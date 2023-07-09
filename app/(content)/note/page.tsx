@@ -1,11 +1,5 @@
-import '@/styles/globals.css';
+const NotePage = () => {
+  return <div>笔记页面</div>;
+};
 
-export default function Home() {
-  return (
-    <div>
-      <h1 className='tw-border-r-half tw-bg-border-color tw-ml-0 tw-mr-0'>
-        Next.js + TypeScript
-      </h1>
-    </div>
-  );
-}
+export default NotePage;

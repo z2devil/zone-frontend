@@ -18,17 +18,17 @@ const User = (props: UserProps) => {
   return (
     <div className='flex h-16 flex-1 items-center justify-start gap-2.5 py-0.5 pr-[1.38rem]'>
       <Image
-        className='h-[3.75rem] w-[3.75rem] rounded-full border border-black border-opacity-40'
+        className='border-black h-[3.75rem] w-[3.75rem] rounded-full border border-opacity-40'
         src={user.avatarUrl}
         width={120}
         height={120}
         alt='avatar'
       />
       <div className='flex flex-1 flex-col items-start justify-start gap-[5px]'>
-        <span className='text-[1.25rem] font-semibold text-black text-opacity-90'>
+        <span className='text-[1.25rem] font-semibold text-black-600'>
           {user.name}
         </span>
-        <span className='text-[16px] font-normal text-black text-opacity-60'>
+        <span className='text-[16px] font-normal text-black-400'>
           {userRole}
         </span>
       </div>

@@ -1,5 +1,5 @@
 export interface IRoute {
-  iconSrc: string;
+  iconClass: string;
   text: string;
   routePath: string;
 }
@@ -9,22 +9,22 @@ const getRoutes = async () => {
     setTimeout(() => {
       resolve([
         {
-          iconSrc: '/icon/note.svg',
+          iconClass: 'icon-note',
           text: '笔记',
           routePath: '/note',
         },
         {
-          iconSrc: '/icon/works.svg',
+          iconClass: 'icon-works',
           text: '作品',
           routePath: '/works',
         },
         {
-          iconSrc: '/icon/about.svg',
+          iconClass: 'icon-about',
           text: '关于',
           routePath: '/about',
         },
         {
-          iconSrc: '/icon/message.svg',
+          iconClass: 'icon-message',
           text: '消息',
           routePath: '/message',
         },

@@ -9,13 +9,25 @@ module.exports = {
     extend: {
       // https://vercel.com/design/color
       colors: {
-        vercel: {
-          pink: '#FF0080',
-          blue: '#0070F3',
-          cyan: '#50E3C2',
-          orange: '#F5A623',
-          violet: '#7928CA',
-          'border-color': '#e5e7eb',
+        'logo-color': '#FFC445',
+        'theme-color': '#0A59F7',
+        'border-color': '#EBE9E9',
+        'bg-color': {
+          50: '#F3F1F2',
+          100: '#F9F9F9',
+          200: '#EFEFED',
+        },
+        black: {
+          50: 'rgba(0, 0, 0, 0.05)',
+          100: 'rgba(0, 0, 0, 0.1)',
+          200: 'rgba(0, 0, 0, 0.2)',
+          300: 'rgba(0, 0, 0, 0.3)',
+          400: 'rgba(0, 0, 0, 0.4)',
+          500: 'rgba(0, 0, 0, 0.5)',
+          600: 'rgba(0, 0, 0, 0.6)',
+          700: 'rgba(0, 0, 0, 0.7)',
+          800: 'rgba(0, 0, 0, 0.8)',
+          900: 'rgba(0, 0, 0, 0.9)',
         },
       },
       keyframes: ({ theme }) => ({
