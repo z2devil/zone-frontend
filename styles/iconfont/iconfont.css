@@ -1,46 +1,55 @@
 @font-face {
-  src: url('iconfont.woff2?t=1688867287985') format('woff2'),
-    url('iconfont.woff?t=1688867287985') format('woff'),
-    url('iconfont.ttf?t=1688867287985') format('truetype');
-  font-family: 'iconfont'; /* Project id 3977835 */
+  font-family: "iconfont"; /* Project id 3977835 */
+  src: url('iconfont.woff2?t=1688889706802') format('woff2'),
+       url('iconfont.woff?t=1688889706802') format('woff'),
+       url('iconfont.ttf?t=1688889706802') format('truetype');
 }
 
 .iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-style: normal;
-  font-size: 16px;
-  font-family: 'iconfont' !important;
+}
+
+.icon-chart:before {
+  content: "\e634";
+}
+
+.icon-search:before {
+  content: "\e635";
 }
 
 .icon-about:before {
-  content: '\e62f';
+  content: "\e62f";
 }
 
 .icon-message:before {
-  content: '\e630';
+  content: "\e630";
 }
 
 .icon-note:before {
-  content: '\e631';
+  content: "\e631";
 }
 
 .icon-logo:before {
-  content: '\e632';
+  content: "\e632";
 }
 
 .icon-works:before {
-  content: '\e633';
+  content: "\e633";
 }
 
 .icon-error:before {
-  content: '\e62c';
+  content: "\e62c";
 }
 
 .icon-success:before {
-  content: '\e62d';
+  content: "\e62d";
 }
 
 .icon-warning:before {
-  content: '\e62e';
+  content: "\e62e";
 }
+

@@ -10,17 +10,21 @@ export const metadata = {
   description: '中二Devil的个人博客',
 };
 
-export default function RootLayout({
-  children,
-}: {
+interface RootLayoutProps {
   children: React.ReactNode;
-}) {
+}
+
+const RootLayout = (props: RootLayoutProps) => {
+  const { children } = props;
+
   return (
     <html lang='en'>
-      <body className={clsx(inter.className, ' relative, h-screen')}>
+      <body className={clsx(inter.className, 'relative flex h-screen')}>
         <Sidebar />
-        {children}
+        <div className='mr-5 flex-1 overflow-y-auto'>{children}</div>
       </body>
     </html>
   );
-}
+};
+
+export default RootLayout;

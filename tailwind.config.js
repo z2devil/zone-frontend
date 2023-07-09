@@ -12,7 +12,7 @@ module.exports = {
         'logo-color': '#FFC445',
         'theme-color': '#0A59F7',
         'border-color': '#EBE9E9',
-        'bg-color': {
+        'background-color': {
           50: '#F3F1F2',
           100: '#F9F9F9',
           200: '#EFEFED',
