@@ -1,5 +1,5 @@
 import '@/styles/globals.css';
-import Sidebar from '@/ui/sidebar/Sidebar';
+import Sidebar from '@/ui/Sidebar';
 import clsx from 'clsx';
 import { Inter } from 'next/font/google';
 
@@ -19,9 +19,13 @@ const RootLayout = (props: RootLayoutProps) => {
 
   return (
     <html lang='en'>
-      <body className={clsx(inter.className, 'relative flex h-screen')}>
+      <body
+        className={clsx(
+          inter.className,
+          'relative flex h-screen bg-gray-50 max-sm:flex-col'
+        )}>
         <Sidebar />
-        <div className='mr-5 flex-1 overflow-y-auto'>{children}</div>
+        <div className='flex-1 overflow-y-auto pr-5'>{children}</div>
       </body>
     </html>
   );

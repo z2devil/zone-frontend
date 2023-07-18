@@ -25,12 +25,12 @@ const Sidebar = () => {
   }, []);
 
   return (
-    <div className='h-full p-5'>
-      <div className='flex h-full flex-shrink-0 flex-col items-start justify-between rounded-xl border border-gray-200 bg-stone-50'>
-        <div className='flex items-start justify-start gap-2.5 self-stretch p-12'>
+    <div className='h-full p-5 max-md:hidden'>
+      <div className='flex h-full flex-shrink-0 flex-col items-start justify-between rounded-xl border border-gray-300 bg-gray-100'>
+        <div className='flex items-start justify-start gap-2.5 p-12'>
           <LogoNav />
         </div>
-        <div className='flex h-[312px] flex-col items-start justify-start gap-2.5 self-stretch pl-[65px]'>
+        <div className='mx-auto flex flex-col gap-2.5'>
           <div className='flex flex-col items-start justify-start gap-10'>
             {routes.map(route => {
               const isActive = pathname.startsWith(route.routePath);
@@ -44,7 +44,7 @@ const Sidebar = () => {
             })}
           </div>
         </div>
-        <div className='flex h-[174px] flex-col items-start justify-start gap-2.5 self-stretch px-[50px] py-[55px]'>
+        <div className='mx-auto mb-14 flex gap-2.5'>
           {userInfo ? <User user={userInfo} /> : null}
         </div>
       </div>

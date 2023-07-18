@@ -10,12 +10,27 @@ module.exports = {
       // https://vercel.com/design/color
       colors: {
         'logo-color': '#FFC445',
-        'theme-color': '#0A59F7',
-        'border-color': '#EBE9E9',
-        'background-color': {
+        primary: {
+          50: '#0A59F7',
+          100: '#317AF7',
+        },
+        danger: {
+          50: '#F84026',
+          100: '#D94838',
+        },
+        warning: {
+          50: '#ED6F21',
+          100: '#DB6B42',
+        },
+        success: {
+          50: '#64BB5C',
+          100: '#5BA854',
+        },
+        gray: {
           50: '#F3F1F2',
-          100: '#F9F9F9',
+          100: '#F8F8F8',
           200: '#EFEFED',
+          300: '#EBE9E9',
         },
         black: {
           50: 'rgba(0, 0, 0, 0.05)',
@@ -30,46 +45,53 @@ module.exports = {
           900: 'rgba(0, 0, 0, 0.9)',
         },
       },
+      screens: {
+        sm: '640px',
+        md: '768px',
+        lg: '1024px',
+        xl: '1280px',
+        '2xl': '1440px',
+      },
       keyframes: ({ theme }) => ({
-        rerender: {
-          '0%': {
-            'border-color': theme('colors.vercel.pink'),
-          },
-          '40%': {
-            'border-color': theme('colors.vercel.pink'),
-          },
-        },
-        highlight: {
-          '0%': {
-            background: theme('colors.vercel.pink'),
-            color: theme('colors.white'),
-          },
-          '40%': {
-            background: theme('colors.vercel.pink'),
-            color: theme('colors.white'),
-          },
-        },
-        shimmer: {
-          '100%': {
-            transform: 'translateX(100%)',
-          },
-        },
-        translateXReset: {
-          '100%': {
-            transform: 'translateX(0)',
-          },
-        },
-        fadeToTransparent: {
-          '0%': {
-            opacity: 1,
-          },
-          '40%': {
-            opacity: 1,
-          },
-          '100%': {
-            opacity: 0,
-          },
-        },
+        // rerender: {
+        //   '0%': {
+        //     'border-color': theme('colors.vercel.pink'),
+        //   },
+        //   '40%': {
+        //     'border-color': theme('colors.vercel.pink'),
+        //   },
+        // },
+        // highlight: {
+        //   '0%': {
+        //     background: theme('colors.vercel.pink'),
+        //     color: theme('colors.white'),
+        //   },
+        //   '40%': {
+        //     background: theme('colors.vercel.pink'),
+        //     color: theme('colors.white'),
+        //   },
+        // },
+        // shimmer: {
+        //   '100%': {
+        //     transform: 'translateX(100%)',
+        //   },
+        // },
+        // translateXReset: {
+        //   '100%': {
+        //     transform: 'translateX(0)',
+        //   },
+        // },
+        // fadeToTransparent: {
+        //   '0%': {
+        //     opacity: 1,
+        //   },
+        //   '40%': {
+        //     opacity: 1,
+        //   },
+        //   '100%': {
+        //     opacity: 0,
+        //   },
+        // },
       }),
     },
   },

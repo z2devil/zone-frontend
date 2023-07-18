@@ -3,11 +3,12 @@
 import { useEffect, useState } from 'react';
 import dateFormat from 'utils/dateFormat';
 
-interface DateDisplayProps {
+interface DateViewProps {
   date: Date | string;
+  className?: string;
 }
 
-const DateDisplay = (props: DateDisplayProps) => {
+const DateView = (props: DateViewProps) => {
   const { date } = props;
 
   const [dateStr, setDateStr] = useState('');
@@ -20,7 +21,7 @@ const DateDisplay = (props: DateDisplayProps) => {
     }
   }, [date]);
 
-  return <span>{dateStr}</span>;
+  return <span className={props.className}>{dateStr}</span>;
 };
 
-export default DateDisplay;
+export default DateView;
