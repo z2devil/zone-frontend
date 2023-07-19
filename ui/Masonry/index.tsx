@@ -9,7 +9,6 @@ import {
   useState,
 } from 'react';
 import useResize from './hooks/useResize';
-import usePromise from './hooks/usePromise';
 
 type Record = {
   id: number;
@@ -134,11 +133,11 @@ const Masonry = <T extends { id: number }>(props: MasonryProps<T>) => {
     const renderIndexArray: number[] = [];
     const renderRange = [visionRange[1], visionRange[0]];
 
-    console.log(
-      '等待预渲染完成，开始渲染',
-      JSON.stringify(records),
-      JSON.stringify(visionRange)
-    );
+    // console.log(
+    //   '等待预渲染完成，开始渲染',
+    //   JSON.stringify(records),
+    //   JSON.stringify(visionRange)
+    // );
 
     records.current.forEach((record, index) => {
       if (
@@ -151,11 +150,11 @@ const Masonry = <T extends { id: number }>(props: MasonryProps<T>) => {
       }
     });
 
-    console.log(
-      JSON.stringify(renderIndexArray),
-      JSON.stringify(renderRange),
-      JSON.stringify(visionRange)
-    );
+    // console.log(
+    //   JSON.stringify(renderIndexArray),
+    //   JSON.stringify(renderRange),
+    //   JSON.stringify(visionRange)
+    // );
 
     // 判断是否满足渲染需求
     if (
@@ -163,16 +162,18 @@ const Masonry = <T extends { id: number }>(props: MasonryProps<T>) => {
       renderRange[1] < visionRange[1] ||
       !renderIndexArray.length
     ) {
+      if (isloading) return;
+      setIsLoading(true);
       console.log('不满足渲染需求，开始加载数据');
-
       // 加载数据
       await handleLoadData();
+      setIsLoading(false);
       return;
     }
 
     // 渲染
     setRenderIndexArray(renderIndexArray);
-  }, [bufferOffset, containerSize.height, handleLoadData]);
+  }, [bufferOffset, containerSize.height, handleLoadData, isloading]);
 
   // 滚动事件
   const isScrolling = useRef(false);

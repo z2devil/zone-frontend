@@ -46,7 +46,7 @@ const NotePage = () => {
       setTimeout(() => {
         setData(prev => [...prev, ...newData]);
         resolve(newData);
-      }, 2000);
+      }, 200);
     });
   };
 
