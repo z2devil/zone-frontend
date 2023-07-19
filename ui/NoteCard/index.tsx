@@ -1,7 +1,6 @@
 import DateView from '../DateView';
 
 interface NoteCardProps {
-  index: number;
   title: string;
   content: string;
   date: string;
@@ -13,10 +12,9 @@ const NoteCard = (
     style: React.CSSProperties;
   }
 ) => {
-  const { index, title, content, date, tags, style } = props;
+  const { title, content, date, tags, style } = props;
   return (
     <div
-      data-index={index}
       className='flex w-[30rem] flex-col gap-2.5 rounded-xl border border-gray-300 bg-gray-100 p-7'
       style={style}>
       <div className='flex flex-col gap-5'>

@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from 'react';
 
 interface INote {
   id: number;
-  height: number;
   title: string;
   content: string;
   createdAt: string;
@@ -27,11 +26,10 @@ const NotePage = () => {
     }
   }, []);
 
-  const handleLoadNext = (id?: number) => {
+  const handleLoadData = (id?: number) => {
     console.log('load next', id);
     const newData = Array.from({ length: 30 }).map((_, index) => ({
       id: data.length + index + (id || 0),
-      height: Math.floor(Math.random() * 200) + 100,
       title:
         new Array(Math.floor(Math.random() * 10) + 5)
           .fill(0)
@@ -48,7 +46,7 @@ const NotePage = () => {
       setTimeout(() => {
         setData(prev => [...prev, ...newData]);
         resolve(newData);
-      }, 200);
+      }, 2000);
     });
   };
 
@@ -64,12 +62,11 @@ const NotePage = () => {
         <Masonry<INote>
           container={containerDOM}
           column={2}
-          loadNext={handleLoadNext}>
+          loadData={handleLoadData}>
           {(index, position) => {
             const item = data[index];
             return (
               <NoteCard
-                index={index}
                 key={index}
                 style={{
                   position: 'absolute',

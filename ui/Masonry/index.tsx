@@ -9,11 +9,13 @@ import {
   useState,
 } from 'react';
 import useResize from './hooks/useResize';
+import usePromise from './hooks/usePromise';
 
-type Position = {
+type Record = {
   id: number;
   x: number;
   y: number;
+  height: number;
 };
 
 interface MasonryProps<T> {
@@ -23,13 +25,19 @@ interface MasonryProps<T> {
   bufferOffset?: number;
   loadDistance?: number;
   container: Element;
-  children: (index: number, position: Position) => React.ReactNode;
-  loadNext?: (id?: number) => void | Promise<T[]>;
+  children: (index: number, record: Record) => React.ReactNode;
+  loadData?: (id?: number) => Promise<T[]>;
 }
 
-const Masonry = <T extends { id: number; height: number }>(
-  props: MasonryProps<T>
-) => {
+let resolveFn: ((value: unknown) => void) | undefined;
+
+const createPromise = () => {
+  return new Promise(resolve => {
+    resolveFn = resolve;
+  });
+};
+
+const Masonry = <T extends { id: number }>(props: MasonryProps<T>) => {
   const {
     // TODO: 之后支持不同高度的 item
     column,
@@ -40,7 +48,7 @@ const Masonry = <T extends { id: number; height: number }>(
     loadDistance = 600,
     container,
     children,
-    loadNext,
+    loadData,
   } = props;
 
   // 组件引用
@@ -56,7 +64,7 @@ const Masonry = <T extends { id: number; height: number }>(
   const columnHeights = useRef<number[]>([]);
 
   // 数据记录
-  const dataRecord = useRef<Position[]>([]);
+  const records = useRef<Record[]>([]);
 
   // 内容最大高度（最大范围）
   const [totalHeight, setTotalHeight] = useState(0);
@@ -89,79 +97,95 @@ const Masonry = <T extends { id: number; height: number }>(
     console.log('visionTop', visionTop.current);
   }, []);
 
+  // 加载数据判断
+  const handleLoadData = useCallback(
+    async (id?: number) => {
+      const res = (await loadData?.(id)) || [];
+      for (const item of res) {
+        // TODO: 提供自定义 key
+        records.current.push({
+          id: item.id,
+          // TODO: 提供自定义 列宽
+          x: 0,
+          y: 0,
+          height: 0,
+        });
+      }
+      // 预渲染
+      const preRenderIndexArray: number[] = [];
+      records.current.forEach((record, index) => {
+        if (!record.height) {
+          preRenderIndexArray.push(index);
+        }
+      });
+      console.log('preRenderIndexArray', preRenderIndexArray);
+      setPreRenderIndexArray(preRenderIndexArray);
+    },
+    [loadData]
+  );
+
   // 渲染调度
-  const render = useCallback(() => {
+  const render = useCallback(async () => {
     const visionRange = [
       visionTop.current - bufferOffset,
       visionTop.current + (containerSize.height || 900) + bufferOffset,
     ];
-    console.log('visionRange', visionRange, containerSize.height);
-    const indexArray: number[] = [];
-    dataRecord.current.forEach((position, index) => {
+
+    const renderIndexArray: number[] = [];
+    const renderRange = [visionRange[1], visionRange[0]];
+
+    console.log(
+      '等待预渲染完成，开始渲染',
+      JSON.stringify(records),
+      JSON.stringify(visionRange)
+    );
+
+    records.current.forEach((record, index) => {
       if (
-        visionRange[0] < position.y + (itemHeight || 0) &&
-        visionRange[1] > position.y
+        record.y + record.height > visionRange[0] &&
+        record.y < visionRange[1]
       ) {
-        indexArray.push(index);
+        renderIndexArray.push(index);
+        renderRange[0] = Math.min(renderRange[0], record.y);
+        renderRange[1] = Math.max(renderRange[1], record.y + record.height);
       }
     });
-    setPreRenderIndexArray(indexArray);
-  }, [bufferOffset, containerSize.height, itemHeight]);
 
-  // 加载数据判断
-  const handleLoadData = useCallback(
-    async (id?: number) => {
-      if (isloading) return;
-      setIsLoading(true);
-      const req = loadNext?.(id);
-      if (req instanceof Promise) {
-        const res = await req;
-        for (const item of res) {
-          // TODO: 提供自定义 key
-          dataRecord.current.push({
-            id: item.id,
-            // TODO: 提供自定义 列宽
-            x: 0,
-            y: 0,
-          });
-        }
-        updateVisionRange();
-        render();
-      } else {
-        console.log('load next', req);
-      }
-      setIsLoading(false);
-    },
-    [isloading, loadNext, updateVisionRange, render]
-  );
+    console.log(
+      JSON.stringify(renderIndexArray),
+      JSON.stringify(renderRange),
+      JSON.stringify(visionRange)
+    );
+
+    // 判断是否满足渲染需求
+    if (
+      // renderRange[0] > visionRange[0] ||
+      renderRange[1] < visionRange[1] ||
+      !renderIndexArray.length
+    ) {
+      console.log('不满足渲染需求，开始加载数据');
+
+      // 加载数据
+      await handleLoadData();
+      return;
+    }
+
+    // 渲染
+    setRenderIndexArray(renderIndexArray);
+  }, [bufferOffset, containerSize.height, handleLoadData]);
 
   // 滚动事件
   const isScrolling = useRef(false);
   const handleScroll = useCallback(() => {
     if (isScrolling.current) return;
     isScrolling.current = true;
-    requestAnimationFrame(() => {
+    requestAnimationFrame(async () => {
       isScrolling.current = false;
-      // 更新所示区域
       scrollTop.current = container.scrollTop;
       updateVisionRange();
-      // 加载数据
-      if (
-        visionTop.current >
-        totalHeight - containerSize.height - loadDistance
-      ) {
-        handleLoadData(dataRecord.current[dataRecord.current.length - 1].id);
-      }
+      await render();
     });
-  }, [
-    container.scrollTop,
-    updateVisionRange,
-    render,
-    totalHeight,
-    containerSize.height,
-    loadDistance,
-    handleLoadData,
-  ]);
+  }, [container.scrollTop, render, updateVisionRange]);
 
   // 维护滚动事件
   useEffect(() => {
@@ -172,34 +196,39 @@ const Masonry = <T extends { id: number; height: number }>(
   }, [container, handleScroll]);
 
   // 初始化
-  const init = useCallback(() => {
+  const init = useCallback(async () => {
     columnHeights.current = Array.from({ length: column }).map(() => 0);
-    handleLoadData();
-  }, [column, handleLoadData]);
+    const promise = createPromise();
+    await handleLoadData();
+    await promise;
+    updateVisionRange();
+    await render();
+  }, [column, handleLoadData, render, updateVisionRange]);
 
   useEffect(() => {
     init();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // 预渲染
   const preRenderContainerRef = useRef<HTMLDivElement>(null);
-
   const resizeObserverRef = useRef<ResizeObserver>();
-
   useEffect(() => {
     const preRenderContainerDOM = preRenderContainerRef.current;
     if (!preRenderContainerDOM || !preRenderIndexArray.length) return;
     const resizeObserver = new ResizeObserver(entries => {
       for (const entry of entries) {
-        const card = entry.target;
-        const index = Number(card.getAttribute('data-index'));
-        const position = dataRecord.current[index];
-        const height = card.getBoundingClientRect().height;
+        const wrapper = entry.target;
+        const index = Number(wrapper.getAttribute('data-index'));
+        const record = records.current[index];
+        const rect = wrapper.children[0].getBoundingClientRect();
+        const height = rect.height;
         const minIndex = columnHeights.current.indexOf(
           Math.min(...columnHeights.current)
         );
-        position.x = minIndex * (card.getBoundingClientRect().width + gap);
-        position.y = columnHeights.current[minIndex];
+        record.x = minIndex * (rect.width + gap);
+        record.y = columnHeights.current[minIndex];
+        record.height = height;
         columnHeights.current[minIndex] += height + gap;
       }
       setRenderIndexArray(prev => {
@@ -216,7 +245,8 @@ const Masonry = <T extends { id: number; height: number }>(
         });
         return height;
       });
-      console.log('dataRecord', dataRecord.current);
+      console.log('预渲染完成', records.current);
+      resolveFn?.(null);
       // 清除resizeObserver
       setPreRenderIndexArray([]);
       resizeObserver.disconnect();
@@ -231,7 +261,7 @@ const Masonry = <T extends { id: number; height: number }>(
     return () => {
       resizeObserver.disconnect();
     };
-  }, [column, gap, preRenderIndexArray, render]);
+  }, [column, gap, preRenderIndexArray]);
 
   return (
     <div
@@ -239,12 +269,16 @@ const Masonry = <T extends { id: number; height: number }>(
       className='relative min-h-screen'
       style={calcFillerHeight}>
       {renderIndexArray.map(i => {
-        const position = dataRecord.current[i];
+        const position = records.current[i];
         return children(i, position);
       })}
       <div ref={preRenderContainerRef} className='invisible absolute'>
         {preRenderIndexArray.map(i => {
-          return children(i, { id: -1, x: 0, y: 0 });
+          return (
+            <div key={i} data-index={i}>
+              {children(i, { id: -1, x: 0, y: 0, height: 0 })}
+            </div>
+          );
         })}
       </div>
     </div>
