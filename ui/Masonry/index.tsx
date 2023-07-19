@@ -166,7 +166,7 @@ const Masonry = <T extends { id: number }>(props: MasonryProps<T>) => {
       setIsLoading(true);
       console.log('不满足渲染需求，开始加载数据');
       // 加载数据
-      await handleLoadData();
+      await handleLoadData(records.current[records.current.length - 1].id);
       setIsLoading(false);
       return;
     }
@@ -270,8 +270,8 @@ const Masonry = <T extends { id: number }>(props: MasonryProps<T>) => {
       className='relative min-h-screen'
       style={calcFillerHeight}>
       {renderIndexArray.map(i => {
-        const position = records.current[i];
-        return children(i, position);
+        const record = records.current[i];
+        return children(i, record);
       })}
       <div ref={preRenderContainerRef} className='invisible absolute'>
         {preRenderIndexArray.map(i => {

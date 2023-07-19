@@ -28,20 +28,23 @@ const NotePage = () => {
 
   const handleLoadData = (id?: number) => {
     console.log('load next', id);
-    const newData = Array.from({ length: 30 }).map((_, index) => ({
-      id: data.length + index + (id || 0),
-      title:
-        new Array(Math.floor(Math.random() * 10) + 5)
+    const newData = Array.from({ length: 30 }).map((_, index) => {
+      const id = data.length + index;
+      return {
+        id,
+        title: '标题' + id,
+        // new Array(Math.floor(Math.random() * 10) + 5)
+        //   .fill(0)
+        //   .map(() => '标题')
+        //   .join('') + index,
+        content: new Array(Math.floor(Math.random() * 200) + 10)
           .fill(0)
-          .map(() => '标题')
-          .join('') + index,
-      content: new Array(Math.floor(Math.random() * 200) + 10)
-        .fill(0)
-        .map(() => '内容')
-        .join(''),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    }));
+          .map(() => '内容')
+          .join(''),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+    });
     return new Promise<INote[]>(resolve => {
       setTimeout(() => {
         setData(prev => [...prev, ...newData]);
