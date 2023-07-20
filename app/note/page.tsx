@@ -13,9 +13,27 @@ interface INote {
 }
 
 const NotePage = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const [data, setData] = useState<INote[]>([]);
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [column, setColumn] = useState(2);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      console.log('width', width);
+      if (!width) return;
+      if (width < 1440) {
+        setColumn(1);
+      } else {
+        setColumn(2);
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const [containerDOM, setContainerDOM] = useState<Element>();
 
@@ -33,10 +51,6 @@ const NotePage = () => {
       return {
         id,
         title: '标题' + id,
-        // new Array(Math.floor(Math.random() * 10) + 5)
-        //   .fill(0)
-        //   .map(() => '标题')
-        //   .join('') + index,
         content: new Array(Math.floor(Math.random() * 200) + 10)
           .fill(0)
           .map(() => '内容')
@@ -64,7 +78,7 @@ const NotePage = () => {
       {containerDOM && (
         <Masonry<INote>
           container={containerDOM}
-          column={2}
+          column={column}
           loadData={handleLoadData}>
           {(index, position) => {
             const item = data[index];

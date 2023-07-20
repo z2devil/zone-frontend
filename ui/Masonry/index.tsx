@@ -19,7 +19,6 @@ type Record = {
 
 interface MasonryProps<T> {
   column: number;
-  itemHeight?: number;
   gap?: number;
   bufferOffset?: number;
   loadDistance?: number;
@@ -40,7 +39,6 @@ const Masonry = <T extends { id: number }>(props: MasonryProps<T>) => {
   const {
     // TODO: 之后支持不同高度的 item
     column,
-    itemHeight,
     // 之后支持rem
     gap = 20,
     bufferOffset = 300,
@@ -75,7 +73,7 @@ const Masonry = <T extends { id: number }>(props: MasonryProps<T>) => {
   const [preRenderIndexArray, setPreRenderIndexArray] = useState<number[]>([]);
 
   // 加载状态
-  const [isloading, setIsLoading] = useState(false);
+  const isLoading = useRef(false);
 
   // 计算填充区域高度
   const calcFillerHeight: CSSProperties = useMemo(() => {
@@ -131,13 +129,6 @@ const Masonry = <T extends { id: number }>(props: MasonryProps<T>) => {
     ];
 
     const renderIndexArray: number[] = [];
-    const renderRange = [visionRange[1], visionRange[0]];
-
-    // console.log(
-    //   '等待预渲染完成，开始渲染',
-    //   JSON.stringify(records),
-    //   JSON.stringify(visionRange)
-    // );
 
     records.current.forEach((record, index) => {
       if (
@@ -145,35 +136,35 @@ const Masonry = <T extends { id: number }>(props: MasonryProps<T>) => {
         record.y < visionRange[1]
       ) {
         renderIndexArray.push(index);
-        renderRange[0] = Math.min(renderRange[0], record.y);
-        renderRange[1] = Math.max(renderRange[1], record.y + record.height);
       }
     });
 
-    // console.log(
-    //   JSON.stringify(renderIndexArray),
-    //   JSON.stringify(renderRange),
-    //   JSON.stringify(visionRange)
-    // );
-
     // 判断是否满足渲染需求
     if (
-      // renderRange[0] > visionRange[0] ||
-      renderRange[1] < visionRange[1] ||
+      visionRange[1] + loadDistance > totalHeight ||
       !renderIndexArray.length
     ) {
-      if (isloading) return;
-      setIsLoading(true);
-      console.log('不满足渲染需求，开始加载数据');
+      if (isLoading.current) return;
+      isLoading.current = true;
+      console.log('不满足渲染需求，开始加载数据', visionRange[1]);
       // 加载数据
-      await handleLoadData(records.current[records.current.length - 1].id);
-      setIsLoading(false);
+      const lastRecord = records.current[records.current.length - 1];
+      await handleLoadData(lastRecord ? lastRecord.id : undefined);
+      const promise = createPromise();
+      await promise;
+      isLoading.current = false;
       return;
     }
 
     // 渲染
     setRenderIndexArray(renderIndexArray);
-  }, [bufferOffset, containerSize.height, handleLoadData, isloading]);
+  }, [
+    bufferOffset,
+    containerSize.height,
+    handleLoadData,
+    loadDistance,
+    totalHeight,
+  ]);
 
   // 滚动事件
   const isScrolling = useRef(false);
@@ -199,12 +190,12 @@ const Masonry = <T extends { id: number }>(props: MasonryProps<T>) => {
   // 初始化
   const init = useCallback(async () => {
     columnHeights.current = Array.from({ length: column }).map(() => 0);
-    const promise = createPromise();
-    await handleLoadData();
-    await promise;
-    updateVisionRange();
+    records.current = [];
+    setRenderIndexArray([]);
+    setPreRenderIndexArray([]);
+    setTotalHeight(0);
     await render();
-  }, [column, handleLoadData, render, updateVisionRange]);
+  }, [column, render]);
 
   useEffect(() => {
     init();
@@ -263,6 +254,13 @@ const Masonry = <T extends { id: number }>(props: MasonryProps<T>) => {
       resizeObserver.disconnect();
     };
   }, [column, gap, preRenderIndexArray]);
+
+  // 监听 columns 变化
+  useEffect(() => {
+    if (!column) return;
+    init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [column]);
 
   return (
     <div
