@@ -23,13 +23,15 @@ const dateFormat = (date: Date, unit?: DateUnit): string => {
   const minute = diffDate.getMinutes();
   const second = diffDate.getSeconds();
   const dateMap = [
-    { unit: DateUnit.SECOND, value: second },
-    { unit: DateUnit.MINUTE, value: minute },
-    { unit: DateUnit.HOUR, value: hour },
-    { unit: DateUnit.DAY, value: day },
-    { unit: DateUnit.MONTH, value: month },
     { unit: DateUnit.YEAR, value: year },
+    { unit: DateUnit.MONTH, value: month },
+    { unit: DateUnit.DAY, value: day },
+    { unit: DateUnit.HOUR, value: hour },
+    { unit: DateUnit.MINUTE, value: minute },
+    { unit: DateUnit.SECOND, value: second },
   ];
+
+  console.log(dateMap);
 
   if (unit) {
     const dateObj = dateMap.find(item => item.unit === unit);

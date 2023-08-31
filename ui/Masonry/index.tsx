@@ -9,11 +9,12 @@ import {
   useState,
 } from 'react';
 import useResize from './hooks/useResize';
+import _ from 'lodash';
 
 type Record = {
-  id: number;
   x: number;
   y: number;
+  width: number;
   height: number;
 };
 
@@ -24,7 +25,7 @@ interface MasonryProps<T> {
   loadDistance?: number;
   container: Element;
   children: (index: number, record: Record) => React.ReactNode;
-  loadData?: (id?: number) => Promise<T[]>;
+  loadData?: (total: number) => Promise<T[]>;
 }
 
 let resolveFn: ((value: unknown) => void) | undefined;
@@ -96,18 +97,16 @@ const Masonry = <T extends { id: number }>(props: MasonryProps<T>) => {
 
   // 加载数据判断
   const handleLoadData = useCallback(
-    async (id?: number) => {
-      const res = (await loadData?.(id)) || [];
-      for (const item of res) {
-        // TODO: 提供自定义 key
-        records.current.push({
-          id: item.id,
-          // TODO: 提供自定义 列宽
-          x: 0,
-          y: 0,
-          height: 0,
-        });
-      }
+    async (total: number) => {
+      const res = (await loadData?.(total)) || [];
+      console.log('res', res);
+
+      records.current.push(
+        ...new Array(res.length)
+          .fill(0)
+          .map(() => ({ x: 0, y: 0, width: 0, height: 0 }))
+      );
+
       // 预渲染
       const preRenderIndexArray: number[] = [];
       records.current.forEach((record, index) => {
@@ -128,7 +127,16 @@ const Masonry = <T extends { id: number }>(props: MasonryProps<T>) => {
       visionTop.current + (containerSize.height || 900) + bufferOffset,
     ];
 
+    console.log(
+      '[ visionRange ]',
+      visionRange,
+      bufferOffset,
+      containerSize.height
+    );
+
     const renderIndexArray: number[] = [];
+
+    console.log('[ records ]', records.current);
 
     records.current.forEach((record, index) => {
       if (
@@ -139,6 +147,18 @@ const Masonry = <T extends { id: number }>(props: MasonryProps<T>) => {
       }
     });
 
+    console.log('[ renderIndexArray ]', renderIndexArray);
+
+    console.log(
+      '[ visionRange[1] + loadDistance ]',
+      visionRange[1] + loadDistance
+    );
+
+    console.log('[ totalHeight ]', totalHeight);
+
+    // 渲染
+    setRenderIndexArray(renderIndexArray);
+
     // 判断是否满足渲染需求
     if (
       visionRange[1] + loadDistance > totalHeight ||
@@ -146,18 +166,18 @@ const Masonry = <T extends { id: number }>(props: MasonryProps<T>) => {
     ) {
       if (isLoading.current) return;
       isLoading.current = true;
-      console.log('不满足渲染需求，开始加载数据', visionRange[1]);
+      console.log(
+        '不满足渲染需求，开始加载数据',
+        visionRange[1],
+        records.current.length
+      );
       // 加载数据
-      const lastRecord = records.current[records.current.length - 1];
-      await handleLoadData(lastRecord ? lastRecord.id : undefined);
+      await handleLoadData(records.current.length);
       const promise = createPromise();
       await promise;
       isLoading.current = false;
       return;
     }
-
-    // 渲染
-    setRenderIndexArray(renderIndexArray);
   }, [
     bufferOffset,
     containerSize.height,
@@ -167,38 +187,40 @@ const Masonry = <T extends { id: number }>(props: MasonryProps<T>) => {
   ]);
 
   // 滚动事件
-  const isScrolling = useRef(false);
-  const handleScroll = useCallback(() => {
-    if (isScrolling.current) return;
-    isScrolling.current = true;
-    requestAnimationFrame(async () => {
-      isScrolling.current = false;
+  const handleScroll = _.throttle(
+    useCallback(() => {
       scrollTop.current = container.scrollTop;
       updateVisionRange();
-      await render();
-    });
-  }, [container.scrollTop, render, updateVisionRange]);
+      render();
+    }, [container, render, updateVisionRange]),
+    100
+  );
 
   // 维护滚动事件
   useEffect(() => {
-    container.addEventListener('scroll', handleScroll);
+    container.addEventListener('scroll', handleScroll, {
+      passive: true,
+    });
     return () => {
       container.removeEventListener('scroll', handleScroll);
     };
   }, [container, handleScroll]);
 
-  // 初始化
-  const init = useCallback(async () => {
-    columnHeights.current = Array.from({ length: column }).map(() => 0);
-    records.current = [];
-    setRenderIndexArray([]);
-    setPreRenderIndexArray([]);
-    setTotalHeight(0);
-    await render();
-  }, [column, render]);
+  // // 初始化
+  // const init = useCallback(async () => {
+  //   columnHeights.current = Array.from({ length: column }).map(() => 0);
+  //   records.current = [];
+  //   setRenderIndexArray([]);
+  //   setPreRenderIndexArray([]);
+  //   setTotalHeight(0);
+  //   updateVisionRange();
+  //   await render();
+  // }, [column, render, updateVisionRange]);
 
   useEffect(() => {
-    init();
+    columnHeights.current = Array.from({ length: column }).map(() => 0);
+    updateVisionRange();
+    render();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -220,6 +242,7 @@ const Masonry = <T extends { id: number }>(props: MasonryProps<T>) => {
         );
         record.x = minIndex * (rect.width + gap);
         record.y = columnHeights.current[minIndex];
+        record.width = rect.width;
         record.height = height;
         columnHeights.current[minIndex] += height + gap;
       }
@@ -255,10 +278,34 @@ const Masonry = <T extends { id: number }>(props: MasonryProps<T>) => {
     };
   }, [column, gap, preRenderIndexArray]);
 
+  const reset = useCallback(async () => {
+    columnHeights.current = Array.from({ length: column }).map(() => 0);
+    // 重新计算records
+    let nextTotalHeight = 0;
+    for (let i = 0; i < records.current.length; i++) {
+      const minIndex = columnHeights.current.indexOf(
+        Math.min(...columnHeights.current)
+      );
+      const record = records.current[i];
+      record.x = minIndex * (record.width + gap);
+      record.y = columnHeights.current[minIndex];
+      columnHeights.current[minIndex] += record.height + gap;
+      nextTotalHeight = Math.max(
+        nextTotalHeight,
+        columnHeights.current[minIndex]
+      );
+    }
+    setRenderIndexArray([]);
+    // setPreRenderIndexArray([]);
+    setTotalHeight(nextTotalHeight);
+    updateVisionRange();
+    await render();
+  }, [column, gap, render, updateVisionRange]);
+
   // 监听 columns 变化
   useEffect(() => {
     if (!column) return;
-    init();
+    reset();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [column]);
 
@@ -275,7 +322,7 @@ const Masonry = <T extends { id: number }>(props: MasonryProps<T>) => {
         {preRenderIndexArray.map(i => {
           return (
             <div key={i} data-index={i}>
-              {children(i, { id: -1, x: 0, y: 0, height: 0 })}
+              {children(i, { x: 0, y: 0, width: 0, height: 0 })}
             </div>
           );
         })}

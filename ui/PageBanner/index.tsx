@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import DateView from '../DateView';
+import dayjs from '@/utils/dayjs';
 
 interface PageBannerProps {
   title: string;
@@ -17,7 +17,7 @@ const PageBanner = forwardRef<any, PageBannerProps>((props, ref) => {
       <div className='flex w-full items-center justify-between'>
         <div className='text-[1.125rem] text-black-400'>
           <span>最近更新：</span>
-          <DateView date={lastUpdated} />
+          <span>{dayjs(lastUpdated).fromNow()}</span>
         </div>
         <div className='flex items-start justify-start gap-2.5'>
           <button className=' flex h-10 w-10 items-center justify-center rounded-xl border transition-all duration-100 hover:border-gray-300 hover:bg-gray-100'>
