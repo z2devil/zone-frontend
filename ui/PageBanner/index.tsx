@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import dayjs from '@/utils/dayjs';
+import dayjs from '@/lib/utils/dayjs';
 
 interface PageBannerProps {
   title: string;

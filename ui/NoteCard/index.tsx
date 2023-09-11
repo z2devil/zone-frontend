@@ -1,14 +1,11 @@
-import dayjs from '@/utils/dayjs';
+import { NoteTypeEnum } from '@/lib/api/note';
+import dayjs from '@/lib/utils/dayjs';
 import ReactMarkdown from 'react-markdown';
 
-export enum NoteCardType {
-  Note = 0,
-  ARTICLE,
-}
-
 interface NoteCardProps {
-  type: NoteCardType;
-  title: string;
+  type: NoteTypeEnum;
+  title?: string;
+  summary?: string;
   content: string;
   date: string;
   tags: string[];
@@ -26,7 +23,7 @@ const NoteCard = (
       style={style}>
       <div className='flex flex-col gap-2'>
         <div className='flex items-center justify-between gap-10'>
-          {type === NoteCardType.Note ? (
+          {type === NoteTypeEnum.NOTE ? (
             <div className='flex items-center gap-1'>
               <i className='iconfont icon-calendar text-[1.06rem] leading-[1.06rem] text-black-400' />
               <span className='text-[0.75rem] leading-[0.75rem] text-black-400'>
@@ -43,13 +40,13 @@ const NoteCard = (
           </button>
         </div>
         <div className='text-justify text-[0.9rem] text-black-600'>
-          {type === NoteCardType.Note ? (
+          {type === NoteTypeEnum.NOTE ? (
             <ReactMarkdown>{content}</ReactMarkdown>
           ) : (
             content
           )}
         </div>
-        {type === NoteCardType.ARTICLE && (
+        {type === NoteTypeEnum.ARTICLE && (
           <div className='flex items-center justify-between gap-1'>
             <div className='flex items-center gap-1'>
               <i className='iconfont icon-calendar text-[1.06rem] leading-[1.06rem] text-black-400' />

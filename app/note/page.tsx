@@ -1,25 +1,16 @@
 'use client';
-import { getNotes } from '@/lib/note';
+import { NoteEntity, getNotesAPI } from '@/lib/api/note';
 import Masonry from '@/ui/Masonry';
-import NoteCard, { NoteCardType } from '@/ui/NoteCard';
+import NoteCard from '@/ui/NoteCard';
 import PageBanner from '@/ui/PageBanner';
 import { useEffect, useRef, useState } from 'react';
-
-interface INote {
-  type: NoteCardType;
-  id: number;
-  title: string;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
-}
 
 const FETCH_SIZE = 30;
 
 const NotePage = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const [data, setData] = useState<INote[]>([]);
+  const [data, setData] = useState<NoteEntity[]>([]);
 
   const [column, setColumn] = useState(2);
 
@@ -55,10 +46,14 @@ const NotePage = () => {
   const handleLoadData = async (total: number) => {
     const nextCurrent = current + 1;
     setCurrent(nextCurrent);
-    const res = await getNotes(nextCurrent, FETCH_SIZE);
-    const code = res.code;
-    if (code !== 200) return [];
-    const nextData = res.data.list;
+    const res = await getNotesAPI({
+      current: nextCurrent,
+      size: FETCH_SIZE,
+    });
+    console.log('res', res);
+    // const code = res;
+    // if (code !== 200) return [];
+    const nextData = res.list;
     setData(prev => [...prev, ...nextData]);
     return nextData;
   };
@@ -72,7 +67,7 @@ const NotePage = () => {
         lastUpdated='Sat Jul 08 2023 13:12:50 GMT+0800 (中国标准时间)'
       />
       {containerDOM && (
-        <Masonry<INote>
+        <Masonry<NoteEntity>
           container={containerDOM}
           column={column}
           loadData={handleLoadData}>

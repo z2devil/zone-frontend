@@ -36,7 +36,7 @@ const createPromise = () => {
   });
 };
 
-const Masonry = <T extends { id: number }>(props: MasonryProps<T>) => {
+const Masonry = <T extends { _id: number }>(props: MasonryProps<T>) => {
   const {
     // TODO: 之后支持不同高度的 item
     column,

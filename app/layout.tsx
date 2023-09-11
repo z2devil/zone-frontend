@@ -24,7 +24,7 @@ const RootLayout = (props: RootLayoutProps) => {
           inter.className,
           'relative flex h-screen bg-gray-50 max-sm:flex-col'
         )}>
-        <Sidebar />
+        {/* <Sidebar /> */}
         <div className='flex-1 overflow-y-auto pr-5'>{children}</div>
       </body>
     </html>
