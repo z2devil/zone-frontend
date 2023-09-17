@@ -9,7 +9,7 @@ export enum NoteTypeEnum {
 }
 
 interface CommonInfo {
-  _id: number;
+  _id: string;
   createdAt: string;
 }
 

@@ -20,12 +20,9 @@ const RootLayout = (props: RootLayoutProps) => {
   return (
     <html lang='en'>
       <body
-        className={clsx(
-          inter.className,
-          'relative flex h-screen bg-gray-50 max-sm:flex-col'
-        )}>
+        className={clsx(inter.className, 'relative flex h-screen bg-gray-50')}>
         {/* <Sidebar /> */}
-        <div className='flex-1 overflow-y-auto pr-5'>{children}</div>
+        <div className='flex-1 overflow-y-auto'>{children}</div>
       </body>
     </html>
   );

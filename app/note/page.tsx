@@ -19,12 +19,13 @@ const NotePage = () => {
       const width = window.innerWidth;
       // console.log('width', width);
       if (!width) return;
-      setColumn(Math.floor((width - 400) / 500));
-      // if (width < 1440) {
-      //   setColumn(1);
-      // } else {
-      //   setColumn(2);
-      // }
+      const rootFontSize = parseFloat(
+        getComputedStyle(document.documentElement).fontSize
+      );
+      const cardWidth = 30 * rootFontSize;
+      const column = Math.floor(width / cardWidth);
+      console.log('column', column);
+      setColumn(column);
     };
     handleResize();
     window.addEventListener('resize', handleResize);
@@ -43,7 +44,7 @@ const NotePage = () => {
   const [current, setCurrent] = useState(0);
 
   // TODO: total 问题
-  const handleLoadData = async (total: number) => {
+  const handleLoadData = async () => {
     const nextCurrent = current + 1;
     setCurrent(nextCurrent);
     const res = await getNotesAPI({
@@ -60,7 +61,7 @@ const NotePage = () => {
 
   return (
     <div
-      className='mx-auto flex flex-1 flex-col max-lg:w-full lg:max-2xl:w-[30rem] 2xl:w-[61.25rem]'
+      className='mx-auto flex flex-1 flex-col items-center px-8'
       ref={containerRef}>
       <PageBanner
         title='笔记'
@@ -68,14 +69,15 @@ const NotePage = () => {
       />
       {containerDOM && (
         <Masonry<NoteEntity>
-          container={containerDOM}
+          parent={containerDOM}
           column={column}
           loadData={handleLoadData}>
-          {(index, position) => {
-            const item = data[index];
+          {(id, position) => {
+            const item = data.find(item => item._id === id);
+            if (!item) return null;
             return (
               <NoteCard
-                key={index}
+                key={id}
                 style={{
                   position: 'absolute',
                   transform: `translate(${position.x}px, ${position.y}px)`,

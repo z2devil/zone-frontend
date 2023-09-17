@@ -1,4 +1,5 @@
 import { RefObject, useEffect, useRef, useState } from 'react';
+import _ from 'lodash';
 
 const useResize = (target: Element | RefObject<Element>) => {
   // resizeObserver
@@ -13,10 +14,12 @@ const useResize = (target: Element | RefObject<Element>) => {
     const dom = target instanceof Element ? target : target.current;
     if (!dom) return;
 
-    resizeObserver.current = new ResizeObserver(() => {
-      const { width, height } = dom.getBoundingClientRect();
-      setSize({ width, height });
-    });
+    resizeObserver.current = new ResizeObserver(
+      _.throttle(() => {
+        const { width, height } = dom.getBoundingClientRect();
+        setSize({ width, height });
+      }, 100)
+    );
     resizeObserver.current.observe(dom);
 
     return () => {

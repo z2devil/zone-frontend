@@ -12,7 +12,7 @@ const PageBanner = forwardRef<any, PageBannerProps>((props, ref) => {
   return (
     <div
       ref={ref}
-      className='flex w-full flex-col items-start justify-start pb-12 pt-5'>
+      className='flex w-full max-w-3xl flex-col items-start justify-start pb-12 pt-5'>
       <div className='text-[4rem] font-semibold text-black-900'>{title}</div>
       <div className='flex w-full items-center justify-between'>
         <div className='text-[1.125rem] text-black-400'>
