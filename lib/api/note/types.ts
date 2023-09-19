@@ -28,7 +28,7 @@ export interface NoteEntity extends CommonInfo {
 /**
  * 查询 notes 参数
  */
-export type LoadNotesParams = IPageParams &
+export type GetNotesParams = IPageParams &
   (
     | {
         search?: string;

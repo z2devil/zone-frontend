@@ -52,6 +52,9 @@ module.exports = {
         xl: '1280px',
         '2xl': '1440px',
       },
+      animation: {
+        flash: 'highlight 1s',
+      },
       keyframes: ({ theme }) => ({
         // rerender: {
         //   '0%': {
@@ -61,16 +64,12 @@ module.exports = {
         //     'border-color': theme('colors.vercel.pink'),
         //   },
         // },
-        // highlight: {
-        //   '0%': {
-        //     background: theme('colors.vercel.pink'),
-        //     color: theme('colors.white'),
-        //   },
-        //   '40%': {
-        //     background: theme('colors.vercel.pink'),
-        //     color: theme('colors.white'),
-        //   },
-        // },
+        highlight: {
+          '0%': {
+            color: theme('colors.danger.100'),
+          },
+          '100%': {},
+        },
         // shimmer: {
         //   '100%': {
         //     transform: 'translateX(100%)',

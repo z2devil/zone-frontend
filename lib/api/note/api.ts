@@ -1,12 +1,12 @@
 import request from '@/lib/utils/request';
 import { IPageData } from '../common';
-import { LoadNotesParams, NoteEntity } from './types';
+import { GetNotesParams, NoteEntity } from './types';
 import { cache } from 'react';
 
 /**
  * 获取note列表
  */
-export const getNotesAPI = cache(async (params: LoadNotesParams) => {
+export const getNotesAPI = cache(async (params: GetNotesParams) => {
   return await request.get<IPageData<NoteEntity>>('/note', params);
 });
 

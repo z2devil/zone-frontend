@@ -5,7 +5,9 @@ import NoteCard from '@/ui/NoteCard';
 import PageBanner from '@/ui/PageBanner';
 import { useEffect, useRef, useState } from 'react';
 
-const FETCH_SIZE = 30;
+const FETCH_SIZE = 20;
+
+const GAP = 20;
 
 const NotePage = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -16,15 +18,15 @@ const NotePage = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      const width = window.innerWidth;
-      // console.log('width', width);
+      const containerDOM = containerRef.current;
+      if (!containerDOM) return;
+      const width = containerDOM.clientWidth;
       if (!width) return;
-      const rootFontSize = parseFloat(
+      const rem = parseFloat(
         getComputedStyle(document.documentElement).fontSize
       );
-      const cardWidth = 30 * rootFontSize;
-      const column = Math.floor(width / cardWidth);
-      console.log('column', column);
+      const cardWidth = 30 * rem;
+      const column = Math.floor((width + GAP - 4 * rem) / (cardWidth + GAP));
       setColumn(column);
     };
     handleResize();
@@ -71,7 +73,8 @@ const NotePage = () => {
         <Masonry<NoteEntity>
           parent={containerDOM}
           column={column}
-          loadData={handleLoadData}>
+          loadData={handleLoadData}
+          gap={GAP}>
           {(id, position) => {
             const item = data.find(item => item._id === id);
             if (!item) return null;

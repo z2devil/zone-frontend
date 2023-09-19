@@ -36,7 +36,7 @@ const NoteCard = (
             </span>
           )}
           <button className=' flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[0.5rem] border border-transparent transition-all duration-100 hover:border-primary-50 hover:bg-gray-200'>
-            <i className='iconfont icon-more text-black-400 hover:text-black-600' />
+            <i className='iconfont icon-ellipsis-v text-black-400 hover:text-black-600' />
           </button>
         </div>
         <div className='text-justify text-[0.9rem] text-black-600'>

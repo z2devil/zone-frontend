@@ -1,3 +1,4 @@
+import { isArray } from 'lodash';
 import settings from '../constant/settings';
 import auth from './auth';
 
@@ -49,8 +50,12 @@ export const fetchService = async <T = any>(
     const { code, data, message } = (await response.json()) as Response<T>;
 
     if (code !== 200) {
-      const { message: msg } = message[0];
-      throw new Error(msg);
+      if (isArray(message)) {
+        const { message: msg } = message[0];
+        throw new Error(msg);
+      } else {
+        throw new Error(message as any);
+      }
     }
 
     return data;
@@ -61,31 +66,25 @@ export const fetchService = async <T = any>(
 };
 
 const request = {
-  get: async <T = any>(
+  get: <T = any>(
     url: string,
     params: Record<string, any> = {},
     config: Omit<RequestInit, 'method'> = {}
   ) => {
     const searchParams = new URLSearchParams(params).toString();
-    return await fetchService<T>(`${url}?${searchParams}`, {
+    return fetchService<T>(`${url}?${searchParams}`, {
       ...config,
       method: 'GET',
     });
   },
-  post: async <T = any>(
-    url: string,
-    config: Omit<RequestInit, 'method'> = {}
-  ) => {
-    return await fetchService<T>(url, {
+  post: <T = any>(url: string, config: Omit<RequestInit, 'method'> = {}) => {
+    return fetchService<T>(url, {
       ...config,
       method: 'POST',
     });
   },
-  put: async <T = any>(
-    url: string,
-    config: Omit<RequestInit, 'method'> = {}
-  ) => {
-    return await fetchService<T>(url, {
+  put: <T = any>(url: string, config: Omit<RequestInit, 'method'> = {}) => {
+    return fetchService<T>(url, {
       ...config,
       method: 'PUT',
     });
@@ -94,7 +93,7 @@ const request = {
     url: string,
     config: Omit<RequestInit, 'method'> = {}
   ) => {
-    return await fetchService<T>(url, {
+    return fetchService<T>(url, {
       ...config,
       method: 'DELETE',
     });
