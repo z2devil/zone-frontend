@@ -2,15 +2,19 @@
 
 import {
   CSSProperties,
+  RefObject,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
-import useResize from './hooks/useResize';
-import _ from 'lodash';
-import MasonyCore, { MasonryRecord, MasonryUpdateDataType } from './utils';
+import { throttle } from 'lodash';
+import MasonyCore, {
+  MasonryRecord,
+  MasonryUpdateDataType,
+  containerRectInfo,
+} from './utils';
 
 type Record = {
   x: number;
@@ -20,26 +24,26 @@ type Record = {
 };
 
 interface MasonryProps<T> {
+  containerRect: containerRectInfo | undefined;
   column: number;
   gap?: number;
   bufferOffset?: number;
   loadDistance?: number;
   chunkSize?: number;
-  parent: Element;
   children: (id: string, record: Record) => React.ReactNode;
   loadData?: () => Promise<T[]>;
 }
 
+let _prevColumn = 0;
+
 const Masonry = <T extends { _id: string }>(props: MasonryProps<T>) => {
   const {
-    // TODO: 之后支持不同高度的 item
+    containerRect,
     column,
-    // 之后支持rem
     gap = 20,
     bufferOffset = 300,
     loadDistance = 600,
     chunkSize = 10,
-    parent,
     children,
     loadData,
   } = props;
@@ -69,26 +73,24 @@ const Masonry = <T extends { _id: string }>(props: MasonryProps<T>) => {
     };
   }, [totalHeight]);
 
-  // 容器尺寸
-  const [containerSize] = useResize(containerRef);
-
   // 核心
   const masonryCoreRef = useRef<MasonyCore>();
 
   useEffect(() => {
-    const containerDOM = containerRef.current;
     const preRenderContainerDOM = preRenderContainerRef.current;
-    if (!containerDOM || !preRenderContainerDOM) return;
+    if (!containerRect || !preRenderContainerDOM) return;
 
     masonryCoreRef.current = new MasonyCore(
       column,
-      containerDOM,
       preRenderContainerDOM,
+      containerRect,
       {
         bufferOffset,
         gap,
       }
     );
+
+    _prevColumn = column;
 
     handleLoadData();
 
@@ -99,22 +101,28 @@ const Masonry = <T extends { _id: string }>(props: MasonryProps<T>) => {
   }, []);
 
   useEffect(() => {
-    const containerDOM = containerRef.current;
+    if (!containerRect) return;
+
     const preRenderContainerDOM = preRenderContainerRef.current;
-    if (!containerDOM || !preRenderContainerDOM) return;
+    if (!preRenderContainerDOM) return;
 
     const masornyCore = masonryCoreRef.current;
     if (!masornyCore) return;
 
-    const [nextRecords, nextTotalHeight, renderIds] = masornyCore.reset(
-      column,
-      containerSize
-    );
+    if (_prevColumn !== column && (column === 1 || _prevColumn === 1)) {
+      // TODO: masornyCore init
+    } else {
+      const [nextRecords, nextTotalHeight, renderIds] = masornyCore.reset(
+        column,
+        containerRect
+      );
 
-    setRecords(nextRecords);
-    setTotalHeight(nextTotalHeight);
-    setRenderIds(renderIds);
-  }, [column, containerSize]);
+      setRecords(nextRecords);
+      setTotalHeight(nextTotalHeight);
+      setRenderIds(renderIds);
+    }
+    _prevColumn = column;
+  }, [column, containerRect]);
 
   // 加载数据判断
   const handleLoadData = useCallback(async () => {
@@ -138,12 +146,17 @@ const Masonry = <T extends { _id: string }>(props: MasonryProps<T>) => {
   }, [loadData]);
 
   // 滚动事件
-  const handleScroll = _.throttle(
+  const handleScroll = throttle(
     useCallback(() => {
+      const containerDOM = containerRef.current;
+      if (!containerDOM) return;
+
       const masonryCore = masonryCoreRef.current;
       if (!masonryCore) return;
 
-      const [nextRecords, nextTotalHeight, renderIds] = masonryCore.onScroll();
+      const [nextRecords, nextTotalHeight, renderIds] = masonryCore.onScroll(
+        containerDOM.getBoundingClientRect().top
+      );
       setRecords(nextRecords);
       setTotalHeight(nextTotalHeight);
       setRenderIds(renderIds);
@@ -153,13 +166,11 @@ const Masonry = <T extends { _id: string }>(props: MasonryProps<T>) => {
 
   // 维护滚动事件
   useEffect(() => {
-    parent.addEventListener('scroll', handleScroll, {
-      passive: true,
-    });
+    window.addEventListener('scroll', handleScroll);
     return () => {
-      parent.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('scroll', handleScroll);
     };
-  }, [parent, handleScroll]);
+  }, [handleScroll]);
 
   return (
     <div

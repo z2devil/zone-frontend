@@ -12,6 +12,12 @@ export enum MasonryUpdateDataType {
   UPDATE,
 }
 
+export interface containerRectInfo {
+  width: number;
+  windowHeight: number;
+  scrollTop: number;
+}
+
 export type masonryRenderInfo = readonly [MasonryRecord[], number, string[]];
 
 class MasonyCore {
@@ -21,9 +27,7 @@ class MasonyCore {
   private totalHeight = 0;
   private records: MasonryRecord[] = [];
   // 容器
-  private containerDOM: HTMLElement | null;
-  private containerResizeObserver: ResizeObserver | null;
-  private containerSize: { width: number; height: number };
+  private containerRect: containerRectInfo;
   // 预渲染区
   private preRenderAreaDOM: HTMLElement | null;
   private preRenderResizeObserver: ResizeObserver | null;
@@ -33,8 +37,8 @@ class MasonyCore {
 
   constructor(
     coloumnCount: number,
-    containerDOM: HTMLElement,
     preRenderAreaDOM: HTMLElement,
+    containerRect: containerRectInfo,
     options?: {
       bufferOffset?: number;
       gap?: number;
@@ -43,12 +47,7 @@ class MasonyCore {
     this.coloumnCount = coloumnCount;
     this.columnHeights = Array.from({ length: this.coloumnCount }, () => 0);
     // 容器
-    this.containerDOM = containerDOM;
-    this.containerResizeObserver = null;
-    this.containerSize = {
-      width: containerDOM.clientWidth,
-      height: containerDOM.clientHeight,
-    };
+    this.containerRect = containerRect;
     // 预渲染区
     this.preRenderAreaDOM = preRenderAreaDOM;
     this.preRenderResizeObserver = null;
@@ -59,10 +58,6 @@ class MasonyCore {
 
   // 销毁
   public destroy() {
-    // 释放容器
-    this.containerDOM = null;
-    this.containerResizeObserver?.disconnect();
-    this.containerResizeObserver = null;
     // 释放预渲染区
     this.preRenderAreaDOM = null;
     this.preRenderResizeObserver?.disconnect();
@@ -72,10 +67,11 @@ class MasonyCore {
   // 重置
   public reset(
     coloumnCount?: number,
-    containerSize?: { width: number; height: number }
+    containerRect?: containerRectInfo
   ): masonryRenderInfo {
     this.coloumnCount = coloumnCount || this.coloumnCount;
-    this.containerSize = containerSize || this.containerSize;
+    this.containerRect = containerRect || this.containerRect;
+    console.log('[ reset ]', this.coloumnCount, this.containerRect);
     this.reclacRecords();
     this.updateVisionTop();
     const renderIds = this.render();
@@ -87,8 +83,6 @@ class MasonyCore {
     type: MasonryUpdateDataType,
     ids: string[]
   ): Promise<masonryRenderInfo> {
-    if (!this.containerDOM) throw new Error('masonry is not init');
-
     const actions = {
       [MasonryUpdateDataType.ADD]: async () => {
         await this.preRender(ids);
@@ -108,7 +102,8 @@ class MasonyCore {
     return [this.records, this.totalHeight, renderIds];
   }
 
-  public onScroll(): masonryRenderInfo {
+  public onScroll(scrollTop: number): masonryRenderInfo {
+    this.containerRect.scrollTop = scrollTop;
     this.updateVisionTop();
     const renderIds = this.render();
     return [this.records, this.totalHeight, renderIds];
@@ -116,9 +111,7 @@ class MasonyCore {
 
   // 更新视窗顶部
   private updateVisionTop() {
-    if (!this.containerDOM) throw new Error('masonry is not init');
-    const masonryRect = this.containerDOM.getBoundingClientRect();
-    this.visionTop = -masonryRect.top;
+    this.visionTop = -this.containerRect.scrollTop;
   }
 
   // 重新计算记录
@@ -126,7 +119,7 @@ class MasonyCore {
     const records = this.records;
     const coloumnCount = this.coloumnCount;
     const columnHeights = this.columnHeights;
-    const containerWidth = this.containerSize.width;
+    const containerWidth = this.containerRect.width;
     const gap = this.gap;
 
     columnHeights.length = 0;
@@ -165,7 +158,7 @@ class MasonyCore {
       const preRenderAreaDOM = this.preRenderAreaDOM;
       const coloumnCount = this.coloumnCount;
       const columnHeights = this.columnHeights;
-      const containerWidth = this.containerSize.width;
+      const containerWidth = this.containerRect.width;
       const gap = this.gap;
       const records = this.records;
 
@@ -204,7 +197,7 @@ class MasonyCore {
   private render() {
     const visionTop = this.visionTop;
     const bufferOffset = this.bufferOffset;
-    const containerHeight = this.containerSize.height;
+    const containerHeight = this.containerRect.windowHeight;
 
     const visionRange = [
       visionTop - bufferOffset,

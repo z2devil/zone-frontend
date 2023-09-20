@@ -1,13 +1,17 @@
 'use client';
 import { NoteEntity, getNotesAPI } from '@/lib/api/note';
 import Masonry from '@/ui/Masonry';
+import useResize from '@/ui/Masonry/hooks/useResize';
 import NoteCard from '@/ui/NoteCard';
 import PageBanner from '@/ui/PageBanner';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import px2number from '@/lib/utils/px2number';
 
 const FETCH_SIZE = 20;
 
 const GAP = 20;
+
+const CARD_WIDTH = 335;
 
 const NotePage = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -16,25 +20,49 @@ const NotePage = () => {
 
   const [column, setColumn] = useState(2);
 
+  const [containerDOM, setContainerDOM] = useState<Element>();
+
+  const [current, setCurrent] = useState(0);
+
+  // 容器尺寸
+  const [containerRect] = useResize(containerRef, {
+    delay: 100,
+  });
+
+  const calcContainerRectInfo = useMemo(() => {
+    const containerDOM = containerRef.current;
+    if (!containerDOM) return;
+    const style = getComputedStyle(containerDOM);
+    const width =
+      px2number(style.width) -
+      px2number(style.paddingLeft) -
+      px2number(style.paddingRight);
+    console.log('calcContainerRectInfo', containerDOM);
+    return {
+      width,
+      windowHeight: containerDOM.clientHeight,
+      scrollTop: containerDOM.scrollTop,
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [containerRect?.width]);
+
   useEffect(() => {
     const handleResize = () => {
       const containerDOM = containerRef.current;
       if (!containerDOM) return;
-      const width = containerDOM.clientWidth;
-      if (!width) return;
-      const rem = parseFloat(
-        getComputedStyle(document.documentElement).fontSize
-      );
-      const cardWidth = 30 * rem;
-      const column = Math.floor((width + GAP - 4 * rem) / (cardWidth + GAP));
+      const style = getComputedStyle(containerDOM);
+      const containerWidth =
+        px2number(style.width) -
+        px2number(style.paddingLeft) -
+        px2number(style.paddingRight);
+      if (containerWidth < CARD_WIDTH) return;
+      const column = Math.floor((containerWidth + GAP) / (CARD_WIDTH + GAP));
       setColumn(column);
     };
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const [containerDOM, setContainerDOM] = useState<Element>();
+  }, [containerRect?.width]);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -42,8 +70,6 @@ const NotePage = () => {
       parentDOM && setContainerDOM(parentDOM);
     }
   }, []);
-
-  const [current, setCurrent] = useState(0);
 
   // TODO: total 问题
   const handleLoadData = async () => {
@@ -63,7 +89,7 @@ const NotePage = () => {
 
   return (
     <div
-      className='mx-auto flex flex-1 flex-col items-center px-8'
+      className='mx-auto flex h-full w-full flex-col items-center overflow-y-auto px-5'
       ref={containerRef}>
       <PageBanner
         title='笔记'
@@ -71,7 +97,7 @@ const NotePage = () => {
       />
       {containerDOM && (
         <Masonry<NoteEntity>
-          parent={containerDOM}
+          containerRect={calcContainerRectInfo}
           column={column}
           loadData={handleLoadData}
           gap={GAP}>
@@ -83,6 +109,7 @@ const NotePage = () => {
                 key={id}
                 style={{
                   position: 'absolute',
+                  width: `${CARD_WIDTH}px`,
                   transform: `translate(${position.x}px, ${position.y}px)`,
                   overflow: 'hidden',
                 }}

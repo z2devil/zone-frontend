@@ -1,24 +1,30 @@
 import { RefObject, useEffect, useRef, useState } from 'react';
-import _ from 'lodash';
+import { throttle } from 'lodash';
 
-const useResize = (target: Element | RefObject<Element>) => {
+interface ResizeOptions {
+  delay?: number;
+}
+
+const useResize = (
+  target: Element | RefObject<Element>,
+  options?: ResizeOptions
+) => {
+  const { delay = 100 } = options || {};
+
   // resizeObserver
   const resizeObserver = useRef<ResizeObserver>();
   // target 尺寸
-  const [size, setSize] = useState({
-    width: 0,
-    height: 0,
-  });
+  const [reat, setRect] = useState<DOMRect>();
 
   useEffect(() => {
     const dom = target instanceof Element ? target : target.current;
     if (!dom) return;
 
     resizeObserver.current = new ResizeObserver(
-      _.throttle(() => {
-        const { width, height } = dom.getBoundingClientRect();
-        setSize({ width, height });
-      }, 100)
+      throttle(() => {
+        const reat = dom.getBoundingClientRect();
+        setRect(reat);
+      }, delay)
     );
     resizeObserver.current.observe(dom);
 
@@ -27,9 +33,9 @@ const useResize = (target: Element | RefObject<Element>) => {
         ? resizeObserver.current.disconnect()
         : null;
     };
-  }, [target]);
+  }, [delay, target]);
 
-  return [size] as const;
+  return [reat] as const;
 };
 
 export default useResize;

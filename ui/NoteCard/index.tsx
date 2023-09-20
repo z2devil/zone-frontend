@@ -19,7 +19,7 @@ const NoteCard = (
   const { type, title, content, date, tags, style } = props;
   return (
     <div
-      className=' flex w-[30rem] flex-col gap-2.5 rounded-xl border border-gray-300 bg-gray-100 p-7 transition-colors hover:border-primary-50'
+      className=' flex flex-col gap-2.5 rounded-xl border border-gray-300 bg-gray-100 p-5 transition-colors hover:border-primary-50'
       style={style}>
       <div className='flex flex-col gap-2'>
         <div className='flex items-center justify-between gap-10'>
