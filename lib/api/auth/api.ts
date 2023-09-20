@@ -1,5 +1,5 @@
 import request from '@/lib/utils/request';
-import { GetVerificationCodeParams, SignParams } from './types';
+import { GetVerificationCodeParams, SignParams, SignResponse } from './types';
 import { cache } from 'react';
 
 /**
@@ -15,7 +15,7 @@ export const getVerificationCodeAPI = cache(
  * 登录/注册
  */
 export const signAPI = (params: SignParams) => {
-  return request.post('/auth/sign', {
+  return request.post<SignResponse>('/auth/sign', {
     body: JSON.stringify(params),
   });
 };

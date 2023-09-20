@@ -36,12 +36,16 @@ export const fetchService = async <T = any>(
       },
     };
 
+    console.log('requestConfig', JSON.stringify(requestConfig));
+
     // 添加 token
     if (auth.isAuthenticated()) {
       (requestConfig.headers as Record<string, string>)[
         settings.request.header
       ] = auth.getToken();
     }
+
+    console.log('requestConfig', requestConfig);
 
     // 发送请求
     const response = await fetch(settings.request.baseURL + url, requestConfig);

@@ -26,7 +26,7 @@ const configs = {
     contentType: 'application/json; charset=utf-8',
 
     // 请求头名称
-    header: 'authorization',
+    header: 'Authorization',
 
     // token 过期时间
     tokenExpires: 30,

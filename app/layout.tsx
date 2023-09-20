@@ -1,7 +1,9 @@
 import '@/styles/globals.css';
+import RecoilRootProvider from '@/ui/RecoilRootProvider';
 import Sidebar from '@/ui/Sidebar';
 import clsx from 'clsx';
 import { Inter } from 'next/font/google';
+import { RecoilRoot } from 'recoil';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,10 +21,11 @@ const RootLayout = (props: RootLayoutProps) => {
 
   return (
     <html lang='en'>
-      <body
-        className={clsx(inter.className, 'relative flex h-screen bg-gray-50')}>
+      <body className={clsx(inter.className, 'bg-gray-50')}>
         {/* <Sidebar /> */}
-        <div className='flex-1 overflow-y-auto'>{children}</div>
+        <RecoilRootProvider>
+          <div className='flex-1'>{children}</div>
+        </RecoilRootProvider>
       </body>
     </html>
   );
