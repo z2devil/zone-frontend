@@ -2,11 +2,12 @@ export interface UserInfo {
   nickname: string;
   email: string;
   avatarPath: string;
-  lv: number;
+  lv: UserRole;
 }
 
 export enum UserRole {
-  LOGIN = 1,
+  UNLOGIN = 0,
+  LOGIN,
   ADMIN,
   MANAGER,
 }
@@ -21,6 +22,11 @@ export interface SignParams {
 }
 
 export interface SignResponse {
+  token: string;
+  info: UserInfo;
+}
+
+export interface GetInfoResponse {
   token: string;
   info: UserInfo;
 }

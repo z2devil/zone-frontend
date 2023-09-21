@@ -1,18 +1,14 @@
 'use client';
 
 import { getVerificationCodeAPI, signAPI } from '@/lib/api/auth';
-import { userState } from '@/lib/recoil/user';
 import auth from '@/lib/utils/auth';
 import { validate, FormRules } from '@/lib/utils/formRules';
 import Button from '@/ui/Button';
 import VerificationCodeInput from '@/ui/VerificationCodeInput';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useRecoilState } from 'recoil';
 
 const LoginPage = () => {
-  const [userInfo, setUserInfo] = useRecoilState(userState);
-
   const router = useRouter();
 
   const [step, setStep] = useState(0);
@@ -70,14 +66,14 @@ const LoginPage = () => {
       });
       setTip('登录成功');
       auth.setToken(token);
-      setUserInfo(info);
+      auth.setUserInfo(info);
       setTimeout(() => {
         router.push('/');
       }, 1000);
     } catch (error: any) {
       setTip(error.message);
     }
-  }, [email, router, setUserInfo, verificationCode]);
+  }, [email, router, verificationCode]);
 
   useEffect(() => {
     if (verificationCode.length === 4) {

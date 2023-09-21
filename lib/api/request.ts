@@ -1,6 +1,6 @@
 import { isArray } from 'lodash';
 import settings from '../constant/settings';
-import auth from './auth';
+import auth from '../utils/auth';
 
 interface Response<T> {
   code: number;
@@ -69,11 +69,13 @@ export const fetchService = async <T = any>(
   }
 };
 
+type RequestConfig = Omit<RequestInit, 'method'>;
+
 const request = {
   get: <T = any>(
     url: string,
     params: Record<string, any> = {},
-    config: Omit<RequestInit, 'method'> = {}
+    config: RequestConfig = {}
   ) => {
     const searchParams = new URLSearchParams(params).toString();
     return fetchService<T>(`${url}?${searchParams}`, {
@@ -81,22 +83,19 @@ const request = {
       method: 'GET',
     });
   },
-  post: <T = any>(url: string, config: Omit<RequestInit, 'method'> = {}) => {
+  post: <T = any>(url: string, config: RequestConfig = {}) => {
     return fetchService<T>(url, {
       ...config,
       method: 'POST',
     });
   },
-  put: <T = any>(url: string, config: Omit<RequestInit, 'method'> = {}) => {
+  put: <T = any>(url: string, config: RequestConfig = {}) => {
     return fetchService<T>(url, {
       ...config,
       method: 'PUT',
     });
   },
-  delete: async <T = any>(
-    url: string,
-    config: Omit<RequestInit, 'method'> = {}
-  ) => {
+  delete: async <T = any>(url: string, config: RequestConfig = {}) => {
     return fetchService<T>(url, {
       ...config,
       method: 'DELETE',

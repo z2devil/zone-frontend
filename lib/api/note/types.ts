@@ -1,4 +1,4 @@
-import { IPageParams } from '../common';
+import { IPageParams } from '../types';
 
 /**
  * note 类型枚举

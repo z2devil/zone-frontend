@@ -22,6 +22,7 @@ const NoteCard = (
       className=' group flex flex-col gap-2.5 rounded-xl border border-gray-300 bg-gray-100 p-5 transition-colors hover:border-primary-50'
       style={style}>
       <div className='flex flex-col gap-2'>
+        {/* 顶部 */}
         <div className='flex items-center justify-between gap-10'>
           {type === NoteTypeEnum.NOTE ? (
             <div className='flex items-center gap-1'>
@@ -39,6 +40,7 @@ const NoteCard = (
             <i className='iconfont icon-ellipsis-v text-black-400 group-hover/more:text-white' />
           </button>
         </div>
+        {/* 内容 */}
         <div className='text-justify text-[0.9rem] text-black-600'>
           {type === NoteTypeEnum.NOTE ? (
             <ReactMarkdown>{content}</ReactMarkdown>
@@ -46,6 +48,7 @@ const NoteCard = (
             content
           )}
         </div>
+        {/* 底部 */}
         {type === NoteTypeEnum.ARTICLE && (
           <div className='flex items-center justify-between gap-1'>
             <div className='flex items-center gap-1'>

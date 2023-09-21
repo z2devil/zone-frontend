@@ -1,5 +1,10 @@
-import request from '@/lib/utils/request';
-import { GetVerificationCodeParams, SignParams, SignResponse } from './types';
+import request from '@/lib/api/request';
+import {
+  GetInfoResponse,
+  GetVerificationCodeParams,
+  SignParams,
+  SignResponse,
+} from './types';
 import { cache } from 'react';
 
 /**
@@ -18,4 +23,11 @@ export const signAPI = (params: SignParams) => {
   return request.post<SignResponse>('/auth/sign', {
     body: JSON.stringify(params),
   });
+};
+
+/**
+ * 获取用户信息
+ */
+export const getUserInfoAPI = () => {
+  return request.get<GetInfoResponse>('/auth/info');
 };

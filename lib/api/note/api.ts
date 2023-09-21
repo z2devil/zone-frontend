@@ -1,5 +1,5 @@
-import request from '@/lib/utils/request';
-import { IPageData } from '../common';
+import request from '@/lib/api/request';
+import { IPageData } from '../types';
 import { GetNotesParams, NoteEntity } from './types';
 import { cache } from 'react';
 
