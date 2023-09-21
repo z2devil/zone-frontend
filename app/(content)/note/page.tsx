@@ -1,4 +1,5 @@
 'use client';
+
 import { NoteEntity, getNotesAPI } from '@/lib/api/note';
 import Masonry from '@/ui/Masonry';
 import useResize from '@/ui/Masonry/hooks/useResize';
@@ -20,13 +21,11 @@ const NotePage = () => {
 
   const [column, setColumn] = useState(2);
 
-  const [containerDOM, setContainerDOM] = useState<Element>();
-
   const [current, setCurrent] = useState(0);
 
   // 容器尺寸
   const [containerRect] = useResize(containerRef, {
-    delay: 100,
+    delay: 400,
   });
 
   const calcContainerRectInfo = useMemo(() => {
@@ -37,7 +36,6 @@ const NotePage = () => {
       px2number(style.width) -
       px2number(style.paddingLeft) -
       px2number(style.paddingRight);
-    console.log('calcContainerRectInfo', containerDOM);
     return {
       width,
       windowHeight: containerDOM.clientHeight,
@@ -64,13 +62,6 @@ const NotePage = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, [containerRect?.width]);
 
-  useEffect(() => {
-    if (containerRef.current) {
-      const parentDOM = containerRef.current.parentElement;
-      parentDOM && setContainerDOM(parentDOM);
-    }
-  }, []);
-
   // TODO: total 问题
   const handleLoadData = async () => {
     const nextCurrent = current + 1;
@@ -95,34 +86,32 @@ const NotePage = () => {
         title='笔记'
         lastUpdated='Sat Jul 08 2023 13:12:50 GMT+0800 (中国标准时间)'
       />
-      {containerDOM && (
-        <Masonry<NoteEntity>
-          containerRect={calcContainerRectInfo}
-          column={column}
-          loadData={handleLoadData}
-          gap={GAP}>
-          {(id, position) => {
-            const item = data.find(item => item._id === id);
-            if (!item) return null;
-            return (
-              <NoteCard
-                key={id}
-                style={{
-                  position: 'absolute',
-                  width: `${CARD_WIDTH}px`,
-                  transform: `translate(${position.x}px, ${position.y}px)`,
-                  overflow: 'hidden',
-                }}
-                type={item.type}
-                title={item.title}
-                content={item.content}
-                date={item.createdAt}
-                tags={[]}
-              />
-            );
-          }}
-        </Masonry>
-      )}
+      <Masonry<NoteEntity>
+        containerRect={calcContainerRectInfo}
+        column={column}
+        loadData={handleLoadData}
+        gap={GAP}>
+        {(id, position) => {
+          const item = data.find(item => item._id === id);
+          if (!item) return null;
+          return (
+            <NoteCard
+              key={id}
+              style={{
+                position: 'absolute',
+                width: `${CARD_WIDTH}px`,
+                transform: `translate(${position.x}px, ${position.y}px)`,
+                overflow: 'hidden',
+              }}
+              type={item.type}
+              title={item.title}
+              content={item.content}
+              date={item.createdAt}
+              tags={[]}
+            />
+          );
+        }}
+      </Masonry>
     </div>
   );
 };

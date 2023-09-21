@@ -2,7 +2,6 @@
 
 import {
   CSSProperties,
-  RefObject,
   useCallback,
   useEffect,
   useMemo,
@@ -34,8 +33,6 @@ interface MasonryProps<T> {
   loadData?: () => Promise<T[]>;
 }
 
-let _prevColumn = 0;
-
 const Masonry = <T extends { _id: string }>(props: MasonryProps<T>) => {
   const {
     containerRect,
@@ -47,6 +44,8 @@ const Masonry = <T extends { _id: string }>(props: MasonryProps<T>) => {
     children,
     loadData,
   } = props;
+
+  const [initialized, setInitialized] = useState(false);
 
   // 容器引用
   const containerRef = useRef<HTMLDivElement>(null);
@@ -74,55 +73,7 @@ const Masonry = <T extends { _id: string }>(props: MasonryProps<T>) => {
   }, [totalHeight]);
 
   // 核心
-  const masonryCoreRef = useRef<MasonyCore>();
-
-  useEffect(() => {
-    const preRenderContainerDOM = preRenderContainerRef.current;
-    if (!containerRect || !preRenderContainerDOM) return;
-
-    masonryCoreRef.current = new MasonyCore(
-      column,
-      preRenderContainerDOM,
-      containerRect,
-      {
-        bufferOffset,
-        gap,
-      }
-    );
-
-    _prevColumn = column;
-
-    handleLoadData();
-
-    return () => {
-      masonryCoreRef.current?.destroy();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (!containerRect) return;
-
-    const preRenderContainerDOM = preRenderContainerRef.current;
-    if (!preRenderContainerDOM) return;
-
-    const masornyCore = masonryCoreRef.current;
-    if (!masornyCore) return;
-
-    if (_prevColumn !== column && (column === 1 || _prevColumn === 1)) {
-      // TODO: masornyCore init
-    } else {
-      const [nextRecords, nextTotalHeight, renderIds] = masornyCore.reset(
-        column,
-        containerRect
-      );
-
-      setRecords(nextRecords);
-      setTotalHeight(nextTotalHeight);
-      setRenderIds(renderIds);
-    }
-    _prevColumn = column;
-  }, [column, containerRect]);
+  const masonryCoreRef = useRef<MasonyCore | null>();
 
   // 加载数据判断
   const handleLoadData = useCallback(async () => {
@@ -144,6 +95,62 @@ const Masonry = <T extends { _id: string }>(props: MasonryProps<T>) => {
       setRenderIds(renderIds);
     });
   }, [loadData]);
+
+  // 初始化
+  useEffect(() => {
+    if (initialized) return;
+    if (!containerRect) return;
+
+    const preRenderContainerDOM = preRenderContainerRef.current;
+    if (!preRenderContainerDOM) return;
+
+    masonryCoreRef.current = new MasonyCore(
+      column,
+      preRenderContainerDOM,
+      containerRect,
+      {
+        bufferOffset,
+        gap,
+      }
+    );
+
+    handleLoadData();
+
+    setInitialized(true);
+  }, [initialized, containerRect, column, bufferOffset, gap, handleLoadData]);
+
+  // 销毁
+  useEffect(() => {
+    return () => {
+      masonryCoreRef.current?.destroy();
+      masonryCoreRef.current = null;
+    };
+  }, []);
+
+  // 重置
+  useEffect(() => {
+    if (!initialized) return;
+    if (!containerRect) return;
+
+    const preRenderContainerDOM = preRenderContainerRef.current;
+    if (!preRenderContainerDOM) return;
+
+    const masornyCore = masonryCoreRef.current;
+    if (!masornyCore) return;
+
+    const [nextRecords, nextTotalHeight, renderIds] = masornyCore.reset(
+      column,
+      containerRect
+    );
+
+    setRecords(nextRecords);
+    setTotalHeight(nextTotalHeight);
+    setRenderIds(renderIds);
+  }, [initialized, column, containerRect]);
+
+  /************************************************
+   * ✨ 滚动
+   ************************************************/
 
   // 滚动事件
   const handleScroll = throttle(

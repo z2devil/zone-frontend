@@ -71,7 +71,6 @@ class MasonyCore {
   ): masonryRenderInfo {
     this.coloumnCount = coloumnCount || this.coloumnCount;
     this.containerRect = containerRect || this.containerRect;
-    console.log('[ reset ]', this.coloumnCount, this.containerRect);
     this.reclacRecords();
     this.updateVisionTop();
     const renderIds = this.render();
