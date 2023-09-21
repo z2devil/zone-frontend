@@ -1,8 +1,13 @@
 'use client';
 
+import {
+  disableScrollbar,
+  enableScrollbar,
+} from '@/lib/utils/scrollbarTrigger';
 import NavLink from '@/ui/NavLink';
 import UserInfo from '@/ui/UserInfo';
 import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
 
 const NAV_LINKS = [
   {
@@ -36,6 +41,13 @@ const NavLayer = (props: NavLayerProps) => {
   const handleBackgroundClick = () => {
     onClose();
   };
+
+  useEffect(() => {
+    disableScrollbar();
+    return () => {
+      enableScrollbar();
+    };
+  }, []);
 
   return (
     <div className=' fixed left-0 top-0 z-30 flex h-full w-full flex-col items-center justify-center'>
