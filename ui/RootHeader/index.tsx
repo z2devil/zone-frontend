@@ -58,7 +58,7 @@ const RootHeader = () => {
           })}
         </div>
       </div>
-      {showLayer && <NavLayer onClose={() => setShowLayer(false)} />}
+      <NavLayer show={showLayer} onHide={() => setShowLayer(false)} />
     </>
   );
 };

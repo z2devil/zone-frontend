@@ -27,10 +27,10 @@ module.exports = {
           100: '#5BA854',
         },
         gray: {
-          50: '#F3F1F2',
-          100: '#F8F8F8',
-          200: '#EFEFED',
-          300: '#EBE9E9',
+          50: '#F3F1F2', // 页面背景
+          100: '#F8F8F8', // 卡片背景1
+          200: '#EFEFED', // 卡片背景2
+          300: '#EBE9E9', // 边框
         },
         black: {
           50: 'rgba(0, 0, 0, 0.05)',
@@ -46,11 +46,14 @@ module.exports = {
         },
       },
       screens: {
-        sm: '640px',
+        sm: '480px',
         md: '768px',
         lg: '1024px',
         xl: '1280px',
         '2xl': '1440px',
+      },
+      boxShadow: {
+        main: '0px 8px 12px 0px rgba(0, 0, 0, 0.05)',
       },
       animation: {
         flash: 'highlight 1s',
