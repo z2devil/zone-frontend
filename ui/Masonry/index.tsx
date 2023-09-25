@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { throttle } from 'lodash';
+import { throttle } from 'lodash-es';
 import MasonyCore, {
   MasonryRecord,
   MasonryUpdateDataType,

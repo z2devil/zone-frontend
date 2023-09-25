@@ -93,7 +93,7 @@ const LoginPage = () => {
   const calcTip = useMemo(() => {
     if (!tip) return null;
     return (
-      <span className=' relative animate-flash text-base font-medium text-black-400'>
+      <span className=' text-black-250 relative animate-flash text-base font-medium'>
         {tip}
       </span>
     );
@@ -103,7 +103,7 @@ const LoginPage = () => {
     if (step === 0) {
       return (
         <input
-          className='h-[3.25rem] w-[17.5rem] rounded-full text-center text-lg font-medium text-black-900 placeholder:text-center placeholder:text-lg placeholder:text-black-400'
+          className='placeholder:text-black-250 text-black-900 h-[3.25rem] w-[17.5rem] rounded-full text-center text-lg font-medium placeholder:text-center placeholder:text-lg'
           placeholder='邮箱'
           maxLength={30}
           value={email}
@@ -140,7 +140,7 @@ const LoginPage = () => {
         {step === 1 && (
           <>
             <Button
-              className=' flex h-12 w-12 items-center justify-center gap-2.5 rounded-3xl bg-black-400 py-3.5 pr-1'
+              className=' bg-black-250 flex h-12 w-12 items-center justify-center gap-2.5 rounded-3xl py-3.5 pr-1'
               onClick={handleBack}>
               <i className='iconfont icon-angle-left text-2xl text-white' />
             </Button>
@@ -164,7 +164,7 @@ const LoginPage = () => {
           <div className='flex flex-col items-center justify-center gap-7'>
             <i className='iconfont icon-logo text-[72px] text-[#FFC445]'></i>
             <div className=' flex flex-col items-center gap-[0.63rem]'>
-              <span className='text-3xl font-medium text-black-900'>
+              <span className='text-black-900 text-3xl font-medium'>
                 {calcTitle}
               </span>
               <div className='h-4'>{calcTip}</div>

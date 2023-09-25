@@ -99,7 +99,7 @@ const VerificationCodeInput = (props: VerificationCodeInputProps) => {
     <div ref={containerRef} className=' flex gap-[1.25rem]'>
       {code.map((value, index) => (
         <input
-          className='flex h-[3.25rem] w-[3.25rem] rounded-xl text-center text-lg font-medium text-black-900'
+          className='text-black-900 flex h-[3.25rem] w-[3.25rem] rounded-xl text-center text-lg font-medium'
           key={index}
           type='text'
           value={value}

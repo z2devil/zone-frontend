@@ -1,4 +1,4 @@
-import { isArray } from 'lodash';
+import { isArray } from 'lodash-es';
 import settings from '../constant/settings';
 import auth from '../utils/auth';
 

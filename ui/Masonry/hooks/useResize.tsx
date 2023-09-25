@@ -1,5 +1,5 @@
 import { RefObject, useEffect, useRef, useState } from 'react';
-import { throttle } from 'lodash';
+import { throttle } from 'lodash-es';
 
 interface ResizeOptions {
   delay?: number;

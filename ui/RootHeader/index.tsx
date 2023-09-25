@@ -3,6 +3,7 @@
 import clsx from 'clsx';
 import { useCallback, useState } from 'react';
 import NavLayer from '../NavLayer';
+import SearchLayer from '../SearchLayer';
 
 const enum MenuKey {
   SEARCH,
@@ -23,17 +24,17 @@ const MENU = [
 ];
 
 const RootHeader = () => {
-  const [showLayer, setShowLayer] = useState(false);
+  const [showLayer, setShowLayer] = useState<MenuKey | null>(null);
 
   const handleMenuClick = useCallback((key: MenuKey) => {
     const actions = {
       [MenuKey.SEARCH]: () => {
         console.log('search');
-        setShowLayer(true);
+        setShowLayer(MenuKey.SEARCH);
       },
       [MenuKey.MORE]: () => {
         console.log('more');
-        setShowLayer(true);
+        setShowLayer(MenuKey.MORE);
       },
     };
 
@@ -43,14 +44,14 @@ const RootHeader = () => {
   return (
     <>
       <div className='sticky top-0 z-30 flex h-[3.625rem] w-full items-center justify-between border-b border-gray-300 bg-gray-50 bg-opacity-90 px-5 backdrop-blur-xl'>
-        <i className='iconfont icon-logo text-[2rem] text-black-900'></i>
+        <i className='iconfont icon-logo text-black-900 text-[2rem]'></i>
         <div className='flex items-center gap-[0.63rem]'>
           {MENU.map(item => {
             return (
               <button key={item.key} onClick={() => handleMenuClick(item.key)}>
                 <i
                   className={clsx(
-                    'iconfont p-[0.5rem] text-2xl text-black-900',
+                    'iconfont text-black-900 p-[0.5rem] text-2xl',
                     item.icon
                   )}></i>
               </button>
@@ -58,7 +59,14 @@ const RootHeader = () => {
           })}
         </div>
       </div>
-      <NavLayer show={showLayer} onHide={() => setShowLayer(false)} />
+      <SearchLayer
+        show={showLayer === MenuKey.SEARCH}
+        onHide={() => setShowLayer(null)}
+      />
+      <NavLayer
+        show={showLayer === MenuKey.MORE}
+        onHide={() => setShowLayer(null)}
+      />
     </>
   );
 };

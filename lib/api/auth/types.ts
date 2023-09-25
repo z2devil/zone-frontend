@@ -1,4 +1,4 @@
-export interface UserInfo {
+export interface IUserInfo {
   nickname: string;
   email: string;
   avatarPath: string;
@@ -23,10 +23,10 @@ export interface SignParams {
 
 export interface SignResponse {
   token: string;
-  info: UserInfo;
+  info: IUserInfo;
 }
 
 export interface GetInfoResponse {
   token: string;
-  info: UserInfo;
+  info: IUserInfo;
 }

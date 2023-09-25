@@ -14,12 +14,19 @@ const NavLink = (props: NavLinkProps) => {
   return (
     <Link
       className={clsx(
-        ' group flex h-12 items-center justify-center gap-[0.62rem] rounded-full px-5 hover:border hover:border-gray-300 hover:bg-gray-200',
+        ' group flex h-12 w-full items-center justify-between gap-[0.62rem] pl-8 pr-7 transition-colors duration-100 hover:bg-gray-200',
         active ? 'text-primary-50' : 'text-black-600'
       )}
       href={path}>
-      <i className={clsx('iconfont text-[1.75rem]', icon)}></i>
-      <span className=' font-medium'>{name}</span>
+      <div className=' flex items-center gap-2'>
+        <i className={clsx('iconfont text-2xl', icon)}></i>
+        <span className=' font-medium'>{name}</span>
+      </div>
+      <i
+        className={clsx(
+          'iconfont icon-angle-right text-lg transition-colors duration-100',
+          active ? 'text-primary-50' : 'text-black-600'
+        )}></i>
     </Link>
   );
 };
