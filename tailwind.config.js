@@ -54,7 +54,7 @@ module.exports = {
         '2xl': '1440px',
       },
       boxShadow: {
-        main: '0px 8px 12px 0px rgba(0, 0, 0, 0.05)',
+        main: '0px 6px 18px 0px rgba(0, 0, 0, 0.05)',
       },
       animation: {
         flash: 'highlight 1s',

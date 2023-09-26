@@ -7,6 +7,7 @@ import NoteCard from '@/ui/NoteCard';
 import PageBanner from '@/ui/PageBanner';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import px2number from '@/lib/utils/px2number';
+import { useNotification } from '@/ui/Notification/Index';
 
 const FETCH_SIZE = 20;
 
@@ -22,6 +23,12 @@ const NotePage = () => {
   const [column, setColumn] = useState(2);
 
   const [current, setCurrent] = useState(0);
+
+  const [notificationUtils, notificationHolder] = useNotification({
+    maxCount: 5,
+  });
+
+  const [isLoading, setIsLoading] = useState(false);
 
   // 容器尺寸
   const [containerRect] = useResize(containerRef, {
@@ -66,26 +73,36 @@ const NotePage = () => {
   const handleLoadData = async () => {
     const nextCurrent = current + 1;
     setCurrent(nextCurrent);
+    setIsLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 3000));
     const res = await getNotesAPI({
       current: nextCurrent,
       size: FETCH_SIZE,
     });
-    console.log('res', res);
-    // const code = res;
-    // if (code !== 200) return [];
+    setIsLoading(false);
     const nextData = res.list;
     setData(prev => [...prev, ...nextData]);
     return nextData;
+  };
+
+  const handleChartClick = () => {
+    notificationUtils.open({
+      content: '这是一条消息',
+      closable: true,
+    });
   };
 
   return (
     <div
       className='mx-auto flex h-full w-full flex-col items-center overflow-y-auto px-5'
       ref={containerRef}>
+      {notificationHolder}
       <PageBanner
         title='笔记'
         lastUpdated='Sat Jul 08 2023 13:12:50 GMT+0800 (中国标准时间)'
+        onChartClick={handleChartClick}
       />
+      {isLoading && <div>loading...</div>}
       <Masonry<NoteEntity>
         containerRect={calcContainerRectInfo}
         column={column}

@@ -113,12 +113,10 @@ const NavLayer = (props: NavLayerProps) => {
             );
           })}
         </div>
-        <div className='absolute bottom-0 left-0 right-0 flex w-full translate-y-[100%] items-center justify-center p-10 pb-14'>
-          <div
-            className=' group flex h-12 w-12 flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-white px-5 transition-colors duration-100 hover:bg-primary-50 sm:shadow-2xl'
-            onClick={handleBack}>
-            <i className=' iconfont icon-error text-2xl text-black-600 transition-colors duration-100 group-hover:text-white'></i>
-          </div>
+        <div
+          className=' group absolute bottom-0 flex h-12 w-12 flex-shrink-0 translate-y-24 cursor-pointer items-center justify-center rounded-full bg-white px-5 transition-colors duration-100 hover:bg-primary-50 sm:shadow-2xl'
+          onClick={handleBack}>
+          <i className=' iconfont icon-error text-2xl text-black-600 transition-colors duration-100 group-hover:text-white'></i>
         </div>
       </div>
     </div>

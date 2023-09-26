@@ -1,0 +1,8 @@
+.transition-enter-from,
+.transition-leave-to {
+  transform: scale(0.3);
+  opacity: 0;
+  filter: blur(30px);
+  height: 0;
+  overflow: hidden;
+}
