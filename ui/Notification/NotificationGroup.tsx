@@ -32,14 +32,14 @@ const NotificationGroup = (props: NotificationGroupProps) => {
   }, [onAllRemoved]);
 
   return (
-    <div className=' fixed top-2 z-50 mx-auto flex flex-col'>
+    <div className=' pointer-events-none fixed top-2 z-50 mx-auto flex w-full flex-col items-center'>
       <MotionList keys={calcKeys} onAllRemoved={handleAllRemoved}>
         {(info, nodeRef) => {
           const config = info.config as NotificationProps;
           return (
             <div
               className={clsx('flex h-16 items-center', info.className)}
-              style={{ ...info.style }}
+              style={{ pointerEvents: 'all', ...info.style }}
               ref={nodeRef}>
               <NotificationItem
                 uuid={config.uuid}

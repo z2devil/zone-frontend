@@ -7,7 +7,9 @@ import NoteCard from '@/ui/NoteCard';
 import PageBanner from '@/ui/PageBanner';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import px2number from '@/lib/utils/px2number';
-import { useNotification } from '@/ui/Notification/Index';
+import { NotificationType } from '@/ui/Notification/Notification';
+import { useRecoilValue } from 'recoil';
+import { notificationUtilsState } from '@/lib/recoil/notification';
 
 const FETCH_SIZE = 20;
 
@@ -23,10 +25,6 @@ const NotePage = () => {
   const [column, setColumn] = useState(2);
 
   const [current, setCurrent] = useState(0);
-
-  const [notificationUtils, notificationHolder] = useNotification({
-    maxCount: 5,
-  });
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -85,9 +83,12 @@ const NotePage = () => {
     return nextData;
   };
 
+  const notificationUtils = useRecoilValue(notificationUtilsState);
+
   const handleChartClick = () => {
-    notificationUtils.open({
-      content: '这是一条消息',
+    notificationUtils?.open({
+      type: NotificationType.WARNING,
+      content: '暂未开放',
       closable: true,
     });
   };
@@ -96,7 +97,6 @@ const NotePage = () => {
     <div
       className='mx-auto flex h-full w-full flex-col items-center overflow-y-auto px-5'
       ref={containerRef}>
-      {notificationHolder}
       <PageBanner
         title='笔记'
         lastUpdated='Sat Jul 08 2023 13:12:50 GMT+0800 (中国标准时间)'

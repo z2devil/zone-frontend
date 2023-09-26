@@ -10,7 +10,7 @@ import {
 } from 'react';
 import clsx from 'clsx';
 
-export enum NoticeType {
+export enum NotificationType {
   SUCCESS,
   ERROR,
   WARNING,
@@ -18,7 +18,7 @@ export enum NoticeType {
 
 export interface NotificationProps {
   uuid: Key;
-  type?: NoticeType;
+  type?: NotificationType;
   content?: ReactNode;
   closable?: boolean;
   duration?: number;
@@ -27,21 +27,21 @@ export interface NotificationProps {
 }
 
 const ICONS = {
-  [NoticeType.SUCCESS]: 'icon-success-filled',
-  [NoticeType.ERROR]: 'icon-error-filled',
-  [NoticeType.WARNING]: 'icon-warning-filled',
+  [NotificationType.SUCCESS]: 'icon-success-filled',
+  [NotificationType.ERROR]: 'icon-error-filled',
+  [NotificationType.WARNING]: 'icon-warning-filled',
 };
 
 const ICON_COLORS = {
-  [NoticeType.SUCCESS]: 'text-[#04D700] text-opacity-60',
-  [NoticeType.ERROR]: 'text-[#D70000] text-opacity-60',
-  [NoticeType.WARNING]: 'text-[#D7CE00] text-opacity-60',
+  [NotificationType.SUCCESS]: 'text-[#04D700] text-opacity-60',
+  [NotificationType.ERROR]: 'text-[#D70000] text-opacity-60',
+  [NotificationType.WARNING]: 'text-[#D7CE00] text-opacity-60',
 };
 
 const Notification = (props: NotificationProps) => {
   const {
     uuid,
-    type = NoticeType.SUCCESS,
+    type = NotificationType.SUCCESS,
     content = '',
     closable = false,
     duration = 5,

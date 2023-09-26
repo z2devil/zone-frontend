@@ -1,3 +1,4 @@
+import NotificationUtilsProvider from '@/lib/recoil/notification';
 import '@/styles/globals.css';
 import RecoilRootProvider from '@/ui/RecoilRootProvider';
 import clsx from 'clsx';
@@ -23,10 +24,9 @@ const RootLayout = (props: RootLayoutProps) => {
       <body className={clsx(inter.className, 'bg-gray-50')}>
         {/* <Sidebar /> */}
         <RecoilRootProvider>
-          <div className='flex-1'>
-            {children}
-            {layer}
-          </div>
+          <NotificationUtilsProvider />
+          {children}
+          {layer}
         </RecoilRootProvider>
       </body>
     </html>
