@@ -1,6 +1,6 @@
 import { Key, useCallback, useMemo, useState } from 'react';
-import NotificationGroup from '../NotificationGroup';
-import { NotificationProps } from '../Notification';
+import NotificationGroup from '../components/NotificationGroup';
+import { NotificationProps } from '../components/Notification';
 import { produce } from 'immer';
 import { uniqueId } from 'lodash';
 

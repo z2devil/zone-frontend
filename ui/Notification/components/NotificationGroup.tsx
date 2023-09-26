@@ -1,7 +1,7 @@
 import { Key, useCallback, useMemo } from 'react';
 import NotificationItem, { NotificationProps } from './Notification';
-import { MotionList } from '../Motion';
-import './styles/style.scss';
+import { MotionList } from '@/ui/Motion';
+import '../styles/style.scss';
 import clsx from 'clsx';
 
 export interface NotificationGroupProps {
@@ -32,7 +32,7 @@ const NotificationGroup = (props: NotificationGroupProps) => {
   }, [onAllRemoved]);
 
   return (
-    <div className=' pointer-events-none fixed top-2 z-50 mx-auto flex w-full flex-col items-center'>
+    <div className=' pointer-events-none absolute top-2 z-50 mx-auto flex w-full flex-col items-center'>
       <MotionList keys={calcKeys} onAllRemoved={handleAllRemoved}>
         {(info, nodeRef) => {
           const config = info.config as NotificationProps;

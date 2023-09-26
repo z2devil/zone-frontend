@@ -7,7 +7,7 @@ import NoteCard from '@/ui/NoteCard';
 import PageBanner from '@/ui/PageBanner';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import px2number from '@/lib/utils/px2number';
-import { NotificationType } from '@/ui/Notification/Notification';
+import { NotificationType } from '@/ui/Notification/components/Notification';
 import { useRecoilValue } from 'recoil';
 import { notificationUtilsState } from '@/lib/recoil/notification';
 
@@ -89,7 +89,7 @@ const NotePage = () => {
     notificationUtils?.open({
       type: NotificationType.WARNING,
       content: '暂未开放',
-      closable: true,
+      duration: 3,
     });
   };
 
