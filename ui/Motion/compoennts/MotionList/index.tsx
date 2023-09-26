@@ -6,8 +6,13 @@ import {
   useMemo,
   useState,
 } from 'react';
-import Motion, { MotionProps } from './Motion';
-import { EnityStatus, KeyEntity, parseKeys, updateKeys } from './utils/diff';
+import Motion, { MotionProps } from '../Motion';
+import {
+  EnityStatus,
+  KeyEntity,
+  parseKeys,
+  updateKeys,
+} from '../../utils/diff';
 
 export interface MotionListProps extends Omit<MotionProps, 'onVisibleChanged'> {
   keys: (Key | { key: Key; [name: string]: any })[];

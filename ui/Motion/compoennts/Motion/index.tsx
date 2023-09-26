@@ -6,7 +6,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import useStatus from './hooks/useStatus';
+import useStatus from '../../hooks/useStatus';
 import clsx from 'clsx';
 
 export interface MotionProps {
