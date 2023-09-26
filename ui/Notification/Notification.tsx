@@ -56,14 +56,6 @@ const Notification = (props: NotificationProps) => {
   const [hovering, setHovering] = useState(false);
 
   useEffect(() => {
-    console.log('[ uuid ]', uuid);
-  }, [uuid]);
-
-  useEffect(() => {
-    console.log('[ onClose ]', onClose);
-  }, [onClose]);
-
-  useEffect(() => {
     let timer: NodeJS.Timeout;
     if (!hovering && duration > 0) {
       timer = setTimeout(() => {

@@ -13,12 +13,12 @@ export interface KeyEntity {
 
 // 转换keys
 const parseKeys = (keys: (Key | { key: Key; [name: string]: any })[]) => {
-  return keys.map((v: Key | { key: Key; [name: string]: any }) => {
-    if (v && typeof v === 'object') {
-      return v;
+  return keys.map(key => {
+    if (key && typeof key === 'object') {
+      return key;
     } else {
       return {
-        key: v,
+        key,
       };
     }
   });
