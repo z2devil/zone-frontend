@@ -89,12 +89,14 @@ const useModal = () => {
         pointerEvents: 'none',
       }}>
       {/* mask */}
-      {/* <div
-        className=' absolute left-0 top-0 h-full w-full duration-500 max-sm:bg-white max-sm:bg-opacity-20 max-sm:backdrop-blur-3xl'
-        // onClick={handleBack}
-        style={{
-          pointerEvents: 'all',
-        }}></div> */}
+      {calcCurrentModals.length > 0 && (
+        <div
+          className=' absolute left-0 top-0 h-full w-full duration-500 max-sm:bg-white max-sm:bg-opacity-20 max-sm:backdrop-blur-3xl'
+          // onClick={handleBack}
+          style={{
+            pointerEvents: 'all',
+          }}></div>
+      )}
       {/* modal */}
       <MotionList transitionDuration={0.4} keys={calcCurrentModals}>
         {info => {
