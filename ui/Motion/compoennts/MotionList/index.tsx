@@ -23,10 +23,6 @@ const MotionList = (props: MotionListProps) => {
 
   const [keyEntities, setKeyEntities] = useState<KeyEntity[]>([]);
 
-  useEffect(() => {
-    console.log(keyEntities);
-  }, [keyEntities]);
-
   const Component = useMemo(() => {
     return component || Fragment;
   }, [component]);
@@ -35,7 +31,6 @@ const MotionList = (props: MotionListProps) => {
     const parsedKeys = parseKeys(keys);
     setKeyEntities(keyEntities => {
       const resKeys = updateKeys(keyEntities, parsedKeys);
-      console.log('[ resKeys ]', resKeys);
       return [...resKeys];
     });
   }, [keys]);

@@ -30,9 +30,6 @@ const updateKeys = (prevKeys: KeyEntity[], nextKeys: KeyEntity[]) => {
   let nextIndex = 0;
   const nextKeysLength = nextKeys.length;
 
-  console.log('[ prevKeys ]', prevKeys);
-  console.log('[ nextKeys ]', nextKeys);
-
   prevKeys.forEach(prevKey => {
     let hit = false;
 
@@ -96,8 +93,6 @@ const updateKeys = (prevKeys: KeyEntity[], nextKeys: KeyEntity[]) => {
     }
     return true;
   });
-
-  console.log('[ res ]', res);
 
   return res;
 };
