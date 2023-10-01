@@ -1,0 +1,13 @@
+.enter-in {
+  transform: translateY(calc(-50% + 50px)) scale(0.5) !important;
+  opacity: 0;
+  filter: blur(30px);
+  overflow: hidden;
+}
+
+.leave-out {
+  transform: translateY(calc(-50% - 50px)) !important;
+  opacity: 0;
+  // filter: blur(30px);
+  overflow: hidden;
+}

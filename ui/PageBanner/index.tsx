@@ -26,7 +26,7 @@ const PageBanner = forwardRef<any, PageBannerProps>((props, ref) => {
         </div>
         <div className='flex items-start justify-start gap-2.5'>
           <button
-            className=' flex h-10 w-10 items-center justify-center rounded-xl border transition-all duration-100 hover:border-gray-300 hover:bg-gray-100'
+            className=' hover:border-black-80 flex h-10 w-10 items-center justify-center rounded-xl border transition-all duration-100 hover:bg-gray-100'
             onClick={handleChartClick}>
             <i className='iconfont icon-chart block h-5 w-5 text-[1.25rem] leading-5 text-black-600' />
           </button>

@@ -1,3 +1,4 @@
+import ModalUtilsProvider from '@/lib/recoil/modal';
 import NotificationUtilsProvider from '@/lib/recoil/notification';
 import '@/styles/globals.css';
 import RecoilRootProvider from '@/ui/RecoilRootProvider';
@@ -22,9 +23,9 @@ const RootLayout = (props: RootLayoutProps) => {
   return (
     <html lang='en'>
       <body className={clsx(inter.className, 'bg-gray-50')}>
-        {/* <Sidebar /> */}
         <RecoilRootProvider>
           <NotificationUtilsProvider />
+          <ModalUtilsProvider />
           {children}
           {layer}
         </RecoilRootProvider>

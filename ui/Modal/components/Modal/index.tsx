@@ -1,7 +1,11 @@
+import { modalUtilsState } from '@/lib/recoil/modal';
+import Button from '@/ui/Button';
 import clsx from 'clsx';
-import style from './style.module.scss';
+import { useMemo } from 'react';
+import { useRecoilValue } from 'recoil';
 
-interface ModalProps {
+export type ModalProps = {
+  uuid: string;
   title: string;
   children: React.ReactNode;
   footer?: React.ReactNode;
@@ -10,10 +14,13 @@ interface ModalProps {
   closable?: boolean;
   onOk?: () => void;
   onCancel?: () => void;
-}
+  outterCalssName?: string;
+  outterStyle?: React.CSSProperties;
+};
 
 const Modal = (props: ModalProps) => {
   const {
+    uuid,
     title,
     children,
     footer,
@@ -22,47 +29,78 @@ const Modal = (props: ModalProps) => {
     closable,
     onOk,
     onCancel,
+    outterCalssName,
+    outterStyle,
   } = props;
 
+  const modalUtils = useRecoilValue(modalUtilsState);
+
   const handleBack = () => {
-    onHide();
+    if (!modalUtils) return;
+    modalUtils.close(uuid);
   };
+
+  const childrenRender = useMemo(() => {
+    if (typeof children === 'string' || typeof children === 'number') {
+      return <div className='px-6 text-17 text-black-900'>{children}</div>;
+    } else {
+      return children;
+    }
+  }, [children]);
+
+  const footerRender = useMemo(() => {
+    if (footer) return footer;
+    if (okText || cancelText) {
+      return (
+        <div className='flex w-full justify-center gap-5 px-6'>
+          {cancelText && (
+            <Button
+              className='flex h-11 flex-grow items-center justify-center rounded-lg border border-black-80 text-17 text-black-600 hover:text-black-900'
+              onClick={onCancel}>
+              {cancelText}
+            </Button>
+          )}
+          {okText && (
+            <Button
+              className='flex h-11 flex-shrink-0 items-center justify-center rounded-lg border border-black-80 bg-primary-50 px-6 text-17 text-white hover:bg-primary-100'
+              onClick={onOk}>
+              {okText}
+            </Button>
+          )}
+        </div>
+      );
+    }
+    return null;
+  }, [footer, okText, cancelText, onOk, onCancel]);
 
   return (
     <div
-      className={clsx(' fixed left-0 top-0 z-30 flex h-full w-full flex-col', {
-        'pointer-events-none': !show,
-      })}>
-      {/* mask */}
-      <div
-        className={clsx(
-          ' absolute left-0 top-0 h-full w-full bg-black-100 duration-500 max-sm:bg-white max-sm:bg-opacity-20 max-sm:backdrop-blur-3xl',
-          show ? '' : 'pointer-events-none opacity-0 delay-200'
-        )}
-        onClick={handleBack}></div>
-      {/* modal */}
-      <div
-        className={clsx(
-          ' absolute left-0 right-0 top-1/2 flex w-full flex-col items-center justify-between overflow-hidden transition-all duration-300 sm:mx-auto sm:w-[480px] sm:rounded-2xl sm:bg-gray-100 sm:shadow-2xl',
-          show ? 'delay-200' : 'pointer-events-none opacity-0',
-          show ? style.modalShow : style.modalHide
-        )}>
-        <div className='flex w-full items-center justify-between gap-4 p-6 sm:border-b sm:border-gray-300 sm:bg-white'>
-          <div className='flex flex-1 gap-[0.63rem]'>
-            <i className=' iconfont icon-search text-2xl text-black-600'></i>
-            <input
-              className=' flex-1 text-lg text-black-900 outline-none placeholder:text-black-250'
-              placeholder='找你想要的'
-            />
-          </div>
+      className={clsx(
+        ' absolute left-0 right-0 top-1/2 flex w-full -translate-y-1/2 flex-col items-center justify-between overflow-hidden transition-all duration-300 sm:mx-auto sm:w-[480px] sm:rounded-2xl sm:bg-gray-100 sm:shadow-2xl',
+        outterCalssName
+      )}
+      style={{
+        pointerEvents: 'all',
+        ...outterStyle,
+      }}>
+      {/* title */}
+      <div className='flex h-14 w-full items-center justify-between gap-4 px-6 sm:border-b sm:border-black-80 sm:bg-white'>
+        <span className='text-19 font-medium leading-6 text-black-900'>
+          {title}
+        </span>
+        {closable && (
           <button className=' group p-2'>
-            <span
-              className=' text-lg font-medium text-black-600 transition-colors duration-100 group-hover:text-black-900'
-              onClick={handleBack}>
-              取消
-            </span>
+            <i
+              className=' iconfont icon-error text-[1.5rem] font-medium leading-6 text-black-600 transition-colors duration-100 group-hover:text-black-900'
+              onClick={handleBack}></i>
           </button>
-        </div>
+        )}
+      </div>
+      {/* content */}
+      <div className='flex w-full flex-col gap-6 overflow-y-auto py-6'>
+        {childrenRender}
+        {/* footer */}
+        {footerRender}
       </div>
     </div>
   );

@@ -1,26 +1,16 @@
-import {
-  forwardRef,
-  Ref,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
-import useStatus from '../../hooks/useStatus';
-import clsx from 'clsx';
+import { forwardRef, Ref, useLayoutEffect, useMemo, useState } from 'react';
 
 export interface MotionProps {
   restProps?: object;
-  motionName?: string;
   visible?: boolean;
   transitionDuration?: number;
-  onVisibleChanged?: (visible: boolean) => void;
   children?: (
     props: {
       visible?: boolean;
-      className?: string;
       style?: React.CSSProperties;
       transitionDuration?: number;
+      enterIn?: boolean;
+      leaveOut?: boolean;
       [key: string]: any;
     },
     ref: Ref<any>
@@ -28,54 +18,61 @@ export interface MotionProps {
 }
 
 const Motion = forwardRef<any, MotionProps>((props, ref) => {
-  const {
-    restProps,
-    motionName,
-    visible = true,
-    transitionDuration,
-    onVisibleChanged,
-    children,
-  } = props;
+  const { restProps, visible = true, transitionDuration = 0, children } = props;
 
   const [truthVisible, setTruthVisible] = useState(false);
 
-  const calcTransitionDuration = useMemo(() => {
-    return transitionDuration || 0;
-  }, [transitionDuration]);
+  const [enterIn, setEnterIn] = useState(false);
 
-  const handleVisibleChanged = useCallback(
-    (v: boolean) => {
-      setTruthVisible(v);
-      onVisibleChanged?.(v);
-    },
-    [onVisibleChanged]
-  );
+  const [leaveOut, setLeaveOut] = useState(false);
 
-  useEffect(() => {
-    onVisibleChanged?.(visible);
-    handleVisibleChanged(visible);
-  }, [visible, onVisibleChanged, handleVisibleChanged]);
+  const [isTransition, setIsTransition] = useState(false);
 
-  const [status, statusStep, isTransition, isActive] = useStatus(
-    visible,
-    calcTransitionDuration
-  );
+  const calcStyle = useMemo(() => {
+    return isTransition
+      ? {
+          transition: transitionDuration + 's',
+        }
+      : undefined;
+  }, [isTransition, transitionDuration]);
+
+  useLayoutEffect(() => {
+    if (visible) {
+      requestAnimationFrame(() => {
+        setTruthVisible(true);
+        setEnterIn(true);
+        requestAnimationFrame(() => {
+          setEnterIn(false);
+          setIsTransition(true);
+        });
+      });
+    } else {
+      setLeaveOut(true);
+      setIsTransition(true);
+    }
+    const timer = setTimeout(() => {
+      setTruthVisible(visible);
+      setEnterIn(false);
+      setLeaveOut(false);
+      setIsTransition(false);
+    }, transitionDuration * 1000);
+    return () => {
+      clearTimeout(timer);
+      setIsTransition(false);
+    };
+  }, [visible, transitionDuration]);
 
   return (
     <>
-      {truthVisible || isTransition
+      {truthVisible
         ? children?.(
             {
-              ...{ visible, transitionDuration, ...restProps },
-              className: clsx(motionName, {
-                [`${motionName}-${status}-${statusStep}`]: isTransition,
-                [`${motionName}-${status}-active`]: isTransition && isActive,
-              }),
-              style: isActive
-                ? {
-                    transition: transitionDuration + 's',
-                  }
-                : undefined,
+              visible,
+              transitionDuration,
+              enterIn,
+              leaveOut,
+              style: calcStyle,
+              ...restProps,
             },
             ref
           )

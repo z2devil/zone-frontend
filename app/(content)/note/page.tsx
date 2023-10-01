@@ -10,6 +10,7 @@ import px2number from '@/lib/utils/px2number';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import { useRecoilValue } from 'recoil';
 import { notificationUtilsState } from '@/lib/recoil/notification';
+import { modalUtilsState } from '@/lib/recoil/modal';
 
 const FETCH_SIZE = 20;
 
@@ -72,7 +73,6 @@ const NotePage = () => {
     const nextCurrent = current + 1;
     setCurrent(nextCurrent);
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 3000));
     const res = await getNotesAPI({
       current: nextCurrent,
       size: FETCH_SIZE,
@@ -85,11 +85,31 @@ const NotePage = () => {
 
   const notificationUtils = useRecoilValue(notificationUtilsState);
 
+  const modalUtils = useRecoilValue(modalUtilsState);
+
   const handleChartClick = () => {
     notificationUtils?.open({
       type: NotificationType.WARNING,
       content: '暂未开放',
       duration: 3,
+    });
+    if (!modalUtils) return;
+    const uuid = modalUtils.open({
+      title: '暂未开放',
+      children: new Array(Math.ceil(Math.random() * 10))
+        .fill(0)
+        .map(() => '暂未开放')
+        .join(''),
+      // okText: '确定',
+      // onOk: () => {
+      //   console.log('onOk');
+      //   modalUtils.close(uuid);
+      // },
+      cancelText: '取消',
+      onCancel: () => {
+        console.log('onCancel');
+        modalUtils.close();
+      },
     });
   };
 

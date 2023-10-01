@@ -1,11 +1,4 @@
-import {
-  Fragment,
-  Key,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { Fragment, Key, useEffect, useMemo, useState } from 'react';
 import Motion, { MotionProps } from '../Motion';
 import {
   EnityStatus,
@@ -14,12 +7,9 @@ import {
   updateKeys,
 } from '../../utils/diff';
 
-export interface MotionListProps extends Omit<MotionProps, 'onVisibleChanged'> {
+export interface MotionListProps extends MotionProps {
   keys: (Key | { key: Key; [name: string]: any })[];
   component?: string | React.ComponentType | false;
-  transitionDuration?: number;
-  onVisibleChanged?: (visible: boolean, info: { key: React.Key }) => void;
-  onAllRemoved?: () => void;
 }
 
 const MotionList = (props: MotionListProps) => {
@@ -28,12 +18,14 @@ const MotionList = (props: MotionListProps) => {
     component,
     transitionDuration = 0.3,
     children,
-    onVisibleChanged,
-    onAllRemoved,
     ...restProps
   } = props;
 
   const [keyEntities, setKeyEntities] = useState<KeyEntity[]>([]);
+
+  useEffect(() => {
+    console.log(keyEntities);
+  }, [keyEntities]);
 
   const Component = useMemo(() => {
     return component || Fragment;
@@ -43,24 +35,10 @@ const MotionList = (props: MotionListProps) => {
     const parsedKeys = parseKeys(keys);
     setKeyEntities(keyEntities => {
       const resKeys = updateKeys(keyEntities, parsedKeys);
-      return resKeys;
+      console.log('[ resKeys ]', resKeys);
+      return [...resKeys];
     });
   }, [keys]);
-
-  const remindKeysLength = useMemo(() => {
-    return keyEntities.filter(({ status }) => status !== EnityStatus.REMOVE)
-      .length;
-  }, [keyEntities]);
-
-  const handleVisibleChanged = useCallback(
-    (visible: boolean, key: React.Key) => {
-      onVisibleChanged?.(visible, { key });
-      if (!visible && remindKeysLength === 0) {
-        onAllRemoved?.();
-      }
-    },
-    [remindKeysLength, onVisibleChanged, onAllRemoved]
-  );
 
   return (
     <Component {...restProps}>
@@ -71,9 +49,7 @@ const MotionList = (props: MotionListProps) => {
             key={key}
             visible={status === EnityStatus.REMOVE ? false : true}
             restProps={restEntityProps}
-            motionName='transition'
-            transitionDuration={transitionDuration}
-            onVisibleChanged={visible => handleVisibleChanged(visible, key)}>
+            transitionDuration={transitionDuration}>
             {children}
           </Motion>
         );

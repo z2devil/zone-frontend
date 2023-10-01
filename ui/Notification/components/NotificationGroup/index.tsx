@@ -1,17 +1,16 @@
 import { Key, useCallback, useMemo } from 'react';
 import NotificationItem, { NotificationProps } from '../Notification';
 import { MotionList } from '@/ui/Motion';
-import './style.scss';
+import style from './style.module.scss';
 import clsx from 'clsx';
 
 export interface NotificationGroupProps {
   list: NotificationProps[];
-  onAllRemoved?: () => void;
   onClose?: (uuid: Key) => void;
 }
 
 const NotificationGroup = (props: NotificationGroupProps) => {
-  const { list, onClose, onAllRemoved } = props;
+  const { list, onClose } = props;
 
   const calcKeys = useMemo(() => {
     return list.map(config => ({
@@ -27,18 +26,18 @@ const NotificationGroup = (props: NotificationGroupProps) => {
     [onClose]
   );
 
-  const handleAllRemoved = useCallback(() => {
-    onAllRemoved?.();
-  }, [onAllRemoved]);
-
   return (
     <div className=' pointer-events-none fixed top-2 z-50 mx-auto flex w-full flex-col items-center'>
-      <MotionList keys={calcKeys} onAllRemoved={handleAllRemoved}>
+      <MotionList keys={calcKeys}>
         {(info, nodeRef) => {
           const config = info.config as NotificationProps;
           return (
             <div
-              className={clsx('flex h-16 items-center', info.className)}
+              className={clsx(
+                'flex h-16 items-center',
+                info.enterIn && style.enterIn,
+                info.leaveOut && style.leaveOut
+              )}
               style={{ pointerEvents: 'all', ...info.style }}
               ref={nodeRef}>
               <NotificationItem

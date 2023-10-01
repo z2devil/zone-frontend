@@ -96,7 +96,7 @@ const NavLayer = (props: NavLayerProps) => {
           show ? 'delay-200' : 'pointer-events-none opacity-0',
           show ? style.modalShow : style.modalHide
         )}>
-        <div className='flex w-full items-center justify-between p-6 sm:rounded-t-2xl sm:border-b sm:border-gray-300 sm:bg-white'>
+        <div className='sm:border-black-80 flex w-full items-center justify-between p-6 sm:rounded-t-2xl sm:border-b sm:bg-white'>
           <UserInfo info={calcUserInfo} />
           <button className=' group p-2'>
             <i className='iconfont icon-setting-filled text-2xl text-black-600 transition-colors duration-100 group-hover:text-black-900'></i>

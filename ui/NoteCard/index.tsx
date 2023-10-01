@@ -19,20 +19,20 @@ const NoteCard = (
   const { type, title, content, date, tags, style } = props;
   return (
     <div
-      className=' group flex flex-col gap-2.5 rounded-xl border border-gray-300 bg-gray-100 p-5 transition-colors hover:border-primary-50'
+      className=' border-black-80 group flex flex-col gap-2.5 rounded-xl border bg-gray-100 p-5 transition-colors hover:border-primary-50'
       style={style}>
       <div className='flex flex-col gap-2'>
         {/* 顶部 */}
         <div className='flex items-center justify-between gap-10'>
           {type === NoteTypeEnum.NOTE ? (
             <div className='flex items-center gap-1'>
-              <i className='iconfont icon-calender-filled text-black-250 text-[1.06rem] leading-[1.06rem]' />
-              <span className='text-black-250 text-[0.75rem] leading-[0.75rem]'>
+              <i className='iconfont icon-calender-filled text-17 text-black-250' />
+              <span className='text-[0.75rem] leading-[0.75rem] text-black-250'>
                 {dayjs(date).format('YYYY-MM-DD')}
               </span>
             </div>
           ) : (
-            <span className='text-black-900 overflow-hidden text-ellipsis whitespace-nowrap font-semibold group-hover:text-primary-50'>
+            <span className='overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-black-900 group-hover:text-primary-50'>
               {title}
             </span>
           )}
@@ -41,7 +41,7 @@ const NoteCard = (
           </button>
         </div>
         {/* 内容 */}
-        <div className='text-black-600 text-justify text-[0.9rem]'>
+        <div className='text-justify text-15 text-black-600'>
           {type === NoteTypeEnum.NOTE ? (
             <ReactMarkdown>{content}</ReactMarkdown>
           ) : (
@@ -52,8 +52,8 @@ const NoteCard = (
         {type === NoteTypeEnum.ARTICLE && (
           <div className='flex items-center justify-between gap-1'>
             <div className='flex items-center gap-1'>
-              <i className='iconfont icon-calender-filled text-black-250 text-[1.06rem] leading-[1.06rem]' />
-              <span className='text-black-250 text-[0.75rem] leading-[0.75rem]'>
+              <i className='iconfont icon-calender-filled text-17 text-black-250' />
+              <span className='text-[0.75rem] leading-[0.75rem] text-black-250'>
                 {dayjs(date).format('YYYY-MM-DD')}
               </span>
             </div>

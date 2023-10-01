@@ -25,27 +25,30 @@ const parseKeys = (keys: (Key | { key: Key; [name: string]: any })[]) => {
 };
 
 // 更新curkeys
-const updateKeys = (prevKeys: KeyEntity[], curKeys: KeyEntity[]) => {
+const updateKeys = (prevKeys: KeyEntity[], nextKeys: KeyEntity[]) => {
   let res: KeyEntity[] = [];
-  let curIdx = 0;
-  const curLen = curKeys.length;
+  let nextIndex = 0;
+  const nextKeysLength = nextKeys.length;
+
+  console.log('[ prevKeys ]', prevKeys);
+  console.log('[ nextKeys ]', nextKeys);
 
   prevKeys.forEach(prevKey => {
     let hit = false;
 
-    for (let i = 0; i < curLen; i++) {
-      const curKey = curKeys[i];
-      if (curKey.key === prevKey.key) {
-        if (curIdx < i) {
+    for (let i = 0; i < nextKeysLength; i++) {
+      const nextKey = nextKeys[i];
+      if (nextKey.key === prevKey.key) {
+        if (nextIndex < i) {
           res = res.concat(
-            curKeys
-              .slice(curIdx, i)
-              .map(v => ({ ...v, statu: EnityStatus.ADD }))
+            nextKeys
+              .slice(nextIndex, i)
+              .map(v => ({ ...v, status: EnityStatus.ADD }))
           );
-          curIdx = i;
+          nextIndex = i;
         }
-        res.push({ ...curKey });
-        curIdx++;
+        res.push({ ...nextKey });
+        nextIndex++;
         hit = true;
         break;
       }
@@ -59,9 +62,9 @@ const updateKeys = (prevKeys: KeyEntity[], curKeys: KeyEntity[]) => {
     }
   });
 
-  if (curIdx < curLen) {
+  if (nextIndex < nextKeysLength) {
     res = res.concat(
-      curKeys.slice(curIdx).map(v => ({ ...v, status: EnityStatus.ADD }))
+      nextKeys.slice(nextIndex).map(v => ({ ...v, status: EnityStatus.ADD }))
     );
   }
 
@@ -93,6 +96,8 @@ const updateKeys = (prevKeys: KeyEntity[], curKeys: KeyEntity[]) => {
     }
     return true;
   });
+
+  console.log('[ res ]', res);
 
   return res;
 };
