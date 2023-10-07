@@ -47,8 +47,6 @@ const useModal = () => {
 
         const uuid = uniqueId('modal-');
 
-        options.title += uuid;
-
         const nextModal: ModalInfo = {
           key: uuid,
           options: {

@@ -4,7 +4,7 @@ interface ContentLayoutProps {
   children: React.ReactNode;
 }
 
-const ContentLayout = (props: ContentLayoutProps) => {
+const RootRoutesLayout = (props: ContentLayoutProps) => {
   const { children } = props;
 
   return (
@@ -15,4 +15,4 @@ const ContentLayout = (props: ContentLayoutProps) => {
   );
 };
 
-export default ContentLayout;
+export default RootRoutesLayout;

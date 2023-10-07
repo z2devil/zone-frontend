@@ -41,8 +41,8 @@ const Button = (props: ButtonProps) => {
   return (
     <button
       className={clsx(
-        ' relative overflow-hidden transition-all duration-100',
-        className
+        className,
+        ' overflow-hidden transition-all duration-100'
       )}
       style={clacStyle}
       onClick={handleClick}>
