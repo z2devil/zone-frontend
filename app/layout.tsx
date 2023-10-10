@@ -4,6 +4,7 @@ import '@/styles/globals.css';
 import RecoilRootProvider from '@/ui/RecoilRootProvider';
 import clsx from 'clsx';
 import { Inter } from 'next/font/google';
+import Script from 'next/script';
 
 const inter = Inter({ subsets: ['latin'] });
 

@@ -1,4 +1,4 @@
-import { NoteTypeEnum } from '@/lib/api/note';
+import { NoteTypeEnum } from '@/lib/api/notes';
 import dayjs from '@/lib/utils/dayjs';
 import ReactMarkdown from 'react-markdown';
 
@@ -19,7 +19,7 @@ const NoteCard = (
   const { type, title, content, date, tags, style } = props;
   return (
     <div
-      className=' border-black-80 group flex flex-col gap-2.5 rounded-xl border bg-gray-100 p-5 transition-colors hover:border-primary-50'
+      className=' group flex flex-col gap-2.5 rounded-xl border border-black-80 bg-gray-100 p-5 transition-colors hover:border-primary-50'
       style={style}>
       <div className='flex flex-col gap-2'>
         {/* 顶部 */}

@@ -1,6 +1,6 @@
 'use client';
 
-import { NoteEntity, getNotesAPI } from '@/lib/api/note';
+import { NoteEntity, getNotesAPI } from '@/lib/api/notes';
 import Masonry from '@/ui/Masonry';
 import useResize from '@/ui/Masonry/hooks/useResize';
 import NoteCard from '@/ui/NoteCard';
