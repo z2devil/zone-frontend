@@ -2,6 +2,8 @@ import marked from '../marked';
 import { forwardMatch } from '../match';
 import { createRoot } from 'react-dom/client';
 
+export const PLACEHOLDER_CHAR = '&#xFEFF;';
+
 const createElement = (tagName: string, className?: string) => {
   const element = document.createElement(tagName);
   if (className) element.className = className;
@@ -10,8 +12,8 @@ const createElement = (tagName: string, className?: string) => {
 
 const createPlaceholderElement = () => {
   const placeholder = document.createElement('span');
-  placeholder.innerHTML = '&#xFEFF;';
-  placeholder.style.userSelect = 'none';
+  placeholder.className = 'placeholder';
+  placeholder.innerHTML = PLACEHOLDER_CHAR;
   return placeholder;
 };
 
@@ -52,21 +54,22 @@ const parseInline = async (selection: Selection) => {
   replaceRange.deleteContents();
 
   const nextElement = document.createElement('element');
+  nextElement.innerHTML = HTML.trim();
 
-  // TODO: 规范化 react-dom 的使用
-  const handleNextElementClick = () => {
-    console.log('nextElement clicked');
-  };
+  // // TODO: 规范化 react-dom 的使用
+  // const handleNextElementClick = () => {
+  //   console.log('nextElement clicked');
+  // };
 
-  const root = createRoot(nextElement);
-  root.render(
-    <span
-      className='inline'
-      onClick={handleNextElementClick}
-      dangerouslySetInnerHTML={{
-        __html: HTML,
-      }}></span>
-  );
+  // const root = createRoot(nextElement);
+  // root.render(
+  //   <span
+  //     className='inline'
+  //     onClick={handleNextElementClick}
+  //     dangerouslySetInnerHTML={{
+  //       __html: HTML,
+  //     }}></span>
+  // );
 
   const placeholder = createPlaceholderElement();
 
@@ -76,7 +79,8 @@ const parseInline = async (selection: Selection) => {
 
   // 重新设置选区（光标位置）
   selection.removeAllRanges();
-  selection.addRange(replaceRange);
+  // selection.addRange(replaceRange);
+  selection.collapse(placeholder, 1);
 };
 
 const elementUtils = {
