@@ -30,11 +30,11 @@ const ContentLayout = (props: ContentLayoutProps) => {
   return (
     <>
       {children}
-      <Button
+      {/* <Button
         className=' group fixed bottom-20 left-1/2 h-14 w-14 -translate-x-1/2 rounded-full bg-white shadow-main hover:bg-primary-50'
         onClick={handleAdd}>
         <i className='iconfont icon-plus text-2xl text-primary-50 transition-colors duration-100 group-hover:text-white'></i>
-      </Button>
+      </Button> */}
     </>
   );
 };

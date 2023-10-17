@@ -1,0 +1,87 @@
+.editor {
+  z2-p {
+    display: block;
+  }
+  z2-h1 {
+    display: block;
+    font-weight: bold;
+    font-size: 2em;
+  }
+  z2-h2 {
+    display: block;
+    font-weight: bold;
+    font-size: 1.75rem;
+  }
+  z2-h3 {
+    display: block;
+    font-weight: bold;
+    font-size: 1.5rem;
+  }
+  z2-h4 {
+    display: block;
+    font-weight: bold;
+    font-size: 1.25rem;
+  }
+  z2-h5 {
+    display: block;
+    font-weight: bold;
+    font-size: 1rem;
+  }
+  z2-h6 {
+    display: block;
+    font-weight: bold;
+    font-size: 0.875rem;
+  }
+  z2-li {
+    display: block;
+    &::before {
+      margin-right: 0.5em;
+      content: '•';
+    }
+  }
+  z2-blockquote {
+    display: block;
+    margin: 0 0 0 1em;
+    border-left: 0.25em solid #eceeef;
+    padding: 0 0 0 0.5em;
+    color: #6a737d;
+  }
+  z2-code {
+    display: inline;
+    margin: 1px 3px;
+    border: solid 1px #e7e9e8;
+    border-radius: 4px;
+    background-color: #0000000f;
+    padding: 0 4px;
+    font-size: 15px;
+    text-indent: 0;
+    word-break: break-all;
+  }
+  z2-em {
+    font-style: italic;
+  }
+  z2-del {
+    text-decoration: line-through;
+  }
+  z2-underline {
+    text-decoration: underline;
+  }
+  z2-strong {
+    font-weight: bold;
+  }
+  z2-link {
+    color: #007bff;
+    text-decoration: underline;
+  }
+  z2-image {
+    display: inline-block;
+    margin: 1px 3px;
+    border: solid 1px #e7e9e8;
+    border-radius: 4px;
+    background-color: #0000000f;
+    padding: 0 4px;
+    font-size: 15px;
+    text-indent: 0;
+    word-break: break-all;
+  }
+}
