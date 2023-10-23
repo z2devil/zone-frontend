@@ -13,7 +13,12 @@ export type ShortcustType =
   | typeof ElementType.HEADING_5
   | typeof ElementType.HEADING_6;
 
-export type CustomEditor = BaseEditor & ReactEditor & HistoryEditor;
+export type CustomEditor = BaseEditor &
+  ReactEditor &
+  HistoryEditor & {
+    type: ElementType;
+    nodeToDecorations?: Map<Element, Range[]>;
+  };
 
 export type ParagraphElement = {
   type: ElementType.PARAGRAPH;
@@ -91,6 +96,9 @@ export type CustomText = {
 
 export type EmptyText = {
   text: string;
+  bold?: true;
+  italic?: boolean;
+  code?: boolean;
 };
 
 declare module 'slate' {

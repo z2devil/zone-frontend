@@ -1,8 +1,14 @@
 'use client';
 
 import clsx from 'clsx';
-import { useCallback, useEffect, useMemo } from 'react';
-import Slate, { Descendant, Editor, Node, createEditor } from 'slate';
+import { KeyboardEvent, useCallback, useMemo } from 'react';
+import {
+  Element as SlateElement,
+  Descendant,
+  Editor,
+  Node,
+  createEditor,
+} from 'slate';
 import {
   Slate as SlateProvider,
   ReactEditor,
@@ -27,14 +33,9 @@ interface EditorProps {
 const CustomEditor = (props: EditorProps) => {
   const { className } = props;
 
-  const editor = useMemo(
-    () => withShortcuts(withReact(withHistory(createEditor()))),
-    []
-  );
-
-  useEffect(() => {
-    withShortcuts(editor);
-  }, [editor]);
+  const editor = useMemo(() => {
+    return withShortcuts(withHistory(withReact(createEditor())));
+  }, []);
 
   const renderLeaf = useCallback((props: RenderLeafProps) => {
     return <Leaf {...props} />;
@@ -44,6 +45,10 @@ const CustomEditor = (props: EditorProps) => {
     (props: RenderElementProps) => <Element {...props} />,
     []
   );
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    console.log('[ handleKeyDown ]', e);
+  }, []);
 
   const handleDOMBeforeInput = useCallback(
     (e: InputEvent) => {
@@ -63,7 +68,7 @@ const CustomEditor = (props: EditorProps) => {
 
           const blockEntry = Editor.above(editor, {
             at: path,
-            match: n => Slate.Element.isElement(n) && Editor.isBlock(editor, n),
+            match: n => SlateElement.isElement(n) && Editor.isBlock(editor, n),
           });
           if (!blockEntry) {
             return false;
@@ -99,6 +104,7 @@ const CustomEditor = (props: EditorProps) => {
           spellCheck={false}
           renderLeaf={renderLeaf}
           renderElement={renderElement}
+          onKeyDown={handleKeyDown}
           onDOMBeforeInput={handleDOMBeforeInput}
         />
       </SlateProvider>

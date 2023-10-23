@@ -1,13 +1,74 @@
 import { Editor, Element, Point, Range, Transforms } from 'slate';
-import { CustomEditor, ListItemElement } from 'types/slate';
-import { SHORTCUTS_MAP } from '../constans';
+import { CustomEditor } from 'types/slate';
+import { NON_WRAPPING_ELEMENTS, SHORTCUTS_MAP } from '../constans';
 import { ElementType } from 'types';
 
 const withShortcuts = (editor: CustomEditor) => {
-  const { deleteBackward, insertText } = editor;
+  const { insertBreak, insertSoftBreak, deleteBackward, insertText } = editor;
+
+  editor.insertBreak = () => {
+    console.log('[ insertBreak ]');
+
+    // 获取上一行的节点
+    const block = Editor.above(editor, {
+      match: n => Element.isElement(n) && Editor.isBlock(editor, n),
+    });
+
+    if (!block) return;
+
+    const prevElementType = block[0].type;
+
+    const prevText = Editor.string(editor, block[1]);
+
+    if (NON_WRAPPING_ELEMENTS.includes(prevElementType)) {
+      Transforms.insertNodes(editor, {
+        type: ElementType.PARAGRAPH,
+        children: [{ text: '' }],
+      });
+
+      return;
+    }
+
+    if (prevElementType === ElementType.LIST_ITEM) {
+      if (prevText === '') {
+        Transforms.setNodes(editor, {
+          type: ElementType.PARAGRAPH,
+        });
+        return;
+      }
+    }
+
+    if (prevText.endsWith('```')) {
+      console.log('[ 代码块 ]');
+
+      const codeBlock: Partial<Element> = {
+        type: ElementType.CODE_BLOCK,
+      };
+
+      Transforms.setNodes(editor, codeBlock, {
+        match: n => Element.isElement(n) && Editor.isBlock(editor, n),
+      });
+
+      Transforms.insertNodes(editor, {
+        type: ElementType.PARAGRAPH,
+        children: [{ text: '' }],
+      });
+
+      return;
+    }
+
+    insertBreak();
+  };
+
+  editor.insertSoftBreak = () => {
+    console.log('[ insertSoftBreak ]');
+    insertSoftBreak();
+  };
 
   editor.insertText = text => {
     const { selection } = editor;
+
+    console.log('[ insertText ]', text);
 
     if (text.endsWith(' ') && selection && Range.isCollapsed(selection)) {
       const { anchor } = selection;
@@ -81,6 +142,15 @@ const withShortcuts = (editor: CustomEditor) => {
 
       deleteBackward(...args);
     }
+  };
+
+  const { isVoid } = editor;
+
+  editor.isVoid = element => {
+    if (element.type === ElementType.CODE_BLOCK) {
+      return true;
+    }
+    return isVoid(element);
   };
 
   return editor;

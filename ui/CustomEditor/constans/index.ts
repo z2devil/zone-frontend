@@ -23,3 +23,12 @@ export const SHORTCUTS_MAP: Record<string, ShortcustType> = (() => {
 
   return map;
 })();
+
+export const NON_WRAPPING_ELEMENTS = [
+  ElementType.HEADING_1,
+  ElementType.HEADING_2,
+  ElementType.HEADING_3,
+  ElementType.HEADING_4,
+  ElementType.HEADING_5,
+  ElementType.HEADING_6,
+];

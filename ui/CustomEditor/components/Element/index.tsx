@@ -1,5 +1,6 @@
 import { RenderElementProps } from 'slate-react';
 import { ElementType } from 'types';
+import CodeBlock from './elements/CodeBlock';
 
 const Element = (props: RenderElementProps) => {
   const { attributes, children, element } = props;
@@ -26,7 +27,11 @@ const Element = (props: RenderElementProps) => {
     case ElementType.CODE_LINE:
       return <pre {...attributes}>{children}</pre>;
     case ElementType.CODE_BLOCK:
-      return <pre {...attributes}>{children}</pre>;
+      return (
+        <CodeBlock attributes={attributes} element={element}>
+          {children}
+        </CodeBlock>
+      );
     case ElementType.LINK:
       return <a {...attributes}>{children}</a>;
     case ElementType.IMAGE:

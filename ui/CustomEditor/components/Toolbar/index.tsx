@@ -24,6 +24,13 @@ const Toolbar = (props: ToolbarProps) => {
         }}>
         <i className='iconfont icon-brackets-curly rounded p-1 text-xl hover:bg-gray-50'></i>
       </button>
+      <button
+        onMouseDown={event => {
+          event.preventDefault();
+          console.log('[ getCommonBlock ]', editorUtils.getCommonBlock(editor));
+        }}>
+        <i className='iconfont icon-brackets-curly rounded p-1 text-xl hover:bg-gray-50'></i>
+      </button>
     </div>
   );
 };
