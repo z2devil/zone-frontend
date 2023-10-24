@@ -25,7 +25,7 @@ const Element = (props: RenderElementProps) => {
     case ElementType.BLOCK_QUOTE:
       return <z2-blockquote {...attributes}>{children}</z2-blockquote>;
     case ElementType.CODE_LINE:
-      return <pre {...attributes}>{children}</pre>;
+      return <z2-codeline {...attributes}>{children}</z2-codeline>;
     case ElementType.CODE_BLOCK:
       return (
         <CodeBlock attributes={attributes} element={element}>

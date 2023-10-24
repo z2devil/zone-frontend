@@ -23,7 +23,12 @@ const withShortcuts = (editor: CustomEditor) => {
     if (NON_WRAPPING_ELEMENTS.includes(prevElementType)) {
       Transforms.insertNodes(editor, {
         type: ElementType.PARAGRAPH,
-        children: [{ text: '' }],
+        children: [
+          {
+            type: ElementType.TEXT,
+            text: '',
+          },
+        ],
       });
 
       return;
@@ -51,7 +56,12 @@ const withShortcuts = (editor: CustomEditor) => {
 
       Transforms.insertNodes(editor, {
         type: ElementType.PARAGRAPH,
-        children: [{ text: '' }],
+        children: [
+          {
+            type: ElementType.TEXT,
+            text: '',
+          },
+        ],
       });
 
       return;

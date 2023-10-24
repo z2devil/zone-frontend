@@ -33,7 +33,6 @@ export type HeadingElement = {
     | ElementType.HEADING_4
     | ElementType.HEADING_5
     | ElementType.HEADING_6;
-  level: number;
   children: CustomText[];
 };
 
@@ -88,16 +87,20 @@ export type CustomElement =
   | ButtonElement;
 
 export type CustomText = {
+  type: ElementType.TEXT;
   text: string;
   bold?: true;
   italic?: boolean;
+  underline?: boolean;
   code?: boolean;
 };
 
 export type EmptyText = {
+  type: ElementType.TEXT;
   text: string;
   bold?: true;
   italic?: boolean;
+  underline?: boolean;
   code?: boolean;
 };
 

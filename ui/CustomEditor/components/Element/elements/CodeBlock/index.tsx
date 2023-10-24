@@ -58,7 +58,7 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
         <SlateProvider editor={editor} initialValue={DEFAULT_CONTENT}>
           <Editable
             className={clsx(
-              ' flex h-full w-full overflow-y-auto border-b border-black-50 p-4 outline-none',
+              ' flex h-full w-full flex-col overflow-y-auto border-b border-black-50 p-4 outline-none',
               `language-${language}`
             )}
             placeholder='Write some markdown...'

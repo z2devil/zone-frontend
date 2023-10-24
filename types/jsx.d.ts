@@ -39,10 +39,10 @@ declare global {
         React.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      // 'z2-code': React.DetailedHTMLProps<
-      //   React.HTMLAttributes<HTMLElement>,
-      //   HTMLElement
-      // >;
+      'z2-codeline': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >;
       // 'z2-a': React.DetailedHTMLProps<
       //   React.AnchorHTMLAttributes<HTMLAnchorElement>,
       //   HTMLAnchorElement

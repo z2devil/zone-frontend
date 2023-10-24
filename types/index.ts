@@ -1,4 +1,5 @@
 export enum ElementType {
+  TEXT = 'text',
   PARAGRAPH = 'paragraph',
   HEADING_1 = 'heading-1',
   HEADING_2 = 'heading-2',
