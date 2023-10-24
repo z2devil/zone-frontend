@@ -32,3 +32,11 @@ export const NON_WRAPPING_ELEMENTS = [
   ElementType.HEADING_5,
   ElementType.HEADING_6,
 ];
+
+export enum MarkType {
+  BOLD = 'bold',
+  ITALIC = 'italic',
+  UNDERLINE = 'underline',
+  STRIKETHROUGH = 'strikethrough',
+  CODE = 'code',
+}

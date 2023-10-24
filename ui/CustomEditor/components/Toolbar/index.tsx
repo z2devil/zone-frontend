@@ -1,5 +1,6 @@
 import { CustomEditor } from 'types/slate';
 import { editorUtils } from '../../utils';
+import { MarkType } from '../../constans';
 
 interface ToolbarProps {
   editor: CustomEditor;
@@ -13,14 +14,21 @@ const Toolbar = (props: ToolbarProps) => {
       <button
         onMouseDown={event => {
           event.preventDefault();
-          editorUtils.toggleBoldMark(editor);
+          editorUtils.toggleMark(editor, MarkType.BOLD);
         }}>
         <i className='iconfont icon-bold rounded p-1 text-xl hover:bg-gray-50'></i>
       </button>
       <button
         onMouseDown={event => {
           event.preventDefault();
-          editorUtils.toggleCodeLine(editor);
+          editorUtils.toggleMark(editor, MarkType.UNDERLINE);
+        }}>
+        <i className='iconfont icon-underline rounded p-1 text-xl hover:bg-gray-50'></i>
+      </button>
+      <button
+        onMouseDown={event => {
+          event.preventDefault();
+          editorUtils.toggleMark(editor, MarkType.CODE);
         }}>
         <i className='iconfont icon-brackets-curly rounded p-1 text-xl hover:bg-gray-50'></i>
       </button>

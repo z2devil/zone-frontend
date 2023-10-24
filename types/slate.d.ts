@@ -2,6 +2,7 @@ import { BaseEditor } from 'slate';
 import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
 import { ElementType } from 'types';
+import { MarkType } from '@/ui/CustomEditor/constans';
 
 export type ShortcustType =
   | typeof ElementType.LIST_ITEM
@@ -89,19 +90,21 @@ export type CustomElement =
 export type CustomText = {
   type: ElementType.TEXT;
   text: string;
-  bold?: true;
-  italic?: boolean;
-  underline?: boolean;
-  code?: boolean;
+  [MarkType.BOLD]?: boolean;
+  [MarkType.ITALIC]?: boolean;
+  [MarkType.UNDERLINE]?: boolean;
+  [MarkType.STRIKETHROUGH]?: boolean;
+  [MarkType.CODE]?: boolean;
 };
 
 export type EmptyText = {
   type: ElementType.TEXT;
   text: string;
-  bold?: true;
-  italic?: boolean;
-  underline?: boolean;
-  code?: boolean;
+  [MarkType.BOLD]?: boolean;
+  [MarkType.ITALIC]?: boolean;
+  [MarkType.UNDERLINE]?: boolean;
+  [MarkType.STRIKETHROUGH]?: boolean;
+  [MarkType.CODE]?: boolean;
 };
 
 declare module 'slate' {

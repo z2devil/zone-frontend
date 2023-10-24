@@ -46,11 +46,18 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
     []
   );
 
+  const isFocused = useMemo(() => {
+    return element.id === 'focused';
+  }, [element.id]);
+
   return (
     <>
       <div
         {...attributes}
-        className=' flex flex-col gap-1 rounded-md border border-black-50 '
+        className={clsx(
+          ' flex flex-col gap-1 rounded-md border border-black-50 bg-gray-100 text-black-600',
+          isFocused && 'border-[#2f8ef4]'
+        )}
         contentEditable={false}>
         <div className=' border-b border-black-50 px-4 py-2'>
           <span>{language}</span>
@@ -58,7 +65,7 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
         <SlateProvider editor={editor} initialValue={DEFAULT_CONTENT}>
           <Editable
             className={clsx(
-              ' flex h-full w-full flex-col overflow-y-auto border-b border-black-50 p-4 outline-none',
+              ' flex h-full w-full flex-col overflow-y-auto p-4 outline-none',
               `language-${language}`
             )}
             placeholder='Write some markdown...'
