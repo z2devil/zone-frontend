@@ -42,7 +42,7 @@ const Modal = (props: ModalProps) => {
 
   const childrenRender = useMemo(() => {
     if (typeof children === 'string' || typeof children === 'number') {
-      return <div className='px-6 text-17 text-black-900'>{children}</div>;
+      return <div className='p-6 text-17 text-black-900'>{children}</div>;
     } else {
       return children;
     }
@@ -97,11 +97,13 @@ const Modal = (props: ModalProps) => {
         )}
       </div>
       {/* content */}
-      <div className='flex w-full flex-col gap-6 overflow-y-auto py-6'>
-        {childrenRender}
-        {/* footer */}
-        {footerRender}
-      </div>
+      <div className='w-full overflow-y-auto'>{childrenRender}</div>
+      {/* footer */}
+      {footerRender && (
+        <div className='flex w-full justify-center gap-5 pb-6'>
+          {footerRender}
+        </div>
+      )}
     </div>
   );
 };

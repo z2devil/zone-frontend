@@ -1,7 +1,13 @@
 'use client';
 
 import clsx from 'clsx';
-import { KeyboardEvent, useCallback, useMemo } from 'react';
+import {
+  KeyboardEvent,
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useMemo,
+} from 'react';
 import {
   Element as SlateElement,
   Descendant,
@@ -28,10 +34,29 @@ import style from './style.module.scss';
 
 interface EditorProps {
   className?: string;
+  initialValue?: Descendant[];
 }
 
-const CustomEditor = (props: EditorProps) => {
-  const { className } = props;
+export interface EditorRef {
+  getHTML: () => string;
+  getJSON: () => Descendant[];
+}
+
+const CustomEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
+  const {
+    className,
+    initialValue = [
+      {
+        type: ElementType.PARAGRAPH,
+        children: [
+          {
+            type: ElementType.TEXT,
+            text: '',
+          },
+        ],
+      },
+    ],
+  } = props;
 
   const editor = useMemo(() => {
     return withShortcuts(withHistory(withReact(createEditor())));
@@ -86,6 +111,17 @@ const CustomEditor = (props: EditorProps) => {
     [editor]
   );
 
+  useImperativeHandle(ref, () => {
+    return {
+      getHTML: () => {
+        return editor.children.map(node => Node.string(node)).join('\n');
+      },
+      getJSON: () => {
+        return editor.children;
+      },
+    };
+  });
+
   return (
     <div
       className={clsx(
@@ -97,11 +133,19 @@ const CustomEditor = (props: EditorProps) => {
         <Editable
           className={clsx(
             style.editor,
-            ' h-full w-full overflow-y-auto p-6 outline-none'
+            ' h-full w-full overflow-y-auto p-6 text-black-900 outline-none'
           )}
-          placeholder='Write some markdown...'
           tabIndex={0}
           spellCheck={false}
+          placeholder='请输入内容...'
+          renderPlaceholder={props => (
+            <div
+              className='pointer-events-none absolute select-none text-black-400'
+              {...props.attributes}
+              style={undefined}>
+              {props.children}
+            </div>
+          )}
           renderLeaf={renderLeaf}
           renderElement={renderElement}
           onKeyDown={handleKeyDown}
@@ -110,49 +154,8 @@ const CustomEditor = (props: EditorProps) => {
       </SlateProvider>
     </div>
   );
-};
+});
+
+CustomEditor.displayName = 'CustomEditor';
 
 export default CustomEditor;
-
-const initialValue: Descendant[] = [
-  {
-    type: ElementType.PARAGRAPH,
-    children: [
-      {
-        type: ElementType.TEXT,
-        text: 'The editor gives you full control over the logic you can add. For example, it\'s fairly common to want to add markdown-like shortcuts to editors. So that, when you start a line with "> " you get a blockquote that looks like this:',
-      },
-    ],
-  },
-  {
-    type: ElementType.BLOCK_QUOTE,
-    children: [{ text: 'A wise quote.' }],
-  },
-  {
-    type: ElementType.PARAGRAPH,
-    children: [
-      {
-        type: ElementType.TEXT,
-        text: 'Order when you start a line with "## " you get a level-two heading, like this:',
-      },
-    ],
-  },
-  {
-    type: ElementType.HEADING_2,
-    children: [
-      {
-        type: ElementType.TEXT,
-        text: 'Try it out!',
-      },
-    ],
-  },
-  {
-    type: ElementType.PARAGRAPH,
-    children: [
-      {
-        type: ElementType.TEXT,
-        text: 'Try it out for yourself! Try starting a new line with ">", "-", or "#"s.',
-      },
-    ],
-  },
-];

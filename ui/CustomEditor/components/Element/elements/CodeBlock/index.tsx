@@ -24,7 +24,7 @@ const DEFAULT_CONTENT: Descendant[] = [
     children: [
       {
         type: ElementType.TEXT,
-        text: 'const a = 1;',
+        text: '',
       },
     ],
   },
@@ -55,7 +55,7 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
       <div
         {...attributes}
         className={clsx(
-          ' flex flex-col gap-1 rounded-md border border-black-50 bg-gray-100 text-black-600',
+          ' my-2 flex flex-col gap-1 rounded-md border border-black-50 bg-gray-200 text-black-600',
           isFocused && 'border-[#2f8ef4]'
         )}
         contentEditable={false}>
@@ -68,7 +68,6 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
               ' flex h-full w-full flex-col overflow-y-auto p-4 outline-none',
               `language-${language}`
             )}
-            placeholder='Write some markdown...'
             tabIndex={0}
             spellCheck={false}
             renderLeaf={renderLeaf}

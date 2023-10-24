@@ -78,8 +78,6 @@ const withShortcuts = (editor: CustomEditor) => {
   editor.insertText = text => {
     const { selection } = editor;
 
-    console.log('[ insertText ]', text);
-
     if (text.endsWith(' ') && selection && Range.isCollapsed(selection)) {
       const { anchor } = selection;
       const block = Editor.above(editor, {

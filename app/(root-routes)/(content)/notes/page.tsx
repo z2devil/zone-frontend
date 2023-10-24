@@ -111,11 +111,11 @@ const NotePage = () => {
         .fill(0)
         .map(() => '暂未开放')
         .join(''),
-      // okText: '确定',
-      // onOk: () => {
-      //   console.log('onOk');
-      //   modalUtils.close(uuid);
-      // },
+      okText: '确定',
+      onOk: () => {
+        console.log('onOk');
+        modalUtils.close(uuid);
+      },
       cancelText: '取消',
       onCancel: () => {
         console.log('onCancel');
