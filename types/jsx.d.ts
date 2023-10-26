@@ -31,7 +31,11 @@ declare global {
         React.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
-      'z2-li': React.DetailedHTMLProps<
+      'z2-ol': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >;
+      'z2-ul': React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;

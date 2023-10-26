@@ -32,7 +32,17 @@
     font-weight: bold;
     font-size: 0.875rem;
   }
-  z2-li {
+  z2-ol {
+    display: block;
+    counter-increment: list-item;
+    &::before {
+      margin-right: 0.5em;
+      content: counter(list-item) '.';
+      font-weight: bold;
+      font-family: 'Courier New', Courier, monospace;
+    }
+  }
+  z2-ul {
     display: block;
     &::before {
       margin-right: 0.5em;

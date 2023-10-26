@@ -20,8 +20,10 @@ const Element = (props: RenderElementProps) => {
       return <z2-h5 {...attributes}>{children}</z2-h5>;
     case ElementType.HEADING_6:
       return <z2-h6 {...attributes}>{children}</z2-h6>;
-    case ElementType.LIST_ITEM:
-      return <z2-li {...attributes}>{children}</z2-li>;
+    case ElementType.OL_LIST:
+      return <z2-ol {...attributes}>{children}</z2-ol>;
+    case ElementType.UL_LIST:
+      return <z2-ul {...attributes}>{children}</z2-ul>;
     case ElementType.BLOCK_QUOTE:
       return <z2-blockquote {...attributes}>{children}</z2-blockquote>;
     case ElementType.CODE_LINE:

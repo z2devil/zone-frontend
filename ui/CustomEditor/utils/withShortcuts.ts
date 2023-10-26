@@ -34,7 +34,16 @@ const withShortcuts = (editor: CustomEditor) => {
       return;
     }
 
-    if (prevElementType === ElementType.LIST_ITEM) {
+    if (prevElementType === ElementType.OL_LIST) {
+      if (prevText === '') {
+        Transforms.setNodes(editor, {
+          type: ElementType.PARAGRAPH,
+        });
+        return;
+      }
+    }
+
+    if (prevElementType === ElementType.UL_LIST) {
       if (prevText === '') {
         Transforms.setNodes(editor, {
           type: ElementType.PARAGRAPH,
@@ -126,7 +135,7 @@ const withShortcuts = (editor: CustomEditor) => {
         if (
           !Editor.isEditor(block) &&
           Element.isElement(block) &&
-          block.type !== 'paragraph' &&
+          block.type !== ElementType.PARAGRAPH &&
           Point.equals(selection.anchor, start)
         ) {
           const newProperties: Partial<Element> = {
@@ -134,12 +143,12 @@ const withShortcuts = (editor: CustomEditor) => {
           };
           Transforms.setNodes(editor, newProperties);
 
-          if (block.type === ElementType.LIST_ITEM) {
+          if (block.type === ElementType.UL_LIST) {
             Transforms.unwrapNodes(editor, {
               match: n =>
                 !Editor.isEditor(n) &&
                 Element.isElement(n) &&
-                n.type === ElementType.LIST_ITEM,
+                n.type === ElementType.UL_LIST,
               split: true,
             });
           }

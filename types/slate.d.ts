@@ -5,7 +5,8 @@ import { ElementType } from 'types';
 import { MarkType } from '@/ui/CustomEditor/constans';
 
 export type ShortcustType =
-  | typeof ElementType.LIST_ITEM
+  | typeof ElementType.OL_LIST
+  | typeof ElementType.UL_LIST
   | typeof ElementType.BLOCK_QUOTE
   | typeof ElementType.HEADING_1
   | typeof ElementType.HEADING_2
@@ -37,8 +38,14 @@ export type HeadingElement = {
   children: CustomText[];
 };
 
-export type ListItemElement = {
-  type: ElementType.LIST_ITEM;
+export type OrderedListElement = {
+  type: ElementType.OL_LIST;
+  align?: string;
+  children: Descendant[];
+};
+
+export type UnorderedListElement = {
+  type: ElementType.UL_LIST;
   align?: string;
   children: Descendant[];
 };
@@ -79,7 +86,8 @@ export type ButtonElement = {
 export type CustomElement =
   | ParagraphElement
   | HeadingElement
-  | ListItemElement
+  | OrderedListElement
+  | UnorderedListElement
   | BlockQuoteElement
   | CodeLineElement
   | CodeBlockElement

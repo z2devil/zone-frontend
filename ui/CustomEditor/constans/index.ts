@@ -2,7 +2,8 @@ import { ElementType } from 'types';
 import { ShortcustType } from 'types/slate';
 
 export const SHORTCUTS = {
-  [ElementType.LIST_ITEM]: ['*', '-', '+'],
+  [ElementType.OL_LIST]: ['1.', '2.', '3.', '4.', '5.', '6.', '7.', '8.', '9.'],
+  [ElementType.UL_LIST]: ['*', '-', '+'],
   [ElementType.BLOCK_QUOTE]: ['>'],
   [ElementType.HEADING_1]: ['#'],
   [ElementType.HEADING_2]: ['##'],
