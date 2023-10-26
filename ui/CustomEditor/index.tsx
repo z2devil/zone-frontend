@@ -71,9 +71,18 @@ const CustomEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
     []
   );
 
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    console.log('[ handleKeyDown ]', e);
-  }, []);
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      console.log('[ handleKeyDown ]', e);
+      if (e.key === 'Tab') {
+        console.log('[ handleKeyDown Tab ]');
+        e.preventDefault();
+
+        Editor.insertText(editor, '  ');
+      }
+    },
+    [editor]
+  );
 
   const handleDOMBeforeInput = useCallback(
     (e: InputEvent) => {
