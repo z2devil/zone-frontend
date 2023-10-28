@@ -34,6 +34,12 @@ export const NON_WRAPPING_ELEMENTS = [
   ElementType.HEADING_6,
 ];
 
+export const NON_EMPTY_ELEMENTS = [
+  ElementType.OL_LIST,
+  ElementType.UL_LIST,
+  ElementType.BLOCK_QUOTE,
+];
+
 export enum MarkType {
   BOLD = 'bold',
   ITALIC = 'italic',

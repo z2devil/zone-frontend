@@ -10,6 +10,7 @@ const Leaf = (props: RenderLeafProps) => {
         props.leaf.bold && style.bold,
         props.leaf.italic && style.italic,
         props.leaf.underline && style.underline,
+        props.leaf.strikethrough && style.strikethrough,
         props.leaf.code && style.code
       )}>
       {props.children}

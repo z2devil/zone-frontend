@@ -1,6 +1,10 @@
 import { Editor, Element, Point, Range, Transforms } from 'slate';
 import { CustomEditor } from 'types/slate';
-import { NON_WRAPPING_ELEMENTS, SHORTCUTS_MAP } from '../constans';
+import {
+  NON_WRAPPING_ELEMENTS,
+  SHORTCUTS_MAP,
+  NON_EMPTY_ELEMENTS,
+} from '../constans';
 import { ElementType } from 'types';
 
 const withShortcuts = (editor: CustomEditor) => {
@@ -34,16 +38,7 @@ const withShortcuts = (editor: CustomEditor) => {
       return;
     }
 
-    if (prevElementType === ElementType.OL_LIST) {
-      if (prevText === '') {
-        Transforms.setNodes(editor, {
-          type: ElementType.PARAGRAPH,
-        });
-        return;
-      }
-    }
-
-    if (prevElementType === ElementType.UL_LIST) {
+    if (NON_EMPTY_ELEMENTS.includes(prevElementType)) {
       if (prevText === '') {
         Transforms.setNodes(editor, {
           type: ElementType.PARAGRAPH,

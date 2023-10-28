@@ -16,7 +16,21 @@ const Toolbar = (props: ToolbarProps) => {
           event.preventDefault();
           editorUtils.toggleMark(editor, MarkType.BOLD);
         }}>
+        <i className='iconfont icon-head-title-filled rounded p-1 text-xl transition-colors duration-100 hover:bg-gray-50 hover:text-black-900'></i>
+      </button>
+      <button
+        onMouseDown={event => {
+          event.preventDefault();
+          editorUtils.toggleMark(editor, MarkType.BOLD);
+        }}>
         <i className='iconfont icon-bold rounded p-1 text-xl transition-colors duration-100 hover:bg-gray-50 hover:text-black-900'></i>
+      </button>
+      <button
+        onMouseDown={event => {
+          event.preventDefault();
+          editorUtils.toggleMark(editor, MarkType.ITALIC);
+        }}>
+        <i className='iconfont icon-italic rounded p-1 text-xl transition-colors duration-100 hover:bg-gray-50 hover:text-black-900'></i>
       </button>
       <button
         onMouseDown={event => {
@@ -24,6 +38,13 @@ const Toolbar = (props: ToolbarProps) => {
           editorUtils.toggleMark(editor, MarkType.UNDERLINE);
         }}>
         <i className='iconfont icon-underline rounded p-1 text-xl transition-colors duration-100 hover:bg-gray-50 hover:text-black-900'></i>
+      </button>
+      <button
+        onMouseDown={event => {
+          event.preventDefault();
+          editorUtils.toggleMark(editor, MarkType.STRIKETHROUGH);
+        }}>
+        <i className='iconfont icon-text-strike-through rounded p-1 text-xl transition-colors duration-100 hover:bg-gray-50 hover:text-black-900'></i>
       </button>
       <button
         onMouseDown={event => {
