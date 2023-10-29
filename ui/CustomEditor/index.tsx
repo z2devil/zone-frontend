@@ -1,23 +1,10 @@
 'use client';
 
 import clsx from 'clsx';
-import {
-  KeyboardEvent,
-  forwardRef,
-  useCallback,
-  useImperativeHandle,
-  useMemo,
-} from 'react';
-import {
-  Element as SlateElement,
-  Descendant,
-  Editor,
-  Node,
-  createEditor,
-} from 'slate';
+import { forwardRef, useCallback, useImperativeHandle, useMemo } from 'react';
+import { Descendant, Node, createEditor } from 'slate';
 import {
   Slate as SlateProvider,
-  ReactEditor,
   RenderElementProps,
   RenderLeafProps,
   withReact,
@@ -28,8 +15,10 @@ import { withShortcuts } from './utils';
 import Element from './components/Element';
 import { withHistory } from 'slate-history';
 import Leaf from './components/Leaf';
-import { ElementType, SHORTCUTS } from './constans';
+import { ElementType } from './constans';
 import style from './style.module.scss';
+import useDOMBeforeInput from './hooks/useDOMBeforeInput';
+import useKeyDown from './hooks/useKeyDown';
 
 interface EditorProps {
   className?: string;
@@ -70,54 +59,9 @@ const CustomEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
     []
   );
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      console.log('[ handleKeyDown ]', e);
-      if (e.key === 'Tab') {
-        console.log('[ handleKeyDown Tab ]');
-        e.preventDefault();
+  const handleDOMInput = useDOMBeforeInput(editor);
 
-        Editor.insertText(editor, '  ');
-      }
-    },
-    [editor]
-  );
-
-  const handleDOMBeforeInput = useCallback(
-    (e: InputEvent) => {
-      queueMicrotask(() => {
-        const pendingDiffs = ReactEditor.androidPendingDiffs(editor);
-
-        const scheduleFlush = pendingDiffs?.some(({ diff, path }) => {
-          if (!diff.text.endsWith(' ')) {
-            return false;
-          }
-
-          const { text } = Node.leaf(editor, path);
-          const beforeText = text.slice(0, diff.start) + diff.text.slice(0, -1);
-          if (!(beforeText in SHORTCUTS)) {
-            return;
-          }
-
-          const blockEntry = Editor.above(editor, {
-            at: path,
-            match: n => SlateElement.isElement(n) && Editor.isBlock(editor, n),
-          });
-          if (!blockEntry) {
-            return false;
-          }
-
-          const [, blockPath] = blockEntry;
-          return Editor.isStart(editor, Editor.start(editor, path), blockPath);
-        });
-
-        if (scheduleFlush) {
-          ReactEditor.androidScheduleFlush(editor);
-        }
-      });
-    },
-    [editor]
-  );
+  const handleKeyDown = useKeyDown(editor);
 
   useImperativeHandle(ref, () => {
     return {
@@ -147,8 +91,8 @@ const CustomEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
           spellCheck={false}
           renderLeaf={renderLeaf}
           renderElement={renderElement}
+          onDOMBeforeInput={handleDOMInput}
           onKeyDown={handleKeyDown}
-          onDOMBeforeInput={handleDOMBeforeInput}
         />
       </SlateProvider>
     </div>
