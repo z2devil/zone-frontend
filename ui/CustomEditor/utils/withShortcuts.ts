@@ -4,8 +4,8 @@ import {
   NON_WRAPPING_ELEMENTS,
   SHORTCUTS_MAP,
   NON_EMPTY_ELEMENTS,
+  ElementType,
 } from '../constans';
-import { ElementType } from 'types';
 
 const withShortcuts = (editor: CustomEditor) => {
   const { insertBreak, insertSoftBreak, deleteBackward, insertText } = editor;

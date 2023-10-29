@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { Descendant, Editor, createEditor } from 'slate';
+import { Descendant, createEditor } from 'slate';
 import {
   Slate as SlateProvider,
   Editable,
@@ -10,7 +10,7 @@ import {
 import Leaf from '../../../Leaf';
 import Element from '../..';
 import clsx from 'clsx';
-import { ElementType } from 'types';
+import { ElementType } from '@/ui/CustomEditor/constans';
 
 interface CodeBlockProps {
   attributes: any;

@@ -1,8 +1,8 @@
 'use client';
 
 import CustomEditor from '@/ui/CustomEditor';
+import { ElementType } from '@/ui/CustomEditor/constans';
 import { Descendant } from 'slate';
-import { ElementType } from 'types';
 
 const WorksPage = () => {
   return (

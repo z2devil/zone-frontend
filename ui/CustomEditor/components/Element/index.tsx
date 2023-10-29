@@ -1,6 +1,6 @@
 import { RenderElementProps } from 'slate-react';
-import { ElementType } from 'types';
 import CodeBlock from './elements/CodeBlock';
+import { ElementType } from '../../constans';
 
 const Element = (props: RenderElementProps) => {
   const { attributes, children, element } = props;

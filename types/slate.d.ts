@@ -1,8 +1,7 @@
 import { BaseEditor } from 'slate';
 import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
-import { ElementType } from 'types';
-import { MarkType } from '@/ui/CustomEditor/constans';
+import { ElementType, MarkType } from '@/ui/CustomEditor/constans';
 
 export type ShortcustType =
   | typeof ElementType.OL_LIST

@@ -1,18 +1,1 @@
-export enum ElementType {
-  TEXT = 'text',
-  PARAGRAPH = 'paragraph',
-  HEADING_1 = 'heading-1',
-  HEADING_2 = 'heading-2',
-  HEADING_3 = 'heading-3',
-  HEADING_4 = 'heading-4',
-  HEADING_5 = 'heading-5',
-  HEADING_6 = 'heading-6',
-  OL_LIST = 'ol-list',
-  UL_LIST = 'ul-list',
-  BLOCK_QUOTE = 'block-quote',
-  CODE_LINE = 'code-line',
-  CODE_BLOCK = 'code-block',
-  LINK = 'link',
-  IMAGE = 'image',
-  BUTTON = 'button',
-}
+

@@ -1,6 +1,6 @@
-import { Editor } from 'slate';
+import { Editor, Node, Transforms } from 'slate';
 import { CustomEditor } from 'types/slate';
-import { MarkType } from '../constans';
+import { CAN_INSERT_ELEMENTS, ElementType, MarkType } from '../constans';
 
 const editorUtils = {
   /**
@@ -27,6 +27,26 @@ const editorUtils = {
     } else {
       Editor.addMark(editor, type, true);
     }
+  },
+
+  /**
+   * 插入节点
+   * @param editor 编辑器
+   * @param type element 类型
+   * @returns
+   */
+  insertNode(editor: CustomEditor, type: ElementType) {
+    if (!CAN_INSERT_ELEMENTS.includes(type))
+      throw new Error(`Can't insert ${type} element`);
+    Transforms.insertNodes(editor, {
+      type,
+      children: [
+        {
+          type: ElementType.TEXT,
+          text: '',
+        },
+      ],
+    } as Node);
   },
 };
 

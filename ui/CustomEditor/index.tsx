@@ -28,8 +28,7 @@ import { withShortcuts } from './utils';
 import Element from './components/Element';
 import { withHistory } from 'slate-history';
 import Leaf from './components/Leaf';
-import { SHORTCUTS } from './constans';
-import { ElementType } from 'types';
+import { ElementType, SHORTCUTS } from './constans';
 import style from './style.module.scss';
 
 interface EditorProps {
@@ -146,15 +145,6 @@ const CustomEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
           )}
           tabIndex={0}
           spellCheck={false}
-          placeholder='请输入内容...'
-          renderPlaceholder={props => (
-            <div
-              className='pointer-events-none absolute select-none text-black-400'
-              {...props.attributes}
-              style={undefined}>
-              {props.children}
-            </div>
-          )}
           renderLeaf={renderLeaf}
           renderElement={renderElement}
           onKeyDown={handleKeyDown}
