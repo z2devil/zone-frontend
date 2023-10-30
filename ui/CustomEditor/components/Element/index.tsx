@@ -1,44 +1,51 @@
 import { RenderElementProps } from 'slate-react';
 import CodeBlock from './elements/CodeBlock';
-import { ElementType } from '../../constans';
+import { BlockElementType, InlineElementType } from '../../constans';
+import InlineChromiumBugfix from './elements/InlineChromiumBugfix';
 
 const Element = (props: RenderElementProps) => {
   const { attributes, children, element } = props;
 
   switch (element.type) {
-    case ElementType.PARAGRAPH:
+    case BlockElementType.PARAGRAPH:
       return <z2-p {...attributes}>{children}</z2-p>;
-    case ElementType.HEADING_1:
+    case BlockElementType.HEADING_1:
       return <z2-h1 {...attributes}>{children}</z2-h1>;
-    case ElementType.HEADING_2:
+    case BlockElementType.HEADING_2:
       return <z2-h2 {...attributes}>{children}</z2-h2>;
-    case ElementType.HEADING_3:
+    case BlockElementType.HEADING_3:
       return <z2-h3 {...attributes}>{children}</z2-h3>;
-    case ElementType.HEADING_4:
+    case BlockElementType.HEADING_4:
       return <z2-h4 {...attributes}>{children}</z2-h4>;
-    case ElementType.HEADING_5:
+    case BlockElementType.HEADING_5:
       return <z2-h5 {...attributes}>{children}</z2-h5>;
-    case ElementType.HEADING_6:
+    case BlockElementType.HEADING_6:
       return <z2-h6 {...attributes}>{children}</z2-h6>;
-    case ElementType.OL_LIST:
+    case BlockElementType.OL_LIST:
       return <z2-ol {...attributes}>{children}</z2-ol>;
-    case ElementType.UL_LIST:
+    case BlockElementType.UL_LIST:
       return <z2-ul {...attributes}>{children}</z2-ul>;
-    case ElementType.BLOCK_QUOTE:
+    case BlockElementType.BLOCK_QUOTE:
       return <z2-blockquote {...attributes}>{children}</z2-blockquote>;
-    case ElementType.CODE_LINE:
-      return <z2-codeline {...attributes}>{children}</z2-codeline>;
-    case ElementType.CODE_BLOCK:
+    case InlineElementType.CODE_LINE:
+      return (
+        <z2-codeline {...attributes}>
+          <InlineChromiumBugfix />
+          {children}
+          <InlineChromiumBugfix />
+        </z2-codeline>
+      );
+    case BlockElementType.CODE_BLOCK:
       return (
         <CodeBlock attributes={attributes} element={element}>
           {children}
         </CodeBlock>
       );
-    case ElementType.LINK:
+    case InlineElementType.LINK:
       return <a {...attributes}>{children}</a>;
-    case ElementType.IMAGE:
+    case BlockElementType.IMAGE:
       return <img {...attributes} />;
-    case ElementType.BUTTON:
+    case BlockElementType.BUTTON:
       return <button {...attributes}>{children}</button>;
     default:
       return <z2-p {...attributes}>{children}</z2-p>;

@@ -1,15 +1,18 @@
-import { ShortcustType } from 'types/slate';
+import { ElementType, ShortcustType } from 'types/slate';
 
 export enum MarkType {
   BOLD = 'bold',
   ITALIC = 'italic',
   UNDERLINE = 'underline',
   STRIKETHROUGH = 'strikethrough',
-  CODE = 'code',
 }
 
-export enum ElementType {
-  TEXT = 'text',
+export enum InlineElementType {
+  CODE_LINE = 'code-line',
+  LINK = 'link',
+}
+
+export enum BlockElementType {
   PARAGRAPH = 'paragraph',
   HEADING_1 = 'heading-1',
   HEADING_2 = 'heading-2',
@@ -20,37 +23,31 @@ export enum ElementType {
   OL_LIST = 'ol-list',
   UL_LIST = 'ul-list',
   BLOCK_QUOTE = 'block-quote',
-  CODE_LINE = 'code-line',
   CODE_BLOCK = 'code-block',
-  LINK = 'link',
   IMAGE = 'image',
   BUTTON = 'button',
 }
 
-export const CAN_INSERT_ELEMENTS = [
-  ElementType.PARAGRAPH,
-  ElementType.HEADING_1,
-  ElementType.HEADING_2,
-  ElementType.HEADING_3,
-  ElementType.HEADING_4,
-  ElementType.HEADING_5,
-  ElementType.HEADING_6,
-  ElementType.OL_LIST,
-  ElementType.UL_LIST,
-  ElementType.BLOCK_QUOTE,
-  ElementType.CODE_BLOCK,
-];
-
 export const SHORTCUTS = {
-  [ElementType.OL_LIST]: ['1.', '2.', '3.', '4.', '5.', '6.', '7.', '8.', '9.'],
-  [ElementType.UL_LIST]: ['*', '-', '+'],
-  [ElementType.BLOCK_QUOTE]: ['>'],
-  [ElementType.HEADING_1]: ['#'],
-  [ElementType.HEADING_2]: ['##'],
-  [ElementType.HEADING_3]: ['###'],
-  [ElementType.HEADING_4]: ['####'],
-  [ElementType.HEADING_5]: ['#####'],
-  [ElementType.HEADING_6]: ['######'],
+  [BlockElementType.OL_LIST]: [
+    '1.',
+    '2.',
+    '3.',
+    '4.',
+    '5.',
+    '6.',
+    '7.',
+    '8.',
+    '9.',
+  ],
+  [BlockElementType.UL_LIST]: ['*', '-', '+'],
+  [BlockElementType.BLOCK_QUOTE]: ['>'],
+  [BlockElementType.HEADING_1]: ['#'],
+  [BlockElementType.HEADING_2]: ['##'],
+  [BlockElementType.HEADING_3]: ['###'],
+  [BlockElementType.HEADING_4]: ['####'],
+  [BlockElementType.HEADING_5]: ['#####'],
+  [BlockElementType.HEADING_6]: ['######'],
 };
 
 export const SHORTCUTS_MAP: Record<string, ShortcustType> = (() => {
@@ -65,17 +62,17 @@ export const SHORTCUTS_MAP: Record<string, ShortcustType> = (() => {
   return map;
 })();
 
-export const NON_WRAPPING_ELEMENTS = [
-  ElementType.HEADING_1,
-  ElementType.HEADING_2,
-  ElementType.HEADING_3,
-  ElementType.HEADING_4,
-  ElementType.HEADING_5,
-  ElementType.HEADING_6,
+export const NON_WRAPPING_ELEMENTS: ElementType[] = [
+  BlockElementType.HEADING_1,
+  BlockElementType.HEADING_2,
+  BlockElementType.HEADING_3,
+  BlockElementType.HEADING_4,
+  BlockElementType.HEADING_5,
+  BlockElementType.HEADING_6,
 ];
 
-export const NON_EMPTY_ELEMENTS = [
-  ElementType.OL_LIST,
-  ElementType.UL_LIST,
-  ElementType.BLOCK_QUOTE,
+export const NON_EMPTY_ELEMENTS: ElementType[] = [
+  BlockElementType.OL_LIST,
+  BlockElementType.UL_LIST,
+  BlockElementType.BLOCK_QUOTE,
 ];

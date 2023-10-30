@@ -15,10 +15,11 @@ import { withShortcuts } from './utils';
 import Element from './components/Element';
 import { withHistory } from 'slate-history';
 import Leaf from './components/Leaf';
-import { ElementType } from './constans';
 import style from './style.module.scss';
 import useDOMBeforeInput from './hooks/useDOMBeforeInput';
 import useKeyDown from './hooks/useKeyDown';
+import { withInlines } from './utils/withInlines';
+import { BlockElementType } from './constans';
 
 interface EditorProps {
   className?: string;
@@ -35,10 +36,9 @@ const CustomEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
     className,
     initialValue = [
       {
-        type: ElementType.PARAGRAPH,
+        type: BlockElementType.PARAGRAPH,
         children: [
           {
-            type: ElementType.TEXT,
             text: '',
           },
         ],
@@ -47,7 +47,11 @@ const CustomEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
   } = props;
 
   const editor = useMemo(() => {
-    return withShortcuts(withHistory(withReact(createEditor())));
+    const enhancers = [withReact, withHistory, withInlines, withShortcuts];
+    return enhancers.reduce(
+      (editor, enhancer) => enhancer(editor),
+      createEditor()
+    );
   }, []);
 
   const renderLeaf = useCallback((props: RenderLeafProps) => {
@@ -89,8 +93,8 @@ const CustomEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
           )}
           tabIndex={0}
           spellCheck={false}
-          renderLeaf={renderLeaf}
           renderElement={renderElement}
+          renderLeaf={renderLeaf}
           onDOMBeforeInput={handleDOMInput}
           onKeyDown={handleKeyDown}
         />

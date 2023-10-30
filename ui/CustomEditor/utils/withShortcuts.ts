@@ -4,7 +4,7 @@ import {
   NON_WRAPPING_ELEMENTS,
   SHORTCUTS_MAP,
   NON_EMPTY_ELEMENTS,
-  ElementType,
+  BlockElementType,
 } from '../constans';
 
 const withShortcuts = (editor: CustomEditor) => {
@@ -26,10 +26,9 @@ const withShortcuts = (editor: CustomEditor) => {
 
     if (NON_WRAPPING_ELEMENTS.includes(prevElementType)) {
       Transforms.insertNodes(editor, {
-        type: ElementType.PARAGRAPH,
+        type: BlockElementType.PARAGRAPH,
         children: [
           {
-            type: ElementType.TEXT,
             text: '',
           },
         ],
@@ -41,7 +40,7 @@ const withShortcuts = (editor: CustomEditor) => {
     if (NON_EMPTY_ELEMENTS.includes(prevElementType)) {
       if (prevText === '') {
         Transforms.setNodes(editor, {
-          type: ElementType.PARAGRAPH,
+          type: BlockElementType.PARAGRAPH,
         });
         return;
       }
@@ -51,7 +50,7 @@ const withShortcuts = (editor: CustomEditor) => {
       console.log('[ 代码块 ]');
 
       const codeBlock: Partial<Element> = {
-        type: ElementType.CODE_BLOCK,
+        type: BlockElementType.CODE_BLOCK,
       };
 
       Transforms.setNodes(editor, codeBlock, {
@@ -59,10 +58,9 @@ const withShortcuts = (editor: CustomEditor) => {
       });
 
       Transforms.insertNodes(editor, {
-        type: ElementType.PARAGRAPH,
+        type: BlockElementType.PARAGRAPH,
         children: [
           {
-            type: ElementType.TEXT,
             text: '',
           },
         ],
@@ -130,20 +128,20 @@ const withShortcuts = (editor: CustomEditor) => {
         if (
           !Editor.isEditor(block) &&
           Element.isElement(block) &&
-          block.type !== ElementType.PARAGRAPH &&
+          block.type !== BlockElementType.PARAGRAPH &&
           Point.equals(selection.anchor, start)
         ) {
           const newProperties: Partial<Element> = {
-            type: ElementType.PARAGRAPH,
+            type: BlockElementType.PARAGRAPH,
           };
           Transforms.setNodes(editor, newProperties);
 
-          if (block.type === ElementType.UL_LIST) {
+          if (block.type === BlockElementType.UL_LIST) {
             Transforms.unwrapNodes(editor, {
               match: n =>
                 !Editor.isEditor(n) &&
                 Element.isElement(n) &&
-                n.type === ElementType.UL_LIST,
+                n.type === BlockElementType.UL_LIST,
               split: true,
             });
           }
@@ -159,7 +157,7 @@ const withShortcuts = (editor: CustomEditor) => {
   const { isVoid } = editor;
 
   editor.isVoid = element => {
-    if (element.type === ElementType.CODE_BLOCK) {
+    if (element.type === BlockElementType.CODE_BLOCK) {
       return true;
     }
     return isVoid(element);

@@ -1,6 +1,6 @@
-import { Editor, Node, Transforms } from 'slate';
-import { CustomEditor } from 'types/slate';
-import { CAN_INSERT_ELEMENTS, ElementType, MarkType } from '../constans';
+import { Editor, Element, Node, Range, Transforms } from 'slate';
+import { CustomEditor, CustomElement, ElementType } from 'types/slate';
+import { BlockElementType, InlineElementType, MarkType } from '../constans';
 
 const editorUtils = {
   /**
@@ -30,23 +30,90 @@ const editorUtils = {
   },
 
   /**
-   * 插入节点
+   * 插入内联节点
    * @param editor 编辑器
-   * @param type element 类型
-   * @returns
+   * @param type inline element 类型
    */
-  insertNode(editor: CustomEditor, type: ElementType) {
-    if (!CAN_INSERT_ELEMENTS.includes(type))
-      throw new Error(`Can't insert ${type} element`);
+  insertInlineNode(editor: CustomEditor, type: InlineElementType) {
     Transforms.insertNodes(editor, {
       type,
       children: [
         {
-          type: ElementType.TEXT,
           text: '',
         },
       ],
     } as Node);
+  },
+
+  /**
+   * 插入块节点
+   * @param editor 编辑器
+   * @param type block element 类型
+   * @returns
+   */
+  insertBlockNode(editor: CustomEditor, type: BlockElementType) {
+    Transforms.insertNodes(editor, {
+      type,
+      children: [
+        {
+          text: '',
+        },
+      ],
+    } as Node);
+  },
+
+  /**
+   * 判断当前选中的节点是否包含指定的 element 的类型
+   * @param editor 编辑器
+   * @param type element 类型
+   * @returns
+   */
+  isElementActive(editor: CustomEditor, type: ElementType) {
+    const [match] = Editor.nodes(editor, {
+      match: n =>
+        !Editor.isEditor(n) && Element.isElement(n) && n.type === type,
+    });
+    return !!match;
+  },
+
+  /**
+   * 解包节点
+   * @param editor 编辑器
+   * @param type element 类型
+   */
+  unwrapElement(editor: CustomEditor, type: ElementType) {
+    Transforms.unwrapNodes(editor, {
+      match: n =>
+        !Editor.isEditor(n) && Element.isElement(n) && n.type === type,
+    });
+  },
+
+  /**
+   * 包裹节点
+   * @param editor 编辑器
+   * @param type element 类型
+   */
+  wrapElement(editor: CustomEditor, type: ElementType) {
+    const isActive = editorUtils.isElementActive(editor, type);
+    console.log('[ wrapNode ]', isActive, type);
+    if (isActive) {
+      editorUtils.unwrapElement(editor, type);
+    } else {
+      const { selection } = editor;
+      const isCollapsed = selection && Range.isCollapsed(selection);
+      const text = selection ? Editor.string(editor, selection) : '';
+      const element: CustomElement = {
+        type,
+        children: [{ text }],
+      };
+      console.log('[ wrapElement ]', isCollapsed, text, element);
+      if (isCollapsed) {
+        Transforms.insertNodes(editor, element);
+      } else {
+        Transforms.wrapNodes(editor, element, { split: true });
+        Transforms.collapse(editor, { edge: 'end' });
+      }
+    }
   },
 };
 

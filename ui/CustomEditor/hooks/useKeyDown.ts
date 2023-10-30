@@ -1,8 +1,8 @@
 import { KeyboardEvent, useCallback } from 'react';
-import { Editor } from 'slate';
+import { Editor, Element, Range, Transforms } from 'slate';
 import { CustomEditor } from 'types/slate';
 import { editorUtils } from '../utils';
-import { MarkType } from '../constans';
+import { InlineElementType, MarkType } from '../constans';
 
 const ACTIONS: Record<string, (editor: CustomEditor) => void> = {
   b: editor => {
@@ -18,7 +18,7 @@ const ACTIONS: Record<string, (editor: CustomEditor) => void> = {
     editorUtils.toggleMark(editor, MarkType.STRIKETHROUGH);
   },
   e: editor => {
-    editorUtils.toggleMark(editor, MarkType.CODE);
+    editorUtils.wrapElement(editor, InlineElementType.CODE_LINE);
   },
 };
 
@@ -31,6 +31,8 @@ const useKeyDown = (editor: CustomEditor) => {
       const isCtrl = !!e.ctrlKey;
       const isAlt = !!e.altKey;
       const isShift = !!e.shiftKey;
+
+      const { selection } = editor;
 
       // 组合键
       if (isMeta || isCtrl) {
@@ -45,6 +47,18 @@ const useKeyDown = (editor: CustomEditor) => {
         if (e.key === 'Tab') {
           e.preventDefault();
           Editor.insertText(editor, '  ');
+        }
+        if (e.key === 'ArrowLeft') {
+          if (selection && Range.isCollapsed(selection)) {
+            e.preventDefault();
+            Transforms.move(editor, { unit: 'offset', reverse: true });
+          }
+        }
+        if (e.key === 'ArrowRight') {
+          if (selection && Range.isCollapsed(selection)) {
+            e.preventDefault();
+            Transforms.move(editor, { unit: 'offset' });
+          }
         }
       }
     },

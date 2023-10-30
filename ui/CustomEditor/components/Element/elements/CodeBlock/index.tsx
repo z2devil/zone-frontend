@@ -10,7 +10,7 @@ import {
 import Leaf from '../../../Leaf';
 import Element from '../..';
 import clsx from 'clsx';
-import { ElementType } from '@/ui/CustomEditor/constans';
+import { BlockElementType } from '@/ui/CustomEditor/constans';
 
 interface CodeBlockProps {
   attributes: any;
@@ -20,10 +20,9 @@ interface CodeBlockProps {
 
 const DEFAULT_CONTENT: Descendant[] = [
   {
-    type: ElementType.PARAGRAPH,
+    type: BlockElementType.PARAGRAPH,
     children: [
       {
-        type: ElementType.TEXT,
         text: '',
       },
     ],
