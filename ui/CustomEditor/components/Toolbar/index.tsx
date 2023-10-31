@@ -10,7 +10,7 @@ const Toolbar = (props: ToolbarProps) => {
   const { editor } = props;
 
   return (
-    <div className=' sticky top-0 flex h-12 items-center gap-2 px-5 text-black-600 shadow-main'>
+    <div className=' sticky top-0 flex h-12 flex-shrink-0 items-center gap-2 px-5 text-black-600 shadow-main'>
       <button
         onMouseDown={event => {
           event.preventDefault();

@@ -103,12 +103,14 @@ export type BlockElement =
 export type CustomElement = InlineElement | BlockElement;
 
 export type CustomText = {
-  text: string;
+  type?: InlineElementType;
   [MarkType.BOLD]?: boolean;
   [MarkType.ITALIC]?: boolean;
   [MarkType.UNDERLINE]?: boolean;
   [MarkType.STRIKETHROUGH]?: boolean;
   [MarkType.CODE]?: boolean;
+  text?: string;
+  children?: CustomText[];
 };
 
 declare module 'slate' {

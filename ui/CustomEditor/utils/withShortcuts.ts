@@ -154,15 +154,6 @@ const withShortcuts = (editor: CustomEditor) => {
     }
   };
 
-  const { isVoid } = editor;
-
-  editor.isVoid = element => {
-    if (element.type === BlockElementType.CODE_BLOCK) {
-      return true;
-    }
-    return isVoid(element);
-  };
-
   return editor;
 };
 

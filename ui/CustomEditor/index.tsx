@@ -19,7 +19,8 @@ import style from './style.module.scss';
 import useDOMBeforeInput from './hooks/useDOMBeforeInput';
 import useKeyDown from './hooks/useKeyDown';
 import { withInlines } from './utils/withInlines';
-import { BlockElementType } from './constans';
+import { BlockElementType, InlineElementType } from './constans';
+import { withVoids } from './utils/withVoids';
 
 interface EditorProps {
   className?: string;
@@ -31,23 +32,165 @@ export interface EditorRef {
   getJSON: () => Descendant[];
 }
 
-const CustomEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
-  const {
-    className,
-    initialValue = [
+const text: Descendant[] = [
+  {
+    type: BlockElementType.PARAGRAPH,
+    children: [
       {
-        type: BlockElementType.PARAGRAPH,
+        text: '什么是 Fiber ？',
+      },
+    ],
+  },
+  {
+    type: BlockElementType.PARAGRAPH,
+    children: [
+      {
+        text: '',
+      },
+    ],
+  },
+  {
+    type: BlockElementType.PARAGRAPH,
+    children: [
+      {
+        text: '对于 React 来说，Fiber 可以从两个角度进行理解：',
+      },
+    ],
+  },
+  {
+    type: BlockElementType.PARAGRAPH,
+    children: [
+      {
+        text: '',
+      },
+    ],
+  },
+  {
+    type: BlockElementType.HEADING_2,
+    children: [
+      {
+        text: '一种流程控制原语',
+      },
+    ],
+  },
+  {
+    type: BlockElementType.PARAGRAPH,
+    children: [
+      {
+        text: '',
+      },
+    ],
+  },
+  {
+    type: BlockElementType.BLOCK_QUOTE,
+    children: [
+      {
+        text: '所谓原语，一般是指由若干条指令组成的程序段，用来实现某个特定功能，在执行过程中不可被中断。',
+      },
+    ],
+  },
+  {
+    type: BlockElementType.PARAGRAPH,
+    children: [
+      {
+        text: '',
+      },
+    ],
+  },
+  {
+    type: BlockElementType.PARAGRAPH,
+    children: [
+      {
+        text: 'Fiber 也称',
+      },
+      {
+        text: '协程',
+        bold: true,
+      },
+      {
+        text: '，或者纤程。Ruby 中就将协程叫做 Fiber ，ES6 中的',
+      },
+      {
+        type: InlineElementType.CODE_LINE,
         children: [
           {
-            text: '',
+            text: 'Generaror',
           },
         ],
       },
+      {
+        text: '也是一类东西。',
+      },
     ],
+  },
+  {
+    type: BlockElementType.PARAGRAPH,
+    children: [
+      {
+        text: '',
+      },
+    ],
+  },
+  {
+    type: BlockElementType.PARAGRAPH,
+    children: [
+      {
+        text: '协程是一种流程控制的让出机制',
+        bold: true,
+        underline: true,
+      },
+      {
+        text: '，和线程不一样。',
+      },
+    ],
+  },
+  {
+    type: BlockElementType.PARAGRAPH,
+    children: [
+      {
+        text: '',
+      },
+    ],
+  },
+  {
+    type: BlockElementType.PARAGRAPH,
+    children: [
+      {
+        text: 'React Fiber 的思想和协程的概念是契合的：',
+      },
+      {
+        text: 'React 渲染过程可以被中断，将控制权交回浏览器，或是让给更高优先级的任务，等待浏览器空闲后再继续渲染。',
+        bold: true,
+        underline: true,
+      },
+    ],
+  },
+];
+
+const CustomEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
+  const {
+    className,
+    initialValue = text,
+    // [
+    //   {
+    //     type: BlockElementType.PARAGRAPH,
+    //     children: [
+    //       {
+    //         text: '',
+    //       },
+    //     ],
+    //   },
+    // ],
   } = props;
 
   const editor = useMemo(() => {
-    const enhancers = [withReact, withHistory, withInlines, withShortcuts];
+    const enhancers = [
+      withReact,
+      withHistory,
+      withInlines,
+      withVoids,
+      withShortcuts,
+    ];
     return enhancers.reduce(
       (editor, enhancer) => enhancer(editor),
       createEditor()
@@ -63,7 +206,7 @@ const CustomEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
     []
   );
 
-  const handleDOMInput = useDOMBeforeInput(editor);
+  // const handleDOMInput = useDOMBeforeInput(editor);
 
   const handleKeyDown = useKeyDown(editor);
 
@@ -95,7 +238,7 @@ const CustomEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
           spellCheck={false}
           renderElement={renderElement}
           renderLeaf={renderLeaf}
-          onDOMBeforeInput={handleDOMInput}
+          // onDOMBeforeInput={handleDOMInput}
           onKeyDown={handleKeyDown}
         />
       </SlateProvider>
