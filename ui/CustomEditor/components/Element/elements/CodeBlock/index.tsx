@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { basicSetup } from 'codemirror';
 import { EditorState } from '@codemirror/state';
 import { EditorView, keymap } from '@codemirror/view';
@@ -49,27 +49,34 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
 
   const editorRef = useRef<HTMLDivElement | null>(null);
 
+  /************************************************
+   * ✨ 语言
+   ************************************************/
+
   const [language, setLanguage] = useState<Language>(
     element.language || Language.PLAINTEXT
   );
 
   const [isLanguageEditing, setIsLanguageEditing] = useState(false);
 
-  const handleLanguageEdit = () => {
-    setIsLanguageEditing(true);
-  };
+  const handleLanguageEdit = useCallback((editing: boolean) => {
+    setIsLanguageEditing(editing);
+  }, []);
 
-  const handleLanguageEditEnd = () => {
-    setIsLanguageEditing(false);
-  };
+  const handleLanguageChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const { value } = e.target;
+      if (SUPPORTED_LANGUAGES.includes(value as Language)) {
+        setLanguage(value as Language);
+        handleLanguageEdit(false);
+      }
+    },
+    [handleLanguageEdit]
+  );
 
-  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { value } = e.target;
-    if (SUPPORTED_LANGUAGES.includes(value as Language)) {
-      setLanguage(value as Language);
-      handleLanguageEditEnd();
-    }
-  };
+  /************************************************
+   * ✨ 内容
+   ************************************************/
 
   const [content, setContent] = useState(element.content || '');
 
@@ -89,6 +96,34 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
     () =>
       EditorView.updateListener.of(update => {
         setContent(update.state.doc.toString());
+      }),
+    []
+  );
+
+  const theme = useMemo(
+    () =>
+      EditorView.theme({
+        // '&': {
+        //   color: 'white',
+        //   backgroundColor: '#034',
+        // },
+        // '.cm-content': {
+        //   caretColor: '#0e9',
+        // },
+        '&.cm-focused': {
+          outline: 'none',
+        },
+        // '&.cm-focused .cm-cursor': {
+        //   borderLeftColor: '#0e9',
+        // },
+        // '&.cm-focused .cm-selectionBackground, ::selection': {
+        //   backgroundColor: '#074',
+        // },
+        '.cm-gutters': {
+          backgroundColor: 'transparent',
+          // color: '#ddd',
+          // border: 'none',
+        },
       }),
     []
   );
@@ -113,6 +148,7 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
           keymap.of([...defaultKeymap, indentWithTab]),
           javascript(),
           onUpdate,
+          theme,
         ],
       }),
       parent: shadowRoot,
@@ -130,20 +166,20 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
       <div
         {...attributes}
         className={clsx(
-          ' my-2 flex flex-col gap-1 rounded-md border border-black-50 bg-gray-200 text-black-600',
+          ' my-2 flex flex-col rounded-md border border-black-50 bg-gray-200 text-black-600',
           element && 'border-[#2f8ef4]'
         )}
         contentEditable={false}>
         <div
           className=' border-b border-black-50 px-4 py-2'
-          onClick={handleLanguageEdit}>
+          onClick={() => handleLanguageEdit(true)}>
           {isLanguageEditing ? (
             <select
               className='bg-transparent text-black-600'
               value={language}
               autoFocus
               onChange={handleLanguageChange}
-              onBlur={handleLanguageEditEnd}>
+              onBlur={() => handleLanguageEdit(false)}>
               {SUPPORTED_LANGUAGES.map(language => (
                 <option key={language} value={language}>
                   {language}
