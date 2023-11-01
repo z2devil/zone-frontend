@@ -4,6 +4,7 @@ import { HistoryEditor } from 'slate-history';
 import {
   BlockElementType,
   InlineElementType,
+  Language,
   MarkType,
 } from '@/ui/CustomEditor/constans';
 
@@ -69,6 +70,8 @@ export type CodeLineElement = {
 export type CodeBlockElement = {
   type: BlockElementType.CODE_BLOCK;
   children: CustomText[];
+  language?: Language;
+  content?: string;
 };
 
 export type LinkElement = {

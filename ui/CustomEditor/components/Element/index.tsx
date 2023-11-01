@@ -36,11 +36,7 @@ const Element = (props: RenderElementProps) => {
         </z2-codeline>
       );
     case BlockElementType.CODE_BLOCK:
-      return (
-        <CodeBlock attributes={attributes} element={element}>
-          {children}
-        </CodeBlock>
-      );
+      return <CodeBlock {...props}>{children}</CodeBlock>;
     case InlineElementType.LINK:
       return <a {...attributes}>{children}</a>;
     case BlockElementType.IMAGE:

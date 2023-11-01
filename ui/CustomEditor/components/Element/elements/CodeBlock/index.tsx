@@ -6,39 +6,14 @@ import { EditorView, keymap } from '@codemirror/view';
 import { defaultKeymap, indentWithTab } from '@codemirror/commands';
 import { javascript } from '@codemirror/lang-javascript';
 import { CodeBlockElement } from 'types/slate';
+import { Transforms } from 'slate';
+import { ReactEditor, useSlate } from 'slate-react';
+import { Language } from '@/ui/CustomEditor/constans';
 
 interface CodeBlockProps {
   attributes: any;
   children: any;
   element: CodeBlockElement;
-}
-
-const enum Language {
-  PLAINTEXT = 'plaintext',
-  JAVASCRIPT = 'javascript',
-  TYPESCRIPT = 'typescript',
-  HTML = 'html',
-  CSS = 'css',
-  JSON = 'json',
-  MARKDOWN = 'markdown',
-  PYTHON = 'python',
-  JAVA = 'java',
-  PHP = 'php',
-  RUBY = 'ruby',
-  C = 'c',
-  CPP = 'cpp',
-  CSHARP = 'csharp',
-  GO = 'go',
-  RUST = 'rust',
-  SQL = 'sql',
-  SHELL = 'shell',
-  BASH = 'bash',
-  DOCKER = 'docker',
-  NGINX = 'nginx',
-  YAML = 'yaml',
-  XML = 'xml',
-  LESS = 'less',
-  SCSS = 'scss',
 }
 
 const SUPPORTED_LANGUAGES = [
@@ -70,13 +45,13 @@ const SUPPORTED_LANGUAGES = [
 ];
 
 const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
-  useEffect(() => {
-    console.log('[ element ]', element);
-  }, [element]);
+  const editor = useSlate();
 
   const editorRef = useRef<HTMLDivElement | null>(null);
 
-  const [language, setLanguage] = useState<Language>(Language.PLAINTEXT);
+  const [language, setLanguage] = useState<Language>(
+    element.language || Language.PLAINTEXT
+  );
 
   const [isLanguageEditing, setIsLanguageEditing] = useState(false);
 
@@ -96,11 +71,19 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
     }
   };
 
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState(element.content || '');
 
   useEffect(() => {
     console.log('[ content ]', content);
-  }, [content]);
+    const path = ReactEditor.findPath(editor, element);
+    const nextElement = {
+      language,
+      content,
+    };
+    Transforms.setNodes(editor, nextElement, {
+      at: path,
+    });
+  }, [content, editor, element, language]);
 
   const onUpdate = useMemo(
     () =>
@@ -124,7 +107,7 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
 
     const view = new EditorView({
       state: EditorState.create({
-        doc: element.children[0].text || '',
+        doc: content,
         extensions: [
           basicSetup,
           keymap.of([...defaultKeymap, indentWithTab]),

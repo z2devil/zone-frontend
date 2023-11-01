@@ -76,3 +76,35 @@ export const NON_EMPTY_ELEMENTS: ElementType[] = [
   BlockElementType.UL_LIST,
   BlockElementType.BLOCK_QUOTE,
 ];
+
+/************************************************
+ * ✨ code-block
+ ************************************************/
+
+export const enum Language {
+  PLAINTEXT = 'plaintext',
+  JAVASCRIPT = 'javascript',
+  TYPESCRIPT = 'typescript',
+  HTML = 'html',
+  CSS = 'css',
+  JSON = 'json',
+  MARKDOWN = 'markdown',
+  PYTHON = 'python',
+  JAVA = 'java',
+  PHP = 'php',
+  RUBY = 'ruby',
+  C = 'c',
+  CPP = 'cpp',
+  CSHARP = 'csharp',
+  GO = 'go',
+  RUST = 'rust',
+  SQL = 'sql',
+  SHELL = 'shell',
+  BASH = 'bash',
+  DOCKER = 'docker',
+  NGINX = 'nginx',
+  YAML = 'yaml',
+  XML = 'xml',
+  LESS = 'less',
+  SCSS = 'scss',
+}

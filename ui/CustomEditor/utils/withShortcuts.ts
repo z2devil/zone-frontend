@@ -1,10 +1,11 @@
 import { Editor, Element, Point, Range, Transforms } from 'slate';
-import { CustomEditor } from 'types/slate';
+import { CodeBlockElement, CustomEditor } from 'types/slate';
 import {
   NON_WRAPPING_ELEMENTS,
   SHORTCUTS_MAP,
   NON_EMPTY_ELEMENTS,
   BlockElementType,
+  Language,
 } from '../constans';
 
 const withShortcuts = (editor: CustomEditor) => {
@@ -49,8 +50,15 @@ const withShortcuts = (editor: CustomEditor) => {
     if (prevText.endsWith('```')) {
       console.log('[ 代码块 ]');
 
-      const codeBlock: Partial<Element> = {
+      const codeBlock: CodeBlockElement = {
         type: BlockElementType.CODE_BLOCK,
+        children: [
+          {
+            text: '',
+          },
+        ],
+        language: Language.PLAINTEXT,
+        content: '',
       };
 
       Transforms.setNodes(editor, codeBlock, {
