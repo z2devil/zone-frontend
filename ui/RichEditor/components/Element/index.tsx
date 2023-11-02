@@ -2,6 +2,7 @@ import { RenderElementProps } from 'slate-react';
 import CodeBlock from './elements/CodeBlock';
 import { BlockElementType, InlineElementType } from '../../constans';
 import InlineChromiumBugfix from './elements/InlineChromiumBugfix';
+import { CodeBlockElement } from 'types/slate';
 
 const Element = (props: RenderElementProps) => {
   const { attributes, children, element } = props;
@@ -36,10 +37,17 @@ const Element = (props: RenderElementProps) => {
         </z2-codeline>
       );
     case BlockElementType.CODE_BLOCK:
-      return <CodeBlock {...props}>{children}</CodeBlock>;
+      return (
+        <CodeBlock
+          attributes={attributes}
+          element={props.element as CodeBlockElement}>
+          {children}
+        </CodeBlock>
+      );
     case InlineElementType.LINK:
       return <a {...attributes}>{children}</a>;
     case BlockElementType.IMAGE:
+      // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
       return <img {...attributes} />;
     case BlockElementType.BUTTON:
       return <button {...attributes}>{children}</button>;

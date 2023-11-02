@@ -1,6 +1,7 @@
 import { NoteTypeEnum } from '@/lib/api/notes';
 import dayjs from '@/lib/utils/dayjs';
 import ReactMarkdown from 'react-markdown';
+import RichView from '../RichView';
 
 interface NoteCardProps {
   type: NoteTypeEnum;
@@ -41,9 +42,9 @@ const NoteCard = (
           </button>
         </div>
         {/* 内容 */}
-        <div className='text-justify text-15 text-black-600'>
+        <div className='text-justify text-black-600'>
           {type === NoteTypeEnum.NOTE ? (
-            <ReactMarkdown>{content}</ReactMarkdown>
+            <RichView initialValue={JSON.parse(content)} />
           ) : (
             content
           )}

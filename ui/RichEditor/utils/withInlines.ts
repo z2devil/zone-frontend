@@ -1,4 +1,4 @@
-import { CustomEditor, ElementType } from 'types/slate';
+import { RichEditor, ElementType } from 'types/slate';
 import { InlineElementType } from '../constans';
 
 const INLINE_ELEMENTS: ElementType[] = [
@@ -10,7 +10,7 @@ const READONLY_INLINE_ELEMENTS: ElementType[] = [];
 
 const UNSELECTABLE_INLINE_ELEMENTS: ElementType[] = [];
 
-const withInlines = (editor: CustomEditor) => {
+const withInlines = (editor: RichEditor) => {
   const { insertData, insertText, isInline, isElementReadOnly, isSelectable } =
     editor;
 

@@ -6,7 +6,7 @@ import {
   InlineElementType,
   Language,
   MarkType,
-} from '@/ui/CustomEditor/constans';
+} from '@/ui/RichEditor/constans';
 
 export type ElementType = BlockElementType | InlineElementType;
 
@@ -21,7 +21,7 @@ export type ShortcustType =
   | typeof BlockElementType.HEADING_5
   | typeof BlockElementType.HEADING_6;
 
-export type CustomEditor = BaseEditor &
+export type RichEditor = BaseEditor &
   ReactEditor &
   HistoryEditor & {
     type: ElementType;
@@ -72,6 +72,7 @@ export type CodeBlockElement = {
   children: CustomText[];
   language?: Language;
   content?: string;
+  height?: number;
 };
 
 export type LinkElement = {
@@ -118,7 +119,7 @@ export type CustomText = {
 
 declare module 'slate' {
   interface CustomTypes {
-    Editor: CustomEditor;
+    Editor: RichEditor;
     Element: CustomElement;
     Text: CustomText;
     Range: BaseRange & {

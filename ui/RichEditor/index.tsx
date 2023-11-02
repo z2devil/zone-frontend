@@ -15,12 +15,12 @@ import { withShortcuts } from './utils';
 import Element from './components/Element';
 import { withHistory } from 'slate-history';
 import Leaf from './components/Leaf';
-import style from './style.module.scss';
 import useDOMBeforeInput from './hooks/useDOMBeforeInput';
 import useKeyDown from './hooks/useKeyDown';
 import { withInlines } from './utils/withInlines';
-import { BlockElementType, InlineElementType } from './constans';
+import { BlockElementType, InlineElementType, Language } from './constans';
 import { withVoids } from './utils/withVoids';
+import style from './style.module.scss';
 
 interface EditorProps {
   className?: string;
@@ -56,6 +56,25 @@ const text: Descendant[] = [
         text: '对于 React 来说，Fiber 可以从两个角度进行理解：',
       },
     ],
+  },
+  {
+    type: BlockElementType.PARAGRAPH,
+    children: [
+      {
+        text: '',
+      },
+    ],
+  },
+  {
+    type: BlockElementType.CODE_BLOCK,
+    children: [
+      {
+        text: '',
+      },
+    ],
+    language: Language.JAVASCRIPT,
+    content:
+      'const a = 1;\nfunction log(params) {\n  console.log(params)\n};\nlog();',
   },
   {
     type: BlockElementType.PARAGRAPH,
@@ -167,7 +186,7 @@ const text: Descendant[] = [
   },
 ];
 
-const CustomEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
+const RichEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
   const {
     className,
     initialValue = text,
@@ -246,6 +265,6 @@ const CustomEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
   );
 });
 
-CustomEditor.displayName = 'CustomEditor';
+RichEditor.displayName = 'RichEditor';
 
-export default CustomEditor;
+export default RichEditor;

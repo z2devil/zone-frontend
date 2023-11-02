@@ -1,7 +1,7 @@
 'use client';
 
-import CustomEditor from '@/ui/CustomEditor';
-import { BlockElementType } from '@/ui/CustomEditor/constans';
+import RichEditor from '@/ui/RichEditor';
+import { BlockElementType } from '@/ui/RichEditor/constans';
 import { Descendant } from 'slate';
 
 const WorksPage = () => {
@@ -11,7 +11,7 @@ const WorksPage = () => {
       style={{
         height: 'calc(100vh - 3.625rem)',
       }}>
-      <CustomEditor
+      <RichEditor
         className=' rounded-xl bg-white'
         initialValue={initialValue}
       />

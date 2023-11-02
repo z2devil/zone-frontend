@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@changesets/cli": "^2.26.1",
+    "@codemirror/autocomplete": "^6.10.2",
     "@codemirror/commands": "^6.3.0",
     "@codemirror/lang-javascript": "^6.2.1",
     "@codemirror/state": "^6.3.1",

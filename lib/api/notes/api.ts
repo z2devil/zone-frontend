@@ -1,14 +1,23 @@
 import request from '@/lib/api/request';
 import { IPageData } from '../types';
-import { GetNotesParams, NoteEntity } from './types';
+import { GetNotesParams, NoteEntity, PostNoteParams } from './types';
 import { cache } from 'react';
 
 /**
- * 获取note列表
+ * 获取 note 列表
  */
 export const getNotesAPI = cache(async (params: GetNotesParams) => {
   return await request.get<IPageData<NoteEntity>>('/note', params);
 });
+
+/**
+ * 创建 note
+ */
+export const postNoteAPI = async (params: PostNoteParams) => {
+  return await request.post('/note', {
+    body: JSON.stringify(params),
+  });
+};
 
 // /**
 //  * 阅读通知

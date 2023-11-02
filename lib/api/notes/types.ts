@@ -28,12 +28,15 @@ export interface NoteEntity extends CommonInfo {
 /**
  * 查询 notes 参数
  */
-export type GetNotesParams = IPageParams &
-  (
-    | {
-        search?: string;
-      }
-    | {
-        _id?: string;
-      }
-  );
+export interface GetNotesParams extends IPageParams {
+  search?: string;
+  _id?: string;
+}
+
+export interface PostNoteParams {
+  content: string;
+  type: NoteTypeEnum;
+  bannerPath?: string;
+  title?: string;
+  summary?: string;
+}

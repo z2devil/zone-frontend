@@ -1,5 +1,5 @@
 import { Editor, Element, Node, Range, Transforms } from 'slate';
-import { CustomEditor, CustomElement, ElementType } from 'types/slate';
+import { RichEditor, CustomElement, ElementType } from 'types/slate';
 import { BlockElementType, InlineElementType, MarkType } from '../constans';
 
 const editorUtils = {
@@ -9,7 +9,7 @@ const editorUtils = {
    * @param type mark 类型
    * @returns
    */
-  isMarkActive(editor: CustomEditor, type: MarkType) {
+  isMarkActive(editor: RichEditor, type: MarkType) {
     const marks = Editor.marks(editor);
     return marks ? marks[type] === true : false;
   },
@@ -19,7 +19,7 @@ const editorUtils = {
    * @param editor 编辑器
    * @param type mark 类型
    */
-  toggleMark(editor: CustomEditor, type: MarkType) {
+  toggleMark(editor: RichEditor, type: MarkType) {
     const isActive = editorUtils.isMarkActive(editor, type);
     console.log('[ toggleMark ]', isActive, type);
     if (isActive) {
@@ -34,7 +34,7 @@ const editorUtils = {
    * @param editor 编辑器
    * @param type inline element 类型
    */
-  insertInlineNode(editor: CustomEditor, type: InlineElementType) {
+  insertInlineNode(editor: RichEditor, type: InlineElementType) {
     Transforms.insertNodes(editor, {
       type,
       children: [
@@ -51,7 +51,7 @@ const editorUtils = {
    * @param type block element 类型
    * @returns
    */
-  insertBlockNode(editor: CustomEditor, type: BlockElementType) {
+  insertBlockNode(editor: RichEditor, type: BlockElementType) {
     Transforms.insertNodes(editor, {
       type,
       children: [
@@ -68,7 +68,7 @@ const editorUtils = {
    * @param type element 类型
    * @returns
    */
-  isElementActive(editor: CustomEditor, type: ElementType) {
+  isElementActive(editor: RichEditor, type: ElementType) {
     const [match] = Editor.nodes(editor, {
       match: n =>
         !Editor.isEditor(n) && Element.isElement(n) && n.type === type,
@@ -81,7 +81,7 @@ const editorUtils = {
    * @param editor 编辑器
    * @param type element 类型
    */
-  unwrapElement(editor: CustomEditor, type: ElementType) {
+  unwrapElement(editor: RichEditor, type: ElementType) {
     Transforms.unwrapNodes(editor, {
       match: n =>
         !Editor.isEditor(n) && Element.isElement(n) && n.type === type,
@@ -93,7 +93,7 @@ const editorUtils = {
    * @param editor 编辑器
    * @param type element 类型
    */
-  wrapElement(editor: CustomEditor, type: ElementType) {
+  wrapElement(editor: RichEditor, type: ElementType) {
     const isActive = editorUtils.isElementActive(editor, type);
     console.log('[ wrapNode ]', isActive, type);
     if (isActive) {

@@ -1,10 +1,10 @@
 import { Editor, Element, Node } from 'slate';
 import { ReactEditor } from 'slate-react';
 import { SHORTCUTS } from '../constans';
-import { CustomEditor } from 'types/slate';
+import { RichEditor } from 'types/slate';
 import { useCallback } from 'react';
 
-const useDOMBeforeInput = (editor: CustomEditor) => {
+const useDOMBeforeInput = (editor: RichEditor) => {
   const handleDOMBeforeInput = useCallback(
     (e: InputEvent) => {
       queueMicrotask(() => {

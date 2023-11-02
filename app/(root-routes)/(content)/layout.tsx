@@ -1,8 +1,9 @@
 'use client';
 
+import { NoteTypeEnum, postNoteAPI } from '@/lib/api/notes';
 import { modalUtilsState } from '@/lib/recoil/modal';
 import Button from '@/ui/Button';
-import CustomEditor, { EditorRef } from '@/ui/CustomEditor';
+import RichEditor, { EditorRef } from '@/ui/RichEditor';
 import { useRef } from 'react';
 import { useRecoilValue } from 'recoil';
 
@@ -22,7 +23,7 @@ const ContentLayout = (props: ContentLayoutProps) => {
       title: '写动态',
       children: (
         <div>
-          <CustomEditor ref={editorRef} className=' max-h-[70vh]' />
+          <RichEditor ref={editorRef} className=' max-h-[70vh]' />
         </div>
       ),
       okText: '发布',
@@ -31,6 +32,10 @@ const ContentLayout = (props: ContentLayoutProps) => {
         if (!editorInstance) return;
         console.log('onOk', editorInstance.getJSON(), editorInstance.getHTML());
         // modalUtils.close();
+        postNoteAPI({
+          type: NoteTypeEnum.NOTE,
+          content: JSON.stringify(editorInstance.getJSON()),
+        });
       },
       cancelText: '取消',
       onCancel: () => {

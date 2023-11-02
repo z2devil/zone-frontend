@@ -1,10 +1,10 @@
 import { KeyboardEvent, useCallback, useRef } from 'react';
 import { Editor, Range, Transforms } from 'slate';
-import { CustomEditor, CustomElement } from 'types/slate';
+import { RichEditor, CustomElement } from 'types/slate';
 import { editorUtils } from '../utils';
 import { InlineElementType, MarkType } from '../constans';
 
-const ACTIONS: Record<string, (editor: CustomEditor) => void> = {
+const ACTIONS: Record<string, (editor: RichEditor) => void> = {
   b: editor => {
     editorUtils.toggleMark(editor, MarkType.BOLD);
   },
@@ -22,7 +22,7 @@ const ACTIONS: Record<string, (editor: CustomEditor) => void> = {
   },
 };
 
-const useKeyDown = (editor: CustomEditor) => {
+const useKeyDown = (editor: RichEditor) => {
   // 用于记录上一次按下的键盘按键是否是内联元素
   const isInlneAbove = useRef(false);
 

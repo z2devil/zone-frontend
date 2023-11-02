@@ -1,4 +1,4 @@
-import { CustomEditor, ElementType } from 'types/slate';
+import { RichEditor, ElementType } from 'types/slate';
 import { BlockElementType } from '../constans';
 
 const VOID_ELEMENTS: ElementType[] = [
@@ -7,7 +7,7 @@ const VOID_ELEMENTS: ElementType[] = [
   BlockElementType.BUTTON,
 ];
 
-const withVoids = (editor: CustomEditor) => {
+const withVoids = (editor: RichEditor) => {
   const { insertData, insertText, isVoid, isElementReadOnly } = editor;
 
   editor.isVoid = element => {

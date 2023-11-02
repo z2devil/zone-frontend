@@ -1,5 +1,5 @@
 import { Editor, Element, Point, Range, Transforms } from 'slate';
-import { CodeBlockElement, CustomEditor } from 'types/slate';
+import { CodeBlockElement, RichEditor } from 'types/slate';
 import {
   NON_WRAPPING_ELEMENTS,
   SHORTCUTS_MAP,
@@ -8,7 +8,7 @@ import {
   Language,
 } from '../constans';
 
-const withShortcuts = (editor: CustomEditor) => {
+const withShortcuts = (editor: RichEditor) => {
   const { insertBreak, insertSoftBreak, deleteBackward, insertText } = editor;
 
   editor.insertBreak = () => {

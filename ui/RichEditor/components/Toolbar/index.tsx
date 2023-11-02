@@ -1,9 +1,9 @@
-import { CustomEditor } from 'types/slate';
+import { RichEditor } from 'types/slate';
 import { editorUtils } from '../../utils';
 import { BlockElementType, InlineElementType, MarkType } from '../../constans';
 
 interface ToolbarProps {
-  editor: CustomEditor;
+  editor: RichEditor;
 }
 
 const Toolbar = (props: ToolbarProps) => {

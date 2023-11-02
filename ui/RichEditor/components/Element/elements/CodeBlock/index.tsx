@@ -2,13 +2,21 @@ import clsx from 'clsx';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { basicSetup } from 'codemirror';
 import { EditorState } from '@codemirror/state';
-import { EditorView, keymap } from '@codemirror/view';
+import { autocompletion } from '@codemirror/autocomplete';
+import {
+  EditorView,
+  Tooltip,
+  keymap,
+  showTooltip,
+  tooltips,
+} from '@codemirror/view';
 import { defaultKeymap, indentWithTab } from '@codemirror/commands';
 import { javascript } from '@codemirror/lang-javascript';
 import { CodeBlockElement } from 'types/slate';
 import { Transforms } from 'slate';
-import { ReactEditor, useSlate } from 'slate-react';
-import { Language } from '@/ui/CustomEditor/constans';
+import { ReactEditor, useReadOnly, useSelected, useSlate } from 'slate-react';
+import { Language } from '@/ui/RichEditor/constans';
+import px2number from '@/lib/utils/px2number';
 
 interface CodeBlockProps {
   attributes: any;
@@ -47,6 +55,12 @@ const SUPPORTED_LANGUAGES = [
 const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
   const editor = useSlate();
 
+  const readOnly = useReadOnly();
+
+  const selected = useSelected();
+
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
   const editorRef = useRef<HTMLDivElement | null>(null);
 
   /************************************************
@@ -75,10 +89,12 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
   );
 
   /************************************************
-   * ✨ 内容
+   * ✨ 编辑器
    ************************************************/
 
   const [content, setContent] = useState(element.content || '');
+
+  const [height, setHeight] = useState(element.height || 100);
 
   useEffect(() => {
     console.log('[ content ]', content);
@@ -86,11 +102,17 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
     const nextElement = {
       language,
       content,
-    };
+      height,
+    } as CodeBlockElement;
     Transforms.setNodes(editor, nextElement, {
       at: path,
     });
-  }, [content, editor, element, language]);
+  }, [content, editor, element, height, language]);
+
+  const readOnlyMode = useMemo(
+    () => EditorState.readOnly.of(readOnly),
+    [readOnly]
+  );
 
   const onUpdate = useMemo(
     () =>
@@ -100,13 +122,22 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
     []
   );
 
+  const autoCompletion = useMemo(
+    () =>
+      autocompletion({
+        activateOnTyping: false,
+      }),
+    []
+  );
+
   const theme = useMemo(
     () =>
       EditorView.theme({
-        // '&': {
-        //   color: 'white',
-        //   backgroundColor: '#034',
-        // },
+        '&': {
+          // color: 'white',
+          // backgroundColor: '#034',
+          // height: '100%',
+        },
         // '.cm-content': {
         //   caretColor: '#0e9',
         // },
@@ -129,8 +160,9 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
   );
 
   useEffect(() => {
+    const containerDOM = containerRef.current;
     const editorDOM = editorRef.current;
-    if (!editorDOM) throw new Error('editor DOM is null');
+    if (!editorDOM || !containerDOM) throw new Error('editor DOM is null');
 
     /**
      * bugfix:
@@ -146,9 +178,11 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
         extensions: [
           basicSetup,
           keymap.of([...defaultKeymap, indentWithTab]),
-          javascript(),
+          readOnlyMode,
           onUpdate,
           theme,
+          autoCompletion,
+          javascript(),
         ],
       }),
       parent: shadowRoot,
@@ -161,37 +195,82 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /************************************************
+   * ✨ 编辑器尺寸
+   ************************************************/
+
+  const [isResizing, setIsResizing] = useState(false);
+
+  const handleResizeStart = useCallback(() => {
+    setIsResizing(true);
+  }, []);
+
+  useEffect(() => {
+    const handleResize = (e: MouseEvent) => {
+      requestAnimationFrame(() => {
+        const containerDOM = containerRef.current;
+        if (!containerDOM) return;
+        const { clientY } = e;
+        const { top } = containerDOM.getBoundingClientRect();
+        const height = clientY - top < 100 ? 100 : clientY - top;
+        setHeight(height);
+      });
+    };
+    if (isResizing) {
+      window.addEventListener('mousemove', handleResize);
+      window.addEventListener('mouseup', () => {
+        setIsResizing(false);
+      });
+    }
+    return () => {
+      window.removeEventListener('mousemove', handleResize);
+      window.removeEventListener('mouseup', () => {
+        setIsResizing(false);
+      });
+    };
+  }, [isResizing]);
+
   return (
     <>
-      <div
-        {...attributes}
-        className={clsx(
-          ' my-2 flex flex-col rounded-md border border-black-50 bg-gray-200 text-black-600',
-          element && 'border-[#2f8ef4]'
-        )}
-        contentEditable={false}>
+      <div className=' relative' {...attributes} contentEditable={false}>
         <div
-          className=' border-b border-black-50 px-4 py-2'
-          onClick={() => handleLanguageEdit(true)}>
-          {isLanguageEditing ? (
-            <select
-              className='bg-transparent text-black-600'
-              value={language}
-              autoFocus
-              onChange={handleLanguageChange}
-              onBlur={() => handleLanguageEdit(false)}>
-              {SUPPORTED_LANGUAGES.map(language => (
-                <option key={language} value={language}>
-                  {language}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <span>{language}</span>
-          )}
+          className={clsx(
+            ' my-2 flex flex-col overflow-hidden rounded-md border bg-gray-200 text-black-600',
+            !readOnly && selected ? 'border-[#2f8ef4]' : 'border-black-50'
+          )}>
+          <div
+            ref={containerRef}
+            className=' w-full overflow-auto'
+            style={{
+              height: `${height}px`,
+            }}>
+            <div className=' sticky top-0 z-10 rounded-sm border-b border-black-50 bg-gray-50 px-4 py-2'>
+              {isLanguageEditing ? (
+                <select
+                  className='bg-transparent text-black-600'
+                  value={language}
+                  autoFocus
+                  onChange={handleLanguageChange}
+                  onBlur={() => handleLanguageEdit(false)}>
+                  {SUPPORTED_LANGUAGES.map(language => (
+                    <option key={language} value={language}>
+                      {language}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <span onClick={() => handleLanguageEdit(true)}>{language}</span>
+              )}
+            </div>
+            <div ref={editorRef}></div>
+            {children}
+          </div>
         </div>
-        <div ref={editorRef}></div>
-        {children}
+        {!readOnly && selected && (
+          <div
+            className=' absolute bottom-0 left-1/2 box-content h-2 w-14 -translate-x-1/2 translate-y-1/2 cursor-row-resize rounded-md border border-white bg-gray-200'
+            onMouseDown={handleResizeStart}></div>
+        )}
       </div>
     </>
   );
