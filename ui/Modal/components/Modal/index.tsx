@@ -55,14 +55,14 @@ const Modal = (props: ModalProps) => {
         <div className='flex w-full justify-center gap-5 px-6'>
           {cancelText && (
             <Button
-              className=' relative flex h-11 flex-grow items-center justify-center rounded-lg border border-black-80 text-17 text-black-600 hover:text-black-900'
+              className=' relative flex h-11 flex-grow items-center justify-center rounded-xl border border-black-80 text-17 text-black-600 hover:text-black-900'
               onClick={onCancel}>
               {cancelText}
             </Button>
           )}
           {okText && (
             <Button
-              className=' relative flex h-11 flex-shrink-0 items-center justify-center rounded-lg border border-black-80 bg-primary-50 px-6 text-17 text-white hover:bg-primary-100'
+              className=' relative flex h-11 flex-shrink-0 items-center justify-center rounded-xl border border-black-80 bg-primary-50 px-6 text-17 text-white hover:bg-primary-100'
               onClick={onOk}>
               {okText}
             </Button>

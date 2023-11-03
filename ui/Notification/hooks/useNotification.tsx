@@ -21,11 +21,10 @@ enum NotificationTaskType {
 interface UseNotificationOptions {
   maxCount?: number;
   onClose?: (uuid: Key) => void;
-  onAllRemoved?: () => void;
 }
 
 const useNotification = (options: UseNotificationOptions) => {
-  const { maxCount = 5, onClose, onAllRemoved } = options;
+  const { maxCount = 5, onClose } = options;
 
   const [notificationList, setNotificationList] = useState<NotificationProps[]>(
     []
@@ -93,16 +92,8 @@ const useNotification = (options: UseNotificationOptions) => {
     [utils, onClose]
   );
 
-  const handleAllRemoved = useCallback(() => {
-    onAllRemoved?.();
-  }, [onAllRemoved]);
-
   const contextHolder = (
-    <NotificationGroup
-      list={notificationList}
-      onClose={handleClose}
-      onAllRemoved={handleAllRemoved}
-    />
+    <NotificationGroup list={notificationList} onClose={handleClose} />
   );
 
   return [utils, contextHolder] as const;

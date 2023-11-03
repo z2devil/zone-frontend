@@ -68,6 +68,7 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
 
   const [isLanguageEditing, setIsLanguageEditing] = useState(false);
 
+  // 开始切换语言编辑
   const handleLanguageEdit = useCallback(
     (editing: boolean) => {
       if (readOnly) return;
@@ -76,6 +77,7 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
     [readOnly]
   );
 
+  // 切换语言
   const handleLanguageChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       const { value } = e.target;
@@ -218,6 +220,7 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
 
   const [isResizing, setIsResizing] = useState(false);
 
+  // 开始拖拽
   const handleResizeStart = useCallback(
     (e: React.MouseEvent) => {
       e.preventDefault();
@@ -227,6 +230,7 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
     [customHeight]
   );
 
+  // 拖拽
   useEffect(() => {
     const handleResize = (e: MouseEvent) => {
       requestAnimationFrame(() => {

@@ -1,7 +1,7 @@
 const About = () => {
   return (
-    <div>
-      <h1 className='border-r-half bg-black-80 ml-0 mr-0'>关于我</h1>
+    <div className=' my-12 w-full text-center'>
+      <h1 className=' text-4xl'>暂未开放</h1>
     </div>
   );
 };

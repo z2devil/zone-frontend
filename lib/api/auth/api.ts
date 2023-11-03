@@ -2,6 +2,8 @@ import request from '@/lib/api/request';
 import {
   GetInfoResponse,
   GetVerificationCodeParams,
+  PutInfoParams,
+  PutInfoResponse,
   SignParams,
   SignResponse,
 } from './types';
@@ -30,4 +32,13 @@ export const signAPI = (params: SignParams) => {
  */
 export const getUserInfoAPI = () => {
   return request.get<GetInfoResponse>('/auth/info');
+};
+
+/**
+ * 修改用户信息
+ */
+export const putUserInfoAPI = (params: PutInfoParams) => {
+  return request.put<PutInfoResponse>('/user', {
+    body: JSON.stringify(params),
+  });
 };

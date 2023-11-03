@@ -35,6 +35,10 @@ const auth = {
   setUserInfo: (userInfo: IUserInfo) => {
     localStorage.setItem('userInfo', JSON.stringify(userInfo));
   },
+  logout: () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userInfo');
+  },
 };
 
 export default auth;

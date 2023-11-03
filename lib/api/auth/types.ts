@@ -30,3 +30,13 @@ export interface GetInfoResponse {
   token: string;
   info: IUserInfo;
 }
+
+export interface PutInfoParams {
+  nickname: string;
+  avatarPath: string;
+}
+
+export interface PutInfoResponse {
+  token: string;
+  info: IUserInfo;
+}
