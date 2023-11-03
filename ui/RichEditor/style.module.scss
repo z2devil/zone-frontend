@@ -1,36 +1,51 @@
 .editor {
   z2-p {
     display: block;
+    & span {
+      font-size: 0.9375rem;
+    }
   }
   z2-h1 {
     display: block;
-    font-weight: bold;
-    font-size: 2em;
+    & span {
+      font-weight: bold;
+      font-size: 1.5625rem;
+    }
   }
   z2-h2 {
     display: block;
-    font-weight: bold;
-    font-size: 1.75rem;
+    & span {
+      font-weight: bold;
+      font-size: 1.4375rem;
+    }
   }
   z2-h3 {
     display: block;
-    font-weight: bold;
-    font-size: 1.5rem;
+    & span {
+      font-weight: bold;
+      font-size: 1.3125rem;
+    }
   }
   z2-h4 {
     display: block;
-    font-weight: bold;
-    font-size: 1.25rem;
+    & span {
+      font-weight: bold;
+      font-size: 1.1875rem;
+    }
   }
   z2-h5 {
     display: block;
-    font-weight: bold;
-    font-size: 1rem;
+    & span {
+      font-weight: bold;
+      font-size: 1.0625rem;
+    }
   }
   z2-h6 {
     display: block;
-    font-weight: bold;
-    font-size: 0.875rem;
+    & span {
+      font-weight: bold;
+      font-size: 0.9375rem;
+    }
   }
   z2-ol {
     display: block;
@@ -41,6 +56,9 @@
       font-weight: bold;
       font-family: 'Courier New', Courier, monospace;
     }
+    & span {
+      font-size: 0.9375rem;
+    }
   }
   z2-ul {
     display: block;
@@ -48,13 +66,19 @@
       margin-right: 0.5em;
       content: '•';
     }
+    & span {
+      font-size: 0.9375rem;
+    }
   }
   z2-blockquote {
     display: block;
     // margin: 0 0 0 1em;
     border-left: 0.25em solid #eceeef;
     padding: 0 0 0 0.5em;
-    color: #6a737d;
+    & span {
+      color: #6a737d;
+      font-size: 0.9375rem;
+    }
   }
   z2-codeline {
     display: inline;
@@ -63,9 +87,11 @@
     border-radius: 4px;
     background-color: rgba($color: #000, $alpha: 0.05);
     padding: 0 4px;
-    font-size: 15px;
-    text-indent: 0;
-    word-break: break-all;
+    & span {
+      font-size: 0.9375rem;
+      text-indent: 0;
+      word-break: break-all;
+    }
   }
   z2-em {
     font-style: italic;
@@ -94,31 +120,30 @@
     text-indent: 0;
     word-break: break-all;
   }
-}
-
-.bold {
-  font-weight: bold;
-}
-.italic {
-  font-style: italic;
-}
-.underline {
-  text-decoration: underline;
-}
-.strikethrough {
-  text-decoration: line-through;
-}
-.code {
-  display: inline;
-  margin: 1px 3px;
-  border: solid 1px #e7e9e8;
-  border-radius: 4px;
-  background-color: #0000000f;
-  padding: 0 4px;
-  font-size: 15px;
-  font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier,
-    monospace, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
-    'Helvetica Neue', Helvetica, Arial, sans-serif, 'Segoe UI';
-  text-indent: 0;
-  word-break: break-all;
+  .bold {
+    font-weight: bold;
+  }
+  .italic {
+    font-style: italic;
+  }
+  .underline {
+    text-decoration: underline;
+  }
+  .strikethrough {
+    text-decoration: line-through;
+  }
+  .code {
+    display: inline;
+    margin: 1px 3px;
+    border: solid 1px #e7e9e8;
+    border-radius: 4px;
+    background-color: #0000000f;
+    padding: 0 4px;
+    font-size: 15px;
+    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier,
+      monospace, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+      'Helvetica Neue', Helvetica, Arial, sans-serif, 'Segoe UI';
+    text-indent: 0;
+    word-break: break-all;
+  }
 }
