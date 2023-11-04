@@ -58,22 +58,16 @@
     "z2-cz-customizable": "0.0.0-development",
     "zone-frontend": "link:"
   },
-  "lint-staged": {
-    "./**/*.{js,ts,jsx,tsx}": [
-      "eslint --fix --ext .js,.jsx,.ts,.tsx",
-      "prettier --write"
-    ]
-  },
-  "config": {
-    "cz-customizable": {
-      "config": ".cz-config.json"
-    },
-    "commitizen": {
-      "path": "./node_modules/z2-cz-customizable"
-    }
-  },
   "devDependencies": {
     "@types/lodash": "^4.14.195",
     "react-markdown": "^8.0.7"
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/z2-cz-customizable"
+    },
+    "cz-customizable": {
+      "config": ".cz-config.json"
+    }
   }
 }
