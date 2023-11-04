@@ -40,7 +40,7 @@ const SearchLayer = (props: SearchLayerProps) => {
           show ? 'delay-200' : 'pointer-events-none opacity-0',
           show ? style.modalShow : style.modalHide
         )}>
-        <div className='flex w-full items-center justify-between gap-4 p-6 sm:border-b sm:border-gray-300 sm:bg-white'>
+        <div className='sm:border-black-80 flex w-full items-center justify-between gap-4 p-6 sm:border-b sm:bg-white'>
           <div className='flex flex-1 gap-[0.63rem]'>
             <i className=' iconfont icon-search text-2xl text-black-600'></i>
             <input

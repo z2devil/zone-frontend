@@ -1,4 +1,4 @@
-import { UserInfo } from '../api/auth';
+import { IUserInfo } from '../api/auth';
 import { UserRole } from '../api/auth/types';
 
 const USER_ROLE = {
@@ -30,10 +30,14 @@ const auth = {
   },
   getUserInfo: () => {
     const userInfo = localStorage.getItem('userInfo');
-    return userInfo ? (JSON.parse(userInfo) as UserInfo) : null;
+    return userInfo ? (JSON.parse(userInfo) as IUserInfo) : null;
   },
-  setUserInfo: (userInfo: UserInfo) => {
+  setUserInfo: (userInfo: IUserInfo) => {
     localStorage.setItem('userInfo', JSON.stringify(userInfo));
+  },
+  logout: () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userInfo');
   },
 };
 

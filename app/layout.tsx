@@ -1,7 +1,10 @@
+import ModalUtilsProvider from '@/lib/recoil/modal';
+import NotificationUtilsProvider from '@/lib/recoil/notification';
 import '@/styles/globals.css';
 import RecoilRootProvider from '@/ui/RecoilRootProvider';
 import clsx from 'clsx';
 import { Inter } from 'next/font/google';
+import Script from 'next/script';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -21,12 +24,11 @@ const RootLayout = (props: RootLayoutProps) => {
   return (
     <html lang='en'>
       <body className={clsx(inter.className, 'bg-gray-50')}>
-        {/* <Sidebar /> */}
         <RecoilRootProvider>
-          <div className='flex-1'>
-            {children}
-            {layer}
-          </div>
+          <NotificationUtilsProvider />
+          <ModalUtilsProvider />
+          {children}
+          {layer}
         </RecoilRootProvider>
       </body>
     </html>

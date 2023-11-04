@@ -1,8 +1,10 @@
 import { UserRole } from '../api/auth';
-import auth from '../utils/auth';
+import useAuth from './useAuth';
 
 const usePermission = (roles: UserRole[]) => {
-  const userInfo = auth.getUserInfo();
+  const auth = useAuth();
+
+  const userInfo = auth?.getUserInfo();
 
   if (!userInfo) {
     return false;

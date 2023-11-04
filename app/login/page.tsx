@@ -1,7 +1,7 @@
 'use client';
 
 import { getVerificationCodeAPI, signAPI } from '@/lib/api/auth';
-import auth from '@/lib/utils/auth';
+import useAuth from '@/lib/hooks/useAuth';
 import { validate, FormRules } from '@/lib/utils/formRules';
 import Button from '@/ui/Button';
 import VerificationCodeInput from '@/ui/VerificationCodeInput';
@@ -10,6 +10,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 const LoginPage = () => {
   const router = useRouter();
+
+  const auth = useAuth();
 
   const [step, setStep] = useState(0);
 
@@ -65,15 +67,15 @@ const LoginPage = () => {
         code: verificationCode,
       });
       setTip('登录成功');
-      auth.setToken(token);
-      auth.setUserInfo(info);
+      auth?.setToken(token);
+      auth?.setUserInfo(info);
       setTimeout(() => {
         router.push('/');
       }, 1000);
     } catch (error: any) {
       setTip(error.message);
     }
-  }, [email, router, verificationCode]);
+  }, [email, router, verificationCode, auth]);
 
   useEffect(() => {
     if (verificationCode.length === 4) {
@@ -93,7 +95,7 @@ const LoginPage = () => {
   const calcTip = useMemo(() => {
     if (!tip) return null;
     return (
-      <span className=' text-black-250 relative animate-flash text-base font-medium'>
+      <span className=' relative animate-flash text-base font-medium text-black-250'>
         {tip}
       </span>
     );
@@ -103,7 +105,7 @@ const LoginPage = () => {
     if (step === 0) {
       return (
         <input
-          className='placeholder:text-black-250 text-black-900 h-[3.25rem] w-[17.5rem] rounded-full text-center text-lg font-medium placeholder:text-center placeholder:text-lg'
+          className='h-[3.25rem] w-[17.5rem] rounded-full text-center text-lg font-medium text-black-900 placeholder:text-center placeholder:text-lg placeholder:text-black-250'
           placeholder='邮箱'
           maxLength={30}
           value={email}
@@ -131,7 +133,7 @@ const LoginPage = () => {
       <div className='mb-10 flex items-center gap-3'>
         {step === 0 && (
           <Button
-            className=' flex h-12 items-center justify-center gap-2.5 rounded-3xl bg-blue-600 py-3.5 pl-7 pr-5'
+            className=' relative flex h-12 items-center justify-center gap-2.5 rounded-3xl bg-blue-600 py-3.5 pl-7 pr-5'
             onClick={handleSendVerificationCode}>
             <span className='text-lg font-medium text-white'>获取验证码</span>
             <i className='iconfont icon-arrow-right text-2xl text-white' />
@@ -140,12 +142,12 @@ const LoginPage = () => {
         {step === 1 && (
           <>
             <Button
-              className=' bg-black-250 flex h-12 w-12 items-center justify-center gap-2.5 rounded-3xl py-3.5 pr-1'
+              className=' relative flex h-12 w-12 items-center justify-center gap-2.5 rounded-3xl bg-black-250 py-3.5 pr-1'
               onClick={handleBack}>
               <i className='iconfont icon-angle-left text-2xl text-white' />
             </Button>
             <Button
-              className=' flex h-12 items-center justify-center gap-2.5 rounded-3xl bg-blue-600 py-3.5 pl-7 pr-5'
+              className=' relative flex h-12 items-center justify-center gap-2.5 rounded-3xl bg-blue-600 py-3.5 pl-7 pr-5'
               onClick={handleSign}>
               <span className='text-lg font-medium text-white'>登录</span>
               <i className='iconfont icon-arrow-right text-2xl text-white' />
@@ -164,7 +166,7 @@ const LoginPage = () => {
           <div className='flex flex-col items-center justify-center gap-7'>
             <i className='iconfont icon-logo text-[72px] text-[#FFC445]'></i>
             <div className=' flex flex-col items-center gap-[0.63rem]'>
-              <span className='text-black-900 text-3xl font-medium'>
+              <span className='text-3xl font-medium text-black-900'>
                 {calcTitle}
               </span>
               <div className='h-4'>{calcTip}</div>

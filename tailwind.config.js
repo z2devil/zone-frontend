@@ -34,6 +34,7 @@ module.exports = {
         },
         black: {
           50: 'rgba(0, 0, 0, 0.05)',
+          80: 'rgba(0, 0, 0, 0.08)',
           100: 'rgba(0, 0, 0, 0.1)',
           200: 'rgba(0, 0, 0, 0.2)',
           250: 'rgba(0, 0, 0, 0.25)',
@@ -46,6 +47,11 @@ module.exports = {
           900: 'rgba(0, 0, 0, 0.9)',
         },
       },
+      fontSize: {
+        15: '0.9375rem',
+        17: '1.0625rem',
+        19: '1.1875rem',
+      },
       screens: {
         sm: '480px',
         md: '768px',
@@ -54,7 +60,7 @@ module.exports = {
         '2xl': '1440px',
       },
       boxShadow: {
-        main: '0px 8px 12px 0px rgba(0, 0, 0, 0.05)',
+        main: '0px 6px 18px 0px rgba(0, 0, 0, 0.05)',
       },
       animation: {
         flash: 'highlight 1s',
