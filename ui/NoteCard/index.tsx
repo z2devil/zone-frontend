@@ -1,6 +1,5 @@
 import { NoteTypeEnum } from '@/lib/api/notes';
 import dayjs from '@/lib/utils/dayjs';
-import ReactMarkdown from 'react-markdown';
 import RichView from '../RichView';
 
 interface NoteCardProps {

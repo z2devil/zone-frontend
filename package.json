@@ -18,6 +18,7 @@
     "@codemirror/view": "^6.21.4",
     "@commitlint/cli": "^17.6.3",
     "@commitlint/config-conventional": "^17.6.3",
+    "@types/lodash": "^4.14.195",
     "@types/lodash-es": "^4.17.9",
     "@types/node": "18.16.0",
     "@types/react": "18.0.38",
@@ -57,10 +58,6 @@
     "typescript": "5.0.4",
     "z2-cz-customizable": "0.0.0-development",
     "zone-frontend": "link:"
-  },
-  "devDependencies": {
-    "@types/lodash": "^4.14.195",
-    "react-markdown": "^8.0.7"
   },
   "config": {
     "commitizen": {
