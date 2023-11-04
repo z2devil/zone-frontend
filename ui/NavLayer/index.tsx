@@ -6,7 +6,7 @@ import {
   getUserInfoAPI,
   putUserInfoAPI,
 } from '@/lib/api/auth';
-import auth, { getUserRoleName } from '@/lib/utils/auth';
+import { getUserRoleName } from '@/lib/utils/auth';
 import NavLink from '@/ui/NavLink';
 import UserInfo from '@/ui/UserInfo';
 import clsx from 'clsx';
@@ -19,6 +19,7 @@ import { modalUtilsState } from '@/lib/recoil/modal';
 import { notificationUtilsState } from '@/lib/recoil/notification';
 import { NotificationType } from '../Notification/components/Notification';
 import usePermission from '@/lib/hooks/usePermission';
+import useAuth from '@/lib/hooks/useAuth';
 
 const NAV_LINKS = [
   {
@@ -47,6 +48,8 @@ const NavLayer = (props: NavLayerProps) => {
   const { show, onHide } = props;
 
   const pathname = usePathname();
+
+  const auth = useAuth();
 
   const isLogin = usePermission([
     UserRole.LOGIN,
@@ -80,19 +83,19 @@ const NavLayer = (props: NavLayerProps) => {
   }, [userInfo]);
 
   const init = useCallback(async () => {
-    const storageUserInfo = auth.getUserInfo();
+    const storageUserInfo = auth?.getUserInfo();
     if (storageUserInfo) {
       setUserInfo(storageUserInfo);
     } else {
       try {
         const { info: requestUserInfo } = await getUserInfoAPI();
         setUserInfo(requestUserInfo);
-        auth.setUserInfo(requestUserInfo);
+        auth?.setUserInfo(requestUserInfo);
       } catch (error) {
         console.log(error);
       }
     }
-  }, []);
+  }, [auth]);
 
   useEffect(() => {
     init();
@@ -125,8 +128,8 @@ const NavLayer = (props: NavLayerProps) => {
         nickname: form.nickname,
         avatarPath: form.avatarPath,
       });
-      auth.setToken(token);
-      auth.setUserInfo(info);
+      auth?.setToken(token);
+      auth?.setUserInfo(info);
       notificationUtils?.open({
         type: NotificationType.SUCCESS,
         content: '保存成功',
@@ -137,7 +140,7 @@ const NavLayer = (props: NavLayerProps) => {
     } catch (error) {
       console.log(error);
     }
-  }, [form, init, notificationUtils]);
+  }, [form, init, notificationUtils, auth]);
 
   /************************************************
    * ✨ 退出登录
@@ -150,7 +153,7 @@ const NavLayer = (props: NavLayerProps) => {
       okText: '确定',
       onOk: () => {
         modalUtils?.close(uuid);
-        auth.logout();
+        auth?.logout();
         notificationUtils?.open({
           type: NotificationType.SUCCESS,
           content: '退出成功',
@@ -164,7 +167,7 @@ const NavLayer = (props: NavLayerProps) => {
         modalUtils?.close(uuid);
       },
     });
-  }, [handleBack, init, modalUtils, notificationUtils]);
+  }, [handleBack, modalUtils, notificationUtils, auth]);
 
   return (
     <div

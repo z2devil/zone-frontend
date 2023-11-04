@@ -16,6 +16,7 @@ const useDOMBeforeInput = (editor: RichEditor) => {
           }
 
           const { text } = Node.leaf(editor, path);
+          if (!text) return;
           const beforeText = text.slice(0, diff.start) + diff.text.slice(0, -1);
           if (!(beforeText in SHORTCUTS)) {
             return;

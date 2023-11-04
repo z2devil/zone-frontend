@@ -13,7 +13,6 @@ const configs = {
    */
   request: {
     // 后端接口地址
-    // baseURL: 'https://z2devil.cn',
     baseURL: 'http://localhost:3000/api',
 
     // oss 地址

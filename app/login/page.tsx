@@ -1,7 +1,7 @@
 'use client';
 
 import { getVerificationCodeAPI, signAPI } from '@/lib/api/auth';
-import auth from '@/lib/utils/auth';
+import useAuth from '@/lib/hooks/useAuth';
 import { validate, FormRules } from '@/lib/utils/formRules';
 import Button from '@/ui/Button';
 import VerificationCodeInput from '@/ui/VerificationCodeInput';
@@ -10,6 +10,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 const LoginPage = () => {
   const router = useRouter();
+
+  const auth = useAuth();
 
   const [step, setStep] = useState(0);
 
@@ -65,15 +67,15 @@ const LoginPage = () => {
         code: verificationCode,
       });
       setTip('登录成功');
-      auth.setToken(token);
-      auth.setUserInfo(info);
+      auth?.setToken(token);
+      auth?.setUserInfo(info);
       setTimeout(() => {
         router.push('/');
       }, 1000);
     } catch (error: any) {
       setTip(error.message);
     }
-  }, [email, router, verificationCode]);
+  }, [email, router, verificationCode, auth]);
 
   useEffect(() => {
     if (verificationCode.length === 4) {
