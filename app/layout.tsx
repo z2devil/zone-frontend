@@ -3,10 +3,6 @@ import NotificationUtilsProvider from '@/lib/recoil/notification';
 import '@/styles/globals.css';
 import RecoilRootProvider from '@/ui/RecoilRootProvider';
 import clsx from 'clsx';
-import { Inter } from 'next/font/google';
-import Script from 'next/script';
-
-const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
   title: 'ZONE',
@@ -23,7 +19,7 @@ const RootLayout = (props: RootLayoutProps) => {
 
   return (
     <html lang='en'>
-      <body className={clsx(inter.className, 'bg-gray-50')}>
+      <body className={clsx('bg-gray-50')}>
         <RecoilRootProvider>
           <NotificationUtilsProvider />
           <ModalUtilsProvider />
