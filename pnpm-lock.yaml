@@ -146,9 +146,6 @@ dependencies:
   z2-cz-customizable:
     specifier: 0.0.0-development
     version: 0.0.0-development
-  zone-frontend:
-    specifier: 'link:'
-    version: 'link:'
 
 packages:
   /@babel/code-frame@7.21.4:
