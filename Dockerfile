@@ -1,11 +1,10 @@
-FROM node:18.18.2
+FROM node:18.18.2-slim
 
 WORKDIR /app
 
 ADD . /app
 
-RUN npm config set registry https://registry.npm.taobao.org \
-&& npm i -g pnpm \ 
+RUN npm i -g pnpm \ 
 && pnpm i \
 && pnpm run build
 
