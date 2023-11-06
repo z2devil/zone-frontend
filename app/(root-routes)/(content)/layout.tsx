@@ -42,7 +42,7 @@ const ContentLayout = (props: ContentLayoutProps) => {
         // modalUtils.close();
         postNoteAPI({
           type: NoteTypeEnum.NOTE,
-          content: JSON.stringify(editorContent),
+          content: JSON.stringify(editorContent.current),
         });
       },
       cancelText: '取消',
