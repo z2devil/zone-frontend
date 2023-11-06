@@ -136,7 +136,6 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
   const onUpdate = useMemo(
     () =>
       EditorView.updateListener.of(update => {
-        console.log('[ updateListener ]', update, update.view.contentHeight);
         setContent(update.state.doc.toString());
         setContentHeight(update.view.contentHeight);
       }),

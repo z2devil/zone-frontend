@@ -183,12 +183,15 @@ class MasonyCore {
         resolve(null);
       });
 
-      const cardDOMs = preRenderAreaDOM.children;
-      for (let i = 0; i < cardDOMs.length; i++) {
-        preRenderResizeObserver.observe(cardDOMs[i]);
-      }
+      // bugfix: 解决预渲染刚开始时拿不到元素的问题
+      requestAnimationFrame(() => {
+        const cardDOMs = preRenderAreaDOM.children;
+        for (let i = 0; i < cardDOMs.length; i++) {
+          preRenderResizeObserver.observe(cardDOMs[i]);
+        }
 
-      this.preRenderResizeObserver = preRenderResizeObserver;
+        this.preRenderResizeObserver = preRenderResizeObserver;
+      });
     });
   }
 
