@@ -107,10 +107,7 @@ const NotePage = () => {
     if (!modalUtils) return;
     const uuid = modalUtils.open({
       title: '暂未开放',
-      children: new Array(Math.ceil(Math.random() * 10))
-        .fill(0)
-        .map(() => '暂未开放')
-        .join(''),
+      children: '暂未开放',
       okText: '确定',
       onOk: () => {
         console.log('onOk');
