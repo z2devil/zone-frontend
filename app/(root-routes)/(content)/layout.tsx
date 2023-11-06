@@ -5,9 +5,10 @@ import { NoteTypeEnum, postNoteAPI } from '@/lib/api/notes';
 import usePermission from '@/lib/hooks/usePermission';
 import { modalUtilsState } from '@/lib/recoil/modal';
 import Button from '@/ui/Button';
-import RichEditor, { EditorRef } from '@/ui/RichEditor';
+import RichEditor from '@/ui/RichEditor';
 import { useCallback, useRef } from 'react';
 import { useRecoilValue } from 'recoil';
+import { Descendant } from 'slate';
 
 interface ContentLayoutProps {
   children: React.ReactNode;
@@ -18,9 +19,13 @@ const ContentLayout = (props: ContentLayoutProps) => {
 
   const modalUtils = useRecoilValue(modalUtilsState);
 
-  const editorRef = useRef<EditorRef | null>(null);
-
   const isAdmin = usePermission([UserRole.ADMIN, UserRole.MANAGER]);
+
+  const editorContent = useRef<Descendant[]>([]);
+
+  const handleEditorChange = useCallback((value: Descendant[]) => {
+    editorContent.current = value;
+  }, []);
 
   const handleAdd = useCallback(() => {
     if (!isAdmin) return;
@@ -28,18 +33,16 @@ const ContentLayout = (props: ContentLayoutProps) => {
       title: '写动态',
       children: (
         <div>
-          <RichEditor ref={editorRef} className=' max-h-[70vh]' />
+          <RichEditor className=' max-h-[70vh]' onChange={handleEditorChange} />
         </div>
       ),
       okText: '发布',
       onOk: () => {
-        const editorInstance = editorRef.current;
-        if (!editorInstance) return;
-        console.log('onOk', editorInstance.getJSON(), editorInstance.getHTML());
+        console.log('onOk', editorContent.current);
         // modalUtils.close();
         postNoteAPI({
           type: NoteTypeEnum.NOTE,
-          content: JSON.stringify(editorInstance.getJSON()),
+          content: JSON.stringify(editorContent),
         });
       },
       cancelText: '取消',
@@ -48,7 +51,7 @@ const ContentLayout = (props: ContentLayoutProps) => {
         modalUtils.close();
       },
     });
-  }, [isAdmin, modalUtils]);
+  }, [handleEditorChange, isAdmin, modalUtils]);
 
   return (
     <>

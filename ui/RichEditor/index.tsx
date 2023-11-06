@@ -1,8 +1,8 @@
 'use client';
 
 import clsx from 'clsx';
-import { forwardRef, useCallback, useImperativeHandle, useMemo } from 'react';
-import { Descendant, Node, createEditor } from 'slate';
+import { useCallback, useMemo } from 'react';
+import { Descendant, createEditor } from 'slate';
 import {
   Slate as SlateProvider,
   RenderElementProps,
@@ -25,14 +25,9 @@ import style from './style.module.scss';
 interface EditorProps {
   className?: string;
   initialValue?: Descendant[];
+  onChange?: (value: Descendant[]) => void;
 }
-
-export interface EditorRef {
-  getHTML: () => string;
-  getJSON: () => Descendant[];
-}
-
-const RichEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
+const RichEditor = (props: EditorProps) => {
   const {
     className,
     initialValue = [
@@ -45,6 +40,7 @@ const RichEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
         ],
       },
     ],
+    onChange,
   } = props;
 
   const editor = useMemo(() => {
@@ -74,16 +70,12 @@ const RichEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
 
   const handleKeyDown = useKeyDown(editor);
 
-  useImperativeHandle(ref, () => {
-    return {
-      getHTML: () => {
-        return editor.children.map(node => Node.string(node)).join('\n');
-      },
-      getJSON: () => {
-        return editor.children;
-      },
-    };
-  });
+  const handleContentChange = useCallback(
+    (value: Descendant[]) => {
+      onChange?.(value);
+    },
+    [onChange]
+  );
 
   return (
     <div
@@ -92,7 +84,10 @@ const RichEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
         className
       )}>
       <Toolbar editor={editor} />
-      <SlateProvider editor={editor} initialValue={initialValue}>
+      <SlateProvider
+        editor={editor}
+        initialValue={initialValue}
+        onChange={handleContentChange}>
         <Editable
           className={clsx(
             style.editor,
@@ -108,8 +103,6 @@ const RichEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
       </SlateProvider>
     </div>
   );
-});
-
-RichEditor.displayName = 'RichEditor';
+};
 
 export default RichEditor;
