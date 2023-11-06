@@ -12,11 +12,6 @@ interface Response<T> {
   }[];
 }
 
-const baseConfig = {
-  baseURL: settings.request.baseURL,
-  timeout: settings.request.timeout,
-};
-
 const headers = {
   'Content-Type': settings.request.contentType,
 };
@@ -28,7 +23,6 @@ export const fetchService = async <T = any>(
   try {
     // 构建请求配置
     const requestConfig: RequestInit = {
-      ...baseConfig,
       ...config,
       headers: {
         ...headers,

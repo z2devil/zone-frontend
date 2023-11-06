@@ -4,9 +4,8 @@ WORKDIR /app
 
 ADD . /app
 
-RUN npm i -g pnpm \ 
-&& pnpm i \
-&& pnpm run build
+RUN npm install \
+&& npm run build
 
 EXPOSE 3000
 

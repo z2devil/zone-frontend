@@ -17,6 +17,9 @@ const nextConfig = {
   experimental: {
     appDir: true,
   },
+  env: {
+    BASE_URL: process.env.BASE_URL,
+  },
   images: {
     remotePatterns: [
       {
