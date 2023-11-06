@@ -13,7 +13,7 @@ const configs = {
    */
   request: {
     // 后端接口地址
-    baseURL: `http://${process.env.HOST_IP || 'localhost'}:2333/api`,
+    baseURL: `${process.env.BASE_URL}/api`,
 
     // oss 地址
     downloadUrl: 'https://z2devil-bucket.oss-cn-beijing.aliyuncs.com/',
