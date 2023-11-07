@@ -7,7 +7,7 @@ import { uniqueId } from 'lodash';
 export type NotificationConfig = Omit<NotificationProps, 'uuid'>;
 
 export interface NotificationUtils {
-  open: (config: NotificationConfig) => void;
+  open: (config: NotificationConfig) => Promise<Key>;
   close: (key: Key) => void;
   destroy: () => void;
 }
@@ -33,19 +33,26 @@ const useNotification = (options: UseNotificationOptions) => {
   const utils = useMemo<NotificationUtils>(() => {
     const actions = {
       [NotificationTaskType.OPEN]: (config: NotificationConfig) => {
-        const uuid = uniqueId();
-        setNotificationList(
-          produce(draft => {
-            const nextNotice: NotificationProps = {
-              uuid,
-              ...config,
-            };
-            draft.push(nextNotice);
-            if (maxCount > 0 && draft.length > maxCount) {
-              draft.splice(0, draft.length - maxCount);
-            }
-          })
-        );
+        return new Promise<Key>(resolve => {
+          const uuid = uniqueId();
+          setNotificationList(
+            produce(draft => {
+              const nextNotice: NotificationProps = {
+                uuid,
+                ...config,
+              };
+              draft.push(nextNotice);
+              if (maxCount > 0 && draft.length > maxCount) {
+                draft.splice(0, draft.length - maxCount);
+              }
+            })
+          );
+          setTimeout(() => {
+            resolve(uuid);
+            // TODO: 消除魔法数字
+          }, (config.duration || 5) * 1000);
+          return uuid;
+        });
       },
       [NotificationTaskType.CLOSE]: (uuid: Key) => {
         setNotificationList(
@@ -72,8 +79,8 @@ const useNotification = (options: UseNotificationOptions) => {
     };
 
     return {
-      open: config => {
-        actions[NotificationTaskType.OPEN](config);
+      open: async config => {
+        return await actions[NotificationTaskType.OPEN](config);
       },
       close: key => {
         actions[NotificationTaskType.CLOSE](key);

@@ -4,8 +4,11 @@ import { UserRole } from '@/lib/api/auth';
 import { NoteTypeEnum, postNoteAPI } from '@/lib/api/notes';
 import usePermission from '@/lib/hooks/usePermission';
 import { modalUtilsState } from '@/lib/recoil/modal';
+import { notificationUtilsState } from '@/lib/recoil/notification';
 import Button from '@/ui/Button';
+import { NotificationType } from '@/ui/Notification/components/Notification';
 import RichEditor from '@/ui/RichEditor';
+import { useRouter } from 'next/navigation';
 import { useCallback, useRef } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Descendant } from 'slate';
@@ -17,7 +20,11 @@ interface ContentLayoutProps {
 const ContentLayout = (props: ContentLayoutProps) => {
   const { children } = props;
 
+  const navigation = useRouter();
+
   const modalUtils = useRecoilValue(modalUtilsState);
+
+  const notificationUtils = useRecoilValue(notificationUtilsState);
 
   const isAdmin = usePermission([UserRole.ADMIN, UserRole.MANAGER]);
 
@@ -29,7 +36,7 @@ const ContentLayout = (props: ContentLayoutProps) => {
 
   const handleAdd = useCallback(() => {
     if (!isAdmin) return;
-    modalUtils?.open({
+    const uuid = modalUtils?.open({
       title: '写动态',
       children: (
         <div>
@@ -37,13 +44,31 @@ const ContentLayout = (props: ContentLayoutProps) => {
         </div>
       ),
       okText: '发布',
-      onOk: () => {
+      onOk: async () => {
         console.log('onOk', editorContent.current);
         // modalUtils.close();
-        postNoteAPI({
-          type: NoteTypeEnum.NOTE,
-          content: JSON.stringify(editorContent),
-        });
+        try {
+          await postNoteAPI({
+            type: NoteTypeEnum.NOTE,
+            content: JSON.stringify(editorContent.current),
+          });
+          notificationUtils
+            ?.open({
+              type: NotificationType.SUCCESS,
+              content: '发布成功',
+              duration: 3,
+            })
+            .then(() => {
+              modalUtils?.close(uuid);
+              navigation.refresh();
+            });
+        } catch (error) {
+          notificationUtils?.open({
+            type: NotificationType.WARNING,
+            content: '暂未开放',
+            duration: 3,
+          });
+        }
       },
       cancelText: '取消',
       onCancel: () => {
@@ -51,7 +76,7 @@ const ContentLayout = (props: ContentLayoutProps) => {
         modalUtils.close();
       },
     });
-  }, [handleEditorChange, isAdmin, modalUtils]);
+  }, [handleEditorChange, isAdmin, modalUtils, navigation, notificationUtils]);
 
   return (
     <>
