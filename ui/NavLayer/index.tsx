@@ -83,6 +83,7 @@ const NavLayer = (props: NavLayerProps) => {
   }, [userInfo]);
 
   const init = useCallback(async () => {
+    if (!notificationUtils) return;
     const storageUserInfo = auth?.getUserInfo();
     if (storageUserInfo) {
       setUserInfo(storageUserInfo);
@@ -91,11 +92,17 @@ const NavLayer = (props: NavLayerProps) => {
         const { info: requestUserInfo } = await getUserInfoAPI();
         setUserInfo(requestUserInfo);
         auth?.setUserInfo(requestUserInfo);
-      } catch (error) {
-        console.log(error);
+      } catch (error: any) {
+        notificationUtils?.open({
+          type: NotificationType.WARNING,
+          content: error.message,
+          duration: 3,
+        });
+        auth?.logout();
+        setUserInfo(null);
       }
     }
-  }, [auth]);
+  }, [auth, notificationUtils]);
 
   useEffect(() => {
     init();

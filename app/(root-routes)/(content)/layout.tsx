@@ -62,10 +62,10 @@ const ContentLayout = (props: ContentLayoutProps) => {
               modalUtils?.close(uuid);
               navigation.refresh();
             });
-        } catch (error) {
+        } catch (error: any) {
           notificationUtils?.open({
             type: NotificationType.WARNING,
-            content: '暂未开放',
+            content: error.message,
             duration: 3,
           });
         }
