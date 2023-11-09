@@ -1,3 +1,4 @@
+import ContextMenuUtilsProvider from '@/lib/recoil/contextmenu';
 import ModalUtilsProvider from '@/lib/recoil/modal';
 import NotificationUtilsProvider from '@/lib/recoil/notification';
 import '@/styles/globals.css';
@@ -23,6 +24,7 @@ const RootLayout = (props: RootLayoutProps) => {
         <RecoilRootProvider>
           <NotificationUtilsProvider />
           <ModalUtilsProvider />
+          <ContextMenuUtilsProvider />
           {children}
           {layer}
         </RecoilRootProvider>

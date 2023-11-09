@@ -148,11 +148,7 @@ const NotePage = () => {
                 transform: `translate(${position.x}px, ${position.y}px)`,
                 overflow: 'hidden',
               }}
-              type={item.type}
-              title={item.title}
-              content={item.content}
-              date={item.createdAt}
-              tags={[]}
+              note={item}
             />
           );
         }}
