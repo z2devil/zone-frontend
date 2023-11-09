@@ -27,6 +27,33 @@ const NoteCard = (props: NoteCardProps) => {
       contextMenuUtils?.open(
         [
           {
+            key: 'like',
+            label: '喜欢',
+            onClick: () => {
+              console.log('like');
+            },
+            icon: <i className='iconfont icon-heart-filled text-17' />,
+            sticky: true,
+          },
+          {
+            key: 'share',
+            label: '分享',
+            onClick: () => {
+              console.log('share');
+            },
+            icon: <i className='iconfont icon-share-filled text-17' />,
+            sticky: true,
+          },
+          {
+            key: 'lock',
+            label: '上锁',
+            onClick: () => {
+              console.log('lock');
+            },
+            icon: <i className='iconfont icon-lock-filled text-17' />,
+            sticky: true,
+          },
+          {
             key: 'edit',
             label: '编辑',
             onClick: () => {
@@ -60,6 +87,10 @@ const NoteCard = (props: NoteCardProps) => {
                     modalUtils.close(uuid);
                   }
                 },
+                cancelText: '取消',
+                onCancel: () => {
+                  modalUtils.close(uuid);
+                },
               });
             },
           },
@@ -68,7 +99,7 @@ const NoteCard = (props: NoteCardProps) => {
         document.querySelector('body') as HTMLElement
       );
     },
-    [contextMenuUtils, modalUtils, note]
+    [contextMenuUtils, modalUtils, notificationUtils, note._id]
   );
 
   return (

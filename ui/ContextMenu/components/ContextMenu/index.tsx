@@ -63,6 +63,14 @@ const ContextMenu = (props: ContextMenuProps) => {
     };
   }, [rootRef, visible, position]);
 
+  const stickyMenus = useMemo(() => {
+    return menus.filter(menu => menu.sticky);
+  }, [menus]);
+
+  const defaultMenus = useMemo(() => {
+    return menus.filter(menu => !menu.sticky);
+  }, [menus]);
+
   const handleClick = (menuItem: ContextMenuItem) => {
     menuItem?.onClick();
     onClose();
@@ -72,18 +80,40 @@ const ContextMenu = (props: ContextMenuProps) => {
 
   return (
     <div ref={contextMenuRef} className='absolute z-30' style={calcStyle}>
-      <div className='rounded bg-white shadow'>
-        {menus.map(menuItem => (
-          <div
-            key={menuItem.key}
-            className='flex cursor-pointer items-center px-4 py-2 text-gray-600 hover:bg-gray-100'
-            onClick={() => handleClick(menuItem)}>
-            {menuItem.icon && (
-              <div className='mr-2 text-xl text-gray-400'>{menuItem.icon}</div>
-            )}
-            <div>{menuItem.label}</div>
-          </div>
-        ))}
+      <div className=' flex min-w-[12rem] flex-col gap-2 rounded-xl bg-gray-100 p-4 shadow-main'>
+        <div className=' mx-2 mb-2 flex justify-between'>
+          {stickyMenus.map(menuItem => (
+            <div
+              key={menuItem.key}
+              className=' flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-gray-300 text-black-900 transition-colors duration-100 hover:border hover:border-primary-50 hover:bg-primary-50 hover:text-white'
+              title={menuItem.label}
+              onClick={() => handleClick(menuItem)}>
+              {menuItem.icon}
+            </div>
+          ))}
+        </div>
+        {stickyMenus.length ? (
+          <div className=' h-[1px] w-full bg-gray-300'></div>
+        ) : null}
+        <div className=' flex flex-col gap-1'>
+          {defaultMenus.map(menuItem => (
+            <div
+              key={menuItem.key}
+              className=' flex cursor-pointer items-center justify-between rounded-lg border border-transparent py-2 pl-2 pr-1 text-black-600 transition-colors duration-100 hover:border hover:border-primary-50 hover:bg-black-50 hover:text-black-900'
+              title={menuItem.label}
+              onClick={() => handleClick(menuItem)}>
+              <div className=' flex items-center'>
+                {menuItem.icon ? (
+                  <div className='mr-2 text-xl text-gray-400'>
+                    {menuItem.icon}
+                  </div>
+                ) : null}
+                <div>{menuItem.label}</div>
+              </div>
+              <i className=' iconfont icon-angle-right'></i>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
