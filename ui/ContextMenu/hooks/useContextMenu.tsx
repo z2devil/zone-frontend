@@ -12,7 +12,7 @@ export interface ContextMenuItem {
 
 export interface ContextMenuUtils {
   open: (
-    menus: ContextMenuItem[],
+    menus: (ContextMenuItem | false | undefined)[],
     position: { x: number; y: number },
     root?: HTMLElement
   ) => void;
@@ -20,7 +20,7 @@ export interface ContextMenuUtils {
 }
 
 const useContextMenu = () => {
-  const rootRef = useRef<HTMLDivElement | null>(null);
+  const rootRef = useRef<HTMLElement | null>(null);
 
   const [visible, setVisible] = useState(false);
 
@@ -31,24 +31,22 @@ const useContextMenu = () => {
 
   const [menus, setMenus] = useState<ContextMenuItem[]>([]);
 
-  const open = (
-    menus: ContextMenuItem[],
-    position: { x: number; y: number },
-    root?: HTMLDivElement | null
-  ) => {
+  const open: ContextMenuUtils['open'] = (menus, position, root) => {
+    const nextMenus = menus.filter(Boolean) as ContextMenuItem[];
+    if (!nextMenus.length) return;
     setVisible(true);
     setPosition(position);
-    setMenus(menus);
+    setMenus(nextMenus);
     if (root) {
       rootRef.current = root;
     }
   };
 
-  const close = () => {
+  const close: ContextMenuUtils['close'] = () => {
     setVisible(false);
   };
 
-  const utils = useMemo(() => {
+  const utils: ContextMenuUtils = useMemo(() => {
     return {
       open,
       close,

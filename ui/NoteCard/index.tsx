@@ -7,6 +7,8 @@ import { useCallback } from 'react';
 import { modalUtilsState } from '@/lib/recoil/modal';
 import { notificationUtilsState } from '@/lib/recoil/notification';
 import { NotificationType } from '../Notification/components/Notification';
+import usePermission from '@/lib/hooks/usePermission';
+import { UserRole } from '@/lib/api/auth';
 
 interface NoteCardProps {
   note: NoteEntity;
@@ -22,6 +24,14 @@ const NoteCard = (props: NoteCardProps) => {
 
   const notificationUtils = useRecoilValue(notificationUtilsState);
 
+  const isLogin = usePermission([
+    UserRole.LOGIN,
+    UserRole.ADMIN,
+    UserRole.MANAGER,
+  ]);
+
+  const isAdmin = usePermission([UserRole.ADMIN, UserRole.MANAGER]);
+
   const handleSetting = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       contextMenuUtils?.open(
@@ -29,40 +39,42 @@ const NoteCard = (props: NoteCardProps) => {
           {
             key: 'like',
             label: '喜欢',
+            icon: <i className='iconfont icon-heart-filled text-17' />,
             onClick: () => {
               console.log('like');
             },
-            icon: <i className='iconfont icon-heart-filled text-17' />,
             sticky: true,
           },
           {
             key: 'share',
             label: '分享',
+            icon: <i className='iconfont icon-share-filled text-17' />,
             onClick: () => {
               console.log('share');
             },
-            icon: <i className='iconfont icon-share-filled text-17' />,
             sticky: true,
           },
-          {
+          isAdmin && {
             key: 'lock',
             label: '上锁',
+            icon: <i className='iconfont icon-lock-filled text-17' />,
             onClick: () => {
               console.log('lock');
             },
-            icon: <i className='iconfont icon-lock-filled text-17' />,
             sticky: true,
           },
-          {
+          isAdmin && {
             key: 'edit',
             label: '编辑',
+            icon: <i className='iconfont icon-edit text-19' />,
             onClick: () => {
               console.log('edit');
             },
           },
-          {
+          isAdmin && {
             key: 'delete',
             label: '删除',
+            icon: <i className='iconfont icon-trash text-19' />,
             onClick: () => {
               const uuid = modalUtils?.open({
                 title: '删除',
@@ -99,7 +111,7 @@ const NoteCard = (props: NoteCardProps) => {
         document.querySelector('body') as HTMLElement
       );
     },
-    [contextMenuUtils, modalUtils, notificationUtils, note._id]
+    [contextMenuUtils, isAdmin, modalUtils, note._id, notificationUtils]
   );
 
   return (
@@ -121,11 +133,13 @@ const NoteCard = (props: NoteCardProps) => {
               {note.title}
             </span>
           )}
-          <button
-            className=' group/more flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[0.5rem] border border-transparent transition-all duration-100 hover:bg-primary-50'
-            onClick={handleSetting}>
-            <i className='iconfont icon-ellipsis-v text-black-250 group-hover/more:text-white' />
-          </button>
+          {isLogin ? (
+            <button
+              className=' group/more flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[0.5rem] border border-transparent transition-all duration-100 hover:bg-primary-50'
+              onClick={handleSetting}>
+              <i className='iconfont icon-ellipsis-v text-black-250 group-hover/more:text-white' />
+            </button>
+          ) : null}
         </div>
         {/* 内容 */}
         <div className='text-justify text-black-600'>

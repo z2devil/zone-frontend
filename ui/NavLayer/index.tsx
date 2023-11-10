@@ -1,11 +1,6 @@
 'use client';
 
-import {
-  IUserInfo,
-  UserRole,
-  getUserInfoAPI,
-  putUserInfoAPI,
-} from '@/lib/api/auth';
+import { UserRole, getUserInfoAPI, putUserInfoAPI } from '@/lib/api/auth';
 import { getUserRoleName } from '@/lib/utils/auth';
 import NavLink from '@/ui/NavLink';
 import UserInfo from '@/ui/UserInfo';
@@ -14,12 +9,12 @@ import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import style from './style.module.scss';
 import Button from '../Button';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { modalUtilsState } from '@/lib/recoil/modal';
 import { notificationUtilsState } from '@/lib/recoil/notification';
 import { NotificationType } from '../Notification/components/Notification';
 import usePermission from '@/lib/hooks/usePermission';
-import useAuth from '@/lib/hooks/useAuth';
+import { tokenState, userInfoState } from '@/lib/recoil/auth';
 
 const NAV_LINKS = [
   {
@@ -49,8 +44,6 @@ const NavLayer = (props: NavLayerProps) => {
 
   const pathname = usePathname();
 
-  const auth = useAuth();
-
   const isLogin = usePermission([
     UserRole.LOGIN,
     UserRole.ADMIN,
@@ -69,7 +62,9 @@ const NavLayer = (props: NavLayerProps) => {
    * ✨ 用户信息
    ************************************************/
 
-  const [userInfo, setUserInfo] = useState<IUserInfo | null>(null);
+  const [userInfo, setUserInfo] = useRecoilState(userInfoState);
+
+  const setToken = useSetRecoilState(tokenState);
 
   const calcUserInfo = useMemo(() => {
     if (userInfo) {
@@ -84,25 +79,21 @@ const NavLayer = (props: NavLayerProps) => {
 
   const init = useCallback(async () => {
     if (!notificationUtils) return;
-    const storageUserInfo = auth?.getUserInfo();
-    if (storageUserInfo) {
-      setUserInfo(storageUserInfo);
-    } else {
+    if (!userInfo) {
       try {
         const { info: requestUserInfo } = await getUserInfoAPI();
         setUserInfo(requestUserInfo);
-        auth?.setUserInfo(requestUserInfo);
+        setUserInfo(requestUserInfo);
       } catch (error: any) {
         notificationUtils?.open({
           type: NotificationType.WARNING,
           content: error.message,
           duration: 3,
         });
-        auth?.logout();
         setUserInfo(null);
       }
     }
-  }, [auth, notificationUtils]);
+  }, [notificationUtils, userInfo, setUserInfo]);
 
   useEffect(() => {
     init();
@@ -135,8 +126,8 @@ const NavLayer = (props: NavLayerProps) => {
         nickname: form.nickname,
         avatarPath: form.avatarPath,
       });
-      auth?.setToken(token);
-      auth?.setUserInfo(info);
+      setUserInfo(info);
+      setToken(token);
       notificationUtils?.open({
         type: NotificationType.SUCCESS,
         content: '保存成功',
@@ -147,7 +138,14 @@ const NavLayer = (props: NavLayerProps) => {
     } catch (error) {
       console.log(error);
     }
-  }, [form, init, notificationUtils, auth]);
+  }, [
+    form.nickname,
+    form.avatarPath,
+    setUserInfo,
+    setToken,
+    notificationUtils,
+    init,
+  ]);
 
   /************************************************
    * ✨ 退出登录
@@ -160,13 +158,13 @@ const NavLayer = (props: NavLayerProps) => {
       okText: '确定',
       onOk: () => {
         modalUtils?.close(uuid);
-        auth?.logout();
+        setUserInfo(null);
+        setToken(null);
         notificationUtils?.open({
           type: NotificationType.SUCCESS,
           content: '退出成功',
           duration: 3,
         });
-        setUserInfo(null);
         handleBack();
       },
       cancelText: '取消',
@@ -174,7 +172,7 @@ const NavLayer = (props: NavLayerProps) => {
         modalUtils?.close(uuid);
       },
     });
-  }, [handleBack, modalUtils, notificationUtils, auth]);
+  }, [modalUtils, setUserInfo, setToken, notificationUtils, handleBack]);
 
   return (
     <div

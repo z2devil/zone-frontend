@@ -96,28 +96,11 @@ const NotePage = () => {
 
   const notificationUtils = useRecoilValue(notificationUtilsState);
 
-  const modalUtils = useRecoilValue(modalUtilsState);
-
   const handleChartClick = () => {
     notificationUtils?.open({
       type: NotificationType.WARNING,
       content: '暂未开放',
       duration: 3,
-    });
-    if (!modalUtils) return;
-    const uuid = modalUtils.open({
-      title: '暂未开放',
-      children: '暂未开放',
-      okText: '确定',
-      onOk: () => {
-        console.log('onOk');
-        modalUtils.close(uuid);
-      },
-      cancelText: '取消',
-      onCancel: () => {
-        console.log('onCancel');
-        modalUtils.close();
-      },
     });
   };
 

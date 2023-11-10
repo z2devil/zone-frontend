@@ -1,7 +1,7 @@
 @font-face {
-  src: url('iconfont.woff2?t=1699514412307') format('woff2'),
-    url('iconfont.woff?t=1699514412307') format('woff'),
-    url('iconfont.ttf?t=1699514412307') format('truetype');
+  src: url('iconfont.woff2?t=1699524181354') format('woff2'),
+    url('iconfont.woff?t=1699524181354') format('woff'),
+    url('iconfont.ttf?t=1699524181354') format('truetype');
   font-family: 'iconfont'; /* Project id 3977835 */
 }
 
@@ -11,6 +11,18 @@
   font-style: normal;
   font-size: 16px;
   font-family: 'iconfont' !important;
+}
+
+.icon-edit:before {
+  content: '\e61a';
+}
+
+.icon-sticky:before {
+  content: '\e665';
+}
+
+.icon-trash:before {
+  content: '\e628';
 }
 
 .icon-share-filled:before {
