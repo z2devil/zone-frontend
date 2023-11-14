@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { UserRole } from '../api/auth';
-import { useRecoilValue } from 'recoil';
-import { userInfoState } from '../recoil/auth';
+import { useAuthStore } from '../stores';
 
 const usePermission = (roles: UserRole[]) => {
-  const userInfo = useRecoilValue(userInfoState);
+  const userInfo = useAuthStore(state => state.userInfo);
 
   const [hasPermission, setHasPermission] = useState(false);
 

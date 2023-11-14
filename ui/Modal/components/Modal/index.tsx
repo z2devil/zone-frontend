@@ -1,8 +1,7 @@
-import { modalUtilsState } from '@/lib/recoil/modal';
+import { useModalUtilsStore } from '@/lib/stores';
 import Button from '@/ui/Button';
 import clsx from 'clsx';
 import { useMemo } from 'react';
-import { useRecoilValue } from 'recoil';
 
 export type ModalProps = {
   uuid: string;
@@ -33,7 +32,7 @@ const Modal = (props: ModalProps) => {
     outterStyle,
   } = props;
 
-  const modalUtils = useRecoilValue(modalUtilsState);
+  const modalUtils = useModalUtilsStore(state => state.utils);
 
   const handleBack = () => {
     if (!modalUtils) return;

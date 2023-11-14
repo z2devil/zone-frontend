@@ -3,14 +3,12 @@
 import { UserRole } from '@/lib/api/auth';
 import { NoteTypeEnum, postNoteAPI } from '@/lib/api/notes';
 import usePermission from '@/lib/hooks/usePermission';
-import { modalUtilsState } from '@/lib/recoil/modal';
-import { notificationUtilsState } from '@/lib/recoil/notification';
+import { useModalUtilsStore, useNotificationUtilsStore } from '@/lib/stores';
 import Button from '@/ui/Button';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import RichEditor from '@/ui/RichEditor';
 import { useRouter } from 'next/navigation';
 import { useCallback, useRef } from 'react';
-import { useRecoilValue } from 'recoil';
 import { Descendant } from 'slate';
 
 interface ContentLayoutProps {
@@ -22,9 +20,9 @@ const ContentLayout = (props: ContentLayoutProps) => {
 
   const navigation = useRouter();
 
-  const modalUtils = useRecoilValue(modalUtilsState);
+  const modalUtils = useModalUtilsStore(state => state.utils);
 
-  const notificationUtils = useRecoilValue(notificationUtilsState);
+  const notificationUtils = useNotificationUtilsStore(state => state.utils);
 
   const isAdmin = usePermission([UserRole.ADMIN, UserRole.MANAGER]);
 

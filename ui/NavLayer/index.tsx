@@ -9,12 +9,14 @@ import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import style from './style.module.scss';
 import Button from '../Button';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { modalUtilsState } from '@/lib/recoil/modal';
-import { notificationUtilsState } from '@/lib/recoil/notification';
 import { NotificationType } from '../Notification/components/Notification';
 import usePermission from '@/lib/hooks/usePermission';
-import { tokenState, userInfoState } from '@/lib/recoil/auth';
+import {
+  useAuthStore,
+  useModalUtilsStore,
+  useNotificationUtilsStore,
+} from '@/lib/stores';
+import useAuthHydration from '@/lib/hooks/useAuthHydration';
 
 const NAV_LINKS = [
   {
@@ -50,9 +52,9 @@ const NavLayer = (props: NavLayerProps) => {
     UserRole.MANAGER,
   ]);
 
-  const notificationUtils = useRecoilValue(notificationUtilsState);
+  const notificationUtils = useNotificationUtilsStore(state => state.utils);
 
-  const modalUtils = useRecoilValue(modalUtilsState);
+  const modalUtils = useModalUtilsStore(state => state.utils);
 
   const handleBack = useCallback(() => {
     onHide();
@@ -62,11 +64,16 @@ const NavLayer = (props: NavLayerProps) => {
    * ✨ 用户信息
    ************************************************/
 
-  const [userInfo, setUserInfo] = useRecoilState(userInfoState);
+  const userInfo = useAuthStore(state => state.userInfo);
 
-  const setToken = useSetRecoilState(tokenState);
+  const setUserInfo = useAuthStore(state => state.setUserInfo);
+
+  const setToken = useAuthStore(state => state.setToken);
+
+  const hydrated = useAuthHydration();
 
   const calcUserInfo = useMemo(() => {
+    if (!hydrated) return void 0;
     if (userInfo) {
       return {
         avatarPath: userInfo.avatarPath,
@@ -75,7 +82,7 @@ const NavLayer = (props: NavLayerProps) => {
       };
     }
     return void 0;
-  }, [userInfo]);
+  }, [hydrated, userInfo]);
 
   const init = useCallback(async () => {
     if (!notificationUtils) return;

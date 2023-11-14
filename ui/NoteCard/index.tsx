@@ -1,14 +1,15 @@
 import { NoteEntity, NoteTypeEnum, deleteNoteAPI } from '@/lib/api/notes';
 import dayjs from '@/lib/utils/dayjs';
 import RichView from '../RichView';
-import { useRecoilValue } from 'recoil';
-import { contextMenuUtilsState } from '@/lib/recoil/contextmenu';
 import { useCallback } from 'react';
-import { modalUtilsState } from '@/lib/recoil/modal';
-import { notificationUtilsState } from '@/lib/recoil/notification';
 import { NotificationType } from '../Notification/components/Notification';
 import usePermission from '@/lib/hooks/usePermission';
 import { UserRole } from '@/lib/api/auth';
+import {
+  useContextMenuUtilsStore,
+  useModalUtilsStore,
+  useNotificationUtilsStore,
+} from '@/lib/stores';
 
 interface NoteCardProps {
   note: NoteEntity;
@@ -18,11 +19,11 @@ interface NoteCardProps {
 const NoteCard = (props: NoteCardProps) => {
   const { note, style } = props;
 
-  const contextMenuUtils = useRecoilValue(contextMenuUtilsState);
+  const contextMenuUtils = useContextMenuUtilsStore(state => state.utils);
 
-  const modalUtils = useRecoilValue(modalUtilsState);
+  const modalUtils = useModalUtilsStore(state => state.utils);
 
-  const notificationUtils = useRecoilValue(notificationUtilsState);
+  const notificationUtils = useNotificationUtilsStore(state => state.utils);
 
   const isLogin = usePermission([
     UserRole.LOGIN,

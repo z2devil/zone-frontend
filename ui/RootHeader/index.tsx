@@ -4,9 +4,8 @@ import clsx from 'clsx';
 import { useCallback, useState } from 'react';
 import NavLayer from '../NavLayer';
 import SearchLayer from '../SearchLayer';
-import { useRecoilValue } from 'recoil';
-import { notificationUtilsState } from '@/lib/recoil/notification';
 import { NotificationType } from '../Notification/components/Notification';
+import { useNotificationUtilsStore } from '@/lib/stores';
 
 const enum MenuKey {
   SEARCH,
@@ -29,7 +28,7 @@ const MENU = [
 const RootHeader = () => {
   const [showLayer, setShowLayer] = useState<MenuKey | null>(null);
 
-  const notificationUtils = useRecoilValue(notificationUtilsState);
+  const notificationUtils = useNotificationUtilsStore(state => state.utils);
 
   const handleMenuClick = useCallback(
     (key: MenuKey) => {

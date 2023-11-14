@@ -8,9 +8,7 @@ import PageBanner from '@/ui/PageBanner';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import px2number from '@/lib/utils/px2number';
 import { NotificationType } from '@/ui/Notification/components/Notification';
-import { useRecoilValue } from 'recoil';
-import { notificationUtilsState } from '@/lib/recoil/notification';
-import { modalUtilsState } from '@/lib/recoil/modal';
+import { useNotificationUtilsStore } from '@/lib/stores';
 
 const FETCH_SIZE = 20;
 
@@ -94,7 +92,7 @@ const NotePage = () => {
    * ✨ 以下为测试代码
    ************************************************/
 
-  const notificationUtils = useRecoilValue(notificationUtilsState);
+  const notificationUtils = useNotificationUtilsStore(state => state.utils);
 
   const handleChartClick = () => {
     notificationUtils?.open({

@@ -1,13 +1,12 @@
 'use client';
 
 import { getVerificationCodeAPI, signAPI } from '@/lib/api/auth';
-import { tokenState, userInfoState } from '@/lib/recoil/auth';
+import { useAuthStore } from '@/lib/stores';
 import { validate, FormRules } from '@/lib/utils/formRules';
 import Button from '@/ui/Button';
 import VerificationCodeInput from '@/ui/VerificationCodeInput';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useSetRecoilState } from 'recoil';
 
 const LoginPage = () => {
   const router = useRouter();
@@ -20,9 +19,9 @@ const LoginPage = () => {
 
   const [verificationCode, setVerificationCode] = useState('');
 
-  const setUserInfo = useSetRecoilState(userInfoState);
+  const setUserInfo = useAuthStore(state => state.setUserInfo);
 
-  const setToken = useSetRecoilState(tokenState);
+  const setToken = useAuthStore(state => state.setToken);
 
   // 验证码输入变化
   const handleVerificationCodeChange = useCallback((code: string) => {
