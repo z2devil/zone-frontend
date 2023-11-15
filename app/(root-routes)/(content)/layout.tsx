@@ -20,9 +20,9 @@ const ContentLayout = (props: ContentLayoutProps) => {
 
   const navigation = useRouter();
 
-  const modalUtils = useModalUtilsStore(state => state.utils);
+  const { utils: modalUtils } = useModalUtilsStore();
 
-  const notificationUtils = useNotificationUtilsStore(state => state.utils);
+  const { utils: notificationUtils } = useNotificationUtilsStore();
 
   const isAdmin = usePermission([UserRole.ADMIN, UserRole.MANAGER]);
 

@@ -28,7 +28,7 @@ const MENU = [
 const RootHeader = () => {
   const [showLayer, setShowLayer] = useState<MenuKey | null>(null);
 
-  const notificationUtils = useNotificationUtilsStore(state => state.utils);
+  const { utils: notificationUtils } = useNotificationUtilsStore();
 
   const handleMenuClick = useCallback(
     (key: MenuKey) => {

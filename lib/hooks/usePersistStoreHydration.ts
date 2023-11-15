@@ -1,29 +1,27 @@
 import { useEffect, useState } from 'react';
-import { useAuthStore } from '../stores';
+import { UseBoundStore } from 'zustand';
 
-const useAuthHydration = () => {
+const usePersistStoreHydration = (useStore: UseBoundStore<any>) => {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     // Note: This is just in case you want to take into account manual rehydration.
     // You can remove the following line if you don't need it.
-    const unsubHydrate = useAuthStore.persist.onHydrate(() =>
-      setHydrated(false)
-    );
+    const unsubHydrate = useStore.persist.onHydrate(() => setHydrated(false));
 
-    const unsubFinishHydration = useAuthStore.persist.onFinishHydration(() =>
+    const unsubFinishHydration = useStore.persist.onFinishHydration(() =>
       setHydrated(true)
     );
 
-    setHydrated(useAuthStore.persist.hasHydrated());
+    setHydrated(useStore.persist.hasHydrated());
 
     return () => {
       unsubHydrate();
       unsubFinishHydration();
     };
-  }, []);
+  }, [useStore.persist]);
 
   return hydrated;
 };
 
-export default useAuthHydration;
+export default usePersistStoreHydration;

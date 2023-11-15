@@ -16,7 +16,7 @@ import {
   useModalUtilsStore,
   useNotificationUtilsStore,
 } from '@/lib/stores';
-import useAuthHydration from '@/lib/hooks/useAuthHydration';
+import usePersistStoreHydration from '@/lib/hooks/usePersistStoreHydration';
 
 const NAV_LINKS = [
   {
@@ -52,9 +52,9 @@ const NavLayer = (props: NavLayerProps) => {
     UserRole.MANAGER,
   ]);
 
-  const notificationUtils = useNotificationUtilsStore(state => state.utils);
+  const { utils: notificationUtils } = useNotificationUtilsStore();
 
-  const modalUtils = useModalUtilsStore(state => state.utils);
+  const { utils: modalUtils } = useModalUtilsStore();
 
   const handleBack = useCallback(() => {
     onHide();
@@ -64,13 +64,9 @@ const NavLayer = (props: NavLayerProps) => {
    * ✨ 用户信息
    ************************************************/
 
-  const userInfo = useAuthStore(state => state.userInfo);
+  const { userInfo, setUserInfo, setToken } = useAuthStore();
 
-  const setUserInfo = useAuthStore(state => state.setUserInfo);
-
-  const setToken = useAuthStore(state => state.setToken);
-
-  const hydrated = useAuthHydration();
+  const hydrated = usePersistStoreHydration(useAuthStore);
 
   const calcUserInfo = useMemo(() => {
     if (!hydrated) return void 0;

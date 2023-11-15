@@ -32,7 +32,7 @@ const Modal = (props: ModalProps) => {
     outterStyle,
   } = props;
 
-  const modalUtils = useModalUtilsStore(state => state.utils);
+  const { utils: modalUtils } = useModalUtilsStore();
 
   const handleBack = () => {
     if (!modalUtils) return;

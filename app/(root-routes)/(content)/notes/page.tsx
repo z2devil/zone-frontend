@@ -92,7 +92,7 @@ const NotePage = () => {
    * ✨ 以下为测试代码
    ************************************************/
 
-  const notificationUtils = useNotificationUtilsStore(state => state.utils);
+  const { utils: notificationUtils } = useNotificationUtilsStore();
 
   const handleChartClick = () => {
     notificationUtils?.open({

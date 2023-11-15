@@ -21,9 +21,9 @@ const NoteCard = (props: NoteCardProps) => {
 
   const contextMenuUtils = useContextMenuUtilsStore(state => state.utils);
 
-  const modalUtils = useModalUtilsStore(state => state.utils);
+  const { utils: modalUtils } = useModalUtilsStore();
 
-  const notificationUtils = useNotificationUtilsStore(state => state.utils);
+  const { utils: notificationUtils } = useNotificationUtilsStore();
 
   const isLogin = usePermission([
     UserRole.LOGIN,
