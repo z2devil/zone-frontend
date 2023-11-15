@@ -9,6 +9,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import px2number from '@/lib/utils/px2number';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import { useNotificationUtilsStore } from '@/lib/stores';
+import useRequest from '@/lib/hooks/useRequest';
 
 const FETCH_SIZE = 20;
 
@@ -17,6 +18,8 @@ const GAP = 20;
 const CARD_WIDTH = 335;
 
 const NotePage = () => {
+  const request = useRequest();
+
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [data, setData] = useState<NoteEntity[]>([]);
@@ -74,11 +77,11 @@ const NotePage = () => {
   }, [containerRect?.width, handleResize]);
 
   // TODO: total 问题
-  const handleLoadData = async () => {
+  const handleLoadData = useCallback(async () => {
     const nextCurrent = current + 1;
     setCurrent(nextCurrent);
     setIsLoading(true);
-    const res = await getNotesAPI({
+    const res = await getNotesAPI(request)({
       current: nextCurrent,
       size: FETCH_SIZE,
     });
@@ -86,7 +89,7 @@ const NotePage = () => {
     const nextData = res.list;
     setData(prev => [...prev, ...nextData]);
     return nextData;
-  };
+  }, [current, request]);
 
   /************************************************
    * ✨ 以下为测试代码

@@ -3,6 +3,7 @@
 import { UserRole } from '@/lib/api/auth';
 import { NoteTypeEnum, postNoteAPI } from '@/lib/api/notes';
 import usePermission from '@/lib/hooks/usePermission';
+import useRequest from '@/lib/hooks/useRequest';
 import { useModalUtilsStore, useNotificationUtilsStore } from '@/lib/stores';
 import Button from '@/ui/Button';
 import { NotificationType } from '@/ui/Notification/components/Notification';
@@ -20,6 +21,8 @@ const ContentLayout = (props: ContentLayoutProps) => {
 
   const navigation = useRouter();
 
+  const request = useRequest();
+
   const { utils: modalUtils } = useModalUtilsStore();
 
   const { utils: notificationUtils } = useNotificationUtilsStore();
@@ -35,9 +38,9 @@ const ContentLayout = (props: ContentLayoutProps) => {
   const handleAdd = useCallback(() => {
     if (!isAdmin) return;
     const uuid = modalUtils?.open({
-      title: '写动态',
+      title: '写笔记',
       children: (
-        <div>
+        <div className='mb-6'>
           <RichEditor className=' max-h-[70vh]' onChange={handleEditorChange} />
         </div>
       ),
@@ -46,7 +49,7 @@ const ContentLayout = (props: ContentLayoutProps) => {
         console.log('onOk', editorContent.current);
         // modalUtils.close();
         try {
-          await postNoteAPI({
+          await postNoteAPI(request)({
             type: NoteTypeEnum.NOTE,
             content: JSON.stringify(editorContent.current),
           });
@@ -74,7 +77,14 @@ const ContentLayout = (props: ContentLayoutProps) => {
         modalUtils.close();
       },
     });
-  }, [handleEditorChange, isAdmin, modalUtils, navigation, notificationUtils]);
+  }, [
+    handleEditorChange,
+    isAdmin,
+    modalUtils,
+    navigation,
+    notificationUtils,
+    request,
+  ]);
 
   return (
     <>

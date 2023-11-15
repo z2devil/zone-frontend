@@ -1,28 +1,35 @@
-import request from '@/lib/api/request';
+import { IRequest } from '@/lib/hooks/useRequest';
 import { IPageData } from '../types';
-import { GetNotesParams, NoteEntity, PostNoteParams } from './types';
+import {
+  GetNotesParams,
+  NoteEntity,
+  PostNoteParams,
+  PutNoteParams,
+} from './types';
 import { cache } from 'react';
 
 /**
  * 获取 note 列表
  */
-export const getNotesAPI = cache(async (params: GetNotesParams) => {
-  return await request.get<IPageData<NoteEntity>>('/note', params);
-});
+export const getNotesAPI = (request: IRequest) =>
+  cache(async (params: GetNotesParams) => {
+    return await request.get<IPageData<NoteEntity>>('/note', params);
+  });
 
 /**
  * 创建 note
  */
-export const postNoteAPI = async (params: PostNoteParams) => {
-  return await request.post('/note', {
-    body: JSON.stringify(params),
-  });
-};
+export const postNoteAPI =
+  (request: IRequest) => async (params: PostNoteParams) => {
+    return await request.post('/note', {
+      body: JSON.stringify(params),
+    });
+  };
 
 /**
  * 删除 note
  */
-export const deleteNoteAPI = async (id: string) => {
+export const deleteNoteAPI = (request: IRequest) => async (id: string) => {
   return await request.delete('/note', {
     body: JSON.stringify({
       _id: id,
@@ -30,26 +37,12 @@ export const deleteNoteAPI = async (id: string) => {
   });
 };
 
-// /**
-//  * 阅读通知
-//  */
-// export const readNotice = async (params: { id: number }) => {
-//   return await service.post<ReadNoticeResult>('/notice/readNotice', params);
-// };
-
-// /**
-//  * 检查有无未读通知
-//  */
-// export const hasUnReadNotices = async () => {
-//   return await service.post<hasUnReadNoticesResult>('/notice/unRead');
-// };
-
-// /**
-//  * 获取风险通知
-//  */
-// export const getRiskNotice = async (params: PageType) => {
-//   return await service.post<LoadNoticesResult>(
-//     '/notice/riskAlertNotice',
-//     params
-//   );
-// };
+/**
+ * 更新 note
+ */
+export const putNoteAPI =
+  (request: IRequest) => async (params: PutNoteParams) => {
+    return await request.put<NoteEntity>('/note', {
+      body: JSON.stringify(params),
+    });
+  };

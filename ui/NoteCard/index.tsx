@@ -1,7 +1,12 @@
-import { NoteEntity, NoteTypeEnum, deleteNoteAPI } from '@/lib/api/notes';
+import {
+  NoteEntity,
+  NoteTypeEnum,
+  deleteNoteAPI,
+  putNoteAPI,
+} from '@/lib/api/notes';
 import dayjs from '@/lib/utils/dayjs';
 import RichView from '../RichView';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { NotificationType } from '../Notification/components/Notification';
 import usePermission from '@/lib/hooks/usePermission';
 import { UserRole } from '@/lib/api/auth';
@@ -10,14 +15,20 @@ import {
   useModalUtilsStore,
   useNotificationUtilsStore,
 } from '@/lib/stores';
+import RichEditor from '../RichEditor';
+import { Descendant } from 'slate';
+import useRequest from '@/lib/hooks/useRequest';
 
 interface NoteCardProps {
-  note: NoteEntity;
   style: React.CSSProperties;
+  note: NoteEntity;
+  onChange?: (value: Descendant[]) => void;
 }
 
 const NoteCard = (props: NoteCardProps) => {
-  const { note, style } = props;
+  const { note, style, onChange } = props;
+
+  const request = useRequest();
 
   const contextMenuUtils = useContextMenuUtilsStore(state => state.utils);
 
@@ -32,6 +43,12 @@ const NoteCard = (props: NoteCardProps) => {
   ]);
 
   const isAdmin = usePermission([UserRole.ADMIN, UserRole.MANAGER]);
+
+  const editorContent = useRef<Descendant[]>([]);
+
+  const handleEditorContentChange = useCallback((value: Descendant[]) => {
+    editorContent.current = value;
+  }, []);
 
   const handleSetting = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -69,7 +86,50 @@ const NoteCard = (props: NoteCardProps) => {
             label: '编辑',
             icon: <i className='iconfont icon-edit text-19' />,
             onClick: () => {
-              console.log('edit');
+              const uuid = modalUtils?.open({
+                title: '编辑笔记',
+                children: (
+                  <div className='mb-6'>
+                    <RichEditor
+                      initialValue={JSON.parse(note.content)}
+                      className=' max-h-[70vh]'
+                      onChange={handleEditorContentChange}
+                    />
+                  </div>
+                ),
+                okText: '保存',
+                onOk: async () => {
+                  console.log('onOk', editorContent.current);
+                  try {
+                    const res = await putNoteAPI(request)({
+                      _id: note._id,
+                      type: NoteTypeEnum.NOTE,
+                      content: JSON.stringify(editorContent.current),
+                    });
+                    console.log('[ 保存成功 ]', res);
+                    notificationUtils
+                      ?.open({
+                        type: NotificationType.SUCCESS,
+                        content: '保存成功',
+                        duration: 3,
+                      })
+                      .then(() => {
+                        modalUtils?.close(uuid);
+                        onChange?.(editorContent.current);
+                      });
+                  } catch (error: any) {
+                    notificationUtils?.open({
+                      type: NotificationType.WARNING,
+                      content: error.message,
+                      duration: 3,
+                    });
+                  }
+                },
+                cancelText: '取消',
+                onCancel: () => {
+                  modalUtils.close();
+                },
+              });
             },
           },
           isAdmin && {
@@ -84,7 +144,7 @@ const NoteCard = (props: NoteCardProps) => {
                 onOk: async () => {
                   console.log('delete');
                   try {
-                    await deleteNoteAPI(note._id);
+                    await deleteNoteAPI(request)(note._id);
                     notificationUtils?.open({
                       type: NotificationType.SUCCESS,
                       content: '删除成功',
@@ -112,7 +172,17 @@ const NoteCard = (props: NoteCardProps) => {
         document.querySelector('body') as HTMLElement
       );
     },
-    [contextMenuUtils, isAdmin, modalUtils, note._id, notificationUtils]
+    [
+      contextMenuUtils,
+      handleEditorContentChange,
+      isAdmin,
+      modalUtils,
+      note._id,
+      note.content,
+      notificationUtils,
+      onChange,
+      request,
+    ]
   );
 
   return (

@@ -1,12 +1,11 @@
 'use client';
 
-import { UserRole, getUserInfoAPI, putUserInfoAPI } from '@/lib/api/auth';
-import { getUserRoleName } from '@/lib/utils/auth';
+import { UserRole, putUserInfoAPI } from '@/lib/api/auth';
 import NavLink from '@/ui/NavLink';
 import UserInfo from '@/ui/UserInfo';
 import clsx from 'clsx';
 import { usePathname } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import style from './style.module.scss';
 import Button from '../Button';
 import { NotificationType } from '../Notification/components/Notification';
@@ -15,8 +14,10 @@ import {
   useAuthStore,
   useModalUtilsStore,
   useNotificationUtilsStore,
+  userRoleNameSelector,
 } from '@/lib/stores';
 import usePersistStoreHydration from '@/lib/hooks/usePersistStoreHydration';
+import useRequest from '@/lib/hooks/useRequest';
 
 const NAV_LINKS = [
   {
@@ -46,6 +47,8 @@ const NavLayer = (props: NavLayerProps) => {
 
   const pathname = usePathname();
 
+  const request = useRequest();
+
   const isLogin = usePermission([
     UserRole.LOGIN,
     UserRole.ADMIN,
@@ -66,41 +69,9 @@ const NavLayer = (props: NavLayerProps) => {
 
   const { userInfo, setUserInfo, setToken } = useAuthStore();
 
+  const userRoleName = userRoleNameSelector(useAuthStore);
+
   const hydrated = usePersistStoreHydration(useAuthStore);
-
-  const calcUserInfo = useMemo(() => {
-    if (!hydrated) return void 0;
-    if (userInfo) {
-      return {
-        avatarPath: userInfo.avatarPath,
-        nickname: userInfo.nickname,
-        roleName: getUserRoleName(userInfo.lv),
-      };
-    }
-    return void 0;
-  }, [hydrated, userInfo]);
-
-  const init = useCallback(async () => {
-    if (!notificationUtils) return;
-    if (!userInfo) {
-      try {
-        const { info: requestUserInfo } = await getUserInfoAPI();
-        setUserInfo(requestUserInfo);
-        setUserInfo(requestUserInfo);
-      } catch (error: any) {
-        notificationUtils?.open({
-          type: NotificationType.WARNING,
-          content: error.message,
-          duration: 3,
-        });
-        setUserInfo(null);
-      }
-    }
-  }, [notificationUtils, userInfo, setUserInfo]);
-
-  useEffect(() => {
-    init();
-  }, [init]);
 
   const [isEditting, setIsEditting] = useState(false);
 
@@ -125,7 +96,7 @@ const NavLayer = (props: NavLayerProps) => {
   const handleSave = useCallback(async () => {
     setIsEditting(false);
     try {
-      const { token, info } = await putUserInfoAPI({
+      const { token, info } = await putUserInfoAPI(request)({
         nickname: form.nickname,
         avatarPath: form.avatarPath,
       });
@@ -136,18 +107,17 @@ const NavLayer = (props: NavLayerProps) => {
         content: '保存成功',
         duration: 3,
       });
-      await init();
       setIsEditting(false);
     } catch (error) {
       console.log(error);
     }
   }, [
+    request,
     form.nickname,
     form.avatarPath,
     setUserInfo,
     setToken,
     notificationUtils,
-    init,
   ]);
 
   /************************************************
@@ -197,7 +167,13 @@ const NavLayer = (props: NavLayerProps) => {
           show ? style.modalShow : style.modalHide
         )}>
         <div className='flex w-full items-center justify-between p-6 sm:rounded-t-2xl sm:border-b sm:border-black-80 sm:bg-white'>
-          <UserInfo info={calcUserInfo} />
+          {hydrated ? (
+            <UserInfo
+              avatarPath={userInfo?.avatarPath}
+              nickname={userInfo?.nickname}
+              roleName={userRoleName}
+            />
+          ) : null}
           {isLogin ? (
             <div className=' flex items-center gap-2'>
               <button

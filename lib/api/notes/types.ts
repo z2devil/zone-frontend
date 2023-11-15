@@ -1,5 +1,9 @@
 import { IPageParams } from '../types';
 
+/************************************************
+ * ✨ 实体
+ ************************************************/
+
 /**
  * note 类型枚举
  */
@@ -25,6 +29,10 @@ export interface NoteEntity extends CommonInfo {
   summary?: string;
 }
 
+/************************************************
+ * ✨ API
+ ************************************************/
+
 /**
  * 查询 notes 参数
  */
@@ -33,10 +41,20 @@ export interface GetNotesParams extends IPageParams {
   _id?: string;
 }
 
+/**
+ * 创建 note 参数
+ */
 export interface PostNoteParams {
   content: string;
   type: NoteTypeEnum;
   bannerPath?: string;
   title?: string;
   summary?: string;
+}
+
+/**
+ * 更新 note 参数
+ */
+export interface PutNoteParams extends PostNoteParams {
+  _id: string;
 }
