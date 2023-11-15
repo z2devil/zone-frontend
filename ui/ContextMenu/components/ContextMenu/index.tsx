@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ContextMenuItem } from '../../hooks/useContextMenu';
 import useClickAway from '@/lib/hooks/useClickAway';
 import clsx from 'clsx';
@@ -18,50 +18,63 @@ const ContextMenu = (props: ContextMenuProps) => {
 
   const contextMenuRef = useRef<HTMLDivElement | null>(null);
 
-  const calcStyle = useMemo(() => {
+  const [style, setStyle] = useState<React.CSSProperties>({});
+
+  useLayoutEffect(() => {
     if (!visible) {
-      return {
+      return setStyle({
         display: 'none',
-      };
+      });
     }
     const contextMenuDOM = contextMenuRef.current;
     if (!contextMenuDOM) {
-      return {
+      return setStyle({
         display: 'none',
-      };
+      });
     }
     const containerDOM = contextMenuDOM.parentElement;
     if (!containerDOM) {
-      return {
+      return setStyle({
         display: 'none',
-      };
+      });
     }
-    const rootDOM = rootRef.current;
-    const rootRect = rootDOM
-      ? rootDOM.getBoundingClientRect()
-      : {
-          x: 0,
-          y: 0,
-          width: 0,
-          height: 0,
-        };
-    const contextMenuRect = contextMenuDOM.getBoundingClientRect();
-    const containerRect = containerDOM.getBoundingClientRect();
 
-    const calcX =
-      position.x + contextMenuRect.width > rootRect.x + rootRect.width
-        ? position.x - contextMenuRect.width
-        : position.x;
-    const calcY =
-      position.y + contextMenuRect.height > rootRect.y + rootRect.height
-        ? position.y - contextMenuRect.height
-        : position.y;
-
-    return {
+    setStyle({
       display: 'block',
-      left: calcX - containerRect.left,
-      top: calcY - containerRect.top,
-    };
+      left: 0,
+      top: 0,
+      opacity: 0,
+      pointerEvents: 'none',
+    });
+
+    requestAnimationFrame(() => {
+      const rootDOM = rootRef.current;
+      const rootRect = rootDOM
+        ? rootDOM.getBoundingClientRect()
+        : {
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0,
+          };
+      const contextMenuRect = contextMenuDOM.getBoundingClientRect();
+      const containerRect = containerDOM.getBoundingClientRect();
+
+      const calcX =
+        position.x + contextMenuRect.width > rootRect.x + rootRect.width
+          ? position.x - contextMenuRect.width
+          : position.x;
+      const calcY =
+        position.y + contextMenuRect.height > rootRect.y + rootRect.height
+          ? position.y - contextMenuRect.height
+          : position.y;
+
+      setStyle({
+        display: 'block',
+        left: calcX - containerRect.left,
+        top: calcY - containerRect.top,
+      });
+    });
   }, [rootRef, visible, position]);
 
   const stickyMenus = useMemo(() => {
@@ -80,7 +93,7 @@ const ContextMenu = (props: ContextMenuProps) => {
   useClickAway(onClose, contextMenuRef);
 
   return (
-    <div ref={contextMenuRef} className='absolute z-30' style={calcStyle}>
+    <div ref={contextMenuRef} className='absolute z-30' style={style}>
       <div className=' flex flex-col gap-2 divide-y divide-gray-300 rounded-xl bg-gray-100 p-4 shadow-main'>
         {stickyMenus.length ? (
           <div
