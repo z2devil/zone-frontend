@@ -30,6 +30,13 @@ const RootLayout = (props: RootLayoutProps) => {
           {children}
           {layer}
         </RootProvider>
+        <a
+          className='fixed bottom-2 left-1/2 -translate-x-1/2 text-xs text-black-100 duration-100 hover:text-black-300'
+          href='https://beian.miit.gov.cn/'
+          target='_blank'
+          rel='noreferrer'>
+          豫ICP备2021001737号
+        </a>
       </body>
     </html>
   );
