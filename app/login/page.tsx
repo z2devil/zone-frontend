@@ -1,7 +1,7 @@
 'use client';
 
 import { getVerificationCodeAPI, signAPI } from '@/lib/api/auth';
-import useAuth from '@/lib/hooks/useAuth';
+import { useAuthStore } from '@/lib/stores';
 import { validate, FormRules } from '@/lib/utils/formRules';
 import Button from '@/ui/Button';
 import VerificationCodeInput from '@/ui/VerificationCodeInput';
@@ -11,8 +11,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 const LoginPage = () => {
   const router = useRouter();
 
-  const auth = useAuth();
-
   const [step, setStep] = useState(0);
 
   const [tip, setTip] = useState('');
@@ -20,6 +18,10 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
 
   const [verificationCode, setVerificationCode] = useState('');
+
+  const setUserInfo = useAuthStore(state => state.setUserInfo);
+
+  const setToken = useAuthStore(state => state.setToken);
 
   // 验证码输入变化
   const handleVerificationCodeChange = useCallback((code: string) => {
@@ -67,15 +69,15 @@ const LoginPage = () => {
         code: verificationCode,
       });
       setTip('登录成功');
-      auth?.setToken(token);
-      auth?.setUserInfo(info);
+      setUserInfo(info);
+      setToken(token);
       setTimeout(() => {
         router.push('/');
       }, 1000);
     } catch (error: any) {
       setTip(error.message);
     }
-  }, [email, router, verificationCode, auth]);
+  }, [email, verificationCode, setUserInfo, setToken, router]);
 
   useEffect(() => {
     if (verificationCode.length === 4) {

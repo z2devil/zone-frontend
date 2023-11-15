@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import Button from '../Button';
 import Link from 'next/link';
 
 const BASE_URL = 'https://z2devil-bucket.oss-cn-beijing.aliyuncs.com/';

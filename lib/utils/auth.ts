@@ -12,14 +12,18 @@ export const getUserRoleName = (lv: UserRole) => {
   return USER_ROLE[lv];
 };
 
-const auth = {
+export const utils = {
   isAuthenticated: () => {
     return localStorage.getItem('token') !== null;
   },
   getToken: () => {
     return localStorage.getItem('token') ?? '';
   },
-  setToken: (token: string) => {
+  setToken: (token: string | null) => {
+    if (!token) {
+      localStorage.removeItem('token');
+      return;
+    }
     localStorage.setItem('token', token);
   },
   removeToken: () => {
@@ -32,13 +36,17 @@ const auth = {
     const userInfo = localStorage.getItem('userInfo');
     return userInfo ? (JSON.parse(userInfo) as IUserInfo) : null;
   },
-  setUserInfo: (userInfo: IUserInfo) => {
+  setUserInfo: (userInfo: IUserInfo | null) => {
+    if (!userInfo) {
+      localStorage.removeItem('userInfo');
+      return;
+    }
     localStorage.setItem('userInfo', JSON.stringify(userInfo));
   },
-  logout: () => {
+  clear: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userInfo');
   },
 };
 
-export default auth;
+export default utils;

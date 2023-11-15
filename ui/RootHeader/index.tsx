@@ -4,6 +4,8 @@ import clsx from 'clsx';
 import { useCallback, useState } from 'react';
 import NavLayer from '../NavLayer';
 import SearchLayer from '../SearchLayer';
+import { NotificationType } from '../Notification/components/Notification';
+import { useNotificationUtilsStore } from '@/lib/stores';
 
 const enum MenuKey {
   SEARCH,
@@ -26,24 +28,34 @@ const MENU = [
 const RootHeader = () => {
   const [showLayer, setShowLayer] = useState<MenuKey | null>(null);
 
-  const handleMenuClick = useCallback((key: MenuKey) => {
-    const actions = {
-      [MenuKey.SEARCH]: () => {
-        console.log('search');
-        setShowLayer(MenuKey.SEARCH);
-      },
-      [MenuKey.MORE]: () => {
-        console.log('more');
-        setShowLayer(MenuKey.MORE);
-      },
-    };
+  const { utils: notificationUtils } = useNotificationUtilsStore();
 
-    actions[key]();
-  }, []);
+  const handleMenuClick = useCallback(
+    (key: MenuKey) => {
+      const actions = {
+        [MenuKey.SEARCH]: () => {
+          // console.log('search');
+          notificationUtils?.open({
+            type: NotificationType.WARNING,
+            content: '暂未开放',
+            duration: 3,
+          });
+          // setShowLayer(MenuKey.SEARCH);
+        },
+        [MenuKey.MORE]: () => {
+          // console.log('more');
+          setShowLayer(MenuKey.MORE);
+        },
+      };
+
+      actions[key]();
+    },
+    [notificationUtils]
+  );
 
   return (
     <>
-      <div className='border-black-80 sticky top-0 z-30 flex h-[3.625rem] w-full items-center justify-between border-b bg-gray-50 bg-opacity-90 px-5 backdrop-blur-xl'>
+      <div className='sticky top-0 z-30 flex h-[3.625rem] w-full items-center justify-between border-b border-black-80 bg-gray-50 bg-opacity-90 px-5 backdrop-blur-xl'>
         <i className='iconfont icon-logo text-[2rem] text-black-900'></i>
         <div className='flex items-center gap-[0.63rem]'>
           {MENU.map(item => {

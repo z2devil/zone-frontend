@@ -103,6 +103,7 @@ const VerificationCodeInput = (props: VerificationCodeInputProps) => {
           key={index}
           type='text'
           value={value}
+          onChange={() => void 0}
           onPaste={handlePaste}
           onKeyDown={handleKeyDown}
           maxLength={1}

@@ -1,16 +1,21 @@
+import { useEffect, useState } from 'react';
 import { UserRole } from '../api/auth';
-import useAuth from './useAuth';
+import { useAuthStore } from '../stores';
 
 const usePermission = (roles: UserRole[]) => {
-  const auth = useAuth();
+  const userInfo = useAuthStore(state => state.userInfo);
 
-  const userInfo = auth?.getUserInfo();
+  const [hasPermission, setHasPermission] = useState(false);
 
-  if (!userInfo) {
-    return false;
-  }
+  useEffect(() => {
+    if (userInfo) {
+      setHasPermission(roles.includes(userInfo.lv));
+    } else {
+      setHasPermission(false);
+    }
+  }, [roles, userInfo]);
 
-  return roles.includes(userInfo.lv);
+  return hasPermission;
 };
 
 export default usePermission;

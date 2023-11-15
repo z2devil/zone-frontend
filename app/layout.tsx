@@ -1,7 +1,5 @@
-import ModalUtilsProvider from '@/lib/recoil/modal';
-import NotificationUtilsProvider from '@/lib/recoil/notification';
 import '@/styles/globals.css';
-import RecoilRootProvider from '@/ui/RecoilRootProvider';
+import RootProvider from '@/ui/RootProvider';
 import clsx from 'clsx';
 
 export const metadata = {
@@ -20,12 +18,10 @@ const RootLayout = (props: RootLayoutProps) => {
   return (
     <html lang='en'>
       <body className={clsx('bg-gray-50')}>
-        <RecoilRootProvider>
-          <NotificationUtilsProvider />
-          <ModalUtilsProvider />
+        <RootProvider>
           {children}
           {layer}
-        </RecoilRootProvider>
+        </RootProvider>
       </body>
     </html>
   );

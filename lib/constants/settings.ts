@@ -1,4 +1,4 @@
-const configs = {
+export const configs = {
   /**
    * 标题
    */
@@ -43,5 +43,3 @@ const configs = {
     maxImageSize: 15 * 1024 * 1024,
   },
 };
-
-export default configs;

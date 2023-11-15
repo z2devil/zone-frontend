@@ -3,14 +3,12 @@
 import { UserRole } from '@/lib/api/auth';
 import { NoteTypeEnum, postNoteAPI } from '@/lib/api/notes';
 import usePermission from '@/lib/hooks/usePermission';
-import { modalUtilsState } from '@/lib/recoil/modal';
-import { notificationUtilsState } from '@/lib/recoil/notification';
+import { useModalUtilsStore, useNotificationUtilsStore } from '@/lib/stores';
 import Button from '@/ui/Button';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import RichEditor from '@/ui/RichEditor';
 import { useRouter } from 'next/navigation';
 import { useCallback, useRef } from 'react';
-import { useRecoilValue } from 'recoil';
 import { Descendant } from 'slate';
 
 interface ContentLayoutProps {
@@ -22,9 +20,9 @@ const ContentLayout = (props: ContentLayoutProps) => {
 
   const navigation = useRouter();
 
-  const modalUtils = useRecoilValue(modalUtilsState);
+  const { utils: modalUtils } = useModalUtilsStore();
 
-  const notificationUtils = useRecoilValue(notificationUtilsState);
+  const { utils: notificationUtils } = useNotificationUtilsStore();
 
   const isAdmin = usePermission([UserRole.ADMIN, UserRole.MANAGER]);
 
@@ -62,10 +60,10 @@ const ContentLayout = (props: ContentLayoutProps) => {
               modalUtils?.close(uuid);
               navigation.refresh();
             });
-        } catch (error) {
+        } catch (error: any) {
           notificationUtils?.open({
             type: NotificationType.WARNING,
-            content: '暂未开放',
+            content: error.message,
             duration: 3,
           });
         }

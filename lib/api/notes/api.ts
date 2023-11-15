@@ -19,6 +19,17 @@ export const postNoteAPI = async (params: PostNoteParams) => {
   });
 };
 
+/**
+ * 删除 note
+ */
+export const deleteNoteAPI = async (id: string) => {
+  return await request.delete('/note', {
+    body: JSON.stringify({
+      _id: id,
+    }),
+  });
+};
+
 // /**
 //  * 阅读通知
 //  */
