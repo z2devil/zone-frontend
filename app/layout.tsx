@@ -16,7 +16,15 @@ const RootLayout = (props: RootLayoutProps) => {
   const { children, layer } = props;
 
   return (
-    <html lang='en'>
+    <html lang='zh-CN'>
+      <head>
+        <link
+          rel='icon'
+          href='/icon?<generated>'
+          type='image/<generated>'
+          sizes='<generated>'
+        />
+      </head>
       <body className={clsx('bg-gray-50')}>
         <RootProvider>
           {children}
