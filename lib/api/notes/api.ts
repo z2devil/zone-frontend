@@ -9,6 +9,13 @@ import {
 import { cache } from 'react';
 
 /**
+ * 获取 note
+ */
+export const getNoteAPI = (request: IRequest) => async (id: string) => {
+  return await request.get<NoteEntity>(`/note/${id}`);
+};
+
+/**
  * 获取 note 列表
  */
 export const getNotesAPI = (request: IRequest) =>
@@ -21,7 +28,7 @@ export const getNotesAPI = (request: IRequest) =>
  */
 export const postNoteAPI =
   (request: IRequest) => async (params: PostNoteParams) => {
-    return await request.post('/note', {
+    return await request.post<NoteEntity>('/note', {
       body: JSON.stringify(params),
     });
   };

@@ -5,10 +5,10 @@ import { NoteTypeEnum, postNoteAPI } from '@/lib/api/notes';
 import usePermission from '@/lib/hooks/usePermission';
 import useRequest from '@/lib/hooks/useRequest';
 import { useModalUtilsStore, useNotificationUtilsStore } from '@/lib/stores';
+import { useNotesStore } from '@/lib/stores/notes';
 import Button from '@/ui/Button';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import RichEditor from '@/ui/RichEditor';
-import { useRouter } from 'next/navigation';
 import { useCallback, useRef } from 'react';
 import { Descendant } from 'slate';
 
@@ -19,13 +19,13 @@ interface ContentLayoutProps {
 const ContentLayout = (props: ContentLayoutProps) => {
   const { children } = props;
 
-  const navigation = useRouter();
-
   const request = useRequest();
 
   const { utils: modalUtils } = useModalUtilsStore();
 
   const { utils: notificationUtils } = useNotificationUtilsStore();
+
+  const { notes, setNotes } = useNotesStore();
 
   const isAdmin = usePermission([UserRole.ADMIN, UserRole.MANAGER]);
 
@@ -49,20 +49,17 @@ const ContentLayout = (props: ContentLayoutProps) => {
         console.log('onOk', editorContent.current);
         // modalUtils.close();
         try {
-          await postNoteAPI(request)({
+          const nextNote = await postNoteAPI(request)({
             type: NoteTypeEnum.NOTE,
             content: JSON.stringify(editorContent.current),
           });
-          notificationUtils
-            ?.open({
-              type: NotificationType.SUCCESS,
-              content: '发布成功',
-              duration: 3,
-            })
-            .then(() => {
-              modalUtils?.close(uuid);
-              navigation.refresh();
-            });
+          modalUtils?.close(uuid);
+          setNotes([nextNote, ...notes]);
+          notificationUtils?.open({
+            type: NotificationType.SUCCESS,
+            content: '发布成功',
+            duration: 3,
+          });
         } catch (error: any) {
           notificationUtils?.open({
             type: NotificationType.WARNING,
@@ -81,9 +78,10 @@ const ContentLayout = (props: ContentLayoutProps) => {
     handleEditorChange,
     isAdmin,
     modalUtils,
-    navigation,
+    notes,
     notificationUtils,
     request,
+    setNotes,
   ]);
 
   return (

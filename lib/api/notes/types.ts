@@ -38,7 +38,6 @@ export interface NoteEntity extends CommonInfo {
  */
 export interface GetNotesParams extends IPageParams {
   search?: string;
-  _id?: string;
 }
 
 /**

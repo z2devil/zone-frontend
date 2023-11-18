@@ -9,11 +9,7 @@ import {
   useState,
 } from 'react';
 import { throttle } from 'lodash-es';
-import MasonyCore, {
-  MasonryRecord,
-  MasonryUpdateDataType,
-  containerRectInfo,
-} from './utils';
+import MasonyCore, { MasonryRecord, containerRectInfo } from './utils/core';
 
 type Record = {
   x: number;
@@ -22,18 +18,20 @@ type Record = {
   height: number;
 };
 
-interface MasonryProps<T> {
+interface MasonryProps {
+  children: (index: number, record: Record) => React.ReactNode;
   containerRect: containerRectInfo | undefined;
   column: number;
   gap?: number;
   bufferOffset?: number;
   loadDistance?: number;
   chunkSize?: number;
-  children: (id: string, record: Record) => React.ReactNode;
-  loadData?: () => Promise<T[]>;
+  keyField?: string;
+  data: any[];
+  touchBottom?: () => void;
 }
 
-const Masonry = <T extends { _id: string }>(props: MasonryProps<T>) => {
+const Masonry = (props: MasonryProps) => {
   const {
     containerRect,
     column,
@@ -41,8 +39,10 @@ const Masonry = <T extends { _id: string }>(props: MasonryProps<T>) => {
     bufferOffset = 300,
     loadDistance = 600,
     chunkSize = 10,
+    keyField = '_id',
+    data,
+    touchBottom,
     children,
-    loadData,
   } = props;
 
   const [initialized, setInitialized] = useState(false);
@@ -60,7 +60,7 @@ const Masonry = <T extends { _id: string }>(props: MasonryProps<T>) => {
   const [totalHeight, setTotalHeight] = useState(0);
 
   // 真实数据下标集合
-  const [renderIds, setRenderIds] = useState<string[]>([]);
+  const [renderIndexes, setRenderIndexes] = useState<number[]>([]);
 
   // 预渲染数据下标集合
   const [preRenderIds, setPreRenderIds] = useState<string[]>([]);
@@ -75,29 +75,8 @@ const Masonry = <T extends { _id: string }>(props: MasonryProps<T>) => {
   // 核心
   const masonryCoreRef = useRef<MasonyCore | null>();
 
-  // 加载数据判断
-  const handleLoadData = useCallback(async () => {
-    const masonryCore = masonryCoreRef.current;
-    if (!masonryCore) return;
-
-    const res = (await loadData?.()) || [];
-
-    const preRenderIds = res.map(item => item._id);
-
-    setPreRenderIds(preRenderIds);
-
-    requestAnimationFrame(async () => {
-      const [nextRecords, nextTotalHeight, renderIds] =
-        await masonryCore.updateData(MasonryUpdateDataType.ADD, preRenderIds);
-      setPreRenderIds([]);
-      setRecords(nextRecords);
-      setTotalHeight(nextTotalHeight);
-      setRenderIds(renderIds);
-    });
-  }, [loadData]);
-
   // 初始化
-  useEffect(() => {
+  const init = useCallback(() => {
     if (initialized) return;
     if (!containerRect) return;
 
@@ -111,26 +90,49 @@ const Masonry = <T extends { _id: string }>(props: MasonryProps<T>) => {
       {
         bufferOffset,
         gap,
+        keyField,
       }
     );
 
-    handleLoadData();
+    touchBottom?.();
 
     setInitialized(true);
-  }, [initialized, containerRect, column, bufferOffset, gap, handleLoadData]);
+  }, [
+    initialized,
+    containerRect,
+    column,
+    bufferOffset,
+    gap,
+    keyField,
+    touchBottom,
+  ]);
+
+  useEffect(() => {
+    init();
+  }, [init]);
+
+  // 销毁
+  const destroy = useCallback(() => {
+    const masonryCore = masonryCoreRef.current;
+    if (!masonryCore) return;
+
+    masonryCore.destroy();
+    masonryCoreRef.current = null;
+  }, []);
 
   // 销毁
   useEffect(() => {
     return () => {
-      masonryCoreRef.current?.destroy();
-      masonryCoreRef.current = null;
+      destroy();
     };
-  }, []);
+  }, [destroy]);
 
-  // 重置
+  // 重置（column 变化时）
   useEffect(() => {
     if (!initialized) return;
     if (!containerRect) return;
+
+    console.log('[ 重置 ]');
 
     const preRenderContainerDOM = preRenderContainerRef.current;
     if (!preRenderContainerDOM) return;
@@ -138,15 +140,44 @@ const Masonry = <T extends { _id: string }>(props: MasonryProps<T>) => {
     const masornyCore = masonryCoreRef.current;
     if (!masornyCore) return;
 
-    const [nextRecords, nextTotalHeight, renderIds] = masornyCore.reset(
+    const [nextRecords, nextTotalHeight, renderIndexes] = masornyCore.reset(
       column,
       containerRect
     );
 
     setRecords(nextRecords);
     setTotalHeight(nextTotalHeight);
-    setRenderIds(renderIds);
-  }, [initialized, column, containerRect]);
+    setRenderIndexes(renderIndexes);
+  }, [initialized, containerRect, column, data]);
+
+  // 上次数据引用
+  const latestDataRef = useRef(data);
+
+  useEffect(() => {
+    if (!initialized) return;
+
+    const masonryCore = masonryCoreRef.current;
+    if (!masonryCore) return;
+
+    const needPreRenderIds = masonryCore.updateData(
+      latestDataRef.current,
+      data,
+      keyField
+    );
+
+    latestDataRef.current = data;
+
+    setPreRenderIds(needPreRenderIds);
+
+    requestAnimationFrame(async () => {
+      const [nextRecords, nextTotalHeight, renderIndexes] =
+        await masonryCore.render();
+      setPreRenderIds([]);
+      setRecords(nextRecords);
+      setTotalHeight(nextTotalHeight);
+      setRenderIndexes(renderIndexes);
+    });
+  }, [initialized, data, keyField, latestDataRef]);
 
   /************************************************
    * ✨ 滚动
@@ -161,12 +192,11 @@ const Masonry = <T extends { _id: string }>(props: MasonryProps<T>) => {
       const masonryCore = masonryCoreRef.current;
       if (!masonryCore) return;
 
-      const [nextRecords, nextTotalHeight, renderIds] = masonryCore.onScroll(
-        containerDOM.getBoundingClientRect().top
-      );
+      const [nextRecords, nextTotalHeight, renderIndexes] =
+        masonryCore.onScroll(containerDOM.getBoundingClientRect().top);
       setRecords(nextRecords);
       setTotalHeight(nextTotalHeight);
-      setRenderIds(renderIds);
+      setRenderIndexes(renderIndexes);
     }, []),
     100
   );
@@ -184,16 +214,17 @@ const Masonry = <T extends { _id: string }>(props: MasonryProps<T>) => {
       ref={containerRef}
       className='relative min-h-screen w-full'
       style={calcFillerStyle}>
-      {renderIds.map(id => {
-        const record = records.find(record => record.id === id);
+      {renderIndexes.map(index => {
+        const record = records[index];
         if (!record) return null;
-        return children(id, record);
+        return children(index, record);
       })}
       <div ref={preRenderContainerRef} className='invisible absolute'>
         {preRenderIds.map(id => {
+          const index = data.findIndex(item => item[keyField] === id);
           return (
             <div key={id} data-id={id}>
-              {children(id, { x: 0, y: 0, width: 0, height: 0 })}
+              {children(index, { x: 0, y: 0, width: 0, height: 0 })}
             </div>
           );
         })}

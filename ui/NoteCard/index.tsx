@@ -2,6 +2,7 @@ import {
   NoteEntity,
   NoteTypeEnum,
   deleteNoteAPI,
+  getNoteAPI,
   putNoteAPI,
 } from '@/lib/api/notes';
 import dayjs from '@/lib/utils/dayjs';
@@ -18,6 +19,7 @@ import {
 import RichEditor from '../RichEditor';
 import { Descendant } from 'slate';
 import useRequest from '@/lib/hooks/useRequest';
+import { useNotesStore } from '@/lib/stores/notes';
 
 interface NoteCardProps {
   style: React.CSSProperties;
@@ -29,6 +31,8 @@ const NoteCard = (props: NoteCardProps) => {
   const { note, style, onChange } = props;
 
   const request = useRequest();
+
+  const { notes, setNotes } = useNotesStore();
 
   const contextMenuUtils = useContextMenuUtilsStore(state => state.utils);
 
@@ -99,14 +103,31 @@ const NoteCard = (props: NoteCardProps) => {
                 ),
                 okText: '保存',
                 onOk: async () => {
-                  console.log('onOk', editorContent.current);
                   try {
-                    const res = await putNoteAPI(request)({
+                    await putNoteAPI(request)({
                       _id: note._id,
                       type: NoteTypeEnum.NOTE,
                       content: JSON.stringify(editorContent.current),
                     });
-                    console.log('[ 保存成功 ]', res);
+                    const nextNote = await getNoteAPI(request)(note._id);
+                    console.log(
+                      '[ nextNote ]',
+                      nextNote,
+                      notes.map(item => {
+                        if (item._id === note._id) {
+                          return nextNote;
+                        }
+                        return item;
+                      })
+                    );
+                    setNotes(
+                      notes.map(item => {
+                        if (item._id === note._id) {
+                          return nextNote;
+                        }
+                        return item;
+                      })
+                    );
                     notificationUtils
                       ?.open({
                         type: NotificationType.SUCCESS,
@@ -142,7 +163,6 @@ const NoteCard = (props: NoteCardProps) => {
                 children: '确定要删除这篇笔记吗？',
                 okText: '删除',
                 onOk: async () => {
-                  console.log('delete');
                   try {
                     await deleteNoteAPI(request)(note._id);
                     notificationUtils?.open({
@@ -150,6 +170,7 @@ const NoteCard = (props: NoteCardProps) => {
                       content: '删除成功',
                       duration: 3,
                     });
+                    setNotes(notes.filter(item => item._id !== note._id));
                   } catch (error) {
                     notificationUtils?.open({
                       type: NotificationType.ERROR,
@@ -179,15 +200,17 @@ const NoteCard = (props: NoteCardProps) => {
       modalUtils,
       note._id,
       note.content,
+      notes,
       notificationUtils,
       onChange,
       request,
+      setNotes,
     ]
   );
 
   return (
     <div
-      className=' group flex flex-col gap-2.5 rounded-xl border border-black-80 bg-gray-100 p-5 transition-colors hover:border-primary-50'
+      className=' group flex flex-col gap-2.5 rounded-xl border border-black-80 bg-gray-100 p-5 transition-all duration-200 hover:border-primary-50'
       style={style}>
       <div className='flex flex-col gap-2'>
         {/* 顶部 */}
@@ -214,6 +237,7 @@ const NoteCard = (props: NoteCardProps) => {
         </div>
         {/* 内容 */}
         <div className='text-justify text-black-600'>
+          {note._id}
           {note.type === NoteTypeEnum.NOTE ? (
             <RichView initialValue={JSON.parse(note.content)} />
           ) : (
