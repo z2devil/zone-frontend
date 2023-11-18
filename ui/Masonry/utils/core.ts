@@ -87,15 +87,43 @@ class MasonyCore {
     coloumnCount?: number,
     containerRect?: containerRectInfo
   ): Promise<masonryRenderInfo> {
-    console.log('[ render ]', this.records);
+    console.log('[ render in ]', JSON.parse(JSON.stringify(this.records)));
     this.coloumnCount = coloumnCount || this.coloumnCount;
     this.containerRect = containerRect || this.containerRect;
     this.updateVisionTop();
     await this.calcSize();
     this.calcPosition();
     const renderIndexes = this.calcRenderIndexes();
+    console.log(
+      '[ render out ]',
+      JSON.parse(JSON.stringify(this.records)),
+      renderIndexes
+    );
     return [this.records, this.totalHeight, renderIndexes];
   }
+
+  // 插入记录
+  private insertRecord = (index: number, source: string | MasonryRecord) => {
+    console.log('[ insertRecord ]', index, source);
+    if (!source) return;
+    if (typeof source === 'string') {
+      const nextRecord = {
+        [this.keyField]: source,
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0,
+      };
+      this.records.splice(index, 0, nextRecord);
+    } else {
+      const record = this.records[index];
+      if (record) {
+        Object.assign(record, source);
+      } else {
+        this.records[index] = source;
+      }
+    }
+  };
 
   // 更新记录
   private patchRecord = (index: number, source: string | MasonryRecord) => {
@@ -132,10 +160,7 @@ class MasonyCore {
   // 删除记录
   private removeRecord = (index: number) => {
     console.log('[ removeRecord ]', index);
-    const record = this.records[index];
-    if (!record) return;
-    this.records[index] = undefined;
-    console.log('[ removeRecord ]', record[this.keyField]);
+    this.records.splice(index, 1);
   };
 
   // 判断数据是否相同
@@ -145,7 +170,12 @@ class MasonyCore {
 
   // 更新数据
   public updateData(prevData: any[], nextData: any[], keyField: keyof any) {
-    console.log('[ updateData ]', prevData, nextData);
+    console.log(
+      '[ updateData in ]',
+      prevData,
+      nextData,
+      JSON.parse(JSON.stringify(this.records))
+    );
     const needPreRenderIds: string[] = [];
 
     let prevStartIndex = 0;
@@ -164,22 +194,19 @@ class MasonyCore {
       } else if (!prevEndItem) {
         prevEndItem = nextData[--prevEndIndex];
       } else if (this.isSameDataItem(prevStartItem, nextStartItem)) {
-        this.patchRecord(nextStartIndex, nextStartItem[keyField]);
-        needPreRenderIds.push(nextStartItem[keyField]);
         prevStartItem = prevData[++prevStartIndex];
         nextStartItem = nextData[++nextStartIndex];
       } else if (this.isSameDataItem(prevEndItem, nextEndItem)) {
-        this.patchRecord(nextEndIndex, nextEndItem[keyField]);
-        needPreRenderIds.push(nextEndItem[keyField]);
         prevEndItem = prevData[--prevEndIndex];
         nextEndItem = nextData[--nextEndIndex];
-        console.log('[ records ]', JSON.parse(JSON.stringify(this.records)));
       } else if (this.isSameDataItem(prevStartItem, nextEndItem)) {
-        this.moveRecord(prevStartIndex, nextEndIndex);
+        this.insertRecord(nextEndIndex + 1, prevStartItem);
+        this.removeRecord(prevStartIndex);
         prevStartItem = prevData[++prevStartIndex];
         nextEndItem = nextData[--nextEndIndex];
       } else if (this.isSameDataItem(prevEndItem, nextStartItem)) {
-        this.moveRecord(prevEndIndex, nextStartIndex);
+        this.insertRecord(nextStartIndex, prevEndItem);
+        this.removeRecord(prevEndIndex);
         prevEndItem = prevData[--prevEndIndex];
         nextStartItem = nextData[++nextStartIndex];
       } else {
@@ -198,7 +225,7 @@ class MasonyCore {
 
     if (prevStartIndex > prevEndIndex) {
       for (let i = nextStartIndex; i <= nextEndIndex; i++) {
-        this.patchRecord(i, nextData[i][keyField]);
+        this.insertRecord(i, nextData[i][keyField]);
         needPreRenderIds.push(nextData[i][keyField]);
       }
     } else if (nextStartIndex > nextEndIndex) {
@@ -207,7 +234,7 @@ class MasonyCore {
       }
     }
 
-    this.records = this.records.filter(Boolean);
+    console.log('[ updateData out ]', JSON.parse(JSON.stringify(this.records)));
 
     return needPreRenderIds;
   }
@@ -227,6 +254,7 @@ class MasonyCore {
 
   // 计算位置
   private calcPosition() {
+    console.log('[ calcPosition ]', JSON.parse(JSON.stringify(this.records)));
     const records = this.records;
     const coloumnCount = this.coloumnCount;
     const columnHeights = this.columnHeights;
@@ -282,6 +310,9 @@ class MasonyCore {
       // bugfix: 解决预渲染刚开始时拿不到元素的问题
       requestAnimationFrame(() => {
         const cardDOMs = preRenderAreaDOM.children;
+        // bugfix: 没有可以预渲染的内容时，直接返回
+        if (!cardDOMs.length) return resolve(null);
+
         for (let i = 0; i < cardDOMs.length; i++) {
           preRenderResizeObserver.observe(cardDOMs[i]);
         }
