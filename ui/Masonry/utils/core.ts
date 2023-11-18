@@ -148,15 +148,6 @@ class MasonyCore {
     }
   };
 
-  // 移动数据
-  private moveRecord = (prevIndex: number, nextIndex: number) => {
-    console.log('[ moveRecord ]', prevIndex, nextIndex);
-    [this.records[prevIndex], this.records[nextIndex]] = [
-      this.records[nextIndex],
-      this.records[prevIndex],
-    ];
-  };
-
   // 删除记录
   private removeRecord = (index: number) => {
     console.log('[ removeRecord ]', index);
@@ -214,10 +205,10 @@ class MasonyCore {
           this.isSameDataItem(prevItem, nextStartItem)
         );
         if (indexInPrev !== -1) {
-          this.moveRecord(indexInPrev, nextStartIndex);
+          this.insertRecord(nextStartIndex, prevData[indexInPrev]);
+          this.removeRecord(indexInPrev + 1);
         } else {
-          this.patchRecord(nextStartIndex, nextStartItem[keyField]);
-          needPreRenderIds.push(nextStartItem[keyField]);
+          this.insertRecord(nextStartIndex, nextStartItem);
         }
         nextStartItem = nextData[++nextStartIndex];
       }
