@@ -1,7 +1,6 @@
 'use client';
 
 import { UserRole, putUserInfoAPI } from '@/lib/api/user';
-import NavLink from '@/ui/NavLink';
 import UserInfo from '@/ui/UserInfo';
 import clsx from 'clsx';
 import { usePathname } from 'next/navigation';
@@ -18,24 +17,8 @@ import {
 } from '@/lib/stores';
 import usePersistStoreHydration from '@/lib/hooks/usePersistStoreHydration';
 import useRequest from '@/lib/hooks/useRequest';
-
-const NAV_LINKS = [
-  {
-    name: '笔记',
-    path: '/notes',
-    icon: 'icon-note',
-  },
-  {
-    name: '作品',
-    path: '/works',
-    icon: 'icon-works',
-  },
-  {
-    name: '关于',
-    path: '/about',
-    icon: 'icon-about',
-  },
-];
+import RouterLink from './components/RouterLink';
+import { ROUTER } from '@/lib/constants/router';
 
 interface NavLayerProps {
   show: boolean;
@@ -220,10 +203,10 @@ const NavLayer = (props: NavLayerProps) => {
           </div>
         ) : (
           <div className=' flex w-full flex-col gap-7 py-6'>
-            {/* nav list */}
-            {NAV_LINKS.map(item => {
+            {/* router list */}
+            {ROUTER.map(item => {
               return (
-                <NavLink
+                <RouterLink
                   key={item.path}
                   {...item}
                   active={pathname === item.path}
