@@ -2,10 +2,13 @@
 
 import clsx from 'clsx';
 import { useCallback, useState } from 'react';
-import NavLayer from '../NavLayer';
+import NavLayer from '../RouterLayer';
 import SearchLayer from '../SearchLayer';
 import { NotificationType } from '../Notification/components/Notification';
 import { useNotificationUtilsStore } from '@/lib/stores';
+import { ROUTER } from '@/lib/constants/router';
+import { usePathname } from 'next/navigation';
+import RouterLink from './components/RouterLink';
 
 const enum MenuKey {
   SEARCH,
@@ -26,6 +29,8 @@ const MENU = [
 ];
 
 const RootHeader = () => {
+  const pathname = usePathname();
+
   const [showLayer, setShowLayer] = useState<MenuKey | null>(null);
 
   const { utils: notificationUtils } = useNotificationUtilsStore();
@@ -56,7 +61,24 @@ const RootHeader = () => {
   return (
     <>
       <div className='sticky top-0 z-30 flex h-[3.625rem] w-full items-center justify-between border-b border-black-80 bg-gray-50 bg-opacity-90 px-5 backdrop-blur-xl'>
-        <i className='iconfont icon-logo text-[2rem] text-black-900'></i>
+        {/* logo */}
+        <div>
+          <i className='iconfont icon-logo text-[2rem] text-black-900'></i>
+        </div>
+        {/* 导航 */}
+        <div className=' flex h-full max-w-xl flex-1 items-center justify-around max-sm:hidden'>
+          {/* nav list */}
+          {ROUTER.map(item => {
+            return (
+              <RouterLink
+                key={item.path}
+                {...item}
+                active={pathname === item.path}
+              />
+            );
+          })}
+        </div>
+        {/* 菜单 */}
         <div className='flex items-center gap-[0.63rem]'>
           {MENU.map(item => {
             return (

@@ -1,14 +1,14 @@
 import clsx from 'clsx';
 import Link from 'next/link';
 
-interface NavLinkProps {
+interface RouterLinkProps {
   name: string;
   path: string;
   icon: string;
   active?: boolean;
 }
 
-const NavLink = (props: NavLinkProps) => {
+const RouterLink = (props: RouterLinkProps) => {
   const { name, path, icon, active } = props;
 
   return (
@@ -31,4 +31,4 @@ const NavLink = (props: NavLinkProps) => {
   );
 };
 
-export default NavLink;
+export default RouterLink;
