@@ -1,3 +1,4 @@
+import { CommonInfo } from '../types';
 import { IPageParams } from '../types';
 
 /************************************************
@@ -5,20 +6,15 @@ import { IPageParams } from '../types';
  ************************************************/
 
 /**
- * note 类型枚举
+ * 笔记类型枚举
  */
 export enum NoteTypeEnum {
   NOTE = 0,
   ARTICLE,
 }
 
-interface CommonInfo {
-  _id: string;
-  createdAt: string;
-}
-
 /**
- * note 实体
+ * 笔记实体
  */
 export interface NoteEntity extends CommonInfo {
   content: string;
@@ -28,6 +24,16 @@ export interface NoteEntity extends CommonInfo {
   title?: string;
   summary?: string;
 }
+
+/**
+ * 笔记列表信息
+ */
+export type NoteInfo = Pick<
+  NoteEntity,
+  '_id' | 'type' | 'content' | 'title' | 'summary' | 'bannerPath' | 'createdAt'
+> & {
+  author: string;
+};
 
 /************************************************
  * ✨ API

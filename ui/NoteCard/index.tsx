@@ -1,5 +1,5 @@
 import {
-  NoteEntity,
+  NoteInfo,
   NoteTypeEnum,
   deleteNoteAPI,
   getNoteAPI,
@@ -10,7 +10,7 @@ import RichView from '../RichView';
 import { useCallback, useRef } from 'react';
 import { NotificationType } from '../Notification/components/Notification';
 import usePermission from '@/lib/hooks/usePermission';
-import { UserRole } from '@/lib/api/auth';
+import { UserRole } from '@/lib/api/user';
 import {
   useContextMenuUtilsStore,
   useModalUtilsStore,
@@ -23,7 +23,7 @@ import { useNotesStore } from '@/lib/stores/notes';
 
 interface NoteCardProps {
   style: React.CSSProperties;
-  note: NoteEntity;
+  note: NoteInfo;
   onChange?: (value: Descendant[]) => void;
 }
 
@@ -238,6 +238,7 @@ const NoteCard = (props: NoteCardProps) => {
         {/* 内容 */}
         <div className='text-justify text-black-600'>
           {note._id}
+          {JSON.stringify(note.author)}
           {note.type === NoteTypeEnum.NOTE ? (
             <RichView initialValue={JSON.parse(note.content)} />
           ) : (

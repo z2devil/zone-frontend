@@ -1,6 +1,6 @@
 'use client';
 
-import { UserRole, putUserInfoAPI } from '@/lib/api/auth';
+import { UserRole, putUserInfoAPI } from '@/lib/api/user';
 import NavLink from '@/ui/NavLink';
 import UserInfo from '@/ui/UserInfo';
 import clsx from 'clsx';

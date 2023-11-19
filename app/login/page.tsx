@@ -1,6 +1,6 @@
 'use client';
 
-import { getVerificationCodeAPI, signAPI } from '@/lib/api/auth';
+import { getVerificationCodeAPI, signAPI } from '@/lib/api/user';
 import useRequest from '@/lib/hooks/useRequest';
 import { useAuthStore } from '@/lib/stores';
 import { validate, FormRules } from '@/lib/utils/formRules';

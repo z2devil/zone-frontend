@@ -1,6 +1,6 @@
 'use client';
 
-import { UserRole } from '@/lib/api/auth';
+import { UserRole } from '@/lib/api/user';
 import { NoteTypeEnum, postNoteAPI } from '@/lib/api/notes';
 import usePermission from '@/lib/hooks/usePermission';
 import useRequest from '@/lib/hooks/useRequest';

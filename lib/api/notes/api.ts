@@ -2,7 +2,7 @@ import { IRequest } from '@/lib/hooks/useRequest';
 import { IPageData } from '../types';
 import {
   GetNotesParams,
-  NoteEntity,
+  NoteInfo,
   PostNoteParams,
   PutNoteParams,
 } from './types';
@@ -12,7 +12,7 @@ import { cache } from 'react';
  * 获取 note
  */
 export const getNoteAPI = (request: IRequest) => async (id: string) => {
-  return await request.get<NoteEntity>(`/note/${id}`);
+  return await request.get<NoteInfo>(`/note/${id}`);
 };
 
 /**
@@ -20,7 +20,7 @@ export const getNoteAPI = (request: IRequest) => async (id: string) => {
  */
 export const getNotesAPI = (request: IRequest) =>
   cache(async (params: GetNotesParams) => {
-    return await request.get<IPageData<NoteEntity>>('/note', params);
+    return await request.get<IPageData<NoteInfo>>('/note', params);
   });
 
 /**
@@ -28,7 +28,7 @@ export const getNotesAPI = (request: IRequest) =>
  */
 export const postNoteAPI =
   (request: IRequest) => async (params: PostNoteParams) => {
-    return await request.post<NoteEntity>('/note', {
+    return await request.post<NoteInfo>('/note', {
       body: JSON.stringify(params),
     });
   };
@@ -49,7 +49,7 @@ export const deleteNoteAPI = (request: IRequest) => async (id: string) => {
  */
 export const putNoteAPI =
   (request: IRequest) => async (params: PutNoteParams) => {
-    return await request.put<NoteEntity>('/note', {
+    return await request.put<NoteInfo>('/note', {
       body: JSON.stringify(params),
     });
   };

@@ -1,13 +1,13 @@
 import { create } from 'zustand';
-import { NoteEntity } from '../api/notes';
+import { NoteInfo } from '../api/notes';
 import { immer } from 'zustand/middleware/immer';
 
 interface NotesState {
-  notes: NoteEntity[];
+  notes: NoteInfo[];
 }
 
 interface NotesAction {
-  setNotes: (notes: NoteEntity[]) => void;
+  setNotes: (notes: NoteInfo[]) => void;
 }
 
 export const useNotesStore = create(
