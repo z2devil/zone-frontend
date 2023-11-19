@@ -66,17 +66,18 @@ const RootHeader = () => {
           <i className='iconfont icon-logo text-[2rem] text-black-900'></i>
         </div>
         {/* 导航 */}
-        <div className=' flex h-full max-w-xl flex-1 items-center justify-around max-sm:hidden'>
-          {/* nav list */}
-          {ROUTER.map(item => {
-            return (
-              <RouterLink
-                key={item.path}
-                {...item}
-                active={pathname === item.path}
-              />
-            );
-          })}
+        <div className=' absolute left-0 top-0 flex h-full w-full justify-center px-28 max-sm:hidden'>
+          <div className=' flex h-full max-w-lg flex-1 items-center justify-between'>
+            {ROUTER.map(item => {
+              return (
+                <RouterLink
+                  key={item.path}
+                  {...item}
+                  active={pathname === item.path}
+                />
+              );
+            })}
+          </div>
         </div>
         {/* 菜单 */}
         <div className='flex items-center gap-[0.63rem]'>
