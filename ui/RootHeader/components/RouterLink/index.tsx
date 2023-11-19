@@ -18,9 +18,9 @@ const RouterLink = (props: RouterLinkProps) => {
         active ? 'text-primary-50' : 'text-black-600 hover:text-black-900'
       )}
       href={path}>
-      <div className=' flex items-center gap-2'>
-        <i className={clsx('iconfont text-2xl', icon)}></i>
-        <span className=' font-medium'>{name}</span>
+      <div className=' flex w-full items-center gap-2'>
+        <i className={clsx('iconfont flex-shrink-0 text-2xl', icon)}></i>
+        <span className=' flex-1 truncate font-medium'>{name}</span>
       </div>
     </Link>
   );
