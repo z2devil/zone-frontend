@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { UserRole } from '../api/auth';
+import { UserRole } from '../api/user';
 import { useAuthStore } from '../stores';
 
 const usePermission = (roles: UserRole[]) => {

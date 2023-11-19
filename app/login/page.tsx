@@ -1,15 +1,18 @@
 'use client';
 
-import { getVerificationCodeAPI, signAPI } from '@/lib/api/auth';
+import { getVerificationCodeAPI, signAPI } from '@/lib/api/user';
+import useRequest from '@/lib/hooks/useRequest';
 import { useAuthStore } from '@/lib/stores';
 import { validate, FormRules } from '@/lib/utils/formRules';
 import Button from '@/ui/Button';
 import VerificationCodeInput from '@/ui/VerificationCodeInput';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 const LoginPage = () => {
   const router = useRouter();
+
+  const request = useRequest();
 
   const [step, setStep] = useState(0);
 
@@ -23,13 +26,17 @@ const LoginPage = () => {
 
   const setToken = useAuthStore(state => state.setToken);
 
-  // 验证码输入变化
-  const handleVerificationCodeChange = useCallback((code: string) => {
-    setVerificationCode(code);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // 返回
+  const handleBack = useCallback(() => {
+    setStep(0);
   }, []);
 
   // 发送验证码
   const handleSendVerificationCode = useCallback(async () => {
+    if (isLoading) return;
+    setIsLoading(true);
     setTip('');
     await Promise.resolve();
     if (email.length === 0) {
@@ -43,47 +50,61 @@ const LoginPage = () => {
     }
     try {
       setTip('发送中...');
-      await getVerificationCodeAPI({
+      await getVerificationCodeAPI(request)({
         email,
       });
       setTip('已发送到 ' + email);
       setStep(1);
     } catch (error: any) {
       setTip(error.message);
+    } finally {
+      setIsLoading(false);
     }
-  }, [email]);
-
-  // 返回
-  const handleBack = useCallback(() => {
-    setStep(0);
-  }, []);
+  }, [email, isLoading, request]);
 
   // 登录/注册
-  const handleSign = useCallback(async () => {
-    setTip('');
-    await Promise.resolve();
-    setTip('登录中...');
-    try {
-      const { token, info } = await signAPI({
-        email,
-        code: verificationCode,
-      });
-      setTip('登录成功');
-      setUserInfo(info);
-      setToken(token);
-      setTimeout(() => {
-        router.push('/');
-      }, 1000);
-    } catch (error: any) {
-      setTip(error.message);
-    }
-  }, [email, verificationCode, setUserInfo, setToken, router]);
+  const sign = useCallback(
+    async (code: string) => {
+      if (isLoading) return;
+      setIsLoading(true);
+      setTip('');
+      await Promise.resolve();
+      setTip('登录中...');
+      try {
+        const { token, info } = await signAPI(request)({
+          email,
+          code,
+        });
+        setTip('登录成功');
+        setUserInfo(info);
+        setToken(token);
+        setTimeout(() => {
+          router.push('/');
+        }, 1000);
+      } catch (error: any) {
+        setTip(error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [isLoading, request, email, setUserInfo, setToken, router]
+  );
 
-  useEffect(() => {
-    if (verificationCode.length === 4) {
-      handleSign();
-    }
-  }, [verificationCode, handleSign]);
+  // 验证码输入变化
+  const handleVerificationCodeChange = useCallback(
+    (code: string) => {
+      setVerificationCode(code);
+      if (code.length === 4) {
+        sign(code);
+      }
+    },
+    [sign]
+  );
+
+  // 登录/注册
+  const handleSign = useCallback(() => {
+    sign(verificationCode);
+  }, [sign, verificationCode]);
 
   const calcTitle = useMemo(() => {
     if (step === 0) {

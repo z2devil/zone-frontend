@@ -1,15 +1,15 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-import { IUserInfo, UserRole } from '../api/auth';
+import { UserInfo, UserRole } from '../api/user';
 
 interface AuthState {
-  userInfo: IUserInfo | null;
+  userInfo: UserInfo | null;
   token: string | null;
 }
 
 interface AuthAction {
-  setUserInfo: (userInfo: IUserInfo | null) => void;
+  setUserInfo: (userInfo: UserInfo | null) => void;
   setToken: (token: string | null) => void;
   clear: () => void;
 }

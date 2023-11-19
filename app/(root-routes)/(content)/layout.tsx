@@ -1,13 +1,14 @@
 'use client';
 
-import { UserRole } from '@/lib/api/auth';
+import { UserRole } from '@/lib/api/user';
 import { NoteTypeEnum, postNoteAPI } from '@/lib/api/notes';
 import usePermission from '@/lib/hooks/usePermission';
+import useRequest from '@/lib/hooks/useRequest';
 import { useModalUtilsStore, useNotificationUtilsStore } from '@/lib/stores';
+import { useNotesStore } from '@/lib/stores/notes';
 import Button from '@/ui/Button';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import RichEditor from '@/ui/RichEditor';
-import { useRouter } from 'next/navigation';
 import { useCallback, useRef } from 'react';
 import { Descendant } from 'slate';
 
@@ -18,11 +19,13 @@ interface ContentLayoutProps {
 const ContentLayout = (props: ContentLayoutProps) => {
   const { children } = props;
 
-  const navigation = useRouter();
+  const request = useRequest();
 
   const { utils: modalUtils } = useModalUtilsStore();
 
   const { utils: notificationUtils } = useNotificationUtilsStore();
+
+  const { notes, setNotes } = useNotesStore();
 
   const isAdmin = usePermission([UserRole.ADMIN, UserRole.MANAGER]);
 
@@ -35,9 +38,9 @@ const ContentLayout = (props: ContentLayoutProps) => {
   const handleAdd = useCallback(() => {
     if (!isAdmin) return;
     const uuid = modalUtils?.open({
-      title: '写动态',
+      title: '写笔记',
       children: (
-        <div>
+        <div className='mb-6'>
           <RichEditor className=' max-h-[70vh]' onChange={handleEditorChange} />
         </div>
       ),
@@ -46,20 +49,17 @@ const ContentLayout = (props: ContentLayoutProps) => {
         console.log('onOk', editorContent.current);
         // modalUtils.close();
         try {
-          await postNoteAPI({
+          const nextNote = await postNoteAPI(request)({
             type: NoteTypeEnum.NOTE,
             content: JSON.stringify(editorContent.current),
           });
-          notificationUtils
-            ?.open({
-              type: NotificationType.SUCCESS,
-              content: '发布成功',
-              duration: 3,
-            })
-            .then(() => {
-              modalUtils?.close(uuid);
-              navigation.refresh();
-            });
+          modalUtils?.close(uuid);
+          setNotes([nextNote, ...notes]);
+          notificationUtils?.open({
+            type: NotificationType.SUCCESS,
+            content: '发布成功',
+            duration: 3,
+          });
         } catch (error: any) {
           notificationUtils?.open({
             type: NotificationType.WARNING,
@@ -74,7 +74,15 @@ const ContentLayout = (props: ContentLayoutProps) => {
         modalUtils.close();
       },
     });
-  }, [handleEditorChange, isAdmin, modalUtils, navigation, notificationUtils]);
+  }, [
+    handleEditorChange,
+    isAdmin,
+    modalUtils,
+    notes,
+    notificationUtils,
+    request,
+    setNotes,
+  ]);
 
   return (
     <>

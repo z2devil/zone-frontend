@@ -1,23 +1,38 @@
-import { NoteEntity, NoteTypeEnum, deleteNoteAPI } from '@/lib/api/notes';
+import {
+  NoteInfo,
+  NoteTypeEnum,
+  deleteNoteAPI,
+  getNoteAPI,
+  putNoteAPI,
+} from '@/lib/api/notes';
 import dayjs from '@/lib/utils/dayjs';
 import RichView from '../RichView';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { NotificationType } from '../Notification/components/Notification';
 import usePermission from '@/lib/hooks/usePermission';
-import { UserRole } from '@/lib/api/auth';
+import { UserRole } from '@/lib/api/user';
 import {
   useContextMenuUtilsStore,
   useModalUtilsStore,
   useNotificationUtilsStore,
 } from '@/lib/stores';
+import RichEditor from '../RichEditor';
+import { Descendant } from 'slate';
+import useRequest from '@/lib/hooks/useRequest';
+import { useNotesStore } from '@/lib/stores/notes';
 
 interface NoteCardProps {
-  note: NoteEntity;
   style: React.CSSProperties;
+  note: NoteInfo;
+  onChange?: (value: Descendant[]) => void;
 }
 
 const NoteCard = (props: NoteCardProps) => {
-  const { note, style } = props;
+  const { note, style, onChange } = props;
+
+  const request = useRequest();
+
+  const { notes, setNotes } = useNotesStore();
 
   const contextMenuUtils = useContextMenuUtilsStore(state => state.utils);
 
@@ -32,6 +47,12 @@ const NoteCard = (props: NoteCardProps) => {
   ]);
 
   const isAdmin = usePermission([UserRole.ADMIN, UserRole.MANAGER]);
+
+  const editorContent = useRef<Descendant[]>([]);
+
+  const handleEditorContentChange = useCallback((value: Descendant[]) => {
+    editorContent.current = value;
+  }, []);
 
   const handleSetting = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -69,7 +90,67 @@ const NoteCard = (props: NoteCardProps) => {
             label: '编辑',
             icon: <i className='iconfont icon-edit text-19' />,
             onClick: () => {
-              console.log('edit');
+              const uuid = modalUtils?.open({
+                title: '编辑笔记',
+                children: (
+                  <div className='mb-6'>
+                    <RichEditor
+                      initialValue={JSON.parse(note.content)}
+                      className=' max-h-[70vh]'
+                      onChange={handleEditorContentChange}
+                    />
+                  </div>
+                ),
+                okText: '保存',
+                onOk: async () => {
+                  try {
+                    await putNoteAPI(request)({
+                      _id: note._id,
+                      type: NoteTypeEnum.NOTE,
+                      content: JSON.stringify(editorContent.current),
+                    });
+                    const nextNote = await getNoteAPI(request)(note._id);
+                    console.log(
+                      '[ nextNote ]',
+                      nextNote,
+                      notes.map(item => {
+                        if (item._id === note._id) {
+                          return nextNote;
+                        }
+                        return item;
+                      })
+                    );
+                    setNotes(
+                      notes.map(item => {
+                        if (item._id === note._id) {
+                          return nextNote;
+                        }
+                        return item;
+                      })
+                    );
+                    notificationUtils
+                      ?.open({
+                        type: NotificationType.SUCCESS,
+                        content: '保存成功',
+                        duration: 3,
+                      })
+                      .then(() => {
+                        modalUtils?.close(uuid);
+                        onChange?.(editorContent.current);
+                      });
+                  } catch (error: any) {
+                    notificationUtils?.open({
+                      type: NotificationType.WARNING,
+                      content: error.message,
+                      duration: 3,
+                    });
+                  }
+                },
+                cancelText: '取消',
+                onCancel: () => {
+                  modalUtils.close();
+                },
+              });
             },
           },
           isAdmin && {
@@ -82,14 +163,14 @@ const NoteCard = (props: NoteCardProps) => {
                 children: '确定要删除这篇笔记吗？',
                 okText: '删除',
                 onOk: async () => {
-                  console.log('delete');
                   try {
-                    await deleteNoteAPI(note._id);
+                    await deleteNoteAPI(request)(note._id);
                     notificationUtils?.open({
                       type: NotificationType.SUCCESS,
                       content: '删除成功',
                       duration: 3,
                     });
+                    setNotes(notes.filter(item => item._id !== note._id));
                   } catch (error) {
                     notificationUtils?.open({
                       type: NotificationType.ERROR,
@@ -112,12 +193,24 @@ const NoteCard = (props: NoteCardProps) => {
         document.querySelector('body') as HTMLElement
       );
     },
-    [contextMenuUtils, isAdmin, modalUtils, note._id, notificationUtils]
+    [
+      contextMenuUtils,
+      handleEditorContentChange,
+      isAdmin,
+      modalUtils,
+      note._id,
+      note.content,
+      notes,
+      notificationUtils,
+      onChange,
+      request,
+      setNotes,
+    ]
   );
 
   return (
     <div
-      className=' group flex flex-col gap-2.5 rounded-xl border border-black-80 bg-gray-100 p-5 transition-colors hover:border-primary-50'
+      className=' group flex flex-col gap-2.5 rounded-xl border border-black-80 bg-gray-100 p-5 transition-all duration-200 hover:border-primary-50'
       style={style}>
       <div className='flex flex-col gap-2'>
         {/* 顶部 */}
@@ -144,6 +237,8 @@ const NoteCard = (props: NoteCardProps) => {
         </div>
         {/* 内容 */}
         <div className='text-justify text-black-600'>
+          {note._id}
+          {JSON.stringify(note.author)}
           {note.type === NoteTypeEnum.NOTE ? (
             <RichView initialValue={JSON.parse(note.content)} />
           ) : (

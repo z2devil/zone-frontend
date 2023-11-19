@@ -1,6 +1,6 @@
 'use client';
 
-import { NoteEntity, getNotesAPI } from '@/lib/api/notes';
+import { getNotesAPI } from '@/lib/api/notes';
 import Masonry from '@/ui/Masonry';
 import useResize from '@/ui/Masonry/hooks/useResize';
 import NoteCard from '@/ui/NoteCard';
@@ -9,6 +9,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import px2number from '@/lib/utils/px2number';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import { useNotificationUtilsStore } from '@/lib/stores';
+import useRequest from '@/lib/hooks/useRequest';
+import { useNotesStore } from '@/lib/stores/notes';
 
 const FETCH_SIZE = 20;
 
@@ -17,9 +19,11 @@ const GAP = 20;
 const CARD_WIDTH = 335;
 
 const NotePage = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const request = useRequest();
 
-  const [data, setData] = useState<NoteEntity[]>([]);
+  const { notes, setNotes } = useNotesStore();
+
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const [column, setColumn] = useState(2);
 
@@ -74,19 +78,18 @@ const NotePage = () => {
   }, [containerRect?.width, handleResize]);
 
   // TODO: total 问题
-  const handleLoadData = async () => {
+  const handleLoadData = useCallback(async () => {
     const nextCurrent = current + 1;
     setCurrent(nextCurrent);
     setIsLoading(true);
-    const res = await getNotesAPI({
+    const res = await getNotesAPI(request)({
       current: nextCurrent,
       size: FETCH_SIZE,
     });
     setIsLoading(false);
-    const nextData = res.list;
-    setData(prev => [...prev, ...nextData]);
-    return nextData;
-  };
+    setNotes([...notes, ...res.list]);
+    return res.list;
+  }, [current, notes, request, setNotes]);
 
   /************************************************
    * ✨ 以下为测试代码
@@ -112,24 +115,25 @@ const NotePage = () => {
         onChartClick={handleChartClick}
       />
       {isLoading && <div>loading...</div>}
-      <Masonry<NoteEntity>
+      <Masonry
         containerRect={calcContainerRectInfo}
         column={column}
-        loadData={handleLoadData}
-        gap={GAP}>
-        {(id, position) => {
-          const item = data.find(item => item._id === id);
-          if (!item) return null;
+        gap={GAP}
+        data={notes}
+        touchBottom={handleLoadData}>
+        {(index, position) => {
+          const note = notes[index];
+          if (!note) return null;
           return (
             <NoteCard
-              key={id}
+              key={note._id}
               style={{
                 position: 'absolute',
                 width: `${CARD_WIDTH}px`,
                 transform: `translate(${position.x}px, ${position.y}px)`,
                 overflow: 'hidden',
               }}
-              note={item}
+              note={note}
             />
           );
         }}

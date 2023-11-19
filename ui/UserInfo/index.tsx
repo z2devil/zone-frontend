@@ -7,15 +7,13 @@ const DEFAULT_USER_AVATAR_PATH =
   'blog/image/e24544c9-ef56-45e6-8719-de70144dab0d.png';
 
 interface UserInfoProps {
-  info?: {
-    avatarPath: string;
-    nickname: string;
-    roleName: string;
-  };
+  avatarPath?: string;
+  nickname?: string;
+  roleName?: string;
 }
 
 const UserInfo = (props: UserInfoProps) => {
-  const { info } = props;
+  const { avatarPath, nickname, roleName } = props;
 
   return (
     <div className='flex items-center gap-[0.63rem]'>
@@ -23,17 +21,17 @@ const UserInfo = (props: UserInfoProps) => {
         className=' h-[3.75rem] w-[3.75rem] rounded-full border-2 border-black-250'
         src={
           BASE_URL +
-          (info ? info.avatarPath : DEFAULT_USER_AVATAR_PATH) +
+          (avatarPath ? avatarPath : DEFAULT_USER_AVATAR_PATH) +
           '?x-oss-process=image/resize,s_128'
         }
         alt='avatar'
         width={60}
         height={60}
       />
-      {info ? (
+      {nickname && roleName ? (
         <div className='flex flex-col gap-[0.3rem]'>
-          <span className='text-xl text-black-900'>{info.nickname}</span>
-          <span className='text-black-250'>{info.roleName}</span>
+          <span className='text-xl text-black-900'>{nickname}</span>
+          <span className='text-black-250'>{roleName}</span>
         </div>
       ) : (
         <Link
