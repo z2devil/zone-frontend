@@ -1,16 +1,8 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Descendant, createEditor } from 'slate';
-import {
-  Slate as SlateProvider,
-  Editable,
-  RenderElementProps,
-  RenderLeafProps,
-  withReact,
-} from 'slate-react';
-import Leaf from '../RichEditor/components/Leaf';
-import Element from '../RichEditor/components/Element';
+import { Slate as SlateProvider, withReact } from 'slate-react';
 import clsx from 'clsx';
-import style from '../RichEditor/style.module.scss';
+import Editor from '../RichEditor/components/Editor';
 
 interface EditorProps {
   className?: string;
@@ -28,15 +20,6 @@ const RichView = (props: EditorProps) => {
     );
   }, []);
 
-  const renderLeaf = useCallback((props: RenderLeafProps) => {
-    return <Leaf {...props} />;
-  }, []);
-
-  const renderElement = useCallback(
-    (props: RenderElementProps) => <Element {...props} />,
-    []
-  );
-
   return (
     <div
       className={clsx(
@@ -44,16 +27,7 @@ const RichView = (props: EditorProps) => {
         className
       )}>
       <SlateProvider editor={editor} initialValue={initialValue}>
-        <Editable
-          className={clsx(
-            style.editor,
-            ' h-full w-full overflow-y-auto text-black-900 outline-none'
-          )}
-          spellCheck={false}
-          renderElement={renderElement}
-          renderLeaf={renderLeaf}
-          readOnly
-        />
+        <Editor readonly />
       </SlateProvider>
     </div>
   );
