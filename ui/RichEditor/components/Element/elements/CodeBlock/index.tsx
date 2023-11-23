@@ -129,7 +129,7 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
   }, [element, editor, content, height, language]);
 
   const readOnlyMode = useMemo(
-    () => EditorState.readOnly.of(readOnly),
+    () => EditorView.editable.of(!readOnly),
     [readOnly]
   );
 
@@ -174,6 +174,9 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
           backgroundColor: '#efefed',
           // color: '#ddd',
           // border: 'none',
+        },
+        '.cm-scroller': {
+          'overflow-x': 'unset',
         },
       }),
     []

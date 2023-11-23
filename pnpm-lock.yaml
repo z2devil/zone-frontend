@@ -140,6 +140,9 @@ dependencies:
   swr:
     specifier: ^2.2.4
     version: 2.2.4(react@18.2.0)
+  tailwind-merge:
+    specifier: ^2.0.0
+    version: 2.0.0
   tailwindcss:
     specifier: 3.3.1
     version: 3.3.1(postcss@8.4.23)(ts-node@10.9.1)
@@ -192,6 +195,16 @@ packages:
     engines: { node: '>=6.9.0' }
     dependencies:
       regenerator-runtime: 0.13.11
+    dev: false
+
+  /@babel/runtime@7.23.4:
+    resolution:
+      {
+        integrity: sha512-2Yv65nlWnWlSpe3fXEyX5i7fx5kIKo4Qbcj+hMO0odwaneFjfXw5fdum+4yL20O0QiaHpia0cYQ9xpNMqrBwHg==,
+      }
+    engines: { node: '>=6.9.0' }
+    dependencies:
+      regenerator-runtime: 0.14.0
     dev: false
 
   /@changesets/apply-release-plan@6.1.3:
@@ -6026,6 +6039,13 @@ packages:
       }
     dev: false
 
+  /regenerator-runtime@0.14.0:
+    resolution:
+      {
+        integrity: sha512-srw17NI0TUWHuGa5CFGGmhfNIeja30WMBfbslPNhf6JrqQlLN5gcrvig1oqPxiVaXb0oW0XRKtH6Nngs5lKCIA==,
+      }
+    dev: false
+
   /regexp.prototype.flags@1.5.0:
     resolution:
       {
@@ -6881,6 +6901,15 @@ packages:
     dependencies:
       '@pkgr/utils': 2.4.0
       tslib: 2.5.0
+    dev: false
+
+  /tailwind-merge@2.0.0:
+    resolution:
+      {
+        integrity: sha512-WO8qghn9yhsldLSg80au+3/gY9E4hFxIvQ3qOmlpXnqpDKoMruKfi/56BbbMg6fHTQJ9QD3cc79PoWqlaQE4rw==,
+      }
+    dependencies:
+      '@babel/runtime': 7.23.4
     dev: false
 
   /tailwindcss@3.3.1(postcss@8.4.23)(ts-node@10.9.1):

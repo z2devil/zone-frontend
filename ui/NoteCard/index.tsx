@@ -218,12 +218,16 @@ const NoteCard = (props: NoteCardProps) => {
           {note.type === NoteTypeEnum.NOTE ? (
             <div className='flex items-center gap-1'>
               <i className='iconfont icon-calender-filled text-17 text-black-250' />
-              <span className='text-[0.75rem] leading-[0.75rem] text-black-250'>
+              <span
+                className='text-[0.75rem] leading-[0.75rem] text-black-250'
+                title={dayjs(note.createdAt).format('YYYY-MM-DD HH:mm:ss')}>
                 {dayjs(note.createdAt).format('YYYY-MM-DD')}
               </span>
             </div>
           ) : (
-            <span className='overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-black-900 group-hover:text-primary-50'>
+            <span
+              className='overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-black-900 group-hover:text-primary-50'
+              title={note.title}>
               {note.title}
             </span>
           )}

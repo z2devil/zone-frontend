@@ -120,30 +120,4 @@
     text-indent: 0;
     word-break: break-all;
   }
-  .bold {
-    font-weight: bold;
-  }
-  .italic {
-    font-style: italic;
-  }
-  .underline {
-    text-decoration: underline;
-  }
-  .strikethrough {
-    text-decoration: line-through;
-  }
-  .code {
-    display: inline;
-    margin: 1px 3px;
-    border: solid 1px #e7e9e8;
-    border-radius: 4px;
-    background-color: #0000000f;
-    padding: 0 4px;
-    font-size: 15px;
-    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier,
-      monospace, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
-      'Helvetica Neue', Helvetica, Arial, sans-serif, 'Segoe UI';
-    text-indent: 0;
-    word-break: break-all;
-  }
 }

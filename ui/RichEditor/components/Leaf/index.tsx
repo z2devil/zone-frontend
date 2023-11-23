@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { RenderLeafProps } from 'slate-react';
-import style from '../../style.module.scss';
+import style from './style.module.scss';
 
 const Leaf = (props: RenderLeafProps) => {
   return (
