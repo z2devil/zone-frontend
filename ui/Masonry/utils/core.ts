@@ -208,7 +208,16 @@ class MasonyCore {
           this.insertRecord(nextStartIndex, prevData[indexInPrev]);
           this.removeRecord(indexInPrev + 1);
         } else {
-          this.insertRecord(nextStartIndex, nextStartItem);
+          const nextRecord = {
+            [this.keyField]: nextStartItem[this.keyField],
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0,
+          };
+          this.insertRecord(nextStartIndex, nextRecord);
+          needPreRenderIds.push(nextStartItem[this.keyField]);
+          // this.insertRecord(nextStartIndex, nextStartItem);
         }
         nextStartItem = nextData[++nextStartIndex];
       }
