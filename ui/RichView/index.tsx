@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo } from 'react';
-import { Descendant, Node, createEditor } from 'slate';
+import { useCallback, useMemo } from 'react';
+import { Descendant, createEditor } from 'slate';
 import {
   Slate as SlateProvider,
   Editable,
