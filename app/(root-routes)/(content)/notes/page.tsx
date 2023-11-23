@@ -11,6 +11,7 @@ import { NotificationType } from '@/ui/Notification/components/Notification';
 import { useNotificationUtilsStore } from '@/lib/stores';
 import useRequest from '@/lib/hooks/useRequest';
 import { useNotesStore } from '@/lib/stores/notes';
+import EmptyInfo from '@/ui/EmptyInfo';
 
 const FETCH_SIZE = 20;
 
@@ -114,7 +115,11 @@ const NotePage = () => {
         lastUpdated='Sat Jul 08 2023 13:12:50 GMT+0800 (中国标准时间)'
         onChartClick={handleChartClick}
       />
-      {isLoading && <div>loading...</div>}
+      {isLoading ? (
+        <div className=' text-17 text-black-600'>加载中...</div>
+      ) : notes.length === 0 ? (
+        <EmptyInfo tip='暂无笔记' />
+      ) : null}
       <Masonry
         containerRect={calcContainerRectInfo}
         column={column}
