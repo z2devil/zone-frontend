@@ -22,6 +22,7 @@ const Toolbar = (props: ToolbarProps) => {
         onMouseDown={event => {
           event.preventDefault();
           editorUtils.insertBlockNode(editor, BlockElementType.CODE_BLOCK);
+          editorUtils.insertBlockNode(editor, BlockElementType.PARAGRAPH);
         }}>
         <i className='iconfont icon-brackets-curly rounded p-1 text-xl font-bold transition-colors duration-100 hover:bg-gray-50 hover:text-black-900'></i>
       </button>
