@@ -47,8 +47,6 @@ const Element = (props: RenderElementProps) => {
     case InlineElementType.LINK:
       return <a {...attributes}>{children}</a>;
     case BlockElementType.IMAGE:
-      // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
-      return <img {...attributes} />;
     case BlockElementType.BUTTON:
       return <button {...attributes}>{children}</button>;
     default:

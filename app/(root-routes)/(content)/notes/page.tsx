@@ -37,6 +37,12 @@ const NotePage = () => {
     delay: 400,
   });
 
+  // 最后更新时间
+  const lastUpdated = useMemo(() => {
+    if (!notes.length) return;
+    return notes[0].createdAt;
+  }, [notes]);
+
   // 容器矩形信息
   const calcContainerRectInfo = useMemo(() => {
     const containerDOM = containerRef.current;
@@ -92,10 +98,6 @@ const NotePage = () => {
     return res.list;
   }, [current, notes, request, setNotes]);
 
-  /************************************************
-   * ✨ 以下为测试代码
-   ************************************************/
-
   const { utils: notificationUtils } = useNotificationUtilsStore();
 
   const handleChartClick = () => {
@@ -112,7 +114,7 @@ const NotePage = () => {
       ref={containerRef}>
       <PageBanner
         title='笔记'
-        lastUpdated='Sat Jul 08 2023 13:12:50 GMT+0800 (中国标准时间)'
+        lastUpdated={lastUpdated}
         onChartClick={handleChartClick}
       />
       {isLoading ? (

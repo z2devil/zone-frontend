@@ -1,12 +1,12 @@
 import { Editor, Element, Point, Range, Transforms } from 'slate';
-import { CodeBlockElement, RichEditor } from 'types/slate';
+import { RichEditor } from 'types/slate';
 import {
   NON_WRAPPING_ELEMENTS,
   SHORTCUTS_MAP,
   NON_EMPTY_ELEMENTS,
   BlockElementType,
-  Language,
 } from '../constans';
+import { editorUtils } from './editorUtils';
 
 const withShortcuts = (editor: RichEditor) => {
   const { insertBreak, insertSoftBreak, deleteBackward, insertText } = editor;
@@ -26,14 +26,7 @@ const withShortcuts = (editor: RichEditor) => {
     const prevText = Editor.string(editor, block[1]);
 
     if (NON_WRAPPING_ELEMENTS.includes(prevElementType)) {
-      Transforms.insertNodes(editor, {
-        type: BlockElementType.PARAGRAPH,
-        children: [
-          {
-            text: '',
-          },
-        ],
-      });
+      editorUtils.insertBlockNode(editor, BlockElementType.PARAGRAPH);
 
       return;
     }
@@ -50,29 +43,13 @@ const withShortcuts = (editor: RichEditor) => {
     if (prevText.endsWith('```')) {
       console.log('[ 代码块 ]');
 
-      const codeBlock: CodeBlockElement = {
-        type: BlockElementType.CODE_BLOCK,
-        children: [
-          {
-            text: '',
-          },
-        ],
-        language: Language.PLAINTEXT,
-        content: '',
-      };
-
-      Transforms.setNodes(editor, codeBlock, {
+      Transforms.removeNodes(editor, {
         match: n => Element.isElement(n) && Editor.isBlock(editor, n),
       });
 
-      Transforms.insertNodes(editor, {
-        type: BlockElementType.PARAGRAPH,
-        children: [
-          {
-            text: '',
-          },
-        ],
-      });
+      editorUtils.insertBlockNode(editor, BlockElementType.CODE_BLOCK);
+
+      editorUtils.insertBlockNode(editor, BlockElementType.PARAGRAPH);
 
       return;
     }
