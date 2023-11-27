@@ -60,11 +60,11 @@ const RichEditor = (props: EditorProps) => {
         ' relative flex flex-1 flex-col overflow-hidden',
         className
       )}>
-      <Toolbar editor={editor} />
       <SlateProvider
         editor={editor}
         initialValue={initialValue}
         onChange={handleContentChange}>
+        <Toolbar />
         <Editor className='p-6' />
       </SlateProvider>
     </div>
