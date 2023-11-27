@@ -1,5 +1,5 @@
 import { KeyboardEvent, useCallback, useRef } from 'react';
-import { Editor, Path, Range, Transforms } from 'slate';
+import { Editor, Range, Transforms } from 'slate';
 import { RichEditor, CustomElement } from 'types/slate';
 import { editorUtils } from '../utils';
 import { InlineElementType, MarkType } from '../constans';
@@ -67,7 +67,6 @@ const useKeyDown = (editor: RichEditor, readOnly = false) => {
               Transforms.move(editor, { unit: 'offset', reverse: true });
             }
             if (e.key === 'Backspace' && !nextAbove && isInlneAbove.current) {
-              console.log('[ 删除 ]');
               e.preventDefault();
               Transforms.delete(editor, {
                 unit: 'character',
@@ -85,7 +84,6 @@ const useKeyDown = (editor: RichEditor, readOnly = false) => {
               at: nextLocation,
               match: node => Editor.isInline(editor, node as CustomElement),
             });
-            console.log('[ nextAbove ]', isInlneAbove.current, nextAbove);
             if (isInlneAbove.current !== !!nextAbove) {
               e.preventDefault();
               Transforms.move(editor, { unit: 'offset' });
