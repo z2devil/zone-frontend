@@ -19,7 +19,7 @@ interface ContentLayoutProps {
 const ContentLayout = (props: ContentLayoutProps) => {
   const { children } = props;
 
-  const request = useRequest();
+  const [request] = useRequest();
 
   const { utils: modalUtils } = useModalUtilsStore();
 

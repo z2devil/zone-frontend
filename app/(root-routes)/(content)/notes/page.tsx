@@ -20,7 +20,7 @@ const GAP = 20;
 const CARD_WIDTH = 335;
 
 const NotePage = () => {
-  const request = useRequest();
+  const [request] = useRequest();
 
   const { notes, setNotes } = useNotesStore();
 

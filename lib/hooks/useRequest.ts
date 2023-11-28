@@ -16,6 +16,14 @@ interface IResponse<T> {
   }[];
 }
 
+export interface IFetcher<T = any> {
+  (
+    url: string,
+    config?: Omit<RequestInit, 'url'>,
+    enabledToken?: boolean
+  ): Promise<T>;
+}
+
 export interface IRequest {
   get: <T = any>(
     url: string,
@@ -37,7 +45,11 @@ const useRequest = () => {
   });
 
   const fetcher = useCallback(
-    async <T = any>(url: string, config: Omit<RequestInit, 'url'> = {}) => {
+    async <T = any>(
+      url: string,
+      config: Omit<RequestInit, 'url'> = {},
+      enabledToken = true
+    ) => {
       try {
         // 构建请求配置
         const requestConfig: RequestInit = {
@@ -49,7 +61,7 @@ const useRequest = () => {
         };
 
         // 添加 token
-        if (token) {
+        if (enabledToken && token) {
           (requestConfig.headers as Record<string, string>)[
             configs.request.header
           ] = token;
@@ -57,7 +69,7 @@ const useRequest = () => {
 
         // 发送请求
         const response = await fetch(
-          configs.request.baseURL + url,
+          url.startsWith('http') ? url : configs.request.baseURL + url,
           requestConfig
         );
 
@@ -124,7 +136,7 @@ const useRequest = () => {
     [fetcher]
   );
 
-  return request;
+  return [request, fetcher] as const;
 };
 
 export default useRequest;

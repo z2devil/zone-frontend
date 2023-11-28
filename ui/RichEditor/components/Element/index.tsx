@@ -3,6 +3,7 @@ import CodeBlock from './elements/CodeBlock';
 import { BlockElementType, InlineElementType } from '../../constans';
 import InlineChromiumBugfix from './elements/InlineChromiumBugfix';
 import { CodeBlockElement } from 'types/slate';
+import ImageBlock from './elements/ImageBlock';
 
 const Element = (props: RenderElementProps) => {
   const { attributes, children, element } = props;
@@ -47,10 +48,14 @@ const Element = (props: RenderElementProps) => {
     case InlineElementType.LINK:
       return <a {...attributes}>{children}</a>;
     case BlockElementType.IMAGE:
+      return (
+        <ImageBlock attributes={attributes} element={element}>
+          {children}
+        </ImageBlock>
+      );
     case BlockElementType.BUTTON:
       return <button {...attributes}>{children}</button>;
     default:
-      return <z2-p {...attributes}>{children}</z2-p>;
   }
 };
 

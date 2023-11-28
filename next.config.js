@@ -2,6 +2,9 @@
 const nextConfig = {
   env: {
     BASE_URL: process.env.BASE_URL,
+    OSS_ENDPOINT: process.env.OSS_ENDPOINT,
+    OSS_BUCKET: process.env.OSS_BUCKET,
+    OSS_ROOT: process.env.OSS_ROOT,
   },
   experimental: {
     appDir: true,
@@ -12,7 +15,7 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'z2devil-bucket.oss-cn-beijing.aliyuncs.com',
         port: '',
-        pathname: '/blog/image/**',
+        pathname: '/*/image/**',
       },
     ],
   },

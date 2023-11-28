@@ -30,7 +30,7 @@ interface NoteCardProps {
 const NoteCard = (props: NoteCardProps) => {
   const { note, style, onChange } = props;
 
-  const request = useRequest();
+  const [request] = useRequest();
 
   const { notes, setNotes } = useNotesStore();
 

@@ -30,7 +30,7 @@ const NavLayer = (props: NavLayerProps) => {
 
   const pathname = usePathname();
 
-  const request = useRequest();
+  const [request] = useRequest();
 
   const isLogin = usePermission([
     UserRole.LOGIN,
