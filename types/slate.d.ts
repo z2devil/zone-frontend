@@ -81,7 +81,7 @@ export type LinkElement = {
   children: CustomText[];
 };
 
-export type ImageElement = {
+export type ImageBlockElement = {
   type: BlockElementType.IMAGE;
   url?: string;
   children: CustomText[];
@@ -101,7 +101,7 @@ export type BlockElement =
   | UnorderedListElement
   | BlockQuoteElement
   | CodeBlockElement
-  | ImageElement
+  | ImageBlockElement
   | ButtonElement;
 
 export type CustomElement = InlineElement | BlockElement;

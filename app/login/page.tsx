@@ -12,7 +12,7 @@ import { useCallback, useMemo, useState } from 'react';
 const LoginPage = () => {
   const router = useRouter();
 
-  const request = useRequest();
+  const [request] = useRequest();
 
   const [step, setStep] = useState(0);
 

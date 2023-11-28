@@ -44,6 +44,20 @@ const Toolbar = () => {
               : 'hover:text-black-900'
           )}></i>
       </button>
+      <button
+        onMouseDown={event => {
+          event.preventDefault();
+          editorUtils.insertBlockNode(editor, BlockElementType.IMAGE);
+          editorUtils.insertBlockNode(editor, BlockElementType.PARAGRAPH);
+        }}>
+        <i
+          className={clsx(
+            'iconfont icon-image rounded p-1 text-xl font-bold transition-colors duration-100 hover:bg-gray-50',
+            editorUtils.isElementActive(editor, BlockElementType.IMAGE)
+              ? 'text-primary-50'
+              : 'hover:text-black-900'
+          )}></i>
+      </button>
       {/* 分割线 */}
       <div className='mx-1 h-full w-[1px] bg-gray-50'></div>
       <button
