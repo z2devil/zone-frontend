@@ -56,6 +56,7 @@ const Element = (props: RenderElementProps) => {
     case BlockElementType.BUTTON:
       return <button {...attributes}>{children}</button>;
     default:
+      return <z2-p {...attributes}>{children}</z2-p>;
   }
 };
 
