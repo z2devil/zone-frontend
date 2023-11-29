@@ -61,7 +61,7 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
         Transforms.setNodes(
           editor,
           {
-            url: `https://${process.env.OSS_BUCKET}.${process.env.OSS_ENDPOINT}/${process.env.OSS_ROOT}/image/${fileName}`,
+            url: `${process.env.OSS_ROOT}/image/${fileName}`,
           },
           { at: ReactEditor.findPath(editor, element) }
         );
@@ -74,7 +74,9 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
 
   const handleLoad: ReactEventHandler<HTMLImageElement> = useCallback(
     e => {
+      if (readOnly) return;
       const target = e.target as HTMLImageElement;
+      console.log('[ target ]', target.naturalWidth, target.naturalHeight);
       Transforms.setNodes(
         editor,
         {
@@ -84,7 +86,7 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
         { at: ReactEditor.findPath(editor, element) }
       );
     },
-    [editor, element]
+    [editor, element, readOnly]
   );
 
   return (
@@ -103,7 +105,7 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
         {element.url ? (
           <Image
             className='block'
-            src={element.url + '?x-oss-process=image/resize,l_480'}
+            src={element.url}
             alt='图片'
             fill={!hasSize}
             width={element.width}
@@ -138,7 +140,12 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
           )
         ) : null}
       </div>
-      {children}
+      <div
+        style={{
+          fontSize: '0',
+        }}>
+        {children}
+      </div>
     </div>
   );
 };

@@ -114,7 +114,6 @@ export type CustomText = {
   [MarkType.ITALIC]?: boolean;
   [MarkType.UNDERLINE]?: boolean;
   [MarkType.STRIKETHROUGH]?: boolean;
-  [MarkType.CODE]?: boolean;
   text?: string;
   children?: CustomText[];
 };
