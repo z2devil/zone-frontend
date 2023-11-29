@@ -84,6 +84,8 @@ export type LinkElement = {
 export type ImageBlockElement = {
   type: BlockElementType.IMAGE;
   url?: string;
+  width?: number;
+  height?: number;
   children: CustomText[];
 };
 
@@ -112,7 +114,6 @@ export type CustomText = {
   [MarkType.ITALIC]?: boolean;
   [MarkType.UNDERLINE]?: boolean;
   [MarkType.STRIKETHROUGH]?: boolean;
-  [MarkType.CODE]?: boolean;
   text?: string;
   children?: CustomText[];
 };

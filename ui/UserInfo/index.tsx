@@ -1,8 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-const BASE_URL = 'https://z2devil-bucket.oss-cn-beijing.aliyuncs.com/';
-
 const DEFAULT_USER_AVATAR_PATH =
   'blog/image/e24544c9-ef56-45e6-8719-de70144dab0d.png';
 
@@ -19,11 +17,7 @@ const UserInfo = (props: UserInfoProps) => {
     <div className='flex items-center gap-[0.63rem]'>
       <Image
         className=' h-[3.75rem] w-[3.75rem] rounded-full border-2 border-black-250'
-        src={
-          BASE_URL +
-          (avatarPath ? avatarPath : DEFAULT_USER_AVATAR_PATH) +
-          '?x-oss-process=image/resize,s_128'
-        }
+        src={avatarPath ? avatarPath : DEFAULT_USER_AVATAR_PATH}
         alt='avatar'
         width={60}
         height={60}
