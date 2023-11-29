@@ -2,8 +2,16 @@ import { editorUtils } from '../../utils';
 import { BlockElementType, InlineElementType, MarkType } from '../../constans';
 import clsx from 'clsx';
 import { useSlate } from 'slate-react';
+import { useCallback } from 'react';
 
-const Toolbar = () => {
+interface ToolbarProps {
+  fullScreen?: boolean;
+  onChangeFullScreen?: (fullScreen: boolean) => void;
+}
+
+const Toolbar = (props: ToolbarProps) => {
+  const { fullScreen, onChangeFullScreen } = props;
+
   const editor = useSlate();
 
   const isHeadingActive = () => {
@@ -17,114 +25,134 @@ const Toolbar = () => {
     );
   };
 
+  const handleFullScreen = useCallback(() => {
+    onChangeFullScreen?.(!fullScreen);
+  }, [fullScreen, onChangeFullScreen]);
+
   return (
-    <div className=' sticky top-0 flex h-12 flex-shrink-0 items-center gap-2 px-5 text-black-600 shadow-main'>
-      <button
-        onMouseDown={event => {
-          event.preventDefault();
-          editorUtils.insertBlockNode(editor, BlockElementType.HEADING_1);
-        }}>
-        <i
-          className={clsx(
-            'iconfont icon-head-title-filled rounded p-1 text-xl transition-colors duration-100 hover:bg-gray-50',
-            isHeadingActive() ? 'text-primary-50' : 'hover:text-black-900'
-          )}></i>
-      </button>
-      <button
-        onMouseDown={event => {
-          event.preventDefault();
-          editorUtils.insertBlockNode(editor, BlockElementType.CODE_BLOCK);
-          editorUtils.insertBlockNode(editor, BlockElementType.PARAGRAPH);
-        }}>
-        <i
-          className={clsx(
-            'iconfont icon-brackets-curly rounded p-1 text-xl font-bold transition-colors duration-100 hover:bg-gray-50',
-            editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK)
-              ? 'text-primary-50'
-              : 'hover:text-black-900'
-          )}></i>
-      </button>
-      <button
-        onMouseDown={event => {
-          event.preventDefault();
-          editorUtils.insertBlockNode(editor, BlockElementType.IMAGE);
-          editorUtils.insertBlockNode(editor, BlockElementType.PARAGRAPH);
-        }}>
-        <i
-          className={clsx(
-            'iconfont icon-image rounded p-1 text-xl font-bold transition-colors duration-100 hover:bg-gray-50',
-            editorUtils.isElementActive(editor, BlockElementType.IMAGE)
-              ? 'text-primary-50'
-              : 'hover:text-black-900'
-          )}></i>
-      </button>
+    <div className=' sticky top-0 flex h-12 flex-shrink-0 px-5 text-black-600 shadow-main'>
+      <div className=' flex h-full w-full flex-grow items-center gap-2 overflow-auto'>
+        <button
+          onMouseDown={event => {
+            event.preventDefault();
+            editorUtils.insertBlockNode(editor, BlockElementType.HEADING_1);
+          }}>
+          <i
+            className={clsx(
+              'iconfont icon-head-title-filled rounded p-1 text-xl transition-colors duration-100 hover:bg-gray-50',
+              isHeadingActive() ? 'text-primary-50' : 'hover:text-black-900'
+            )}></i>
+        </button>
+        <button
+          onMouseDown={event => {
+            event.preventDefault();
+            editorUtils.insertBlockNode(editor, BlockElementType.CODE_BLOCK);
+            editorUtils.insertBlockNode(editor, BlockElementType.PARAGRAPH);
+          }}>
+          <i
+            className={clsx(
+              'iconfont icon-brackets-curly rounded p-1 text-xl font-bold transition-colors duration-100 hover:bg-gray-50',
+              editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK)
+                ? 'text-primary-50'
+                : 'hover:text-black-900'
+            )}></i>
+        </button>
+        <button
+          onMouseDown={event => {
+            event.preventDefault();
+            editorUtils.insertBlockNode(editor, BlockElementType.IMAGE);
+            editorUtils.insertBlockNode(editor, BlockElementType.PARAGRAPH);
+          }}>
+          <i
+            className={clsx(
+              'iconfont icon-image rounded p-1 text-xl font-bold transition-colors duration-100 hover:bg-gray-50',
+              editorUtils.isElementActive(editor, BlockElementType.IMAGE)
+                ? 'text-primary-50'
+                : 'hover:text-black-900'
+            )}></i>
+        </button>
+        {/* 分割线 */}
+        <div className='mx-1 h-1/3 w-[1px] bg-gray-50'></div>
+        <button
+          onMouseDown={event => {
+            event.preventDefault();
+            editorUtils.toggleMark(editor, MarkType.BOLD);
+          }}>
+          <i
+            className={clsx(
+              'iconfont icon-bold rounded p-1 text-xl transition-colors duration-100 hover:bg-gray-50',
+              editorUtils.isMarkActive(editor, MarkType.BOLD)
+                ? 'text-primary-50'
+                : 'hover:text-black-900'
+            )}></i>
+        </button>
+        <button
+          onMouseDown={event => {
+            event.preventDefault();
+            editorUtils.toggleMark(editor, MarkType.ITALIC);
+          }}>
+          <i
+            className={clsx(
+              'iconfont icon-italic rounded p-1 text-xl transition-colors duration-100 hover:bg-gray-50',
+              editorUtils.isMarkActive(editor, MarkType.ITALIC)
+                ? 'text-primary-50'
+                : 'hover:text-black-900'
+            )}></i>
+        </button>
+        <button
+          onMouseDown={event => {
+            event.preventDefault();
+            editorUtils.toggleMark(editor, MarkType.UNDERLINE);
+          }}>
+          <i
+            className={clsx(
+              'iconfont icon-underline rounded p-1 text-xl transition-colors duration-100 hover:bg-gray-50',
+              editorUtils.isMarkActive(editor, MarkType.UNDERLINE)
+                ? 'text-primary-50'
+                : 'hover:text-black-900'
+            )}></i>
+        </button>
+        <button
+          onMouseDown={event => {
+            event.preventDefault();
+            editorUtils.toggleMark(editor, MarkType.STRIKETHROUGH);
+          }}>
+          <i
+            className={clsx(
+              'iconfont icon-text-strike-through rounded p-1 text-xl transition-colors duration-100 hover:bg-gray-50',
+              editorUtils.isMarkActive(editor, MarkType.STRIKETHROUGH)
+                ? 'text-primary-50'
+                : 'hover:text-black-900'
+            )}></i>
+        </button>
+        <button
+          onMouseDown={event => {
+            event.preventDefault();
+            editorUtils.insertInlineNode(editor, InlineElementType.CODE_LINE);
+          }}>
+          <i
+            className={clsx(
+              'iconfont icon-arrow rounded p-1 text-xl font-bold transition-colors duration-100 hover:bg-gray-50',
+              editorUtils.isElementActive(editor, InlineElementType.CODE_LINE)
+                ? 'text-primary-50'
+                : 'hover:text-black-900'
+            )}></i>
+        </button>
+      </div>
       {/* 分割线 */}
-      <div className='mx-1 h-full w-[1px] bg-gray-50'></div>
-      <button
-        onMouseDown={event => {
-          event.preventDefault();
-          editorUtils.toggleMark(editor, MarkType.BOLD);
-        }}>
-        <i
-          className={clsx(
-            'iconfont icon-bold rounded p-1 text-xl transition-colors duration-100 hover:bg-gray-50',
-            editorUtils.isMarkActive(editor, MarkType.BOLD)
-              ? 'text-primary-50'
-              : 'hover:text-black-900'
-          )}></i>
-      </button>
-      <button
-        onMouseDown={event => {
-          event.preventDefault();
-          editorUtils.toggleMark(editor, MarkType.ITALIC);
-        }}>
-        <i
-          className={clsx(
-            'iconfont icon-italic rounded p-1 text-xl transition-colors duration-100 hover:bg-gray-50',
-            editorUtils.isMarkActive(editor, MarkType.ITALIC)
-              ? 'text-primary-50'
-              : 'hover:text-black-900'
-          )}></i>
-      </button>
-      <button
-        onMouseDown={event => {
-          event.preventDefault();
-          editorUtils.toggleMark(editor, MarkType.UNDERLINE);
-        }}>
-        <i
-          className={clsx(
-            'iconfont icon-underline rounded p-1 text-xl transition-colors duration-100 hover:bg-gray-50',
-            editorUtils.isMarkActive(editor, MarkType.UNDERLINE)
-              ? 'text-primary-50'
-              : 'hover:text-black-900'
-          )}></i>
-      </button>
-      <button
-        onMouseDown={event => {
-          event.preventDefault();
-          editorUtils.toggleMark(editor, MarkType.STRIKETHROUGH);
-        }}>
-        <i
-          className={clsx(
-            'iconfont icon-text-strike-through rounded p-1 text-xl transition-colors duration-100 hover:bg-gray-50',
-            editorUtils.isMarkActive(editor, MarkType.STRIKETHROUGH)
-              ? 'text-primary-50'
-              : 'hover:text-black-900'
-          )}></i>
-      </button>
-      <button
-        onMouseDown={event => {
-          event.preventDefault();
-          editorUtils.insertInlineNode(editor, InlineElementType.CODE_LINE);
-        }}>
-        <i
-          className={clsx(
-            'iconfont icon-arrow rounded p-1 text-xl font-bold transition-colors duration-100 hover:bg-gray-50',
-            editorUtils.isElementActive(editor, InlineElementType.CODE_LINE)
-              ? 'text-primary-50'
-              : 'hover:text-black-900'
-          )}></i>
-      </button>
+      <div className=' flex h-full flex-shrink-0 items-center gap-2 border-l border-gray-50 pl-2'>
+        <button
+          onMouseDown={event => {
+            event.preventDefault();
+            handleFullScreen();
+          }}>
+          <i
+            className={clsx(
+              'iconfont rounded p-1 text-lg font-bold transition-colors duration-100 hover:bg-gray-50 hover:text-black-900',
+              fullScreen ? 'icon-compress-alt' : 'icon-expand-alt'
+            )}></i>
+        </button>
+      </div>
     </div>
   );
 };
