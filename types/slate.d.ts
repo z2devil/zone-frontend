@@ -84,6 +84,8 @@ export type LinkElement = {
 export type ImageBlockElement = {
   type: BlockElementType.IMAGE;
   url?: string;
+  width?: number;
+  height?: number;
   children: CustomText[];
 };
 

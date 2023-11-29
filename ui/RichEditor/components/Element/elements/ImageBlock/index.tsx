@@ -1,13 +1,9 @@
-'use client';
-
-import Button from '@/ui/Button';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { Transforms } from 'slate';
-import { ReactEditor, useReadOnly, useSelected, useSlate } from 'slate-react';
+import { ReactEditor, useReadOnly, useSlate } from 'slate-react';
 import { ImageBlockElement } from 'types/slate';
-import defaultImg from '../../../../../../public/tip/default-img.jpg';
-import { useCallback } from 'react';
+import { ReactEventHandler, useCallback, useMemo, useState } from 'react';
 import { upload } from '@/lib/api/oss';
 import useRequest from '@/lib/hooks/useRequest';
 
@@ -22,71 +18,121 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
 
   const readOnly = useReadOnly();
 
-  const selected = useSelected();
-
   const [, fetcher] = useRequest();
 
-  const handleRemove = useCallback(() => {
-    const path = ReactEditor.findPath(editor, element);
-    console.log('[ path ]', path);
-    Transforms.removeNodes(editor, { at: path });
-  }, [editor, element]);
+  const hasSize = useMemo(() => {
+    return element.width && element.height;
+  }, [element]);
 
-  const handleUpload = useCallback(() => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.onchange = async () => {
-      const file = input.files?.[0];
-      if (!file) return;
-      const fileName = await upload(fetcher)({
-        file,
-        fileType: 'image',
-      });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleUpload = useCallback(async () => {
+    if (hasSize) {
       Transforms.setNodes(
         editor,
         {
-          url: `https://z2devil-bucket.oss-cn-beijing.aliyuncs.com/zone/image/${fileName}?x-oss-process=image/resize,s_480`,
+          url: void 0,
+          width: void 0,
+          height: void 0,
         },
         { at: ReactEditor.findPath(editor, element) }
       );
-    };
-    input.click();
-  }, [editor, element, fetcher]);
+    }
+    await new Promise(resolve => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = async () => {
+        const file = input.files?.[0];
+        if (!file) return resolve(null);
+        setIsLoading(true);
+        let fileName = '';
+        try {
+          fileName = await upload(fetcher)({
+            file,
+            fileType: 'image',
+          });
+        } catch (error) {
+          setIsLoading(false);
+          return resolve(null);
+        }
+        Transforms.setNodes(
+          editor,
+          {
+            url: `https://${process.env.OSS_BUCKET}.${process.env.OSS_ENDPOINT}/${process.env.OSS_ROOT}/image/${fileName}`,
+          },
+          { at: ReactEditor.findPath(editor, element) }
+        );
+        setIsLoading(false);
+        resolve(null);
+      };
+      input.click();
+    });
+  }, [editor, element, fetcher, hasSize]);
+
+  const handleLoad: ReactEventHandler<HTMLImageElement> = useCallback(
+    e => {
+      const target = e.target as HTMLImageElement;
+      Transforms.setNodes(
+        editor,
+        {
+          width: target.naturalWidth,
+          height: target.naturalHeight,
+        },
+        { at: ReactEditor.findPath(editor, element) }
+      );
+    },
+    [editor, element]
+  );
 
   return (
     <div {...attributes}>
-      {children}
-      <div contentEditable={false} className='relative'>
-        <Image
-          className='block'
-          src={element.url || defaultImg}
-          alt='图片'
-          width={480}
-          height={480}
-        />
+      <div
+        contentEditable={false}
+        className={clsx(
+          'group relative w-full overflow-hidden',
+          !readOnly ? 'border-2 border-dashed border-black-300' : '',
+          !hasSize && 'aspect-[3/1]'
+        )}>
+        {element.url ? (
+          <Image
+            className='block'
+            src={element.url + '?x-oss-process=image/resize,l_480'}
+            alt='图片'
+            fill={!hasSize}
+            width={element.width}
+            height={element.height}
+            onLoad={handleLoad}
+          />
+        ) : null}
         {!readOnly ? (
-          <>
-            <Button
+          isLoading ? (
+            <div className='absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col items-center justify-center gap-1 bg-white bg-opacity-50 backdrop-blur-lg'>
+              <span className='text-17 font-bold text-black-600'>
+                上传中...
+              </span>
+            </div>
+          ) : (
+            <div
               className={clsx(
-                ' group/insert absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-lg border border-gray-300 bg-white px-2 py-1 hover:border-primary-50'
+                'absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col items-center justify-center gap-1',
+                !hasSize
+                  ? ''
+                  : 'bg-white bg-opacity-50 opacity-0 backdrop-blur-lg transition-all duration-100 group-hover:opacity-100'
               )}
               onClick={handleUpload}>
-              <span className=' text-15 text-black-600 duration-100 group-hover/insert:text-primary-50'>
-                上传图片
+              <i className='iconfont icon-image-plus text-xl text-black-600'></i>
+              <span className=' text-17 font-bold text-black-600'>
+                {!hasSize ? '点击上传图片' : '点击更换图片'}
               </span>
-            </Button>
-            <Button
-              className={clsx(
-                ' group/remove absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-md border border-gray-300 bg-white hover:border-danger-50',
-                selected ? 'block' : 'hidden'
-              )}
-              onClick={handleRemove}>
-              <i className='iconfont icon-trash text-black-600 duration-100 group-hover/remove:text-danger-50'></i>
-            </Button>
-          </>
+              <span className=' text-xs font-bold text-black-250'>
+                最大支持 25MB
+              </span>
+            </div>
+          )
         ) : null}
       </div>
+      {children}
     </div>
   );
 };
