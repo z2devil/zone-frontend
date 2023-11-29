@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import Image from 'next/image';
 import { Transforms } from 'slate';
-import { ReactEditor, useReadOnly, useSlate } from 'slate-react';
+import { ReactEditor, useReadOnly, useSelected, useSlate } from 'slate-react';
 import { ImageBlockElement } from 'types/slate';
 import { ReactEventHandler, useCallback, useMemo, useState } from 'react';
 import { upload } from '@/lib/api/oss';
@@ -17,6 +17,8 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
   const editor = useSlate();
 
   const readOnly = useReadOnly();
+
+  const selected = useSelected();
 
   const [, fetcher] = useRequest();
 
@@ -91,7 +93,11 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
         contentEditable={false}
         className={clsx(
           'group relative w-full overflow-hidden',
-          !readOnly ? 'border-2 border-dashed border-black-300' : '',
+          !readOnly
+            ? selected
+              ? 'border-2 border-dashed border-primary-50'
+              : 'border-2 border-dashed border-black-300'
+            : '',
           !hasSize && 'aspect-[3/1]'
         )}>
         {element.url ? (

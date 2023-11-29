@@ -50,7 +50,9 @@ const Element = (props: RenderElementProps) => {
     case BlockElementType.IMAGE:
       return (
         <ImageBlock attributes={attributes} element={element}>
+          <InlineChromiumBugfix />
           {children}
+          <InlineChromiumBugfix />
         </ImageBlock>
       );
     case BlockElementType.BUTTON:
