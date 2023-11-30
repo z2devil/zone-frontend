@@ -3,14 +3,16 @@ import { BlockElementType, InlineElementType, MarkType } from '../../constans';
 import clsx from 'clsx';
 import { useSlate } from 'slate-react';
 import { useCallback } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 interface ToolbarProps {
+  className?: string;
   fullScreen?: boolean;
   onChangeFullScreen?: (fullScreen: boolean) => void;
 }
 
 const Toolbar = (props: ToolbarProps) => {
-  const { fullScreen, onChangeFullScreen } = props;
+  const { className, fullScreen, onChangeFullScreen } = props;
 
   const editor = useSlate();
 
@@ -30,7 +32,13 @@ const Toolbar = (props: ToolbarProps) => {
   }, [fullScreen, onChangeFullScreen]);
 
   return (
-    <div className=' sticky top-0 flex h-12 flex-shrink-0 px-5 text-black-600 shadow-main'>
+    <div
+      className={clsx(
+        twMerge(
+          ' sticky top-0 flex h-12 flex-shrink-0 px-5 text-black-600 shadow-main',
+          className
+        )
+      )}>
       <div className=' flex h-full w-full flex-grow items-center gap-2 overflow-auto'>
         <button
           onMouseDown={event => {
