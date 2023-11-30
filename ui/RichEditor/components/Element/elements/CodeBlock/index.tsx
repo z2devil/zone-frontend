@@ -258,75 +258,71 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
   }, [isResizing]);
 
   return (
-    <>
-      <div className=' relative' {...attributes} contentEditable={false}>
-        <div
-          className={clsx(
-            ' my-2 flex flex-col overflow-hidden rounded-md border bg-gray-200 text-black-600',
-            !readOnly && selected ? 'border-[#2f8ef4]' : 'border-black-50'
-          )}>
-          <div className=' w-full'>
-            <div
-              ref={toolbarRef}
-              className=' sticky top-0 z-10 flex items-center justify-between rounded-sm border-b border-black-50 bg-gray-50 px-4 py-2'>
+    <div className=' relative mb-2' {...attributes} contentEditable={false}>
+      <div
+        className={clsx(
+          ' flex flex-col overflow-hidden rounded-md border bg-gray-200 text-black-600',
+          !readOnly && selected ? 'border-[#2f8ef4]' : 'border-black-50'
+        )}>
+        <div className=' w-full'>
+          <div
+            ref={toolbarRef}
+            className=' sticky top-0 z-10 flex items-center justify-between rounded-sm border-b border-black-50 bg-gray-50 px-4 py-2'>
+            <div>
+              {isLanguageEditing ? (
+                <select
+                  className='bg-transparent text-black-600'
+                  value={language}
+                  autoFocus
+                  onChange={handleLanguageChange}
+                  onBlur={() => handleLanguageEdit(false)}>
+                  {SUPPORTED_LANGUAGES.map(language => (
+                    <option key={language} value={language}>
+                      {language}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <span onClick={() => handleLanguageEdit(true)}>{language}</span>
+              )}
+            </div>
+            {!readOnly ? (
               <div>
-                {isLanguageEditing ? (
-                  <select
-                    className='bg-transparent text-black-600'
-                    value={language}
-                    autoFocus
-                    onChange={handleLanguageChange}
-                    onBlur={() => handleLanguageEdit(false)}>
-                    {SUPPORTED_LANGUAGES.map(language => (
-                      <option key={language} value={language}>
-                        {language}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <span onClick={() => handleLanguageEdit(true)}>
-                    {language}
+                <button onClick={handleToggleCustomHeight}>
+                  <span
+                    className={clsx(
+                      ' text-xs',
+                      customHeight ? 'text-green-500' : 'text-blue-500'
+                    )}>
+                    {customHeight ? '手动高度' : '自动高度'}
                   </span>
-                )}
+                </button>
               </div>
-              {!readOnly ? (
-                <div>
-                  <button onClick={handleToggleCustomHeight}>
-                    <span
-                      className={clsx(
-                        ' text-xs',
-                        customHeight ? 'text-green-500' : 'text-blue-500'
-                      )}>
-                      {customHeight ? '手动高度' : '自动高度'}
-                    </span>
-                  </button>
-                </div>
-              ) : null}
-            </div>
-            <div
-              ref={containerRef}
-              className=' relative overflow-auto'
-              style={{
-                height: `${height}px`,
-              }}>
-              <div ref={editorRef}></div>
-            </div>
-            <div
-              style={{
-                fontSize: '0',
-              }}>
-              {children}
-            </div>
+            ) : null}
+          </div>
+          <div
+            ref={containerRef}
+            className=' relative overflow-auto'
+            style={{
+              height: `${height}px`,
+            }}>
+            <div ref={editorRef}></div>
+          </div>
+          <div
+            style={{
+              fontSize: '0',
+            }}>
+            {children}
           </div>
         </div>
-        {!readOnly && selected && customHeight ? (
-          <div
-            className=' absolute bottom-0 left-1/2 box-content h-2 w-14 -translate-x-1/2 translate-y-1/2 cursor-row-resize rounded-md border border-black-300 bg-gray-200'
-            onContextMenu={handleResizeStart}
-            onMouseDown={handleResizeStart}></div>
-        ) : null}
       </div>
-    </>
+      {!readOnly && selected && customHeight ? (
+        <div
+          className=' absolute bottom-0 left-1/2 box-content h-2 w-14 -translate-x-1/2 translate-y-1/2 cursor-row-resize rounded-md border border-black-300 bg-gray-200'
+          onContextMenu={handleResizeStart}
+          onMouseDown={handleResizeStart}></div>
+      ) : null}
+    </div>
   );
 };
 

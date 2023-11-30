@@ -240,7 +240,7 @@ const NoteCard = (props: NoteCardProps) => {
           ) : null}
         </div>
         {/* 内容 */}
-        <div className='text-justify text-black-600'>
+        <div className='text-black-600'>
           {note.type === NoteTypeEnum.NOTE ? (
             <RichView initialValue={JSON.parse(note.content)} />
           ) : (

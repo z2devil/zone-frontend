@@ -10,8 +10,8 @@ const nextConfig = {
     appDir: true,
   },
   images: {
-    loader: 'custom',
-    loaderFile: './config/image/loader.ts',
+    // loader: 'custom',
+    // loaderFile: './config/image/loader.ts',
     remotePatterns: [
       {
         protocol: 'https',

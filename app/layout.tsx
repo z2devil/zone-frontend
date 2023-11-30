@@ -1,6 +1,7 @@
 import '@/styles/globals.css';
 import RootProvider from '@/ui/RootProvider';
 import clsx from 'clsx';
+import jetBrainsMono from 'config/font/jetBrainsMono';
 
 export const metadata = {
   title: 'ZONE',
@@ -16,7 +17,7 @@ const RootLayout = (props: RootLayoutProps) => {
   const { children, layer } = props;
 
   return (
-    <html lang='zh-CN'>
+    <html lang='zh-CN' className={jetBrainsMono.className}>
       <head>
         <link
           rel='icon'

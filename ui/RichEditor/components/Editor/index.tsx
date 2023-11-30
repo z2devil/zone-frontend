@@ -59,6 +59,11 @@ const Editor = (props: EditorProps) => {
       onCopy={handleCopy}
       onCut={handleCut}
       readOnly={readonly}
+      renderPlaceholder={props => (
+        <div {...props} className={clsx(twMerge(' text-gray-400'))}>
+          Type something...
+        </div>
+      )}
     />
   );
 };
