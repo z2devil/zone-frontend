@@ -1,55 +1,65 @@
 .editor {
-  z2-p {
+  p {
     display: block;
+    margin-bottom: 0.5rem;
     & span {
       font-size: 0.9375rem;
     }
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
-  z2-h1 {
+  h1 {
     display: block;
+    margin-bottom: 1.5rem;
     & span {
       font-weight: bold;
       font-size: 1.5625rem;
     }
   }
-  z2-h2 {
+  h2 {
     display: block;
+    margin-bottom: 1.5rem;
     & span {
       font-weight: bold;
       font-size: 1.4375rem;
     }
   }
-  z2-h3 {
+  h3 {
     display: block;
+    margin-bottom: 0.75rem;
     & span {
       font-weight: bold;
       font-size: 1.3125rem;
     }
   }
-  z2-h4 {
+  h4 {
     display: block;
+    margin-bottom: 0.5rem;
     & span {
       font-weight: bold;
       font-size: 1.1875rem;
     }
   }
-  z2-h5 {
+  h5 {
     display: block;
+    margin-bottom: 0.5rem;
     & span {
       font-weight: bold;
       font-size: 1.0625rem;
     }
   }
-  z2-h6 {
+  h6 {
     display: block;
     & span {
       font-weight: bold;
       font-size: 0.9375rem;
     }
   }
-  z2-ol {
+  ol {
     display: block;
     counter-increment: list-item;
+    margin-bottom: 0.5rem;
     &::before {
       margin-right: 0.5em;
       content: counter(list-item) '.';
@@ -59,9 +69,13 @@
     & span {
       font-size: 0.9375rem;
     }
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
-  z2-ul {
+  ul {
     display: block;
+    margin-bottom: 0.5rem;
     &::before {
       margin-right: 0.5em;
       content: '•';
@@ -69,18 +83,24 @@
     & span {
       font-size: 0.9375rem;
     }
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
-  z2-blockquote {
+  blockquote {
     display: block;
-    // margin: 0 0 0 1em;
+    margin-bottom: 0.5rem;
     border-left: 0.25em solid #eceeef;
     padding: 0 0 0 0.5em;
     & span {
       color: #6a737d;
       font-size: 0.9375rem;
     }
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
-  z2-codeline {
+  code-line {
     display: inline;
     margin: 1px 3px;
     border: solid 1px rgba($color: #000, $alpha: 0.1);
@@ -89,27 +109,28 @@
     padding: 0 4px;
     & span {
       font-size: 0.9375rem;
+      font-family: 'Courier New', Courier, monospace;
       text-indent: 0;
       word-break: break-all;
     }
   }
-  z2-em {
+  em {
     font-style: italic;
   }
-  z2-del {
+  del {
     text-decoration: line-through;
   }
-  z2-underline {
+  underline {
     text-decoration: underline;
   }
-  z2-strong {
+  strong {
     font-weight: bold;
   }
-  z2-link {
+  link {
     color: #007bff;
     text-decoration: underline;
   }
-  z2-image {
+  image {
     display: inline-block;
     margin: 1px 3px;
     border: solid 1px #e7e9e8;

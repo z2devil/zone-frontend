@@ -1,5 +1,13 @@
 const InlineChromiumBugfix = () => (
-  <span contentEditable={false} className='text-[0px]'>
+  <span
+    contentEditable={false}
+    style={{
+      display: 'inline-block',
+      width: '0',
+      height: '0',
+      overflow: 'hidden',
+      verticalAlign: 'bottom',
+    }}>
     {String.fromCodePoint(160) /* Non-breaking space */}
   </span>
 );

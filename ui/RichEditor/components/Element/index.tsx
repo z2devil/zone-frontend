@@ -10,32 +10,32 @@ const Element = (props: RenderElementProps) => {
 
   switch (element.type) {
     case BlockElementType.PARAGRAPH:
-      return <z2-p {...attributes}>{children}</z2-p>;
+      return <p {...attributes}>{children}</p>;
     case BlockElementType.HEADING_1:
-      return <z2-h1 {...attributes}>{children}</z2-h1>;
+      return <h1 {...attributes}>{children}</h1>;
     case BlockElementType.HEADING_2:
-      return <z2-h2 {...attributes}>{children}</z2-h2>;
+      return <h2 {...attributes}>{children}</h2>;
     case BlockElementType.HEADING_3:
-      return <z2-h3 {...attributes}>{children}</z2-h3>;
+      return <h3 {...attributes}>{children}</h3>;
     case BlockElementType.HEADING_4:
-      return <z2-h4 {...attributes}>{children}</z2-h4>;
+      return <h4 {...attributes}>{children}</h4>;
     case BlockElementType.HEADING_5:
-      return <z2-h5 {...attributes}>{children}</z2-h5>;
+      return <h5 {...attributes}>{children}</h5>;
     case BlockElementType.HEADING_6:
-      return <z2-h6 {...attributes}>{children}</z2-h6>;
+      return <h6 {...attributes}>{children}</h6>;
     case BlockElementType.OL_LIST:
-      return <z2-ol {...attributes}>{children}</z2-ol>;
+      return <ol {...attributes}>{children}</ol>;
     case BlockElementType.UL_LIST:
-      return <z2-ul {...attributes}>{children}</z2-ul>;
+      return <ul {...attributes}>{children}</ul>;
     case BlockElementType.BLOCK_QUOTE:
-      return <z2-blockquote {...attributes}>{children}</z2-blockquote>;
+      return <blockquote {...attributes}>{children}</blockquote>;
     case InlineElementType.CODE_LINE:
       return (
-        <z2-codeline {...attributes}>
+        <code-line {...attributes}>
           <InlineChromiumBugfix />
           {children}
           <InlineChromiumBugfix />
-        </z2-codeline>
+        </code-line>
       );
     case BlockElementType.CODE_BLOCK:
       return (
@@ -56,7 +56,7 @@ const Element = (props: RenderElementProps) => {
     case BlockElementType.BUTTON:
       return <button {...attributes}>{children}</button>;
     default:
-      return <z2-p {...attributes}>{children}</z2-p>;
+      return <p {...attributes}>{children}</p>;
   }
 };
 
