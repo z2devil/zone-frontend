@@ -81,16 +81,19 @@ const RichEditor = (props: EditorProps) => {
           <div
             className={clsx(
               twMerge(
-                ' fixed inset-0 z-50 flex flex-col overflow-hidden bg-white',
+                ' fixed inset-0 z-50 flex flex-col overflow-hidden bg-gray-200',
                 className,
                 'min-h-screen'
               )
             )}>
             <Toolbar
+              className='z-10 bg-gray-100'
               fullScreen={fullScreen}
               onChangeFullScreen={handleFullScreen}
             />
-            <Editor className='p-6' />
+            <div className='flex flex-1 overflow-auto sm:py-10'>
+              <Editor className='mx-auto h-fit max-w-[48rem] overflow-y-hidden bg-gray-100 shadow-main max-sm:p-6 sm:p-12' />
+            </div>
           </div>,
           document.body
         )
