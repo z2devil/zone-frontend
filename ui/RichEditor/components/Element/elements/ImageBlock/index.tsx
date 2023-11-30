@@ -6,6 +6,7 @@ import { ImageBlockElement } from 'types/slate';
 import { ReactEventHandler, useCallback, useMemo, useState } from 'react';
 import { upload } from '@/lib/api/oss';
 import useRequest from '@/lib/hooks/useRequest';
+import imageLoader from 'config/image/loader';
 
 interface CodeBlockProps {
   attributes: any;
@@ -111,6 +112,7 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
             width={element.width}
             height={element.height}
             onLoad={handleLoad}
+            loader={imageLoader}
           />
         ) : null}
         {!readOnly ? (

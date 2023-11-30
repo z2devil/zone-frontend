@@ -3,7 +3,7 @@
 interface ImageLoaderProps {
   src: string;
   width: number;
-  quality: number;
+  quality?: number;
 }
 
 export default function imageLoader({ src, width }: ImageLoaderProps) {

@@ -91,8 +91,8 @@ const RichEditor = (props: EditorProps) => {
               fullScreen={fullScreen}
               onChangeFullScreen={handleFullScreen}
             />
-            <div className='flex flex-1 overflow-auto sm:py-10'>
-              <Editor className='mx-auto h-fit max-w-[48rem] overflow-y-hidden bg-gray-100 shadow-main max-sm:p-6 sm:p-12' />
+            <div className='flex flex-1 overflow-auto bg-gray-100 sm:py-10'>
+              <Editor className='mx-auto h-fit max-w-[45rem] overflow-y-hidden p-6' />
             </div>
           </div>,
           document.body
