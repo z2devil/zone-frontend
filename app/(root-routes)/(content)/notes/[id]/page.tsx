@@ -1,5 +1,5 @@
 const NoteDetailPage = () => {
-  return <div>文章详情页面</div>;
+  return <div>笔记详情页面</div>;
 };
 
 export default NoteDetailPage;

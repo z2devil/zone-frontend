@@ -44,6 +44,7 @@ export type NoteInfo = Pick<
  */
 export interface GetNotesParams extends IPageParams {
   search?: string;
+  type?: NoteTypeEnum;
 }
 
 /**
