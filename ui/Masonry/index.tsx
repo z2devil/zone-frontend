@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { throttle } from 'lodash-es';
+import { debounce, throttle } from 'lodash-es';
 import MasonyCore, { MasonryRecord, containerRectInfo } from './utils/core';
 
 type Record = {
@@ -22,6 +22,7 @@ interface MasonryProps {
   children: (index: number, record: Record) => React.ReactNode;
   containerRect: containerRectInfo | undefined;
   column: number;
+  cellWidth: number;
   gap?: number;
   bufferOffset?: number;
   loadDistance?: number;
@@ -35,6 +36,7 @@ const Masonry = (props: MasonryProps) => {
   const {
     containerRect,
     column,
+    cellWidth,
     gap = 20,
     bufferOffset = 300,
     loadDistance = 600,
@@ -45,10 +47,14 @@ const Masonry = (props: MasonryProps) => {
     children,
   } = props;
 
+  // 初始化状态
   const [initialized, setInitialized] = useState(false);
 
   // 容器引用
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // 上次宽度引用
+  const lastestWdithRef = useRef<number>(0);
 
   // 预渲染容器引用
   const preRenderContainerRef = useRef<HTMLDivElement>(null);
@@ -85,6 +91,7 @@ const Masonry = (props: MasonryProps) => {
 
     masonryCoreRef.current = new MasonyCore(
       column,
+      cellWidth,
       preRenderContainerDOM,
       containerRect,
       {
@@ -101,6 +108,7 @@ const Masonry = (props: MasonryProps) => {
     initialized,
     containerRect,
     column,
+    cellWidth,
     bufferOffset,
     gap,
     keyField,
@@ -127,12 +135,10 @@ const Masonry = (props: MasonryProps) => {
     };
   }, [destroy]);
 
-  // 重置（column 变化时）
-  useEffect(() => {
+  // 重置
+  const reset = useCallback(() => {
     if (!initialized) return;
     if (!containerRect) return;
-
-    console.log('[ 重置 ]');
 
     const preRenderContainerDOM = preRenderContainerRef.current;
     if (!preRenderContainerDOM) return;
@@ -140,15 +146,42 @@ const Masonry = (props: MasonryProps) => {
     const masornyCore = masonryCoreRef.current;
     if (!masornyCore) return;
 
-    const [nextRecords, nextTotalHeight, renderIndexes] = masornyCore.reset(
-      column,
-      containerRect
-    );
+    let needCalcSize = false;
 
-    setRecords(nextRecords);
-    setTotalHeight(nextTotalHeight);
-    setRenderIndexes(renderIndexes);
-  }, [initialized, containerRect, column, data]);
+    if (lastestWdithRef.current !== containerRect.width) {
+      if (containerRect.width < cellWidth) {
+        lastestWdithRef.current = containerRect.width;
+        needCalcSize = true;
+      } else {
+        if (lastestWdithRef.current !== cellWidth) {
+          lastestWdithRef.current = cellWidth;
+          needCalcSize = true;
+        }
+      }
+      masornyCore.setContainerRect(containerRect);
+    }
+
+    if (needCalcSize) {
+      setPreRenderIds(latestDataRef.current.map(item => item[keyField]));
+    }
+
+    requestAnimationFrame(async () => {
+      masornyCore.setColumCount(column);
+      masornyCore.setCellWidth(cellWidth);
+      const [nextRecords, nextTotalHeight, renderIndexes] =
+        await masornyCore.reset(needCalcSize);
+
+      setPreRenderIds([]);
+      setRecords(nextRecords);
+      setTotalHeight(nextTotalHeight);
+      setRenderIndexes(renderIndexes);
+    });
+  }, [cellWidth, column, containerRect, initialized, keyField]);
+
+  // 重置（container 变化时）
+  useEffect(() => {
+    reset();
+  }, [reset]);
 
   // 上次数据引用
   const latestDataRef = useRef(data);
@@ -172,12 +205,13 @@ const Masonry = (props: MasonryProps) => {
     requestAnimationFrame(async () => {
       const [nextRecords, nextTotalHeight, renderIndexes] =
         await masonryCore.render();
+
       setPreRenderIds([]);
       setRecords(nextRecords);
       setTotalHeight(nextTotalHeight);
       setRenderIndexes(renderIndexes);
     });
-  }, [initialized, data, keyField, latestDataRef]);
+  }, [initialized, data, keyField]);
 
   /************************************************
    * ✨ 滚动
@@ -224,7 +258,12 @@ const Masonry = (props: MasonryProps) => {
           const index = data.findIndex(item => item[keyField] === id);
           return (
             <div key={id} data-id={id}>
-              {children(index, { x: 0, y: 0, width: 0, height: 0 })}
+              {children(index, {
+                x: 0,
+                y: 0,
+                width: Math.min(cellWidth, containerRect?.width || 0),
+                height: 0,
+              })}
             </div>
           );
         })}

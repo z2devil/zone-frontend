@@ -23,6 +23,7 @@ export type masonryRenderInfo = readonly [MasonryRecord[], number, number[]];
 
 class MasonyCore {
   private coloumnCount: number;
+  private cellWidth: number;
   private visionTop = 0;
   private columnHeights: number[];
   private totalHeight = 0;
@@ -39,6 +40,7 @@ class MasonyCore {
 
   constructor(
     coloumnCount: number,
+    cellWidth: number,
     preRenderAreaDOM: HTMLElement,
     containerRect: containerRectInfo,
     options?: {
@@ -48,6 +50,7 @@ class MasonyCore {
     }
   ) {
     this.coloumnCount = coloumnCount;
+    this.cellWidth = cellWidth;
     this.columnHeights = Array.from({ length: this.coloumnCount }, () => 0);
     // 容器
     this.containerRect = containerRect;
@@ -60,6 +63,21 @@ class MasonyCore {
     this.keyField = options?.keyField || '_id';
   }
 
+  // 设置列数
+  public setColumCount(coloumnCount: number) {
+    this.coloumnCount = coloumnCount;
+  }
+
+  // 设置单元格宽度
+  public setCellWidth(cellWidth: number) {
+    this.cellWidth = cellWidth;
+  }
+
+  // 设置容器尺寸
+  public setContainerRect(containerRect: containerRectInfo) {
+    this.containerRect = containerRect;
+  }
+
   // 销毁
   public destroy() {
     // 释放预渲染区
@@ -69,27 +87,18 @@ class MasonyCore {
   }
 
   // 重置
-  public reset(
-    coloumnCount?: number,
-    containerRect?: containerRectInfo
-  ): masonryRenderInfo {
-    this.coloumnCount = coloumnCount || this.coloumnCount;
-    this.containerRect = containerRect || this.containerRect;
+  public async reset(needCalcSize = false): Promise<masonryRenderInfo> {
     this.updateVisionTop();
-    // this.calcSize(); 不计算尺寸
+    if (needCalcSize) {
+      await this.calcSize();
+    }
     this.calcPosition();
     const renderIndexes = this.calcRenderIndexes();
     return [this.records, this.totalHeight, renderIndexes];
   }
 
   // 渲染
-  public async render(
-    coloumnCount?: number,
-    containerRect?: containerRectInfo
-  ): Promise<masonryRenderInfo> {
-    console.log('[ render in ]', JSON.parse(JSON.stringify(this.records)));
-    this.coloumnCount = coloumnCount || this.coloumnCount;
-    this.containerRect = containerRect || this.containerRect;
+  public async render(): Promise<masonryRenderInfo> {
     this.updateVisionTop();
     await this.calcSize();
     this.calcPosition();
@@ -160,14 +169,18 @@ class MasonyCore {
   };
 
   // 更新数据
-  public updateData(prevData: any[], nextData: any[], keyField: keyof any) {
+  public updateData(
+    prevData: any[],
+    nextData: any[],
+    keyField: keyof any,
+    needPreRenderIds: string[] = []
+  ) {
     console.log(
       '[ updateData in ]',
       prevData,
       nextData,
       JSON.parse(JSON.stringify(this.records))
     );
-    const needPreRenderIds: string[] = [];
 
     let prevStartIndex = 0;
     let prevEndIndex = prevData.length - 1;
@@ -254,7 +267,6 @@ class MasonyCore {
 
   // 计算位置
   private calcPosition() {
-    console.log('[ calcPosition ]', JSON.parse(JSON.stringify(this.records)));
     const records = this.records;
     const coloumnCount = this.coloumnCount;
     const columnHeights = this.columnHeights;

@@ -5,19 +5,16 @@ import Masonry from '@/ui/Masonry';
 import useResize from '@/ui/Masonry/hooks/useResize';
 import NoteCard from '@/ui/NoteCard';
 import PageBanner from '@/ui/PageBanner';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import px2number from '@/lib/utils/px2number';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import { useNotificationUtilsStore } from '@/lib/stores';
 import useRequest from '@/lib/hooks/useRequest';
 import { useNotesStore } from '@/lib/stores/notes';
 import EmptyInfo from '@/ui/EmptyInfo';
+import { CARD_WIDTH, GAP } from '@/ui/Masonry/constants';
 
 const FETCH_SIZE = 20;
-
-const GAP = 20;
-
-const CARD_WIDTH = 335;
 
 const NotePage = () => {
   const [request] = useRequest();
@@ -26,14 +23,12 @@ const NotePage = () => {
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const [column, setColumn] = useState(2);
-
   const [current, setCurrent] = useState(0);
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // 容器尺寸
-  const [containerRect] = useResize(containerRef, {
+  // 容器尺寸 & 列数
+  const [containerRect, column] = useResize(containerRef, {
     delay: 400,
   });
 
@@ -59,30 +54,6 @@ const NotePage = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [containerRect?.width]);
-
-  // 计算列数
-  const handleResize = useCallback(() => {
-    const containerDOM = containerRef.current;
-    if (!containerDOM) return;
-    const style = getComputedStyle(containerDOM);
-    const containerWidth =
-      px2number(style.width) -
-      px2number(style.paddingLeft) -
-      px2number(style.paddingRight);
-    if (containerWidth < CARD_WIDTH) {
-      setColumn(1);
-      return;
-    }
-    const column = Math.floor((containerWidth + GAP) / (CARD_WIDTH + GAP));
-    setColumn(column);
-  }, []);
-
-  // 监听窗口变化
-  useEffect(() => {
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [containerRect?.width, handleResize]);
 
   // TODO: total 问题
   const handleLoadData = useCallback(async () => {
@@ -125,6 +96,7 @@ const NotePage = () => {
       <Masonry
         containerRect={calcContainerRectInfo}
         column={column}
+        cellWidth={CARD_WIDTH}
         gap={GAP}
         data={notes}
         touchBottom={handleLoadData}>
@@ -136,7 +108,7 @@ const NotePage = () => {
               key={note._id}
               style={{
                 position: 'absolute',
-                width: `${CARD_WIDTH}px`,
+                width: `${position.width}px`,
                 transform: `translate(${position.x}px, ${position.y}px)`,
                 overflow: 'hidden',
               }}
