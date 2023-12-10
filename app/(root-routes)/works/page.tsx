@@ -128,6 +128,7 @@ const WorksPage = () => {
       <Masonry
         containerRect={calcContainerRectInfo}
         column={column}
+        cellWidth={CARD_WIDTH}
         gap={GAP}
         data={works}
         touchBottom={handleLoadData}>
