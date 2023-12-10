@@ -90,11 +90,12 @@
   blockquote {
     display: block;
     margin-bottom: 0.5rem;
-    border-left: 0.25em solid #eceeef;
-    padding: 0 0 0 0.5em;
+    border: 1px solid #eceeef;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
     & span {
       color: #6a737d;
-      font-size: 0.9375rem;
+      font-size: 0.8125rem;
     }
     &:last-child {
       margin-bottom: 0;
@@ -108,7 +109,6 @@
     background-color: rgba($color: #000, $alpha: 0.05);
     padding: 0 4px;
     & span {
-      font-size: 0.9375rem;
       text-indent: 0;
       word-break: break-all;
     }

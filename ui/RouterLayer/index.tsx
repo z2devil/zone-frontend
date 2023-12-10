@@ -206,11 +206,9 @@ const NavLayer = (props: NavLayerProps) => {
             {/* router list */}
             {ROUTER.map(item => {
               return (
-                <RouterLink
-                  key={item.path}
-                  {...item}
-                  active={pathname === item.path}
-                />
+                <div key={item.path} onClick={onHide}>
+                  <RouterLink {...item} active={pathname === item.path} />
+                </div>
               );
             })}
           </div>

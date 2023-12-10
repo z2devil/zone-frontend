@@ -14,7 +14,7 @@ const EmptyInfo = (props: EmptyInfoProps) => {
   return (
     <div className='mx-auto flex h-fit w-fit flex-col items-center justify-center overflow-hidden'>
       <Image
-        className=' pointer-events-none'
+        className=' pointer-events-none select-none'
         src={EmptyTipImg}
         alt='empty'
         width={256}
