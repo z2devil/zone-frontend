@@ -7,7 +7,7 @@ import {
 } from '@/lib/api/notes';
 import dayjs from '@/lib/utils/dayjs';
 import RichView from '../RichView';
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { NotificationType } from '../Notification/components/Notification';
 import usePermission from '@/lib/hooks/usePermission';
 import { UserRole } from '@/lib/api/user';
@@ -20,15 +20,18 @@ import RichEditor from '../RichEditor';
 import { Descendant } from 'slate';
 import useRequest from '@/lib/hooks/useRequest';
 import { useNotesStore } from '@/lib/stores/notes';
+import clsx from 'clsx';
+import rem2px from '@/lib/utils/rem2px';
 
 interface NoteCardProps {
   style: React.CSSProperties;
   note: NoteInfo;
   onChange?: (value: Descendant[]) => void;
+  onShowDetail?: (id: string | null) => void;
 }
 
 const NoteCard = (props: NoteCardProps) => {
-  const { note, style, onChange } = props;
+  const { style, note, onChange, onShowDetail } = props;
 
   const [request] = useRequest();
 
@@ -56,6 +59,7 @@ const NoteCard = (props: NoteCardProps) => {
 
   const handleSetting = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
       contextMenuUtils?.open(
         [
           {
@@ -208,10 +212,52 @@ const NoteCard = (props: NoteCardProps) => {
     ]
   );
 
+  /************************************************
+   * ✨ 内容收缩
+   ************************************************/
+
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  useEffect(() => {
+    const cardDOM = cardRef.current;
+    if (cardDOM) {
+      const maxHeight = rem2px(30);
+      setIsCollapsed(cardDOM.scrollHeight > maxHeight);
+    } else {
+      setIsCollapsed(false);
+    }
+  }, []);
+
+  /************************************************
+   * ✨ 查看详情
+   ************************************************/
+
+  const handleShowDetail = useCallback(() => {
+    onShowDetail?.(note._id);
+  }, [note._id, onShowDetail]);
+
   return (
     <div
-      className=' group flex flex-col gap-2.5 rounded-xl border border-black-80 bg-gray-100 p-5 transition-all duration-200 hover:border-primary-50'
-      style={style}>
+      ref={cardRef}
+      className={clsx(
+        ' group relative flex flex-col gap-2.5 overflow-hidden rounded-xl border border-black-80 bg-gray-100 p-5 transition-all duration-200 hover:border-primary-50'
+      )}
+      style={style}
+      onClick={handleShowDetail}>
+      <div className='absolute bottom-0 left-0 right-0 z-[1]'>
+        {isCollapsed && (
+          <>
+            <div className='gradient-mask-y pointer-events-none absolute bottom-0 left-0 right-0 flex h-64 translate-y-32 select-none items-center justify-center gap-1 bg-white'></div>
+            <div className='flex h-12 translate-y-2 cursor-pointer items-center justify-center gap-1'>
+              <span className='inline-block overflow-hidden whitespace-nowrap text-15 text-black-600'>
+                ···
+              </span>
+            </div>
+          </>
+        )}
+      </div>
       <div className='flex flex-col gap-2'>
         {/* 顶部 */}
         <div className='flex items-center justify-between gap-10'>

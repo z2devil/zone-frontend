@@ -3,3 +3,33 @@
 @tailwind utilities;
 
 @import './iconfont/iconfont.css';
+
+@layer utilities {
+  .gradient-mask-x {
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 50px,
+      black calc(100% - 50px),
+      transparent
+    );
+  }
+
+  .gradient-mask-y {
+    mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      black 40%,
+      black 60%,
+      transparent
+    );
+  }
+
+  .gradient-mask {
+    mask-image: radial-gradient(
+      closest-side,
+      black calc(100% - 50px),
+      transparent
+    );
+  }
+}

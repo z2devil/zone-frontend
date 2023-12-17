@@ -7,7 +7,6 @@ module.exports = {
   ],
   theme: {
     extend: {
-      // https://vercel.com/design/color
       colors: {
         'logo-color': '#FFC445',
         primary: {
@@ -66,41 +65,12 @@ module.exports = {
         flash: 'highlight 1s',
       },
       keyframes: ({ theme }) => ({
-        // rerender: {
-        //   '0%': {
-        //     'border-color': theme('colors.vercel.pink'),
-        //   },
-        //   '40%': {
-        //     'border-color': theme('colors.vercel.pink'),
-        //   },
-        // },
         highlight: {
           '0%': {
             color: theme('colors.danger.100'),
           },
           '100%': {},
         },
-        // shimmer: {
-        //   '100%': {
-        //     transform: 'translateX(100%)',
-        //   },
-        // },
-        // translateXReset: {
-        //   '100%': {
-        //     transform: 'translateX(0)',
-        //   },
-        // },
-        // fadeToTransparent: {
-        //   '0%': {
-        //     opacity: 1,
-        //   },
-        //   '40%': {
-        //     opacity: 1,
-        //   },
-        //   '100%': {
-        //     opacity: 0,
-        //   },
-        // },
       }),
     },
   },

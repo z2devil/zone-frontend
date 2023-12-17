@@ -79,6 +79,16 @@ const NotePage = () => {
     });
   };
 
+  /************************************************
+   * ✨ 详情
+   ************************************************/
+
+  const [showDetailId, setShowDetailId] = useState<string | null>(null);
+
+  const handleShowDetail = useCallback((id: string | null) => {
+    setShowDetailId(id);
+  }, []);
+
   return (
     <div
       className='mx-auto flex h-full w-full flex-col items-center overflow-y-auto px-5'
@@ -109,10 +119,12 @@ const NotePage = () => {
               style={{
                 position: 'absolute',
                 width: `${position.width}px`,
+                maxHeight: `30rem`,
                 transform: `translate(${position.x}px, ${position.y}px)`,
                 overflow: 'hidden',
               }}
               note={note}
+              onShowDetail={handleShowDetail}
             />
           );
         }}
