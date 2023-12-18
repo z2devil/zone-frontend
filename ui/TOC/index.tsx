@@ -107,7 +107,7 @@ const TOC = (props: TOCProps) => {
     init();
   }, [init]);
 
-  if (!toc) return null;
+  if (!toc || !toc.children?.length) return null;
 
   return (
     <div
@@ -117,7 +117,7 @@ const TOC = (props: TOCProps) => {
           className
         )
       )}>
-      {(toc.children || []).map((item, index) => (
+      {toc.children.map((item, index) => (
         <TOCTree key={index} data={item} activePath={activePath} />
       ))}
     </div>

@@ -1,6 +1,7 @@
 import { IRequest } from '@/lib/hooks/useRequest';
 import { IPageData } from '../types';
 import {
+  AdjacentNotes,
   GetNotesParams,
   NoteInfo,
   PostNoteParams,
@@ -21,6 +22,14 @@ export const getNoteAPI = (request: IRequest) => async (id: string) => {
 export const getNotesAPI = (request: IRequest) =>
   cache(async (params: GetNotesParams) => {
     return await request.get<IPageData<NoteInfo>>('/note', params);
+  });
+
+/**
+ * 获取相邻 note
+ */
+export const getAdjacentNotesAPI = (request: IRequest) =>
+  cache(async (id: string) => {
+    return await request.get<AdjacentNotes>(`/note/adjacent/${id}`);
   });
 
 /**

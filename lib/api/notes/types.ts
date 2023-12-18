@@ -48,6 +48,14 @@ export interface GetNotesParams extends IPageParams {
 }
 
 /**
+ * 相邻笔记信息
+ */
+export interface AdjacentNotes {
+  next: NoteInfo | null;
+  prev: NoteInfo | null;
+}
+
+/**
  * 创建 note 参数
  */
 export interface PostNoteParams {

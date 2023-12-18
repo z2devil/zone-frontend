@@ -1,9 +1,11 @@
 'use client';
 
 import {
+  AdjacentNotes,
   NoteInfo,
   NoteTypeEnum,
   deleteNoteAPI,
+  getAdjacentNotesAPI,
   getNoteAPI,
   putNoteAPI,
 } from '@/lib/api/notes';
@@ -15,12 +17,15 @@ import {
   useModalUtilsStore,
   useNotificationUtilsStore,
 } from '@/lib/stores';
+import { getContentSummary } from '@/lib/utils/editor';
 import EmptyInfo from '@/ui/EmptyInfo';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import RichEditor from '@/ui/RichEditor';
 import Editor from '@/ui/RichEditor/components/Editor';
 import TOC from '@/ui/TOC';
+import clsx from 'clsx';
 import dayjs from 'dayjs';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Descendant, createEditor } from 'slate';
@@ -54,6 +59,27 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
 
   const [note, setNote] = useState<NoteInfo | null>(null);
 
+  const [adjacentNotes, setAdjacentNotes] = useState<AdjacentNotes>({
+    prev: null,
+    next: null,
+  });
+
+  const prevNoteInfo = useMemo(() => {
+    if (!adjacentNotes.prev) return null;
+    return {
+      id: adjacentNotes.prev._id,
+      title: getContentSummary(adjacentNotes.prev.content),
+    };
+  }, [adjacentNotes]);
+
+  const nextNoteInfo = useMemo(() => {
+    if (!adjacentNotes.next) return null;
+    return {
+      id: adjacentNotes.next._id,
+      title: getContentSummary(adjacentNotes.next.content),
+    };
+  }, [adjacentNotes]);
+
   const editor = useMemo(() => {
     const enhancers = [withReact];
     return enhancers.reduce(
@@ -70,6 +96,8 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
     try {
       const res = await getNoteAPI(request)(params.id);
       setNote(res);
+      const adjacentNotes = await getAdjacentNotesAPI(request)(params.id);
+      setAdjacentNotes(adjacentNotes);
     } catch (error) {
       return navigation.push('/404');
     }
@@ -235,11 +263,11 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
   return (
     <SlateProvider editor={editor} initialValue={JSON.parse(note.content)}>
       <div
-        className='mx-auto flex gap-8 lg:w-[60rem]'
+        className='mx-auto flex w-fit gap-8'
         style={{
           minHeight: 'calc(100vh - 3.625rem)',
         }}>
-        <div className='w-full bg-gray-100'>
+        <div className='flex w-[45rem] flex-col overflow-hidden bg-gray-100'>
           <div className='flex flex-col gap-4 p-8'>
             {/* 顶部 */}
             <div className='flex items-center justify-between gap-10'>
@@ -294,29 +322,43 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
           </div>
           {/* 上下页 */}
           <div className='flex flex-col gap-4 bg-gray-50 p-5 md:flex-row'>
-            <div className='group flex h-16 flex-1 cursor-pointer items-center justify-start gap-2.5 rounded-xl border border-transparent bg-black-50 px-3.5 py-2.5 transition-colors duration-100 hover:border-blue-600'>
-              <span className='iconfont icon-angle-left relative text-19 font-semibold text-black-600 transition-colors duration-100 group-hover:text-primary-50' />
+            <Link
+              className={clsx(
+                ' group flex h-16 flex-1 cursor-pointer items-center justify-start gap-2.5 overflow-hidden rounded-xl border border-transparent bg-black-50 px-3.5 py-2.5 transition-colors duration-100 hover:border-blue-600',
+                {
+                  'pointer-events-none': !prevNoteInfo,
+                }
+              )}
+              href={`/note/${prevNoteInfo?.id}`}>
+              <span className='iconfont icon-angle-left relative shrink-0 text-19 font-semibold text-black-600 transition-colors duration-100 group-hover:text-primary-50' />
               <span
-                className='truncate text-base font-semibold text-black-600 transition-colors duration-100 group-hover:text-primary-50'
-                title='上一篇：莫欺少年穷'>
-                上一篇：莫欺少年穷
+                className='flex-1 truncate text-base font-semibold text-black-600 transition-colors duration-100 group-hover:text-primary-50'
+                title={prevNoteInfo?.title}>
+                {'上一篇：' + (prevNoteInfo?.title || '无')}
               </span>
-            </div>
-            <div className='group flex h-16 flex-1 cursor-pointer items-center justify-end gap-2.5 rounded-xl border border-transparent bg-black-50 px-3.5 py-2.5 transition-colors duration-100 hover:border-blue-600'>
+            </Link>
+            <Link
+              className={clsx(
+                ' group flex h-16 flex-1 cursor-pointer items-center justify-end gap-2.5 overflow-hidden rounded-xl border border-transparent bg-black-50 px-3.5 py-2.5 transition-colors duration-100 hover:border-blue-600',
+                {
+                  'pointer-events-none': !nextNoteInfo,
+                }
+              )}
+              href={`/note/${nextNoteInfo?.id}`}>
               <span
-                className='truncate text-base font-semibold text-black-600 transition-colors duration-100 group-hover:text-primary-50'
-                title='下一篇：莫欺老年穷'>
-                下一篇：莫欺老年穷
+                className='flex-1 truncate text-base font-semibold text-black-600 transition-colors duration-100 group-hover:text-primary-50'
+                title={nextNoteInfo?.title}>
+                {'下一篇：' + (nextNoteInfo?.title || '无')}
               </span>
-              <span className='iconfont icon-angle-right relative text-19 font-semibold text-black-600 transition-colors duration-100 group-hover:text-primary-50' />
-            </div>
+              <span className='iconfont icon-angle-right relative shrink-0 text-19 font-semibold text-black-600 transition-colors duration-100 group-hover:text-primary-50' />
+            </Link>
           </div>
           {/* 评论 */}
           <div className='flex px-5 pb-20 pt-5'>
             <EmptyInfo tip='暂无评论' />
           </div>
         </div>
-        <TOC className='sticky top-24 hidden h-fit lg:flex' />
+        <TOC className='sticky top-24 hidden h-fit shrink-0 lg:flex' />
       </div>
     </SlateProvider>
   );
