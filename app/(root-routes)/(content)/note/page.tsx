@@ -55,7 +55,6 @@ const NotePage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [containerRect?.width]);
 
-  // TODO: total 问题
   const handleLoadData = useCallback(async () => {
     const nextCurrent = current + 1;
     setCurrent(nextCurrent);
@@ -78,16 +77,6 @@ const NotePage = () => {
       duration: 3,
     });
   };
-
-  /************************************************
-   * ✨ 详情
-   ************************************************/
-
-  const [showDetailId, setShowDetailId] = useState<string | null>(null);
-
-  const handleShowDetail = useCallback((id: string | null) => {
-    setShowDetailId(id);
-  }, []);
 
   return (
     <div
@@ -112,8 +101,7 @@ const NotePage = () => {
         touchBottom={handleLoadData}>
         {(index, position) => {
           const note = notes[index];
-          if (!note) return null;
-          return (
+          return note ? (
             <NoteCard
               key={note._id}
               style={{
@@ -124,9 +112,8 @@ const NotePage = () => {
                 overflow: 'hidden',
               }}
               note={note}
-              onShowDetail={handleShowDetail}
             />
-          );
+          ) : null;
         }}
       </Masonry>
     </div>

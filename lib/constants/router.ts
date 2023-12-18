@@ -7,7 +7,7 @@ interface RouterConfig {
 export const ROUTER: RouterConfig[] = [
   {
     name: '笔记',
-    path: '/notes',
+    path: '/note',
     icon: 'icon-note',
   },
   {

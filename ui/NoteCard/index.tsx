@@ -22,16 +22,18 @@ import useRequest from '@/lib/hooks/useRequest';
 import { useNotesStore } from '@/lib/stores/notes';
 import clsx from 'clsx';
 import rem2px from '@/lib/utils/rem2px';
+import { twMerge } from 'tailwind-merge';
+import Link from 'next/link';
 
 interface NoteCardProps {
-  style: React.CSSProperties;
   note: NoteInfo;
+  className?: string;
+  style?: React.CSSProperties;
   onChange?: (value: Descendant[]) => void;
-  onShowDetail?: (id: string | null) => void;
 }
 
 const NoteCard = (props: NoteCardProps) => {
-  const { style, note, onChange, onShowDetail } = props;
+  const { note, className, style, onChange } = props;
 
   const [request] = useRequest();
 
@@ -60,6 +62,7 @@ const NoteCard = (props: NoteCardProps) => {
   const handleSetting = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
+      e.preventDefault();
       contextMenuUtils?.open(
         [
           {
@@ -230,90 +233,80 @@ const NoteCard = (props: NoteCardProps) => {
     }
   }, []);
 
-  /************************************************
-   * ✨ 查看详情
-   ************************************************/
-
-  const handleShowDetail = useCallback(() => {
-    onShowDetail?.(note._id);
-  }, [note._id, onShowDetail]);
-
   return (
     <div
       ref={cardRef}
       className={clsx(
-        ' group relative flex flex-col gap-2.5 overflow-hidden rounded-xl border border-black-80 bg-gray-100 p-5 transition-all duration-200 hover:border-primary-50'
+        twMerge(
+          ' group relative flex flex-col gap-2.5 overflow-hidden rounded-xl border border-black-80 bg-gray-100 p-5 transition-all duration-200 hover:border-primary-50',
+          className
+        )
       )}
-      style={style}
-      onClick={handleShowDetail}>
-      <div className='absolute bottom-0 left-0 right-0 z-[1]'>
-        {isCollapsed && (
-          <>
-            <div className='gradient-mask-y pointer-events-none absolute bottom-0 left-0 right-0 flex h-64 translate-y-32 select-none items-center justify-center gap-1 bg-white'></div>
-            <div className='flex h-12 translate-y-2 cursor-pointer items-center justify-center gap-1'>
-              <span className='inline-block overflow-hidden whitespace-nowrap text-15 text-black-600'>
-                ···
-              </span>
-            </div>
-          </>
-        )}
-      </div>
-      <div className='flex flex-col gap-2'>
-        {/* 顶部 */}
-        <div className='flex items-center justify-between gap-10'>
-          {note.type === NoteTypeEnum.NOTE ? (
-            <div className='flex items-center gap-1'>
-              <i className='iconfont icon-calender-filled text-17 text-black-250' />
-              <span
-                className='text-[0.75rem] leading-[0.75rem] text-black-250'
-                title={dayjs(note.createdAt).format('YYYY-MM-DD HH:mm:ss')}>
-                {dayjs(note.createdAt).format('YYYY-MM-DD')}
-              </span>
-            </div>
-          ) : (
-            <span
-              className='overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-black-900 group-hover:text-primary-50'
-              title={note.title}>
-              {note.title}
-            </span>
-          )}
-          {isLogin ? (
-            <button
-              className=' group/more flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[0.5rem] border border-transparent transition-all duration-100 hover:bg-primary-50'
-              onClick={handleSetting}>
-              <i className='iconfont icon-ellipsis-v text-black-250 group-hover/more:text-white' />
-            </button>
+      style={style}>
+      <Link href={`/note/${props.note._id}`} target='_blank'>
+        <div className='absolute bottom-0 left-0 right-0 z-[1]'>
+          {isCollapsed ? (
+            <>
+              <div className='gradient-mask-y pointer-events-none absolute bottom-0 left-0 right-0 flex h-64 translate-y-32 select-none items-center justify-center gap-1 bg-white'></div>
+              <div className='flex h-12 translate-y-2 cursor-pointer items-center justify-center gap-1'>
+                <span className='inline-block overflow-hidden whitespace-nowrap text-15 text-black-600'>
+                  ···
+                </span>
+              </div>
+            </>
           ) : null}
         </div>
-        {/* 内容 */}
-        <div className='text-black-600'>
-          {note.type === NoteTypeEnum.NOTE ? (
-            <RichView initialValue={JSON.parse(note.content)} />
-          ) : (
-            note.content
+        <div className='flex flex-col gap-2'>
+          {/* 顶部 */}
+          <div className='flex items-center justify-between gap-10'>
+            {note.type === NoteTypeEnum.NOTE ? (
+              <div className='flex items-center gap-1'>
+                <i className='iconfont icon-calender-filled text-17 text-black-250' />
+                <span
+                  className='text-[0.75rem] leading-[0.75rem] text-black-250'
+                  title={dayjs(note.createdAt).format('YYYY-MM-DD HH:mm:ss')}>
+                  {dayjs(note.createdAt).format('YYYY-MM-DD')}
+                </span>
+              </div>
+            ) : (
+              <span
+                className='overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-black-900 group-hover:text-primary-50'
+                title={note.title}>
+                {note.title}
+              </span>
+            )}
+            {isLogin ? (
+              <button
+                className=' group/more flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[0.5rem] border border-transparent transition-all duration-100 hover:bg-primary-50'
+                onClick={handleSetting}>
+                <i className='iconfont icon-ellipsis-v text-black-250 group-hover/more:text-white' />
+              </button>
+            ) : null}
+          </div>
+          {/* 内容 */}
+          <RichView initialValue={JSON.parse(note.content)} />
+          {/* 底部 */}
+          {note.type === NoteTypeEnum.ARTICLE && (
+            <div className='flex items-center justify-between gap-1'>
+              <div className='flex items-center gap-1'>
+                <i className='iconfont icon-calender-filled text-17 text-black-250' />
+                <span className='text-[0.75rem] leading-[0.75rem] text-black-250'>
+                  {dayjs(note.createdAt).format('YYYY-MM-DD')}
+                </span>
+              </div>
+              <div className='flex gap-2.5'>
+                {[].map((tag, i) => (
+                  <div
+                    key={i}
+                    className='text-black text-xs font-normal text-opacity-40'>
+                    #{tag}
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
         </div>
-        {/* 底部 */}
-        {note.type === NoteTypeEnum.ARTICLE && (
-          <div className='flex items-center justify-between gap-1'>
-            <div className='flex items-center gap-1'>
-              <i className='iconfont icon-calender-filled text-17 text-black-250' />
-              <span className='text-[0.75rem] leading-[0.75rem] text-black-250'>
-                {dayjs(note.createdAt).format('YYYY-MM-DD')}
-              </span>
-            </div>
-            <div className='flex gap-2.5'>
-              {[].map((tag, i) => (
-                <div
-                  key={i}
-                  className='text-black text-xs font-normal text-opacity-40'>
-                  #{tag}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
+      </Link>
     </div>
   );
 };

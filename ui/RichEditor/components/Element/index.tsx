@@ -1,28 +1,59 @@
-import { RenderElementProps } from 'slate-react';
+import { ReactEditor, RenderElementProps, useSlate } from 'slate-react';
 import CodeBlock from './elements/CodeBlock';
 import { BlockElementType, InlineElementType } from '../../constans';
 import InlineChromiumBugfix from './elements/InlineChromiumBugfix';
 import { CodeBlockElement } from 'types/slate';
 import ImageBlock from './elements/ImageBlock';
+import { useMemo } from 'react';
 
 const Element = (props: RenderElementProps) => {
   const { attributes, children, element } = props;
+
+  const editor = useSlate();
+
+  const key = useMemo(() => {
+    return ReactEditor.findPath(editor, element).join('-');
+  }, [editor, element]);
 
   switch (element.type) {
     case BlockElementType.PARAGRAPH:
       return <p {...attributes}>{children}</p>;
     case BlockElementType.HEADING_1:
-      return <h1 {...attributes}>{children}</h1>;
+      return (
+        <h1 {...attributes} id={key}>
+          {children}
+        </h1>
+      );
     case BlockElementType.HEADING_2:
-      return <h2 {...attributes}>{children}</h2>;
+      return (
+        <h2 {...attributes} id={key}>
+          {children}
+        </h2>
+      );
     case BlockElementType.HEADING_3:
-      return <h3 {...attributes}>{children}</h3>;
+      return (
+        <h3 {...attributes} id={key}>
+          {children}
+        </h3>
+      );
     case BlockElementType.HEADING_4:
-      return <h4 {...attributes}>{children}</h4>;
+      return (
+        <h4 {...attributes} id={key}>
+          {children}
+        </h4>
+      );
     case BlockElementType.HEADING_5:
-      return <h5 {...attributes}>{children}</h5>;
+      return (
+        <h5 {...attributes} id={key}>
+          {children}
+        </h5>
+      );
     case BlockElementType.HEADING_6:
-      return <h6 {...attributes}>{children}</h6>;
+      return (
+        <h6 {...attributes} id={key}>
+          {children}
+        </h6>
+      );
     case BlockElementType.OL_LIST:
       return <ol {...attributes}>{children}</ol>;
     case BlockElementType.UL_LIST:

@@ -25,7 +25,7 @@ const nextConfig = {
     return [
       {
         source: '/',
-        destination: '/notes',
+        destination: '/note',
         permanent: true,
       },
     ];
