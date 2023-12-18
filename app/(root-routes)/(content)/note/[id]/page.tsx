@@ -235,11 +235,11 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
   return (
     <SlateProvider editor={editor} initialValue={JSON.parse(note.content)}>
       <div
-        className='mx-auto flex w-fit gap-8'
+        className='mx-auto flex gap-8 lg:w-[60rem]'
         style={{
           minHeight: 'calc(100vh - 3.625rem)',
         }}>
-        <div className='w-[45rem] bg-gray-100'>
+        <div className='w-full bg-gray-100'>
           <div className='flex flex-col gap-4 p-8'>
             {/* 顶部 */}
             <div className='flex items-center justify-between gap-10'>
@@ -293,15 +293,19 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
             )}
           </div>
           {/* 上下页 */}
-          <div className='flex gap-4 bg-gray-50 p-5'>
+          <div className='flex flex-col gap-4 bg-gray-50 p-5 md:flex-row'>
             <div className='group flex h-16 flex-1 cursor-pointer items-center justify-start gap-2.5 rounded-xl border border-transparent bg-black-50 px-3.5 py-2.5 transition-colors duration-100 hover:border-blue-600'>
               <span className='iconfont icon-angle-left relative text-19 font-semibold text-black-600 transition-colors duration-100 group-hover:text-primary-50' />
-              <span className='text-base font-semibold text-black-600 transition-colors duration-100 group-hover:text-primary-50'>
+              <span
+                className='truncate text-base font-semibold text-black-600 transition-colors duration-100 group-hover:text-primary-50'
+                title='上一篇：莫欺少年穷'>
                 上一篇：莫欺少年穷
               </span>
             </div>
             <div className='group flex h-16 flex-1 cursor-pointer items-center justify-end gap-2.5 rounded-xl border border-transparent bg-black-50 px-3.5 py-2.5 transition-colors duration-100 hover:border-blue-600'>
-              <span className='text-base font-semibold text-black-600 transition-colors duration-100 group-hover:text-primary-50'>
+              <span
+                className='truncate text-base font-semibold text-black-600 transition-colors duration-100 group-hover:text-primary-50'
+                title='下一篇：莫欺老年穷'>
                 下一篇：莫欺老年穷
               </span>
               <span className='iconfont icon-angle-right relative text-19 font-semibold text-black-600 transition-colors duration-100 group-hover:text-primary-50' />
@@ -312,7 +316,7 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
             <EmptyInfo tip='暂无评论' />
           </div>
         </div>
-        <TOC className='sticky top-24 flex h-fit' />
+        <TOC className='sticky top-24 hidden h-fit lg:flex' />
       </div>
     </SlateProvider>
   );
