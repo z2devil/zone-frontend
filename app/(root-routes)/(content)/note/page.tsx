@@ -55,7 +55,6 @@ const NotePage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [containerRect?.width]);
 
-  // TODO: total 问题
   const handleLoadData = useCallback(async () => {
     const nextCurrent = current + 1;
     setCurrent(nextCurrent);
@@ -102,19 +101,19 @@ const NotePage = () => {
         touchBottom={handleLoadData}>
         {(index, position) => {
           const note = notes[index];
-          if (!note) return null;
-          return (
+          return note ? (
             <NoteCard
               key={note._id}
               style={{
                 position: 'absolute',
                 width: `${position.width}px`,
+                maxHeight: `30rem`,
                 transform: `translate(${position.x}px, ${position.y}px)`,
                 overflow: 'hidden',
               }}
               note={note}
             />
-          );
+          ) : null;
         }}
       </Masonry>
     </div>

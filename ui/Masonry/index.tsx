@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { debounce, throttle } from 'lodash-es';
+import { throttle } from 'lodash-es';
 import MasonyCore, { MasonryRecord, containerRectInfo } from './utils/core';
 
 type Record = {
@@ -20,6 +20,7 @@ type Record = {
 
 interface MasonryProps {
   children: (index: number, record: Record) => React.ReactNode;
+  data: any[];
   containerRect: containerRectInfo | undefined;
   column: number;
   cellWidth: number;
@@ -28,12 +29,13 @@ interface MasonryProps {
   loadDistance?: number;
   chunkSize?: number;
   keyField?: string;
-  data: any[];
   touchBottom?: () => void;
 }
 
 const Masonry = (props: MasonryProps) => {
   const {
+    children,
+    data,
     containerRect,
     column,
     cellWidth,
@@ -42,9 +44,7 @@ const Masonry = (props: MasonryProps) => {
     loadDistance = 600,
     chunkSize = 10,
     keyField = '_id',
-    data,
     touchBottom,
-    children,
   } = props;
 
   // 初始化状态

@@ -9,8 +9,9 @@ import { useNotesStore } from '@/lib/stores/notes';
 import Button from '@/ui/Button';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import RichEditor from '@/ui/RichEditor';
-import { useCallback, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { Descendant } from 'slate';
+import { usePathname } from 'next/navigation';
 
 interface ContentLayoutProps {
   children: React.ReactNode;
@@ -19,6 +20,8 @@ interface ContentLayoutProps {
 const ContentLayout = (props: ContentLayoutProps) => {
   const { children } = props;
 
+  const pathname = usePathname();
+
   const [request] = useRequest();
 
   const { utils: modalUtils } = useModalUtilsStore();
@@ -26,6 +29,8 @@ const ContentLayout = (props: ContentLayoutProps) => {
   const { utils: notificationUtils } = useNotificationUtilsStore();
 
   const { notes, setNotes } = useNotesStore();
+
+  const isNotePage = useMemo(() => pathname === '/note', [pathname]);
 
   const isAdmin = usePermission([UserRole.ADMIN, UserRole.MANAGER]);
 
@@ -87,7 +92,7 @@ const ContentLayout = (props: ContentLayoutProps) => {
   return (
     <>
       {children}
-      {isAdmin ? (
+      {isNotePage && isAdmin ? (
         <Button
           className=' group fixed bottom-20 left-1/2 h-14 w-14 -translate-x-1/2 rounded-full bg-white shadow-main hover:bg-primary-50'
           onClick={handleAdd}>
