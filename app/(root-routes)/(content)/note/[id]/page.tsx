@@ -33,7 +33,6 @@ import { withReact, Slate as SlateProvider } from 'slate-react';
 
 interface NoteDetailPageProps {
   params: { id: string };
-  id: string;
 }
 
 const NoteDetailPage = (props: NoteDetailPageProps) => {
