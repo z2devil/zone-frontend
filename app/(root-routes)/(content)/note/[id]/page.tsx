@@ -262,11 +262,11 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
   return (
     <SlateProvider editor={editor} initialValue={JSON.parse(note.content)}>
       <div
-        className='mx-auto flex w-fit gap-8'
+        className='mx-auto flex gap-8 md:w-fit'
         style={{
           minHeight: 'calc(100vh - 3.625rem)',
         }}>
-        <div className='flex w-[45rem] flex-col overflow-hidden bg-gray-100'>
+        <div className='flex w-full flex-col overflow-hidden bg-gray-100 md:w-[45rem]'>
           <div className='flex flex-col gap-4 p-8'>
             {/* 顶部 */}
             <div className='flex items-center justify-between gap-10'>
