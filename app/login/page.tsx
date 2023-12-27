@@ -156,7 +156,7 @@ const LoginPage = () => {
       <div className='mb-10 flex items-center gap-3'>
         {step === 0 && (
           <Button
-            className=' relative flex h-12 items-center justify-center gap-2.5 rounded-3xl bg-blue-600 py-3.5 pl-7 pr-5'
+            className=' relative flex h-12 items-center justify-center gap-2.5 rounded-3xl bg-primary-50 py-3.5 pl-7 pr-5'
             onClick={handleSendVerificationCode}>
             <span className='text-lg font-medium text-white'>获取验证码</span>
             <i className='iconfont icon-arrow-right text-2xl text-white' />
@@ -170,7 +170,7 @@ const LoginPage = () => {
               <i className='iconfont icon-angle-left text-2xl text-white' />
             </Button>
             <Button
-              className=' relative flex h-12 items-center justify-center gap-2.5 rounded-3xl bg-blue-600 py-3.5 pl-7 pr-5'
+              className=' relative flex h-12 items-center justify-center gap-2.5 rounded-3xl bg-primary-50 py-3.5 pl-7 pr-5'
               onClick={handleSign}>
               <span className='text-lg font-medium text-white'>登录</span>
               <i className='iconfont icon-arrow-right text-2xl text-white' />

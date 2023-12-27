@@ -24,16 +24,18 @@ import clsx from 'clsx';
 import rem2px from '@/lib/utils/rem2px';
 import { twMerge } from 'tailwind-merge';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface NoteCardProps {
   note: NoteInfo;
   className?: string;
   style?: React.CSSProperties;
-  onChange?: (value: Descendant[]) => void;
 }
 
 const NoteCard = (props: NoteCardProps) => {
-  const { note, className, style, onChange } = props;
+  const { note, className, style } = props;
+
+  const navigation = useRouter();
 
   const [request] = useRequest();
 
@@ -143,7 +145,7 @@ const NoteCard = (props: NoteCardProps) => {
                       })
                       .then(() => {
                         modalUtils?.close(uuid);
-                        onChange?.(editorContent.current);
+                        navigation.refresh();
                       });
                   } catch (error: any) {
                     notificationUtils?.open({
@@ -205,11 +207,11 @@ const NoteCard = (props: NoteCardProps) => {
       handleEditorContentChange,
       isAdmin,
       modalUtils,
+      navigation,
       note._id,
       note.content,
       notes,
       notificationUtils,
-      onChange,
       request,
       setNotes,
     ]

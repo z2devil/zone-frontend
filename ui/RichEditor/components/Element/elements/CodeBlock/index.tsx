@@ -206,6 +206,7 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
           javascript(),
         ],
       }),
+      // parent: editorDOM,
       parent: shadowRoot,
       root: shadowRoot,
     });
