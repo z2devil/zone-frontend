@@ -10,7 +10,7 @@ const READONLY_INLINE_ELEMENTS: ElementType[] = [];
 
 const UNSELECTABLE_INLINE_ELEMENTS: ElementType[] = [];
 
-const withInlines = (editor: RichEditor) => {
+export const withInlines = (editor: RichEditor) => {
   const { insertData, insertText, isInline, isElementReadOnly, isSelectable } =
     editor;
 
@@ -32,5 +32,3 @@ const withInlines = (editor: RichEditor) => {
 
   return editor;
 };
-
-export { withInlines };

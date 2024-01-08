@@ -7,7 +7,7 @@ export const VOID_ELEMENTS: ElementType[] = [
   BlockElementType.BUTTON,
 ];
 
-const withVoids = (editor: RichEditor) => {
+export const withVoids = (editor: RichEditor) => {
   const { insertData, insertText, isVoid, isElementReadOnly } = editor;
 
   editor.isVoid = element => {
@@ -22,5 +22,3 @@ const withVoids = (editor: RichEditor) => {
 
   return editor;
 };
-
-export { withVoids };

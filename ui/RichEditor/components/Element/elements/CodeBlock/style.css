@@ -1,20 +1,12 @@
-/* Code blocks */
-pre {
-  margin: 0.5em 0;
-  padding: 1em;
-  overflow: auto;
-}
-
 pre {
   background: transparent;
+  padding: 1em;
+  overflow: auto;
+  caret-color: #000;
 }
 
 code > p {
   margin-bottom: 0 !important;
-}
-
-code > p span {
-  font-size: 13px !important;
 }
 
 .token.comment,
