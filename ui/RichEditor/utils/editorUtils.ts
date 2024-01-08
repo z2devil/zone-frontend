@@ -1,6 +1,7 @@
 import { Editor, Element, Node, Range, Transforms } from 'slate';
 import { RichEditor, CustomElement, ElementType } from 'types/slate';
 import { BlockElementType, InlineElementType, MarkType } from '../constans';
+import { VOID_ELEMENTS } from './withVoids';
 
 const editorUtils = {
   /**
@@ -52,11 +53,25 @@ const editorUtils = {
    * @returns
    */
   insertBlockNode(editor: RichEditor, type: BlockElementType) {
+    // TODO: 需要先获取当前选中的行，判断行内是否有除了 p 以外的其他元素，如果有，则将 btn 置灰；
+    // 不同按钮的置灰逻辑不同，需要根据具体的按钮来判断
+    if (VOID_ELEMENTS.includes(type) || type === BlockElementType.PARAGRAPH) {
+      Transforms.insertNodes(editor, {
+        type,
+        children: [
+          {
+            text: '',
+          },
+        ],
+      } as Node);
+      return;
+    }
     Transforms.insertNodes(editor, {
       type,
       children: [
         {
-          text: '',
+          type: BlockElementType.PARAGRAPH,
+          children: [{ text: '' }],
         },
       ],
     } as Node);

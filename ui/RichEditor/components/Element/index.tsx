@@ -60,13 +60,13 @@ const Element = (props: RenderElementProps) => {
       return <ul {...attributes}>{children}</ul>;
     case BlockElementType.BLOCK_QUOTE:
       return <blockquote {...attributes}>{children}</blockquote>;
-    case InlineElementType.CODE_LINE:
+    case InlineElementType.CODE_SPAN:
       return (
-        <code-line {...attributes}>
+        <code-span {...attributes}>
           <InlineChromiumBugfix />
           {children}
           <InlineChromiumBugfix />
-        </code-line>
+        </code-span>
       );
     case BlockElementType.CODE_BLOCK:
       return (

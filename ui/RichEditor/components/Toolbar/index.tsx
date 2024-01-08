@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { useSlate } from 'slate-react';
 import { useCallback } from 'react';
 import { twMerge } from 'tailwind-merge';
+import { Element, Transforms } from 'slate';
 
 interface ToolbarProps {
   className?: string;
@@ -31,6 +32,22 @@ const Toolbar = (props: ToolbarProps) => {
     onChangeFullScreen?.(!fullScreen);
   }, [fullScreen, onChangeFullScreen]);
 
+  const handleInsertCodeBlock = useCallback(() => {
+    // 如果当前选区在代码块中，则不进行包裹
+    if (editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK)) {
+      return;
+    }
+    Transforms.wrapNodes(
+      editor,
+      { type: BlockElementType.CODE_BLOCK, children: [] },
+      {
+        match: n =>
+          Element.isElement(n) && n.type === BlockElementType.PARAGRAPH,
+        split: true,
+      }
+    );
+  }, [editor]);
+
   return (
     <div
       className={clsx(
@@ -54,8 +71,7 @@ const Toolbar = (props: ToolbarProps) => {
         <button
           onMouseDown={event => {
             event.preventDefault();
-            editorUtils.insertBlockNode(editor, BlockElementType.CODE_BLOCK);
-            editorUtils.insertBlockNode(editor, BlockElementType.PARAGRAPH);
+            handleInsertCodeBlock();
           }}>
           <i
             className={clsx(
@@ -136,12 +152,12 @@ const Toolbar = (props: ToolbarProps) => {
         <button
           onMouseDown={event => {
             event.preventDefault();
-            editorUtils.insertInlineNode(editor, InlineElementType.CODE_LINE);
+            editorUtils.insertInlineNode(editor, InlineElementType.CODE_SPAN);
           }}>
           <i
             className={clsx(
               'iconfont icon-arrow rounded p-1 text-xl font-bold transition-colors duration-100 hover:bg-gray-50',
-              editorUtils.isElementActive(editor, InlineElementType.CODE_LINE)
+              editorUtils.isElementActive(editor, InlineElementType.CODE_SPAN)
                 ? 'text-primary-50'
                 : 'hover:text-black-900'
             )}></i>

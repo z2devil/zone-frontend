@@ -1,4 +1,4 @@
-import { BaseEditor, BaseRange } from 'slate';
+import { BaseEditor, BaseRange, Element } from 'slate';
 import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
 import {
@@ -25,7 +25,10 @@ export type RichEditor = BaseEditor &
   ReactEditor &
   HistoryEditor & {
     type: ElementType;
-    nodeToDecorations?: Map<Element, Range[]>;
+    nodeToDecorations?: Map<
+      Element,
+      (BaseRange & { [key: string]: unknown })[]
+    >;
   };
 
 export type ParagraphElement = {
@@ -62,8 +65,8 @@ export type BlockQuoteElement = {
   children: Descendant[];
 };
 
-export type CodeLineElement = {
-  type: InlineElementType.CODE_LINE;
+export type CodeSpanElement = {
+  type: InlineElementType.CODE_SPAN;
   children: CustomText[];
 };
 
@@ -94,7 +97,7 @@ export type ButtonElement = {
   children: CustomText[];
 };
 
-export type InlineElement = CodeLineElement | LinkElement;
+export type InlineElement = CodeSpanElement | LinkElement;
 
 export type BlockElement =
   | ParagraphElement

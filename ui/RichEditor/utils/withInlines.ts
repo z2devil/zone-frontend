@@ -2,7 +2,7 @@ import { RichEditor, ElementType } from 'types/slate';
 import { InlineElementType } from '../constans';
 
 const INLINE_ELEMENTS: ElementType[] = [
-  InlineElementType.CODE_LINE,
+  InlineElementType.CODE_SPAN,
   InlineElementType.LINK,
 ];
 

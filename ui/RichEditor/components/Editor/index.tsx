@@ -13,6 +13,7 @@ import { useCallback } from 'react';
 import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import useCut from '../../hooks/useCut';
+import useDecorate from '../../hooks/useDecorate';
 
 interface EditorProps {
   className?: string;
@@ -41,6 +42,8 @@ const Editor = (props: EditorProps) => {
 
   const handleCut = useCut(editor);
 
+  const decorate = useDecorate(editor);
+
   return (
     <Editable
       className={clsx(
@@ -58,12 +61,8 @@ const Editor = (props: EditorProps) => {
       onKeyDown={handleKeyDown}
       onCopy={handleCopy}
       onCut={handleCut}
+      decorate={decorate}
       readOnly={readonly}
-      renderPlaceholder={props => (
-        <div {...props} className={clsx(twMerge(' text-gray-400'))}>
-          Type something...
-        </div>
-      )}
     />
   );
 };
