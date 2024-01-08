@@ -1,5 +1,5 @@
-import { Editor, Element, Point, Range, Transforms } from 'slate';
-import { RichEditor } from 'types/slate';
+import { Editor, Element, Node, Point, Range, Transforms } from 'slate';
+import { CustomElement, RichEditor } from 'types/slate';
 import {
   NON_WRAPPING_ELEMENTS,
   SHORTCUTS_MAP,
@@ -48,8 +48,6 @@ const withShortcuts = (editor: RichEditor) => {
       });
 
       editorUtils.insertBlockNode(editor, BlockElementType.CODE_BLOCK);
-
-      editorUtils.insertBlockNode(editor, BlockElementType.PARAGRAPH);
 
       return;
     }

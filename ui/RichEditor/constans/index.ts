@@ -8,7 +8,7 @@ export enum MarkType {
 }
 
 export enum InlineElementType {
-  CODE_LINE = 'code-line',
+  CODE_SPAN = 'code-span',
   LINK = 'link',
 }
 
@@ -84,11 +84,13 @@ export const NON_EMPTY_ELEMENTS: ElementType[] = [
 export const enum Language {
   PLAINTEXT = 'plaintext',
   JAVASCRIPT = 'javascript',
+  JSX = 'jsx',
   TYPESCRIPT = 'typescript',
-  HTML = 'html',
+  TSX = 'tsx',
+  MARKUP = 'markup',
+  MARKDOWN = 'markdown',
   CSS = 'css',
   JSON = 'json',
-  MARKDOWN = 'markdown',
   PYTHON = 'python',
   JAVA = 'java',
   PHP = 'php',
@@ -99,12 +101,11 @@ export const enum Language {
   GO = 'go',
   RUST = 'rust',
   SQL = 'sql',
-  SHELL = 'shell',
   BASH = 'bash',
   DOCKER = 'docker',
   NGINX = 'nginx',
   YAML = 'yaml',
-  XML = 'xml',
+  TOML = 'toml',
   LESS = 'less',
   SCSS = 'scss',
 }

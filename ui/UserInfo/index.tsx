@@ -31,7 +31,7 @@ const UserInfo = (props: UserInfoProps) => {
         </div>
       ) : (
         <Link
-          className='group flex h-8 items-center justify-center gap-1 rounded-3xl pl-3 pr-2 hover:bg-blue-600'
+          className='group flex h-8 items-center justify-center gap-1 rounded-3xl pl-3 pr-2 hover:bg-primary-50'
           href='/login'>
           <span className='font-medium transition-colors duration-100 group-hover:text-white'>
             登录

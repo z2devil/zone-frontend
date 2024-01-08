@@ -26,7 +26,7 @@ import TOC from '@/ui/TOC';
 import clsx from 'clsx';
 import dayjs from 'dayjs';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Descendant, createEditor } from 'slate';
 import { withReact, Slate as SlateProvider } from 'slate-react';
@@ -98,9 +98,9 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
       const adjacentNotes = await getAdjacentNotesAPI(request)(params.id);
       setAdjacentNotes(adjacentNotes);
     } catch (error) {
-      return navigation.push('/404');
+      return notFound();
     }
-  }, [params, navigation, request]);
+  }, [params, request]);
 
   useEffect(() => {
     init();
@@ -181,7 +181,6 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
                       })
                       .then(() => {
                         modalUtils?.close(uuid);
-                        // onChange?.(editorContent.current);
                         setNote(prevNote => {
                           if (prevNote) {
                             return {
@@ -191,6 +190,7 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
                           }
                           return prevNote;
                         });
+                        navigation.refresh();
                       });
                   } catch (error: any) {
                     notificationUtils?.open({
@@ -251,6 +251,7 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
       handleEditorContentChange,
       isAdmin,
       modalUtils,
+      navigation,
       note,
       notificationUtils,
       request,

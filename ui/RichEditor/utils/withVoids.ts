@@ -1,8 +1,8 @@
 import { RichEditor, ElementType } from 'types/slate';
 import { BlockElementType } from '../constans';
 
-const VOID_ELEMENTS: ElementType[] = [
-  BlockElementType.CODE_BLOCK,
+export const VOID_ELEMENTS: ElementType[] = [
+  // BlockElementType.CODE_BLOCK,
   BlockElementType.IMAGE,
   BlockElementType.BUTTON,
 ];
