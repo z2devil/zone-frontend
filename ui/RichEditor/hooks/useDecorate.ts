@@ -1,9 +1,9 @@
+import Prism from 'prismjs';
 import { useCallback } from 'react';
 import { BaseRange, Editor, Element, Node, NodeEntry } from 'slate';
 import { BlockElementType } from '../constans';
 import { CodeBlockElement } from 'types/slate';
-import Prism from 'prismjs';
-import { normalizeTokens } from '../utils/normalize-tokens';
+import { normalizeTokens } from '../utils/normalizeTokens';
 
 const useDecorate = (editor: Editor) => {
   const blockEntries: NodeEntry<CodeBlockElement>[] = Array.from(

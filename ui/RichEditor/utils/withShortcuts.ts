@@ -8,7 +8,7 @@ import {
 } from '../constans';
 import { editorUtils } from './editorUtils';
 
-const withShortcuts = (editor: RichEditor) => {
+export const withShortcuts = (editor: RichEditor) => {
   const { insertBreak, insertSoftBreak, deleteBackward, insertText } = editor;
 
   editor.insertBreak = () => {
@@ -139,5 +139,3 @@ const withShortcuts = (editor: RichEditor) => {
 
   return editor;
 };
-
-export { withShortcuts };

@@ -117,8 +117,8 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
             )}
           </div>
         </div>
-        <pre className=' flex overflow-x-auto px-4 py-2'>
-          <code className=' w-fit'>{children}</code>
+        <pre className='overflow-x-auto px-4 py-2'>
+          <code>{children}</code>
         </pre>
       </div>
     </div>
