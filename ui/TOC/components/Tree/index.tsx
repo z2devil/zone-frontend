@@ -47,7 +47,7 @@ const TOCTree = (props: TOCTreeProps) => {
 
   const handleToggleCollapse = useCallback(
     (e: MouseEvent) => {
-      e.preventDefault();
+      e.stopPropagation();
       setIsCollapse(!isCollapse);
     },
     [isCollapse]
@@ -67,7 +67,9 @@ const TOCTree = (props: TOCTreeProps) => {
         onClick={handleLink}>
         <span className='flex-1 truncate'>{data.label}</span>
         {data.children?.length ? (
-          <button onClick={handleToggleCollapse}>
+          <button
+            className=' flex h-5 w-5 items-center justify-center'
+            onClick={handleToggleCollapse}>
             <span
               className='iconfont icon-angle-right block shrink-0'
               style={calcArrowStyle}></span>
