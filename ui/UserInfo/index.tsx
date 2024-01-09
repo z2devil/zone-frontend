@@ -1,3 +1,4 @@
+import { getRandomRgbDataURL } from '@/lib/utils/rgbDataURL';
 import imageLoader from 'config/image/loader';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -23,6 +24,8 @@ const UserInfo = (props: UserInfoProps) => {
         width={60}
         height={60}
         loader={imageLoader}
+        placeholder='blur'
+        blurDataURL={getRandomRgbDataURL()}
       />
       {nickname && roleName ? (
         <div className='flex flex-col gap-[0.3rem]'>
