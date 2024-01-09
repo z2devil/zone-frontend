@@ -173,25 +173,22 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
                       type: NoteTypeEnum.NOTE,
                       content: JSON.stringify(editorContent.current),
                     });
-                    notificationUtils
-                      ?.open({
-                        type: NotificationType.SUCCESS,
-                        content: '保存成功',
-                        duration: 3,
-                      })
-                      .then(() => {
-                        modalUtils?.close(uuid);
-                        setNote(prevNote => {
-                          if (prevNote) {
-                            return {
-                              ...prevNote,
-                              content: JSON.stringify(editorContent.current),
-                            };
-                          }
-                          return prevNote;
-                        });
-                        navigation.refresh();
-                      });
+                    notificationUtils?.open({
+                      type: NotificationType.SUCCESS,
+                      content: '保存成功',
+                      duration: 3,
+                    });
+                    modalUtils?.close(uuid);
+                    setNote(prevNote => {
+                      if (prevNote) {
+                        return {
+                          ...prevNote,
+                          content: JSON.stringify(editorContent.current),
+                        };
+                      }
+                      return prevNote;
+                    });
+                    navigation.refresh();
                   } catch (error: any) {
                     notificationUtils?.open({
                       type: NotificationType.WARNING,
