@@ -15,10 +15,11 @@ export const getContentSummary = (contentString: string) => {
         BlockElementType.HEADING_5,
         BlockElementType.HEADING_6,
         BlockElementType.PARAGRAPH,
-      ].includes(node.type as any)
+      ].includes(node.type as any) &&
+      Node.string(node).length > 0
     ) {
       return Node.string(node);
     }
   }
-  return '';
+  return '未命名';
 };

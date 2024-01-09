@@ -97,6 +97,7 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
       setNote(res);
       const adjacentNotes = await getAdjacentNotesAPI(request)(params.id);
       setAdjacentNotes(adjacentNotes);
+      console.log('[ adjacentNotes ]', adjacentNotes);
     } catch (error) {
       return notFound();
     }
