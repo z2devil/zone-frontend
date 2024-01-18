@@ -8,12 +8,6 @@ export type MasonryRecord =
     }
   | undefined;
 
-export interface containerRectInfo {
-  width: number;
-  windowHeight: number;
-  scrollTop: number;
-}
-
 /**
  * @param records 记录
  * @param totalHeight 总高度
@@ -22,14 +16,18 @@ export interface containerRectInfo {
 export type masonryRenderInfo = readonly [MasonryRecord[], number, number[]];
 
 class MasonyCore {
+  // 列数
   private coloumnCount: number;
-  private cellWidth: number;
-  private visionTop = 0;
+  // 每列高度
   private columnHeights: number[];
+  // 总高度
   private totalHeight = 0;
+  // 位置记录
   private records: MasonryRecord[] = [];
-  // 容器
-  private containerRect: containerRectInfo;
+  // 视窗宽
+  private visionWidth = 0;
+  // 瀑布流顶部相对于视窗顶部的距离
+  private scrollTop = 0;
   // 预渲染区
   private preRenderAreaDOM: HTMLElement | null;
   private preRenderResizeObserver: ResizeObserver | null;
@@ -40,9 +38,7 @@ class MasonyCore {
 
   constructor(
     coloumnCount: number,
-    cellWidth: number,
     preRenderAreaDOM: HTMLElement,
-    containerRect: containerRectInfo,
     options?: {
       bufferOffset?: number;
       gap?: number;
@@ -50,10 +46,7 @@ class MasonyCore {
     }
   ) {
     this.coloumnCount = coloumnCount;
-    this.cellWidth = cellWidth;
     this.columnHeights = Array.from({ length: this.coloumnCount }, () => 0);
-    // 容器
-    this.containerRect = containerRect;
     // 预渲染区
     this.preRenderAreaDOM = preRenderAreaDOM;
     this.preRenderResizeObserver = null;
@@ -68,14 +61,9 @@ class MasonyCore {
     this.coloumnCount = coloumnCount;
   }
 
-  // 设置单元格宽度
-  public setCellWidth(cellWidth: number) {
-    this.cellWidth = cellWidth;
-  }
-
-  // 设置容器尺寸
-  public setContainerRect(containerRect: containerRectInfo) {
-    this.containerRect = containerRect;
+  // 设置视窗宽度
+  public setVisionWdith(visionWidth: number) {
+    this.visionWidth = visionWidth;
   }
 
   // 销毁
@@ -88,7 +76,7 @@ class MasonyCore {
 
   // 重置
   public async reset(needCalcSize = false): Promise<masonryRenderInfo> {
-    this.updateVisionTop();
+    // this.updateVisionTop();
     if (needCalcSize) {
       await this.calcSize();
     }
@@ -99,7 +87,7 @@ class MasonyCore {
 
   // 渲染
   public async render(): Promise<masonryRenderInfo> {
-    this.updateVisionTop();
+    // this.updateVisionTop();
     await this.calcSize();
     this.calcPosition();
     const renderIndexes = this.calcRenderIndexes();
@@ -252,15 +240,9 @@ class MasonyCore {
     return needPreRenderIds;
   }
 
-  // 更新视窗顶部
-  private updateVisionTop() {
-    this.visionTop = -this.containerRect.scrollTop;
-  }
-
   // 滚动
   public onScroll(scrollTop: number): masonryRenderInfo {
-    this.containerRect.scrollTop = scrollTop;
-    this.updateVisionTop();
+    this.scrollTop = scrollTop;
     const renderIndexes = this.calcRenderIndexes();
     return [this.records, this.totalHeight, renderIndexes];
   }
@@ -270,7 +252,7 @@ class MasonyCore {
     const records = this.records;
     const coloumnCount = this.coloumnCount;
     const columnHeights = this.columnHeights;
-    const containerWidth = this.containerRect.width;
+    const visionWidth = this.visionWidth;
     const gap = this.gap;
 
     columnHeights.length = 0;
@@ -283,7 +265,7 @@ class MasonyCore {
       const minIndex = columnHeights.indexOf(Math.min(...columnHeights));
       const wrapperWidth = coloumnCount * (record.width + gap) - gap;
       record.x =
-        minIndex * (record.width + gap) + (containerWidth - wrapperWidth) / 2;
+        minIndex * (record.width + gap) + (visionWidth - wrapperWidth) / 2;
       record.y = columnHeights[minIndex];
       columnHeights[minIndex] += record.height + gap;
       nextTotalHeight = Math.max(nextTotalHeight, columnHeights[minIndex]);
@@ -336,9 +318,10 @@ class MasonyCore {
 
   // 计算渲染索引
   private calcRenderIndexes() {
-    const visionTop = this.visionTop;
+    const visionTop = -this.scrollTop;
     const bufferOffset = this.bufferOffset;
-    const containerHeight = this.containerRect.windowHeight;
+    // TODO: 改为视窗高度 visionHeight
+    const containerHeight = window.innerHeight;
     const records = this.records;
 
     const visionRange = [

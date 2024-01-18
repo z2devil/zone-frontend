@@ -19,7 +19,7 @@ const useDecorate = (editor: Editor) => {
     ...blockEntries.map(getChildNodeToDecorations)
   );
 
-  console.log('[ blockEntries ]', blockEntries);
+  // console.log('[ blockEntries ]', blockEntries);
 
   editor.nodeToDecorations = nodeToDecorations;
 
@@ -47,7 +47,7 @@ const mergeMaps = <K, V>(...maps: Map<K, V>[]) => {
     }
   }
 
-  console.log('[ mergeMaps ]', map);
+  // console.log('[ mergeMaps ]', map);
 
   return map;
 };

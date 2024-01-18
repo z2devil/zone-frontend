@@ -6,7 +6,6 @@ import useResize from '@/ui/Masonry/hooks/useResize';
 import NoteCard from '@/ui/NoteCard';
 import PageBanner from '@/ui/PageBanner';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import px2number from '@/lib/utils/px2number';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import { useNotificationUtilsStore } from '@/lib/stores';
 import useRequest from '@/lib/hooks/useRequest';
@@ -21,6 +20,8 @@ const NotePage = () => {
 
   const { notes, setNotes } = useNotesStore();
 
+  const [noteTotal, setNoteTotal] = useState(Infinity);
+
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [current, setCurrent] = useState(0);
@@ -28,7 +29,7 @@ const NotePage = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // 容器尺寸 & 列数
-  const [containerRect, column] = useResize(containerRef, {
+  const [containerWidth, column] = useResize(containerRef, {
     delay: 400,
   });
 
@@ -38,35 +39,21 @@ const NotePage = () => {
     return notes[0].createdAt;
   }, [notes]);
 
-  // 容器矩形信息
-  const calcContainerRectInfo = useMemo(() => {
-    const containerDOM = containerRef.current;
-    if (!containerDOM) return;
-    const style = getComputedStyle(containerDOM);
-    const width =
-      px2number(style.width) -
-      px2number(style.paddingLeft) -
-      px2number(style.paddingRight);
-    return {
-      width,
-      windowHeight: containerDOM.clientHeight,
-      scrollTop: containerDOM.scrollTop,
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [containerRect?.width]);
-
   const handleLoadData = useCallback(async () => {
+    if (isLoading) return;
+    if (notes.length >= noteTotal) return;
+    setIsLoading(true);
     const nextCurrent = current + 1;
     setCurrent(nextCurrent);
-    setIsLoading(true);
     const res = await getNotesAPI(request)({
       current: nextCurrent,
       size: FETCH_SIZE,
     });
     setIsLoading(false);
     setNotes([...notes, ...res.list]);
+    setNoteTotal(res.total);
     return res.list;
-  }, [current, notes, request, setNotes]);
+  }, [current, isLoading, notes, request, setNotes, noteTotal]);
 
   const { utils: notificationUtils } = useNotificationUtilsStore();
 
@@ -93,9 +80,9 @@ const NotePage = () => {
         <EmptyInfo tip='暂无笔记' />
       ) : null}
       <Masonry
-        containerRect={calcContainerRectInfo}
         column={column}
         cellWidth={CARD_WIDTH}
+        visionWidth={containerWidth}
         gap={GAP}
         data={notes}
         touchBottom={handleLoadData}>

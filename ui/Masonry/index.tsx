@@ -9,7 +9,7 @@ import {
   useState,
 } from 'react';
 import { throttle } from 'lodash-es';
-import MasonyCore, { MasonryRecord, containerRectInfo } from './utils/core';
+import MasonyCore, { MasonryRecord } from './utils/core';
 
 type Record = {
   x: number;
@@ -21,7 +21,8 @@ type Record = {
 interface MasonryProps {
   children: (index: number, record: Record) => React.ReactNode;
   data: any[];
-  containerRect: containerRectInfo | undefined;
+  // containerRect: containerRectInfo | undefined;
+  visionWidth: number;
   column: number;
   cellWidth: number;
   gap?: number;
@@ -36,7 +37,8 @@ const Masonry = (props: MasonryProps) => {
   const {
     children,
     data,
-    containerRect,
+    // containerRect,
+    visionWidth,
     column,
     cellWidth,
     gap = 20,
@@ -84,36 +86,20 @@ const Masonry = (props: MasonryProps) => {
   // 初始化
   const init = useCallback(() => {
     if (initialized) return;
-    if (!containerRect) return;
 
     const preRenderContainerDOM = preRenderContainerRef.current;
     if (!preRenderContainerDOM) return;
 
-    masonryCoreRef.current = new MasonyCore(
-      column,
-      cellWidth,
-      preRenderContainerDOM,
-      containerRect,
-      {
-        bufferOffset,
-        gap,
-        keyField,
-      }
-    );
+    masonryCoreRef.current = new MasonyCore(column, preRenderContainerDOM, {
+      bufferOffset,
+      gap,
+      keyField,
+    });
 
     touchBottom?.();
 
     setInitialized(true);
-  }, [
-    initialized,
-    containerRect,
-    column,
-    cellWidth,
-    bufferOffset,
-    gap,
-    keyField,
-    touchBottom,
-  ]);
+  }, [initialized, column, bufferOffset, gap, keyField, touchBottom]);
 
   useEffect(() => {
     init();
@@ -138,7 +124,6 @@ const Masonry = (props: MasonryProps) => {
   // 重置
   const reset = useCallback(() => {
     if (!initialized) return;
-    if (!containerRect) return;
 
     const preRenderContainerDOM = preRenderContainerRef.current;
     if (!preRenderContainerDOM) return;
@@ -148,9 +133,9 @@ const Masonry = (props: MasonryProps) => {
 
     let needCalcSize = false;
 
-    if (lastestWdithRef.current !== containerRect.width) {
-      if (containerRect.width < cellWidth) {
-        lastestWdithRef.current = containerRect.width;
+    if (lastestWdithRef.current !== visionWidth) {
+      if (visionWidth < cellWidth) {
+        lastestWdithRef.current = visionWidth;
         needCalcSize = true;
       } else {
         if (lastestWdithRef.current !== cellWidth) {
@@ -158,7 +143,7 @@ const Masonry = (props: MasonryProps) => {
           needCalcSize = true;
         }
       }
-      masornyCore.setContainerRect(containerRect);
+      masornyCore.setVisionWdith(visionWidth);
     }
 
     if (needCalcSize) {
@@ -167,7 +152,6 @@ const Masonry = (props: MasonryProps) => {
 
     requestAnimationFrame(async () => {
       masornyCore.setColumCount(column);
-      masornyCore.setCellWidth(cellWidth);
       const [nextRecords, nextTotalHeight, renderIndexes] =
         await masornyCore.reset(needCalcSize);
 
@@ -176,7 +160,7 @@ const Masonry = (props: MasonryProps) => {
       setTotalHeight(nextTotalHeight);
       setRenderIndexes(renderIndexes);
     });
-  }, [cellWidth, column, containerRect, initialized, keyField]);
+  }, [cellWidth, column, initialized, keyField, visionWidth]);
 
   // 重置（container 变化时）
   useEffect(() => {
@@ -226,12 +210,23 @@ const Masonry = (props: MasonryProps) => {
       const masonryCore = masonryCoreRef.current;
       if (!masonryCore) return;
 
+      const containerTop = containerDOM.getBoundingClientRect().top;
+
       const [nextRecords, nextTotalHeight, renderIndexes] =
-        masonryCore.onScroll(containerDOM.getBoundingClientRect().top);
+        masonryCore.onScroll(containerTop);
+
       setRecords(nextRecords);
       setTotalHeight(nextTotalHeight);
       setRenderIndexes(renderIndexes);
-    }, []),
+
+      // 触底
+      if (
+        -containerTop + window.innerHeight + loadDistance >= nextTotalHeight &&
+        data.length
+      ) {
+        touchBottom?.();
+      }
+    }, [data.length, loadDistance, touchBottom]),
     100
   );
 
@@ -261,7 +256,7 @@ const Masonry = (props: MasonryProps) => {
               {children(index, {
                 x: 0,
                 y: 0,
-                width: Math.min(cellWidth, containerRect?.width || 0),
+                width: Math.min(cellWidth, visionWidth),
                 height: 0,
               })}
             </div>
