@@ -26,6 +26,8 @@ const WorksPage = () => {
 
   const { works, setWorks } = useWorksStore();
 
+  const [workTotal, setWorkTotal] = useState(Infinity);
+
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [column, setColumn] = useState(2);
@@ -35,7 +37,7 @@ const WorksPage = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // 容器尺寸
-  const [containerRect] = useResize(containerRef, {
+  const [containerWidth] = useResize(containerRef, {
     delay: 400,
   });
 
@@ -44,23 +46,6 @@ const WorksPage = () => {
     if (!works.length) return;
     return works[0].createdAt;
   }, [works]);
-
-  // 容器矩形信息
-  const calcContainerRectInfo = useMemo(() => {
-    const containerDOM = containerRef.current;
-    if (!containerDOM) return;
-    const style = getComputedStyle(containerDOM);
-    const width =
-      px2number(style.width) -
-      px2number(style.paddingLeft) -
-      px2number(style.paddingRight);
-    return {
-      width,
-      windowHeight: containerDOM.clientHeight,
-      scrollTop: containerDOM.scrollTop,
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [containerRect?.width]);
 
   // 计算列数
   const handleResize = useCallback(() => {
@@ -84,13 +69,14 @@ const WorksPage = () => {
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [containerRect?.width, handleResize]);
+  }, [handleResize]);
 
-  // TODO: total 问题
   const handleLoadData = useCallback(async () => {
+    if (isLoading) return;
+    if (works.length >= workTotal) return;
+    setIsLoading(true);
     const nextCurrent = current + 1;
     setCurrent(nextCurrent);
-    setIsLoading(true);
     const res = await getNotesAPI(request)({
       current: nextCurrent,
       size: FETCH_SIZE,
@@ -98,8 +84,9 @@ const WorksPage = () => {
     });
     setIsLoading(false);
     setWorks([...works, ...res.list]);
+    setWorkTotal(res.total);
     return res.list;
-  }, [current, works, request, setWorks]);
+  }, [isLoading, works, workTotal, current, request, setWorks]);
 
   const { utils: notificationUtils } = useNotificationUtilsStore();
 
@@ -126,9 +113,9 @@ const WorksPage = () => {
         <EmptyInfo tip='暂无作品' />
       ) : null}
       <Masonry
-        containerRect={calcContainerRectInfo}
         column={column}
         cellWidth={CARD_WIDTH}
+        visionWidth={containerWidth}
         gap={GAP}
         data={works}
         touchBottom={handleLoadData}>
