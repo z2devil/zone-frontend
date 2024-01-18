@@ -7,6 +7,7 @@ import { ReactEventHandler, useCallback, useMemo, useState } from 'react';
 import { upload } from '@/lib/api/oss';
 import useRequest from '@/lib/hooks/useRequest';
 import imageLoader from 'config/image/loader';
+import { getRandomRgbDataURL } from '@/lib/utils/rgbDataURL';
 
 interface CodeBlockProps {
   attributes: any;
@@ -113,6 +114,8 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
             height={element.height}
             onLoad={handleLoad}
             loader={imageLoader}
+            placeholder='blur'
+            blurDataURL={getRandomRgbDataURL()}
           />
         ) : null}
         {!readOnly ? (

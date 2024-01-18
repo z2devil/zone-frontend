@@ -137,16 +137,13 @@ const NoteCard = (props: NoteCardProps) => {
                         return item;
                       })
                     );
-                    notificationUtils
-                      ?.open({
-                        type: NotificationType.SUCCESS,
-                        content: '保存成功',
-                        duration: 3,
-                      })
-                      .then(() => {
-                        modalUtils?.close(uuid);
-                        navigation.refresh();
-                      });
+                    notificationUtils?.open({
+                      type: NotificationType.SUCCESS,
+                      content: '保存成功',
+                      duration: 3,
+                    });
+                    modalUtils?.close(uuid);
+                    navigation.refresh();
                   } catch (error: any) {
                     notificationUtils?.open({
                       type: NotificationType.WARNING,
