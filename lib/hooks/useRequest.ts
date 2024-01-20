@@ -2,7 +2,7 @@ import { useCallback, useMemo, useRef } from 'react';
 import { useAuthStore } from '../stores';
 import { configs } from '../constants';
 import { isArray } from 'lodash';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 type RequestConfig = Omit<RequestInit, 'method'>;
 
@@ -37,6 +37,8 @@ export interface IRequest {
 
 const useRequest = () => {
   const router = useRouter();
+
+  const pathname = usePathname();
 
   const { token, clear } = useAuthStore();
 
@@ -84,6 +86,10 @@ const useRequest = () => {
             router.push('/login');
           }
 
+          if (code === 429 && pathname !== '/too-many-requests') {
+            router.push('/too-many-requests');
+          }
+
           if (isArray(message)) {
             const { message: msg } = message[0];
             throw new Error(msg);
@@ -98,7 +104,7 @@ const useRequest = () => {
         throw error;
       }
     },
-    [clear, router, token]
+    [clear, pathname, router, token]
   );
 
   const request: IRequest = useMemo(
