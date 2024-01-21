@@ -91,6 +91,10 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
     [editor, element, readOnly]
   );
 
+  const blurDataURL = useMemo(() => {
+    return getRandomRgbDataURL();
+  }, []);
+
   return (
     <div {...attributes}>
       <div
@@ -115,7 +119,7 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
             onLoad={handleLoad}
             loader={imageLoader}
             placeholder='blur'
-            blurDataURL={getRandomRgbDataURL()}
+            blurDataURL={blurDataURL}
           />
         ) : null}
         {!readOnly ? (

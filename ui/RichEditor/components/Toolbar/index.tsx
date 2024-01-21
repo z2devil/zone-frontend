@@ -57,6 +57,7 @@ const Toolbar = (props: ToolbarProps) => {
         )
       )}>
       <div className=' flex h-full w-full flex-grow items-center gap-2 overflow-auto'>
+        {/* 标题 */}
         <button
           onMouseDown={event => {
             event.preventDefault();
@@ -68,6 +69,7 @@ const Toolbar = (props: ToolbarProps) => {
               isHeadingActive() ? 'text-primary-50' : 'hover:text-black-900'
             )}></i>
         </button>
+        {/* 代码块 */}
         <button
           onMouseDown={event => {
             event.preventDefault();
@@ -81,6 +83,7 @@ const Toolbar = (props: ToolbarProps) => {
                 : 'hover:text-black-900'
             )}></i>
         </button>
+        {/* 图片 */}
         <button
           onMouseDown={event => {
             event.preventDefault();
@@ -91,6 +94,20 @@ const Toolbar = (props: ToolbarProps) => {
             className={clsx(
               'iconfont icon-image rounded p-1 text-xl font-bold transition-colors duration-100 hover:bg-gray-50',
               editorUtils.isElementActive(editor, BlockElementType.IMAGE)
+                ? 'text-primary-50'
+                : 'hover:text-black-900'
+            )}></i>
+        </button>
+        {/* 音乐 */}
+        <button
+          onMouseDown={event => {
+            event.preventDefault();
+            editorUtils.insertBlockNode(editor, BlockElementType.MUSIC);
+          }}>
+          <i
+            className={clsx(
+              'iconfont icon-music rounded p-1 text-xl font-bold transition-colors duration-100 hover:bg-gray-50',
+              editorUtils.isElementActive(editor, BlockElementType.MUSIC)
                 ? 'text-primary-50'
                 : 'hover:text-black-900'
             )}></i>

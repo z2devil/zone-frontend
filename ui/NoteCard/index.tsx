@@ -283,7 +283,9 @@ const NoteCard = (props: NoteCardProps) => {
             ) : null}
           </div>
           {/* 内容 */}
-          <RichView initialValue={JSON.parse(note.content)} />
+          <div className=' pointer-events-none'>
+            <RichView initialValue={JSON.parse(note.content)} />
+          </div>
           {/* 底部 */}
           {note.type === NoteTypeEnum.ARTICLE && (
             <div className='flex items-center justify-between gap-1'>

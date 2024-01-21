@@ -1,7 +1,7 @@
 @font-face {
-  src: url('iconfont.woff2?t=1701249099033') format('woff2'),
-    url('iconfont.woff?t=1701249099033') format('woff'),
-    url('iconfont.ttf?t=1701249099033') format('truetype');
+  src: url('iconfont.woff2?t=1705852448714') format('woff2'),
+    url('iconfont.woff?t=1705852448714') format('woff'),
+    url('iconfont.ttf?t=1705852448714') format('truetype');
   font-family: 'iconfont'; /* Project id 3977835 */
 }
 
@@ -11,6 +11,38 @@
   font-style: normal;
   font-size: 16px;
   font-family: 'iconfont' !important;
+}
+
+.icon-music:before {
+  content: '\e677';
+}
+
+.icon-play-filled:before {
+  content: '\e674';
+}
+
+.icon-pause-filled:before {
+  content: '\e676';
+}
+
+.icon-volume-filled:before {
+  content: '\e670';
+}
+
+.icon-volume-silent-filled:before {
+  content: '\e671';
+}
+
+.icon-char:before {
+  content: '\e672';
+}
+
+.icon-music-filled:before {
+  content: '\e66f';
+}
+
+.icon-uil_file-copy-alt:before {
+  content: '\e675';
 }
 
 .icon-compress-alt:before {

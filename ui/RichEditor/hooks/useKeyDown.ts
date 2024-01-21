@@ -162,7 +162,10 @@ const handleSingleKey = (
       });
       const nextAbove = Editor.above(editor, {
         at: nextLocation,
-        match: node => Editor.isInline(editor, node as CustomElement),
+        match: node => {
+          if (!Element.isElement(node)) return false;
+          return Editor.isInline(editor, node);
+        },
       });
       if (isInlneAbove.current !== !!nextAbove) {
         e.preventDefault();
@@ -178,7 +181,10 @@ const handleSingleKey = (
       });
       const nextAbove = Editor.above(editor, {
         at: nextLocation,
-        match: node => Editor.isInline(editor, node as CustomElement),
+        match: node => {
+          if (!Element.isElement(node)) return false;
+          return Editor.isInline(editor, node);
+        },
       });
       if (isInlneAbove.current !== !!nextAbove) {
         e.preventDefault();
@@ -194,9 +200,10 @@ const handleSingleKey = (
         const nextPath = Path.previous(path);
         const nextAbove = Editor.above(editor, {
           at: nextPath,
-          match: node =>
-            Editor.isBlock(editor, node as CustomElement) &&
-            Editor.isVoid(editor, node as CustomElement),
+          match: node => {
+            if (!Element.isElement(node)) return false;
+            return Editor.isBlock(editor, node) && Editor.isVoid(editor, node);
+          },
         });
         if (isVoidAbove.current !== !!nextAbove) {
           e.preventDefault();
@@ -221,9 +228,10 @@ const handleSingleKey = (
         nextPath[nextPath.length - 2] > 0 && nextPath[nextPath.length - 2]++;
         const nextAbove = Editor.above(editor, {
           at: nextPath,
-          match: node =>
-            Editor.isBlock(editor, node as CustomElement) &&
-            Editor.isVoid(editor, node as CustomElement),
+          match: node => {
+            if (!Element.isElement(node)) return false;
+            return Editor.isBlock(editor, node) && Editor.isVoid(editor, node);
+          },
         });
         if (isVoidAbove.current !== !!nextAbove) {
           e.preventDefault();
