@@ -5,6 +5,7 @@ import InlineChromiumBugfix from './elements/InlineChromiumBugfix';
 import { CodeBlockElement } from 'types/slate';
 import ImageBlock from './elements/ImageBlock';
 import { useMemo } from 'react';
+import MusicBlock from './elements/MusicBlock';
 
 const Element = (props: RenderElementProps) => {
   const { attributes, children, element } = props;
@@ -86,6 +87,12 @@ const Element = (props: RenderElementProps) => {
       );
     case BlockElementType.BUTTON:
       return <button {...attributes}>{children}</button>;
+    case BlockElementType.MUSIC:
+      return (
+        <MusicBlock attributes={attributes} element={element}>
+          {children}
+        </MusicBlock>
+      );
     default:
       return <p {...attributes}>{children}</p>;
   }

@@ -17,7 +17,7 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'z2devil-bucket.oss-cn-beijing.aliyuncs.com',
         port: '',
-        pathname: '/*/image/**',
+        pathname: '/*/*/**',
       },
     ],
   },

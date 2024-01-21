@@ -97,6 +97,14 @@ export type ButtonElement = {
   children: CustomText[];
 };
 
+export type MusicBlockElement = {
+  type: BlockElementType.MUSIC;
+  url?: string;
+  coverUrl?: string;
+  title?: string;
+  children: CustomText[];
+};
+
 export type InlineElement = CodeSpanElement | LinkElement;
 
 export type BlockElement =
@@ -107,7 +115,8 @@ export type BlockElement =
   | BlockQuoteElement
   | CodeBlockElement
   | ImageBlockElement
-  | ButtonElement;
+  | ButtonElement
+  | MusicBlockElement;
 
 export type CustomElement = InlineElement | BlockElement;
 

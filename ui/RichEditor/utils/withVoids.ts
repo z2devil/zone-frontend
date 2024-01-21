@@ -5,6 +5,7 @@ export const VOID_ELEMENTS: ElementType[] = [
   // BlockElementType.CODE_BLOCK,
   BlockElementType.IMAGE,
   BlockElementType.BUTTON,
+  BlockElementType.MUSIC,
 ];
 
 export const withVoids = (editor: RichEditor) => {
