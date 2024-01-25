@@ -100,7 +100,7 @@ const WhiteBoard = (props: WhiteBoardProps) => {
         readOnly ? style.readOnly : undefined
       )}>
       <Excalidraw
-        autoFocus
+        autoFocus={!readOnly}
         gridModeEnabled
         viewModeEnabled={readOnly}
         zenModeEnabled
