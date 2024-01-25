@@ -6,13 +6,14 @@ import {
   ExcalidrawImperativeAPI,
   ExcalidrawInitialDataState,
 } from '@excalidraw/excalidraw/types/types';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ExcalidrawElement } from '@excalidraw/excalidraw/types/element/types';
 import { Transforms } from 'slate';
 import { ReactEditor, useSlateStatic } from 'slate-react';
 
 interface WhiteBoardProps {
   element: WhiteBoardBlockElement;
+  readOnly?: boolean;
 }
 
 const Excalidraw = dynamic(
@@ -42,7 +43,9 @@ const isElementsEqual = (
 };
 
 const WhiteBoard = (props: WhiteBoardProps) => {
-  const { element } = props;
+  const { element, readOnly } = props;
+
+  console.log('[ readOnly ]', readOnly);
 
   const editor = useSlateStatic();
 
@@ -51,7 +54,7 @@ const WhiteBoard = (props: WhiteBoardProps) => {
 
   const initialData = useMemo<ExcalidrawInitialDataState>(
     () => ({
-      scrollToContent: true,
+      // scrollToContent: true,
       elements: element.elements,
     }),
     [element.elements]
@@ -62,7 +65,7 @@ const WhiteBoard = (props: WhiteBoardProps) => {
   const handleChange = useCallback(
     (
       elements: readonly ExcalidrawElement[]
-      // appState: AppState,
+      // appState: AppState
       // files: BinaryFiles
     ) => {
       const elementsClone = structuredClone(elements);
@@ -80,11 +83,27 @@ const WhiteBoard = (props: WhiteBoardProps) => {
     [editor, element]
   );
 
+  useEffect(() => {
+    if (!readOnly) return;
+    if (!initialData.elements) return;
+    excalidrawAPI?.scrollToContent(initialData.elements, {
+      fitToViewport: true,
+      viewportZoomFactor: 0.9,
+    });
+  }, [excalidrawAPI, initialData.elements, readOnly]);
+
   return (
-    <div className={clsx('relative flex h-full w-full', style.excalidraw)}>
+    <div
+      className={clsx(
+        'relative flex h-full w-full',
+        style.excalidraw,
+        readOnly ? style.readOnly : undefined
+      )}>
       <Excalidraw
         autoFocus
         gridModeEnabled
+        viewModeEnabled={readOnly}
+        zenModeEnabled
         UIOptions={{
           canvasActions: {
             changeViewBackgroundColor: false,

@@ -32,7 +32,7 @@ const WhiteBoardBlock = ({
               : 'border-transparent'
             : ''
         )}>
-        <WhiteBoard element={element} />
+        <WhiteBoard element={element} readOnly={readOnly} />
       </div>
       <div
         style={{
