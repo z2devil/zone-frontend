@@ -34,3 +34,14 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+
+## 结构化文档编辑器
+
+### 添加组件
+
+1. constants/index.ts 文件中为 BlockElementType 或者 InlineElementType 添加 xxx 类型
+2. types/slate.d.ts 文件中添加 xxxElement 类型，同时将其添加到 BlockElement 或者 InlineElement 中
+3. ui/RichEditor/components/Element/elements/index.tsx 文件中添加 xxxElement 组件
+4. ui/RichEditor/components/Element/elements 添加 xxxBlock/Inline 文件夹，下面添加 index.tsx 文件
+5. 注意，如果该组件是 void 类型，ui/RichEditor/utils/withVoids.ts 的 VOID_ELEMENTS 中添加该组件的类型

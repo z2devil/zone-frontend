@@ -1,11 +1,12 @@
 import { RichEditor, ElementType } from 'types/slate';
-import { BlockElementType } from '../constans';
+import { BlockElementType } from '../constants';
 
 export const VOID_ELEMENTS: ElementType[] = [
   // BlockElementType.CODE_BLOCK,
   BlockElementType.IMAGE,
   BlockElementType.BUTTON,
   BlockElementType.MUSIC,
+  BlockElementType.WHITE_BOARD,
 ];
 
 export const withVoids = (editor: RichEditor) => {

@@ -1,5 +1,5 @@
 import { editorUtils } from '../../utils';
-import { BlockElementType, InlineElementType, MarkType } from '../../constans';
+import { BlockElementType, InlineElementType, MarkType } from '../../constants';
 import clsx from 'clsx';
 import { useSlate } from 'slate-react';
 import { useCallback } from 'react';
@@ -108,6 +108,20 @@ const Toolbar = (props: ToolbarProps) => {
             className={clsx(
               'iconfont icon-music rounded p-1 text-xl font-bold transition-colors duration-100 hover:bg-gray-50',
               editorUtils.isElementActive(editor, BlockElementType.MUSIC)
+                ? 'text-primary-50'
+                : 'hover:text-black-900'
+            )}></i>
+        </button>
+        {/* 画板 */}
+        <button
+          onMouseDown={event => {
+            event.preventDefault();
+            editorUtils.insertBlockNode(editor, BlockElementType.WHITE_BOARD);
+          }}>
+          <i
+            className={clsx(
+              'iconfont icon-white-board rounded p-1 text-xl font-black transition-colors duration-100 hover:bg-gray-50',
+              editorUtils.isElementActive(editor, BlockElementType.WHITE_BOARD)
                 ? 'text-primary-50'
                 : 'hover:text-black-900'
             )}></i>

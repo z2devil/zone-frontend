@@ -2,7 +2,7 @@ import { KeyboardEvent, MutableRefObject, useCallback, useRef } from 'react';
 import { Editor, Element, Path, Range, Transforms } from 'slate';
 import { RichEditor, CustomElement } from 'types/slate';
 import { editorUtils } from '../utils';
-import { BlockElementType, InlineElementType, MarkType } from '../constans';
+import { BlockElementType, InlineElementType, MarkType } from '../constants';
 
 const ACTIONS: Record<string, (editor: RichEditor) => void> = {
   b: editor => {

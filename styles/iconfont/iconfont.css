@@ -1,7 +1,7 @@
 @font-face {
-  src: url('iconfont.woff2?t=1705852448714') format('woff2'),
-    url('iconfont.woff?t=1705852448714') format('woff'),
-    url('iconfont.ttf?t=1705852448714') format('truetype');
+  src: url('iconfont.woff2?t=1706060808067') format('woff2'),
+    url('iconfont.woff?t=1706060808067') format('woff'),
+    url('iconfont.ttf?t=1706060808067') format('truetype');
   font-family: 'iconfont'; /* Project id 3977835 */
 }
 
@@ -11,6 +11,10 @@
   font-style: normal;
   font-size: 16px;
   font-family: 'iconfont' !important;
+}
+
+.icon-white-board:before {
+  content: '\e678';
 }
 
 .icon-music:before {

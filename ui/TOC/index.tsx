@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import TOCTree from './components/Tree';
 import { twMerge } from 'tailwind-merge';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { BlockElementType } from '../RichEditor/constans';
+import { BlockElementType } from '../RichEditor/constants';
 import { ReactEditor, useSlate } from 'slate-react';
 
 export interface TOCTreeItem {

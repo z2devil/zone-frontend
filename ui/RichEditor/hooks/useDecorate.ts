@@ -1,7 +1,7 @@
 import Prism from 'prismjs';
 import { useCallback } from 'react';
 import { BaseRange, Editor, Element, Node, NodeEntry } from 'slate';
-import { BlockElementType } from '../constans';
+import { BlockElementType } from '../constants';
 import { CodeBlockElement } from 'types/slate';
 import { normalizeTokens } from '../utils/normalizeTokens';
 
