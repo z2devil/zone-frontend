@@ -6,7 +6,8 @@ import {
   InlineElementType,
   Language,
   MarkType,
-} from '@/ui/RichEditor/constans';
+} from '@/ui/RichEditor/constants';
+import { ExcalidrawElement } from '@excalidraw/excalidraw/types/element/types';
 
 export type ElementType = BlockElementType | InlineElementType;
 
@@ -105,6 +106,12 @@ export type MusicBlockElement = {
   children: CustomText[];
 };
 
+export type WhiteBoardBlockElement = {
+  type: BlockElementType.WHITE_BOARD;
+  elements: ExcalidrawElement[];
+  children: CustomText[];
+};
+
 export type InlineElement = CodeSpanElement | LinkElement;
 
 export type BlockElement =
@@ -116,7 +123,8 @@ export type BlockElement =
   | CodeBlockElement
   | ImageBlockElement
   | ButtonElement
-  | MusicBlockElement;
+  | MusicBlockElement
+  | WhiteBoardBlockElement;
 
 export type CustomElement = InlineElement | BlockElement;
 

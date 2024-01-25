@@ -3,7 +3,7 @@ import { useCallback, useRef, useState } from 'react';
 import { CodeBlockElement } from 'types/slate';
 import { Transforms } from 'slate';
 import { ReactEditor, useReadOnly, useSelected, useSlate } from 'slate-react';
-import { Language } from '@/ui/RichEditor/constans';
+import { Language } from '@/ui/RichEditor/constants';
 import './style.css';
 
 interface CodeBlockProps {
@@ -96,7 +96,7 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
         )}>
         <div
           ref={toolbarRef}
-          className=' sticky top-0 z-10 flex select-none items-center justify-between rounded-sm border-b border-black-50 bg-gray-50 px-4 py-2'
+          className=' relative flex select-none items-center justify-between rounded-sm border-b border-black-50 bg-gray-50 px-4 py-2'
           contentEditable={false}>
           <div>
             {isLanguageEditing ? (

@@ -27,6 +27,7 @@ export enum BlockElementType {
   IMAGE = 'image',
   BUTTON = 'button',
   MUSIC = 'music',
+  WHITE_BOARD = 'white-board',
 }
 
 export const SHORTCUTS = {

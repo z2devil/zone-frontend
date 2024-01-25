@@ -29,6 +29,9 @@ dependencies:
   '@commitlint/config-conventional':
     specifier: ^17.6.3
     version: 17.6.3
+  '@excalidraw/excalidraw':
+    specifier: ^0.17.2
+    version: 0.17.2(react-dom@18.2.0)(react@18.2.0)
   '@types/lodash':
     specifier: ^4.14.195
     version: 4.14.195
@@ -888,6 +891,19 @@ packages:
         integrity: sha512-kf9RB0Fg7NZfap83B3QOqOGg9QmD9yBudqQXzzOtn3i4y7ZUXe5ONeW34Gwi+TxhH4mvj72R1Zc300KUMa9Bng==,
       }
     engines: { node: ^12.22.0 || ^14.17.0 || >=16.0.0 }
+    dev: false
+
+  /@excalidraw/excalidraw@0.17.2(react-dom@18.2.0)(react@18.2.0):
+    resolution:
+      {
+        integrity: sha512-7pqUWD8+mPjDhF4XxG3gw4rvE2JGaLW3Vss5UZfTbITPxAtFaGEc1K081bncitnaYhUwN9ENJE0i87QB3poDwQ==,
+      }
+    peerDependencies:
+      react: ^17.0.2 || ^18.2.0
+      react-dom: ^17.0.2 || ^18.2.0
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /@humanwhocodes/config-array@0.11.8:

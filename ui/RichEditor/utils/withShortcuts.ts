@@ -5,7 +5,7 @@ import {
   SHORTCUTS_MAP,
   NON_EMPTY_ELEMENTS,
   BlockElementType,
-} from '../constans';
+} from '../constants';
 import { editorUtils } from './editorUtils';
 
 export const withShortcuts = (editor: RichEditor) => {

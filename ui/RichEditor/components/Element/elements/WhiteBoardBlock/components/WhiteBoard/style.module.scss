@@ -1,0 +1,36 @@
+.excalidraw {
+  :global(.dropdown-menu-container) {
+    button:nth-child(4) ~ * {
+      display: none !important;
+    }
+  }
+  :global(.mobile-misc-tools-container) {
+    label:first-child {
+      display: none;
+    }
+  }
+  :global(.layer-ui__wrapper__top-right) {
+    display: none !important;
+  }
+  :global(.ToolIcon.Shape[title='Hand (panning tool) — H']) {
+    display: none !important;
+  }
+  :global(.App-toolbar__divider) {
+    display: none !important;
+  }
+  :global(.App-toolbar__extra-tools-trigger) {
+    display: none !important;
+  }
+  :global(.App-bottom-bar) {
+    & > div {
+      margin-right: auto;
+      margin-left: auto;
+      width: fit-content !important;
+      min-width: unset !important;
+      max-width: unset !important;
+    }
+  }
+  :global(.dropdown-menu--mobile) {
+    width: unset !important;
+  }
+}

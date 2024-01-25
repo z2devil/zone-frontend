@@ -1,6 +1,6 @@
 import { Editor, Element, Node, Range, Transforms } from 'slate';
 import { RichEditor, CustomElement, ElementType } from 'types/slate';
-import { BlockElementType, InlineElementType, MarkType } from '../constans';
+import { BlockElementType, InlineElementType, MarkType } from '../constants';
 import { VOID_ELEMENTS } from './withVoids';
 
 export const editorUtils = {

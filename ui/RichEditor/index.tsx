@@ -7,7 +7,7 @@ import { Slate as SlateProvider, withReact } from 'slate-react';
 import Toolbar from './components/Toolbar';
 import { withShortcuts, withVoids, withInlines } from './utils';
 import { withHistory } from 'slate-history';
-import { BlockElementType } from './constans';
+import { BlockElementType } from './constants';
 import Editor from './components/Editor';
 import { twMerge } from 'tailwind-merge';
 import { createPortal } from 'react-dom';

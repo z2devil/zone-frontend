@@ -1,11 +1,12 @@
 import { ReactEditor, RenderElementProps, useSlate } from 'slate-react';
 import CodeBlock from './elements/CodeBlock';
-import { BlockElementType, InlineElementType } from '../../constans';
+import { BlockElementType, InlineElementType } from '../../constants';
 import InlineChromiumBugfix from './elements/InlineChromiumBugfix';
 import { CodeBlockElement } from 'types/slate';
 import ImageBlock from './elements/ImageBlock';
 import { useMemo } from 'react';
 import MusicBlock from './elements/MusicBlock';
+import WhiteBoardBlock from './elements/WhiteBoardBlock';
 
 const Element = (props: RenderElementProps) => {
   const { attributes, children, element } = props;
@@ -92,6 +93,12 @@ const Element = (props: RenderElementProps) => {
         <MusicBlock attributes={attributes} element={element}>
           {children}
         </MusicBlock>
+      );
+    case BlockElementType.WHITE_BOARD:
+      return (
+        <WhiteBoardBlock attributes={attributes} element={element}>
+          {children}
+        </WhiteBoardBlock>
       );
     default:
       return <p {...attributes}>{children}</p>;

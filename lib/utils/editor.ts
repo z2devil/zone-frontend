@@ -1,4 +1,4 @@
-import { BlockElementType } from '@/ui/RichEditor/constans';
+import { BlockElementType } from '@/ui/RichEditor/constants';
 import { Descendant, Node } from 'slate';
 
 export const getContentSummary = (contentString: string) => {
