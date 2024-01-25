@@ -108,7 +108,7 @@ export type MusicBlockElement = {
 
 export type WhiteBoardBlockElement = {
   type: BlockElementType.WHITE_BOARD;
-  elements: ExcalidrawElement[];
+  elements?: ExcalidrawElement[];
   children: CustomText[];
 };
 
