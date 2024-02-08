@@ -16,8 +16,6 @@ const useResize = (
   // resizeObserver
   const resizeObserver = useRef<ResizeObserver>();
 
-  // const [containerReat, setContainerRect] = useState<DOMRect>();
-
   // container 尺寸
   const [containerWidth, setContainerWidth] = useState<number>(0);
 
@@ -31,9 +29,6 @@ const useResize = (
     resizeObserver.current = new ResizeObserver(
       throttle(
         () => {
-          // const containerReat = dom.getBoundingClientRect();
-          // setContainerRect(containerReat);
-
           const style = getComputedStyle(dom);
           const containerWidth =
             px2number(style.width) -
@@ -50,6 +45,7 @@ const useResize = (
           const column = Math.floor(
             (containerWidth + GAP) / (CARD_WIDTH + GAP)
           );
+
           setColumn(column);
         },
         delay,

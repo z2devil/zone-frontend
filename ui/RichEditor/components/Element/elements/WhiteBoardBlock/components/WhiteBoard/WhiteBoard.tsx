@@ -45,8 +45,6 @@ const isElementsEqual = (
 const WhiteBoard = (props: WhiteBoardProps) => {
   const { element, readOnly } = props;
 
-  console.log('[ readOnly ]', readOnly);
-
   const editor = useSlateStatic();
 
   const [excalidrawAPI, setExcalidrawAPI] =
@@ -100,7 +98,6 @@ const WhiteBoard = (props: WhiteBoardProps) => {
         readOnly ? style.readOnly : undefined
       )}>
       <Excalidraw
-        autoFocus
         gridModeEnabled
         viewModeEnabled={readOnly}
         zenModeEnabled
