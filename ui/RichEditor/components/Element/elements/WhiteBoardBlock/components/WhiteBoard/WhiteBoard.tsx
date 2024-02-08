@@ -9,7 +9,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ExcalidrawElement } from '@excalidraw/excalidraw/types/element/types';
 import { Transforms } from 'slate';
-import { ReactEditor, useSlateStatic } from 'slate-react';
+import { ReactEditor, useSelected, useSlateStatic } from 'slate-react';
 
 interface WhiteBoardProps {
   element: WhiteBoardBlockElement;
@@ -47,6 +47,8 @@ const WhiteBoard = (props: WhiteBoardProps) => {
 
   const editor = useSlateStatic();
 
+  const selected = useSelected();
+
   const [excalidrawAPI, setExcalidrawAPI] =
     useState<ExcalidrawImperativeAPI | null>(null);
 
@@ -57,6 +59,12 @@ const WhiteBoard = (props: WhiteBoardProps) => {
     }),
     [element.elements]
   );
+
+  useEffect(() => {
+    console.log('[ refresh ]', readOnly, selected, excalidrawAPI?.refresh);
+    if (readOnly || !selected) return;
+    requestAnimationFrame(() => excalidrawAPI?.refresh());
+  }, [excalidrawAPI, readOnly, selected]);
 
   const latestElementsRef = useRef<readonly ExcalidrawElement[]>([]);
 
