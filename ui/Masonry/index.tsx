@@ -8,8 +8,10 @@ import {
   useRef,
   useState,
 } from 'react';
-import { throttle } from 'lodash-es';
-import MasonyCore, { MasonryRecord } from './utils/core';
+import { MasonryRecord, diffAndUpdateRecords } from './utils';
+import { useMount, useUnmount } from 'react-use';
+import useResize from './hooks/useResize';
+import { throttle } from 'lodash';
 
 type Record = {
   x: number;
@@ -21,10 +23,7 @@ type Record = {
 interface MasonryProps {
   children: (index: number, record: Record) => React.ReactNode;
   data: any[];
-  // containerRect: containerRectInfo | undefined;
-  visionWidth: number;
-  column: number;
-  cellWidth: number;
+  columnWidth: number;
   gap?: number;
   bufferOffset?: number;
   loadDistance?: number;
@@ -37,10 +36,7 @@ const Masonry = (props: MasonryProps) => {
   const {
     children,
     data,
-    // containerRect,
-    visionWidth,
-    column,
-    cellWidth,
+    columnWidth,
     gap = 20,
     bufferOffset = 300,
     loadDistance = 600,
@@ -49,29 +45,41 @@ const Masonry = (props: MasonryProps) => {
     touchBottom,
   } = props;
 
-  // 初始化状态
-  const [initialized, setInitialized] = useState(false);
-
   // 容器引用
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // 上次宽度引用
-  const lastestWdithRef = useRef<number>(0);
-
   // 预渲染容器引用
-  const preRenderContainerRef = useRef<HTMLDivElement>(null);
+  const prerenderContainerRef = useRef<HTMLDivElement>(null);
+
+  // 监听器引用
+  const observerRef = useRef<MutationObserver>();
 
   // 位置记录
   const [records, setRecords] = useState<MasonryRecord[]>([]);
-
-  // 内容最大高度（最大范围）
-  const [totalHeight, setTotalHeight] = useState(0);
 
   // 真实数据下标集合
   const [renderIndexes, setRenderIndexes] = useState<number[]>([]);
 
   // 预渲染数据下标集合
-  const [preRenderIds, setPreRenderIds] = useState<string[]>([]);
+  const [prerenderIds, setPrerenderIds] = useState<string[]>([]);
+
+  // 数据引用
+  const dataRef = useRef(data);
+
+  // 记录的引用
+  const recordsRef = useRef<MasonryRecord[]>([]);
+
+  // 上次容器宽度引用
+  const latestContainerWidth = useRef<number>(0);
+
+  // 容器宽度引用
+  const containerWidthRef = useRef<number>(0);
+
+  // 滚动距离
+  const scrollTopRef = useRef(0);
+
+  // 总高度
+  const [totalHeight, setTotalHeight] = useState(0);
 
   // 计算填充区域高度
   const calcFillerStyle: CSSProperties = useMemo(() => {
@@ -80,153 +88,192 @@ const Masonry = (props: MasonryProps) => {
     };
   }, [totalHeight]);
 
-  // 核心
-  const masonryCoreRef = useRef<MasonyCore | null>();
+  // 容器尺寸 & 列数
+  const [containerWidth, column] = useResize(containerRef, {
+    delay: 400,
+  });
 
-  // 初始化
-  const init = useCallback(() => {
-    if (initialized) return;
-
-    const preRenderContainerDOM = preRenderContainerRef.current;
-    if (!preRenderContainerDOM) return;
-
-    masonryCoreRef.current = new MasonyCore(column, preRenderContainerDOM, {
-      bufferOffset,
-      gap,
-      keyField,
-    });
+  // 挂载
+  const mount = useCallback(() => {
+    setRecords([]);
+    setRenderIndexes([]);
 
     touchBottom?.();
+  }, [touchBottom]);
 
-    setInitialized(true);
-  }, [initialized, column, bufferOffset, gap, keyField, touchBottom]);
+  useMount(() => {
+    mount();
+  });
 
-  useEffect(() => {
-    init();
-  }, [init]);
-
-  // 销毁
-  const destroy = useCallback(() => {
-    const masonryCore = masonryCoreRef.current;
-    if (!masonryCore) return;
-
-    masonryCore.destroy();
-    masonryCoreRef.current = null;
+  // 卸载
+  const unmount = useCallback(() => {
+    setRecords([]);
+    setRenderIndexes([]);
   }, []);
 
-  // 销毁
-  useEffect(() => {
-    return () => {
-      destroy();
-    };
-  }, [destroy]);
+  useUnmount(() => {
+    unmount();
+  });
 
-  // 重置
-  const reset = useCallback(() => {
-    if (!initialized) return;
+  // 预渲染（用于计算卡片大小）
+  const prerender = useCallback(
+    async (ids: string[]) => {
+      const preRenderContainerDOM = prerenderContainerRef.current;
+      if (!preRenderContainerDOM) return;
 
-    const preRenderContainerDOM = preRenderContainerRef.current;
-    if (!preRenderContainerDOM) return;
+      let promiseResovle: () => void;
+      const promise = new Promise<void>(resovle => {
+        promiseResovle = resovle;
+      });
 
-    const masornyCore = masonryCoreRef.current;
-    if (!masornyCore) return;
+      setPrerenderIds(ids);
 
-    let needCalcSize = false;
-
-    if (lastestWdithRef.current !== visionWidth) {
-      if (visionWidth < cellWidth) {
-        lastestWdithRef.current = visionWidth;
-        needCalcSize = true;
-      } else {
-        if (lastestWdithRef.current !== cellWidth) {
-          lastestWdithRef.current = cellWidth;
-          needCalcSize = true;
+      // 定义回调函数，当观察到变化时执行
+      const callback = (mutationsList: MutationRecord[]) => {
+        for (const mutation of mutationsList) {
+          if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+            mutation.addedNodes.forEach(node => {
+              if (node.nodeType !== 1) return;
+              const cardId = (node as HTMLElement).getAttribute('data-id');
+              const cardDOM = (node as HTMLElement).children[0];
+              if (!cardId || !cardDOM) return;
+              recordsRef.current.forEach(record => {
+                if (record[keyField] === cardId) {
+                  record.height = cardDOM.clientHeight;
+                  record.width = cardDOM.clientWidth;
+                  return true;
+                }
+              });
+            });
+          }
         }
+        requestAnimationFrame(() => {
+          promiseResovle();
+        });
+      };
+
+      observerRef.current = new MutationObserver(callback);
+
+      observerRef.current.observe(preRenderContainerDOM, {
+        childList: true,
+      });
+
+      await promise;
+
+      observerRef.current.disconnect();
+
+      observerRef.current = undefined;
+
+      setPrerenderIds([]);
+    },
+    [keyField]
+  );
+
+  // 渲染
+  const render = useCallback(async () => {
+    // 位置计算
+    const recordsRefValue = recordsRef.current;
+    const columnHeights = Array(column).fill(0);
+    for (let i = 0; i < recordsRefValue.length; i++) {
+      const record = recordsRefValue[i];
+      if (!record) throw new Error('record missing');
+      const minIndex = columnHeights.indexOf(Math.min(...columnHeights));
+      const wrapperWidth = column * (record.width + gap) - gap;
+      record.x =
+        minIndex * (record.width + gap) +
+        (containerWidthRef.current - wrapperWidth) / 2;
+      record.y = columnHeights[minIndex];
+      columnHeights[minIndex] += record.height + gap;
+    }
+    setTotalHeight(Math.max(...columnHeights) - gap);
+    setRecords([...recordsRefValue]);
+
+    // 渲染区域计算
+    const visionTop = -scrollTopRef.current;
+    const containerHeight = window.innerHeight;
+
+    const visionRange = [
+      visionTop - bufferOffset,
+      visionTop + containerHeight + bufferOffset,
+    ];
+
+    const nextRenderIndexes: number[] = [];
+
+    for (let i = 0; i < recordsRefValue.length; i++) {
+      const record = recordsRefValue[i];
+      if (!record) continue;
+      if (
+        record.y + record.height > visionRange[0] &&
+        record.y < visionRange[1]
+      ) {
+        nextRenderIndexes.push(i);
       }
-      masornyCore.setVisionWdith(visionWidth);
     }
 
-    if (needCalcSize) {
-      setPreRenderIds(latestDataRef.current.map(item => item[keyField]));
-    }
+    setRenderIndexes(nextRenderIndexes);
+  }, [bufferOffset, column, gap]);
 
-    requestAnimationFrame(async () => {
-      masornyCore.setColumCount(column);
-      const [nextRecords, nextTotalHeight, renderIndexes] =
-        await masornyCore.reset(needCalcSize);
-
-      setPreRenderIds([]);
-      setRecords(nextRecords);
-      setTotalHeight(nextTotalHeight);
-      setRenderIndexes(renderIndexes);
-    });
-  }, [cellWidth, column, initialized, keyField, visionWidth]);
-
-  // 重置（container 变化时）
-  useEffect(() => {
-    reset();
-  }, [reset]);
-
-  // 上次数据引用
-  const latestDataRef = useRef(data);
-
-  useEffect(() => {
-    if (!initialized) return;
-
-    const masonryCore = masonryCoreRef.current;
-    if (!masonryCore) return;
-
-    const needPreRenderIds = masonryCore.updateData(
-      latestDataRef.current,
+  // 更新
+  const update = useCallback(async () => {
+    const nextRecords = structuredClone(recordsRef.current);
+    const nextPrerenderIds = diffAndUpdateRecords(
+      nextRecords,
+      dataRef.current,
       data,
       keyField
     );
 
-    latestDataRef.current = data;
+    dataRef.current = data;
 
-    setPreRenderIds(needPreRenderIds);
+    recordsRef.current = nextRecords;
 
-    requestAnimationFrame(async () => {
-      const [nextRecords, nextTotalHeight, renderIndexes] =
-        await masonryCore.render();
+    let needCalcSize = false;
 
-      setPreRenderIds([]);
-      setRecords(nextRecords);
-      setTotalHeight(nextTotalHeight);
-      setRenderIndexes(renderIndexes);
-    });
-  }, [initialized, data, keyField]);
+    if (latestContainerWidth.current !== containerWidth) {
+      if (containerWidth < columnWidth) {
+        latestContainerWidth.current = containerWidth;
+        needCalcSize = true;
+      } else if (latestContainerWidth.current !== columnWidth) {
+        latestContainerWidth.current = columnWidth;
+        needCalcSize = true;
+      }
+      containerWidthRef.current = containerWidth;
+    }
 
-  /************************************************
-   * ✨ 滚动
-   ************************************************/
+    if (needCalcSize) {
+      nextPrerenderIds.push(...data.map(record => record[keyField]));
+    }
+
+    if (nextPrerenderIds.length) {
+      await prerender(nextPrerenderIds);
+    }
+
+    await render();
+  }, [data, keyField, containerWidth, columnWidth, prerender, render]);
+
+  useEffect(() => {
+    update();
+  }, [update]);
 
   // 滚动事件
   const handleScroll = throttle(
-    useCallback(() => {
+    useCallback(async () => {
       const containerDOM = containerRef.current;
       if (!containerDOM) return;
 
-      const masonryCore = masonryCoreRef.current;
-      if (!masonryCore) return;
+      scrollTopRef.current = containerDOM.getBoundingClientRect().top;
 
-      const containerTop = containerDOM.getBoundingClientRect().top;
-
-      const [nextRecords, nextTotalHeight, renderIndexes] =
-        masonryCore.onScroll(containerTop);
-
-      setRecords(nextRecords);
-      setTotalHeight(nextTotalHeight);
-      setRenderIndexes(renderIndexes);
+      await render();
 
       // 触底
       if (
-        -containerTop + window.innerHeight + loadDistance >= nextTotalHeight &&
+        -scrollTopRef.current + window.innerHeight + loadDistance >=
+          totalHeight &&
         data.length
       ) {
         touchBottom?.();
       }
-    }, [data.length, loadDistance, touchBottom]),
+    }, [data.length, loadDistance, render, totalHeight, touchBottom]),
     100
   );
 
@@ -239,24 +286,21 @@ const Masonry = (props: MasonryProps) => {
   }, [handleScroll]);
 
   return (
-    <div
-      ref={containerRef}
-      className='relative min-h-screen w-full'
-      style={calcFillerStyle}>
+    <div ref={containerRef} className='relative w-full' style={calcFillerStyle}>
       {renderIndexes.map(index => {
         const record = records[index];
         if (!record) return null;
         return children(index, record);
       })}
-      <div ref={preRenderContainerRef} className='invisible absolute'>
-        {preRenderIds.map(id => {
+      <div ref={prerenderContainerRef} className='invisible absolute'>
+        {prerenderIds.map(id => {
           const index = data.findIndex(item => item[keyField] === id);
           return (
             <div key={id} data-id={id}>
               {children(index, {
                 x: 0,
                 y: 0,
-                width: Math.min(cellWidth, visionWidth),
+                width: Math.min(columnWidth, containerWidth),
                 height: 0,
               })}
             </div>

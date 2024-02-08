@@ -2,7 +2,6 @@
 
 import { getNotesAPI } from '@/lib/api/notes';
 import Masonry from '@/ui/Masonry';
-import useResize from '@/ui/Masonry/hooks/useResize';
 import NoteCard from '@/ui/NoteCard';
 import PageBanner from '@/ui/PageBanner';
 import { useCallback, useMemo, useRef, useState } from 'react';
@@ -12,6 +11,7 @@ import useRequest from '@/lib/hooks/useRequest';
 import { useNotesStore } from '@/lib/stores/notes';
 import EmptyInfo from '@/ui/EmptyInfo';
 import { CARD_WIDTH, GAP } from '@/ui/Masonry/constants';
+import { useUnmount } from 'react-use';
 
 const FETCH_SIZE = 20;
 
@@ -28,10 +28,7 @@ const NotePage = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // 容器尺寸 & 列数
-  const [containerWidth, column] = useResize(containerRef, {
-    delay: 400,
-  });
+  const isLoadingRef = useRef(isLoading);
 
   // 最后更新时间
   const lastUpdated = useMemo(() => {
@@ -39,10 +36,16 @@ const NotePage = () => {
     return notes[0].createdAt;
   }, [notes]);
 
+  useUnmount(() => {
+    setNotes([]);
+  });
+
   const handleLoadData = useCallback(async () => {
-    if (isLoading) return;
+    console.log('[ handleLoadData ]');
+    if (isLoadingRef.current) return;
     if (notes.length >= noteTotal) return;
     setIsLoading(true);
+    isLoadingRef.current = true;
     const nextCurrent = current + 1;
     setCurrent(nextCurrent);
     const res = await getNotesAPI(request)({
@@ -50,10 +53,11 @@ const NotePage = () => {
       size: FETCH_SIZE,
     });
     setIsLoading(false);
+    isLoadingRef.current = false;
     setNotes([...notes, ...res.list]);
     setNoteTotal(res.total);
     return res.list;
-  }, [current, isLoading, notes, request, setNotes, noteTotal]);
+  }, [current, notes, request, setNotes, noteTotal]);
 
   const { utils: notificationUtils } = useNotificationUtilsStore();
 
@@ -67,22 +71,15 @@ const NotePage = () => {
 
   return (
     <div
-      className='mx-auto flex h-full w-full flex-col items-center overflow-y-auto px-5'
+      className='mx-auto flex h-full w-full flex-col items-center px-5'
       ref={containerRef}>
       <PageBanner
         title='笔记'
         lastUpdated={lastUpdated}
         onChartClick={handleChartClick}
       />
-      {isLoading ? (
-        <div className=' text-17 text-black-600'>加载中...</div>
-      ) : notes.length === 0 ? (
-        <EmptyInfo tip='暂无笔记' />
-      ) : null}
       <Masonry
-        column={column}
-        cellWidth={CARD_WIDTH}
-        visionWidth={containerWidth}
+        columnWidth={CARD_WIDTH}
         gap={GAP}
         data={notes}
         touchBottom={handleLoadData}>
@@ -103,6 +100,13 @@ const NotePage = () => {
           ) : null;
         }}
       </Masonry>
+      <div className=' flex w-full items-center justify-center py-4'>
+        {isLoading ? (
+          <div className=' text-17 text-black-600'>加载中...</div>
+        ) : notes.length === 0 ? (
+          <EmptyInfo tip='暂无笔记' />
+        ) : null}
+      </div>
     </div>
   );
 };

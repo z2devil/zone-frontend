@@ -9,7 +9,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ExcalidrawElement } from '@excalidraw/excalidraw/types/element/types';
 import { Transforms } from 'slate';
-import { ReactEditor, useSlateStatic } from 'slate-react';
+import { ReactEditor, useSelected, useSlateStatic } from 'slate-react';
 
 interface WhiteBoardProps {
   element: WhiteBoardBlockElement;
@@ -45,9 +45,9 @@ const isElementsEqual = (
 const WhiteBoard = (props: WhiteBoardProps) => {
   const { element, readOnly } = props;
 
-  console.log('[ readOnly ]', readOnly);
-
   const editor = useSlateStatic();
+
+  const selected = useSelected();
 
   const [excalidrawAPI, setExcalidrawAPI] =
     useState<ExcalidrawImperativeAPI | null>(null);
@@ -59,6 +59,12 @@ const WhiteBoard = (props: WhiteBoardProps) => {
     }),
     [element.elements]
   );
+
+  useEffect(() => {
+    console.log('[ refresh ]', readOnly, selected, excalidrawAPI?.refresh);
+    if (readOnly || !selected) return;
+    requestAnimationFrame(() => excalidrawAPI?.refresh());
+  }, [excalidrawAPI, readOnly, selected]);
 
   const latestElementsRef = useRef<readonly ExcalidrawElement[]>([]);
 
@@ -100,7 +106,6 @@ const WhiteBoard = (props: WhiteBoardProps) => {
         readOnly ? style.readOnly : undefined
       )}>
       <Excalidraw
-        autoFocus={!readOnly}
         gridModeEnabled
         viewModeEnabled={readOnly}
         zenModeEnabled
