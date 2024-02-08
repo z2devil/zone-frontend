@@ -41,7 +41,6 @@ const NotePage = () => {
   });
 
   const handleLoadData = useCallback(async () => {
-    console.log('[ handleLoadData ]');
     if (isLoadingRef.current) return;
     if (notes.length >= noteTotal) return;
     setIsLoading(true);

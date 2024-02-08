@@ -2,22 +2,18 @@
 
 import { NoteTypeEnum, getNotesAPI } from '@/lib/api/notes';
 import Masonry from '@/ui/Masonry';
-import useResize from '@/ui/Masonry/hooks/useResize';
 import NoteCard from '@/ui/NoteCard';
 import PageBanner from '@/ui/PageBanner';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import px2number from '@/lib/utils/px2number';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import { useNotificationUtilsStore } from '@/lib/stores';
 import useRequest from '@/lib/hooks/useRequest';
 import { useWorksStore } from '@/lib/stores/works';
 import EmptyInfo from '@/ui/EmptyInfo';
+import { useUnmount } from 'react-use';
+import { CARD_WIDTH, GAP } from '@/ui/Masonry/constants';
 
 const FETCH_SIZE = 20;
-
-const GAP = 20;
-
-const CARD_WIDTH = 335;
 
 const CARD_HEIGHT = 200;
 
@@ -30,16 +26,11 @@ const WorksPage = () => {
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const [column, setColumn] = useState(2);
-
   const [current, setCurrent] = useState(0);
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // 容器尺寸
-  const [containerWidth] = useResize(containerRef, {
-    delay: 400,
-  });
+  const isLoadingRef = useRef(isLoading);
 
   // 最后更新时间
   const lastUpdated = useMemo(() => {
@@ -47,34 +38,15 @@ const WorksPage = () => {
     return works[0].createdAt;
   }, [works]);
 
-  // 计算列数
-  const handleResize = useCallback(() => {
-    const containerDOM = containerRef.current;
-    if (!containerDOM) return;
-    const style = getComputedStyle(containerDOM);
-    const containerWidth =
-      px2number(style.width) -
-      px2number(style.paddingLeft) -
-      px2number(style.paddingRight);
-    if (containerWidth < CARD_WIDTH) {
-      setColumn(1);
-      return;
-    }
-    const column = Math.floor((containerWidth + GAP) / (CARD_WIDTH + GAP));
-    setColumn(column);
-  }, []);
-
-  // 监听窗口变化
-  useEffect(() => {
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [handleResize]);
+  useUnmount(() => {
+    setWorks([]);
+  });
 
   const handleLoadData = useCallback(async () => {
-    if (isLoading) return;
+    if (isLoadingRef.current) return;
     if (works.length >= workTotal) return;
     setIsLoading(true);
+    isLoadingRef.current = true;
     const nextCurrent = current + 1;
     setCurrent(nextCurrent);
     const res = await getNotesAPI(request)({
@@ -83,10 +55,11 @@ const WorksPage = () => {
       type: NoteTypeEnum.ARTICLE,
     });
     setIsLoading(false);
+    isLoadingRef.current = false;
     setWorks([...works, ...res.list]);
     setWorkTotal(res.total);
     return res.list;
-  }, [isLoading, works, workTotal, current, request, setWorks]);
+  }, [works, workTotal, current, request, setWorks]);
 
   const { utils: notificationUtils } = useNotificationUtilsStore();
 
@@ -107,15 +80,8 @@ const WorksPage = () => {
         lastUpdated={lastUpdated}
         onChartClick={handleChartClick}
       />
-      {isLoading ? (
-        <div className=' text-17 text-black-600'>加载中...</div>
-      ) : works.length === 0 ? (
-        <EmptyInfo tip='暂无作品' />
-      ) : null}
       <Masonry
-        column={column}
-        cellWidth={CARD_WIDTH}
-        visionWidth={containerWidth}
+        columnWidth={CARD_WIDTH}
         gap={GAP}
         data={works}
         touchBottom={handleLoadData}>
@@ -127,7 +93,7 @@ const WorksPage = () => {
               key={note._id}
               style={{
                 position: 'absolute',
-                width: `${CARD_WIDTH}px`,
+                width: `${position.width}px`,
                 height: `${CARD_HEIGHT}px`,
                 transform: `translate(${position.x}px, ${position.y}px)`,
                 overflow: 'hidden',
@@ -137,6 +103,13 @@ const WorksPage = () => {
           );
         }}
       </Masonry>
+      <div className=' flex w-full items-center justify-center py-4'>
+        {isLoading ? (
+          <div className=' text-17 text-black-600'>加载中...</div>
+        ) : works.length === 0 ? (
+          <EmptyInfo tip='暂无作品' />
+        ) : null}
+      </div>
     </div>
   );
 };
