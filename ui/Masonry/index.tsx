@@ -38,7 +38,7 @@ const Masonry = (props: MasonryProps) => {
     data,
     columnWidth,
     gap = 20,
-    bufferOffset = 300,
+    bufferOffset = 1200,
     loadDistance = 600,
     chunkSize = 10,
     keyField = '_id',
