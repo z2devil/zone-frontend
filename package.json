@@ -19,6 +19,7 @@
     "@commitlint/cli": "^17.6.3",
     "@commitlint/config-conventional": "^17.6.3",
     "@excalidraw/excalidraw": "^0.17.2",
+    "@splinetool/runtime": "^1.0.62",
     "@types/lodash": "^4.14.195",
     "@types/lodash-es": "^4.17.9",
     "@types/node": "18.16.0",

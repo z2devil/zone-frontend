@@ -118,6 +118,12 @@ export type WhiteBoardBlockElement = {
   children: CustomText[];
 };
 
+export type CubeBlockElement = {
+  type: BlockElementType.CUBE;
+  url?: string;
+  children: CustomText[];
+};
+
 export type InlineElement = CodeSpanElement | LinkInlineElement;
 
 export type BlockElement =
@@ -131,7 +137,8 @@ export type BlockElement =
   | VideoBlockElement
   | ButtonElement
   | MusicBlockElement
-  | WhiteBoardBlockElement;
+  | WhiteBoardBlockElement
+  | CubeBlockElement;
 
 export type CustomElement = InlineElement | BlockElement;
 

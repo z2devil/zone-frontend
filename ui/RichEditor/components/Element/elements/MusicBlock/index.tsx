@@ -1,12 +1,8 @@
 import { useReadOnly, useSelected } from 'slate-react';
 import { MusicBlockElement } from 'types/slate';
-import dayjs from 'dayjs';
-import duration from 'dayjs/plugin/duration';
 import MusicPreview from './components/Preview';
 import MusicEdit from './components/Edit';
 import clsx from 'clsx';
-
-dayjs.extend(duration);
 
 interface MusicBlockProps {
   attributes: any;

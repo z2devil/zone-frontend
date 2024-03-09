@@ -141,6 +141,20 @@ const Toolbar = (props: ToolbarProps) => {
                 : 'hover:text-black-900'
             )}></i>
         </button>
+        {/* spline */}
+        <button
+          onMouseDown={event => {
+            event.preventDefault();
+            editorUtils.insertBlockNode(editor, BlockElementType.CUBE);
+          }}>
+          <i
+            className={clsx(
+              'iconfont icon-cube rounded p-1 text-xl font-black transition-colors duration-100 hover:bg-gray-50',
+              editorUtils.isElementActive(editor, BlockElementType.CUBE)
+                ? 'text-primary-50'
+                : 'hover:text-black-900'
+            )}></i>
+        </button>
         {/* 分割线 */}
         <div className='mx-1 h-1/3 w-[1px] bg-gray-50'></div>
         {/* 粗体 */}
