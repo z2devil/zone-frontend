@@ -16,7 +16,6 @@ import {
 } from '@/lib/stores';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import RichEditor from '@/ui/RichEditor';
-import Spline from '@splinetool/react-spline';
 import dayjs from 'dayjs';
 import { notFound, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
