@@ -1,12 +1,8 @@
 import { useReadOnly, useSelected } from 'slate-react';
 import { VideoBlockElement } from 'types/slate';
-import dayjs from 'dayjs';
-import duration from 'dayjs/plugin/duration';
 import VideoPreview from './components/Preview';
 import VideoEdit from './components/Edit';
 import clsx from 'clsx';
-
-dayjs.extend(duration);
 
 interface VideoBlockProps {
   attributes: any;

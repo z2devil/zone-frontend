@@ -1,11 +1,7 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { ReactEditor, useSlate } from 'slate-react';
 import { VideoBlockElement } from 'types/slate';
-import dayjs from 'dayjs';
-import duration from 'dayjs/plugin/duration';
 import { Transforms } from 'slate';
-
-dayjs.extend(duration);
 
 interface VideoPreviewProps {
   element: VideoBlockElement;

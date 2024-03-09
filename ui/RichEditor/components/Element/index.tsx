@@ -9,6 +9,7 @@ import MusicBlock from './elements/MusicBlock';
 import WhiteBoardBlock from './elements/WhiteBoardBlock';
 import VideoBlock from './elements/VideoBlock';
 import LinkInline from './elements/LinkInline';
+import CubeBlock from './elements/CubeBlock';
 
 const Element = (props: RenderElementProps) => {
   const { attributes, children, element } = props;
@@ -113,6 +114,12 @@ const Element = (props: RenderElementProps) => {
         <WhiteBoardBlock attributes={attributes} element={element}>
           {children}
         </WhiteBoardBlock>
+      );
+    case BlockElementType.CUBE:
+      return (
+        <CubeBlock attributes={attributes} element={element}>
+          {children}
+        </CubeBlock>
       );
     default:
       return <p {...attributes}>{children}</p>;

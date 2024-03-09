@@ -171,31 +171,35 @@ const About = () => {
         <div className='flex w-full flex-col overflow-hidden md:w-[45rem]'>
           <div className='flex flex-col gap-4 p-8'>
             {/* 顶部 */}
-            <div className='flex items-center justify-between gap-10'>
-              {note.type === NoteTypeEnum.NOTE ? (
-                <div className='flex items-center gap-1'>
-                  <i className='iconfont icon-calender-filled text-17 text-black-250' />
+            {isAdmin ? (
+              <div className='flex items-center justify-between gap-10'>
+                {note.type === NoteTypeEnum.NOTE ? (
+                  <div className='flex items-center gap-1'>
+                    <i className='iconfont icon-calender-filled text-17 text-black-250' />
+                    <span
+                      className='text-[0.75rem] leading-[0.75rem] text-black-250'
+                      title={dayjs(note.createdAt).format(
+                        'YYYY-MM-DD HH:mm:ss'
+                      )}>
+                      {dayjs(note.createdAt).format('YYYY-MM-DD')}
+                    </span>
+                  </div>
+                ) : (
                   <span
-                    className='text-[0.75rem] leading-[0.75rem] text-black-250'
-                    title={dayjs(note.createdAt).format('YYYY-MM-DD HH:mm:ss')}>
-                    {dayjs(note.createdAt).format('YYYY-MM-DD')}
+                    className='overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-black-900 group-hover:text-primary-50'
+                    title={note.title}>
+                    {note.title}
                   </span>
-                </div>
-              ) : (
-                <span
-                  className='overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-black-900 group-hover:text-primary-50'
-                  title={note.title}>
-                  {note.title}
-                </span>
-              )}
-              {isLogin ? (
-                <button
-                  className=' group/more flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[0.5rem] border border-transparent transition-all duration-100 hover:bg-primary-50'
-                  onClick={handleSetting}>
-                  <i className='iconfont icon-ellipsis-v text-black-250 group-hover/more:text-white' />
-                </button>
-              ) : null}
-            </div>
+                )}
+                {isLogin ? (
+                  <button
+                    className=' group/more flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[0.5rem] border border-transparent transition-all duration-100 hover:bg-primary-50'
+                    onClick={handleSetting}>
+                    <i className='iconfont icon-ellipsis-v text-black-250 group-hover/more:text-white' />
+                  </button>
+                ) : null}
+              </div>
+            ) : null}
             {/* 内容 */}
             <div className='relative flex flex-1 flex-col overflow-hidden'>
               <Editor readonly />
