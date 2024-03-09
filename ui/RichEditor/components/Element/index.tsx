@@ -7,6 +7,8 @@ import ImageBlock from './elements/ImageBlock';
 import { useMemo } from 'react';
 import MusicBlock from './elements/MusicBlock';
 import WhiteBoardBlock from './elements/WhiteBoardBlock';
+import VideoBlock from './elements/VideoBlock';
+import LinkInline from './elements/LinkInline';
 
 const Element = (props: RenderElementProps) => {
   const { attributes, children, element } = props;
@@ -70,6 +72,14 @@ const Element = (props: RenderElementProps) => {
           <InlineChromiumBugfix />
         </code-span>
       );
+    case InlineElementType.LINK:
+      return (
+        <LinkInline attributes={attributes} element={element}>
+          <InlineChromiumBugfix />
+          {children}
+          <InlineChromiumBugfix />
+        </LinkInline>
+      );
     case BlockElementType.CODE_BLOCK:
       return (
         <CodeBlock
@@ -78,13 +88,17 @@ const Element = (props: RenderElementProps) => {
           {children}
         </CodeBlock>
       );
-    case InlineElementType.LINK:
-      return <a {...attributes}>{children}</a>;
     case BlockElementType.IMAGE:
       return (
         <ImageBlock attributes={attributes} element={element}>
           {children}
         </ImageBlock>
+      );
+    case BlockElementType.VIDEO:
+      return (
+        <VideoBlock attributes={attributes} element={element}>
+          {children}
+        </VideoBlock>
       );
     case BlockElementType.BUTTON:
       return <button {...attributes}>{children}</button>;

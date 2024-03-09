@@ -79,7 +79,7 @@ export type CodeBlockElement = {
   height?: number;
 };
 
-export type LinkElement = {
+export type LinkInlineElement = {
   type: InlineElementType.LINK;
   url?: string;
   children: CustomText[];
@@ -90,6 +90,12 @@ export type ImageBlockElement = {
   url?: string;
   width?: number;
   height?: number;
+  children: CustomText[];
+};
+
+export type VideoBlockElement = {
+  type: BlockElementType.VIDEO;
+  url?: string;
   children: CustomText[];
 };
 
@@ -112,7 +118,7 @@ export type WhiteBoardBlockElement = {
   children: CustomText[];
 };
 
-export type InlineElement = CodeSpanElement | LinkElement;
+export type InlineElement = CodeSpanElement | LinkInlineElement;
 
 export type BlockElement =
   | ParagraphElement
@@ -122,6 +128,7 @@ export type BlockElement =
   | BlockQuoteElement
   | CodeBlockElement
   | ImageBlockElement
+  | VideoBlockElement
   | ButtonElement
   | MusicBlockElement
   | WhiteBoardBlockElement;
