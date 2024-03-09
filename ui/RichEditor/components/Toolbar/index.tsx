@@ -98,6 +98,21 @@ const Toolbar = (props: ToolbarProps) => {
                 : 'hover:text-black-900'
             )}></i>
         </button>
+        {/* 视频 */}
+        <button
+          onMouseDown={event => {
+            event.preventDefault();
+            editorUtils.insertBlockNode(editor, BlockElementType.VIDEO);
+            editorUtils.insertBlockNode(editor, BlockElementType.PARAGRAPH);
+          }}>
+          <i
+            className={clsx(
+              'iconfont icon-film rounded p-1 text-xl font-bold transition-colors duration-100 hover:bg-gray-50',
+              editorUtils.isElementActive(editor, BlockElementType.VIDEO)
+                ? 'text-primary-50'
+                : 'hover:text-black-900'
+            )}></i>
+        </button>
         {/* 音乐 */}
         <button
           onMouseDown={event => {
@@ -128,6 +143,7 @@ const Toolbar = (props: ToolbarProps) => {
         </button>
         {/* 分割线 */}
         <div className='mx-1 h-1/3 w-[1px] bg-gray-50'></div>
+        {/* 粗体 */}
         <button
           onMouseDown={event => {
             event.preventDefault();
@@ -141,6 +157,7 @@ const Toolbar = (props: ToolbarProps) => {
                 : 'hover:text-black-900'
             )}></i>
         </button>
+        {/* 斜体 */}
         <button
           onMouseDown={event => {
             event.preventDefault();
@@ -154,6 +171,7 @@ const Toolbar = (props: ToolbarProps) => {
                 : 'hover:text-black-900'
             )}></i>
         </button>
+        {/* 下划线 */}
         <button
           onMouseDown={event => {
             event.preventDefault();
@@ -167,6 +185,7 @@ const Toolbar = (props: ToolbarProps) => {
                 : 'hover:text-black-900'
             )}></i>
         </button>
+        {/* 删除线 */}
         <button
           onMouseDown={event => {
             event.preventDefault();
@@ -180,6 +199,7 @@ const Toolbar = (props: ToolbarProps) => {
                 : 'hover:text-black-900'
             )}></i>
         </button>
+        {/* 代码段 */}
         <button
           onMouseDown={event => {
             event.preventDefault();
@@ -189,6 +209,20 @@ const Toolbar = (props: ToolbarProps) => {
             className={clsx(
               'iconfont icon-arrow rounded p-1 text-xl font-bold transition-colors duration-100 hover:bg-gray-50',
               editorUtils.isElementActive(editor, InlineElementType.CODE_SPAN)
+                ? 'text-primary-50'
+                : 'hover:text-black-900'
+            )}></i>
+        </button>
+        {/* 链接 */}
+        <button
+          onMouseDown={event => {
+            event.preventDefault();
+            editorUtils.insertInlineNode(editor, InlineElementType.LINK);
+          }}>
+          <i
+            className={clsx(
+              'iconfont icon-link rounded p-1 text-xl font-bold transition-colors duration-100 hover:bg-gray-50',
+              editorUtils.isElementActive(editor, InlineElementType.LINK)
                 ? 'text-primary-50'
                 : 'hover:text-black-900'
             )}></i>

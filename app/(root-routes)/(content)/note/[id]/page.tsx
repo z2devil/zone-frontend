@@ -319,7 +319,7 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
             )}
           </div>
           {/* 上下页 */}
-          <div className='flex flex-col gap-4 bg-gray-50 p-5 md:flex-row'>
+          <div className='flex flex-col gap-4 p-5 md:flex-row'>
             <Link
               className={clsx(
                 ' group flex h-16 flex-1 cursor-pointer items-center justify-start gap-2.5 overflow-hidden rounded-xl border border-transparent bg-black-50 px-3.5 py-2.5 transition-colors duration-100 hover:border-blue-600',

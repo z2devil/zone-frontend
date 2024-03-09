@@ -25,6 +25,7 @@ export enum BlockElementType {
   BLOCK_QUOTE = 'block-quote',
   CODE_BLOCK = 'code-block',
   IMAGE = 'image',
+  VIDEO = 'video',
   BUTTON = 'button',
   MUSIC = 'music',
   WHITE_BOARD = 'white-board',
