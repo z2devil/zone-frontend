@@ -30,6 +30,8 @@ export type RichEditor = BaseEditor &
       Element,
       (BaseRange & { [key: string]: unknown })[]
     >;
+  } & {
+    isSummary?: boolean;
   };
 
 export type ParagraphElement = {

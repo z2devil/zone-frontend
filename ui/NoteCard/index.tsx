@@ -284,7 +284,7 @@ const NoteCard = (props: NoteCardProps) => {
           </div>
           {/* 内容 */}
           <div className=' pointer-events-none'>
-            <RichView initialValue={JSON.parse(note.content)} />
+            <RichView initialValue={JSON.parse(note.content)} isSummary />
           </div>
           {/* 底部 */}
           {note.type === NoteTypeEnum.ARTICLE && (

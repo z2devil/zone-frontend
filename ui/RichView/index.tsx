@@ -7,18 +7,20 @@ import Editor from '../RichEditor/components/Editor';
 interface EditorProps {
   className?: string;
   initialValue: Descendant[];
+  isSummary?: boolean;
 }
 
 const RichView = (props: EditorProps) => {
-  const { className, initialValue } = props;
+  const { className, initialValue, isSummary } = props;
 
   const editor = useMemo(() => {
     const enhancers = [withReact];
-    return enhancers.reduce(
-      (editor, enhancer) => enhancer(editor),
-      createEditor()
-    );
-  }, []);
+    const res = enhancers.reduce((e, enhancer) => enhancer(e), createEditor());
+    if (isSummary) {
+      res.isSummary = true;
+    }
+    return res;
+  }, [isSummary]);
 
   return (
     <div
