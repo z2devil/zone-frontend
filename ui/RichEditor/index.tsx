@@ -15,6 +15,8 @@ import {
   disableScrollbar,
   enableScrollbar,
 } from '@/lib/utils/scrollbarTrigger';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 interface EditorProps {
   className?: string;
@@ -70,44 +72,49 @@ const RichEditor = (props: EditorProps) => {
   }, []);
 
   return (
-    <SlateProvider
-      editor={editor}
-      initialValue={initialValue}
-      onChange={handleContentChange}>
-      {fullScreen ? (
-        createPortal(
+    <DndProvider backend={HTML5Backend}>
+      <SlateProvider
+        editor={editor}
+        initialValue={initialValue}
+        onChange={handleContentChange}>
+        {fullScreen ? (
+          createPortal(
+            <div
+              className={clsx(
+                twMerge(
+                  ' fixed inset-0 z-50 flex flex-col overflow-hidden bg-gray-200',
+                  className,
+                  'min-h-screen'
+                )
+              )}>
+              <Toolbar
+                className='z-10 bg-gray-100'
+                fullScreen={fullScreen}
+                onChangeFullScreen={handleFullScreen}
+              />
+              <div className='flex flex-1 overflow-auto bg-gray-100 sm:py-10'>
+                <Editor className='mx-auto h-fit max-w-[45rem] overflow-y-hidden p-6' />
+              </div>
+            </div>,
+            document.body
+          )
+        ) : (
           <div
             className={clsx(
               twMerge(
-                ' fixed inset-0 z-50 flex flex-col overflow-hidden bg-gray-200',
-                className,
-                'min-h-screen'
+                ' relative flex flex-1 flex-col overflow-hidden',
+                className
               )
             )}>
             <Toolbar
-              className='z-10 bg-gray-100'
               fullScreen={fullScreen}
               onChangeFullScreen={handleFullScreen}
             />
-            <div className='flex flex-1 overflow-auto bg-gray-100 sm:py-10'>
-              <Editor className='mx-auto h-fit max-w-[45rem] overflow-y-hidden p-6' />
-            </div>
-          </div>,
-          document.body
-        )
-      ) : (
-        <div
-          className={clsx(
-            twMerge(' relative flex flex-1 flex-col overflow-hidden', className)
-          )}>
-          <Toolbar
-            fullScreen={fullScreen}
-            onChangeFullScreen={handleFullScreen}
-          />
-          <Editor className='p-6' />
-        </div>
-      )}
-    </SlateProvider>
+            <Editor className='p-6' />
+          </div>
+        )}
+      </SlateProvider>
+    </DndProvider>
   );
 };
 
