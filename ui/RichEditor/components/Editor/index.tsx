@@ -44,6 +44,16 @@ const Editor = (props: EditorProps) => {
 
   const decorate = useDecorate(editor);
 
+  // 返回 true 将跳过 slate 的默认行为
+  // 返回 false 将在自定义逻辑后执行 slate 的默认行为
+  const onDrop = useCallback(() => {
+    return true;
+  }, []);
+
+  const onDragStart = useCallback(() => {
+    return true;
+  }, []);
+
   return (
     <Editable
       className={clsx(
@@ -61,6 +71,8 @@ const Editor = (props: EditorProps) => {
       onKeyDown={handleKeyDown}
       onCopy={handleCopy}
       onCut={handleCut}
+      onDrop={onDrop}
+      onDragStart={onDragStart}
       decorate={decorate}
       readOnly={readonly}
     />

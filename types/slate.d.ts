@@ -3,6 +3,7 @@ import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
 import {
   BlockElementType,
+  DropType,
   InlineElementType,
   Language,
   MarkType,
@@ -30,6 +31,8 @@ export type RichEditor = BaseEditor &
       Element,
       (BaseRange & { [key: string]: unknown })[]
     >;
+  } & {
+    isSummary?: boolean;
   };
 
 export type ParagraphElement = {

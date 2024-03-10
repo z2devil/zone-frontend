@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MusicBlockElement } from 'types/slate';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-import { usePathname } from 'next/navigation';
+import { useSlate } from 'slate-react';
 
 dayjs.extend(duration);
 
@@ -16,17 +16,15 @@ interface MusicPreviewProps {
 const MusicPreview = (props: MusicPreviewProps) => {
   const { element } = props;
 
-  const pathname = usePathname();
+  const editor = useSlate();
+
+  const isSummary = useMemo(() => {
+    return editor.isSummary;
+  }, [editor.isSummary]);
+
+  const url = useMemo(() => element.url, [element.url]);
 
   const audioRef = useRef<HTMLAudioElement>(null);
-
-  const url = useMemo(() => {
-    console.log(pathname);
-    if (pathname === '/note' || !pathname.includes('/note/')) {
-      return '';
-    }
-    return element.url;
-  }, [element.url, pathname]);
 
   /************************************************
    * ✨ 封面
@@ -204,7 +202,7 @@ const MusicPreview = (props: MusicPreviewProps) => {
           controls={false}
           autoPlay={false}
           onTimeUpdate={handleTimeUpdate}
-          src={url}></audio>
+          src={isSummary ? '' : url}></audio>
         <div className='flex flex-col gap-1'>
           {/* info */}
           <div className='flex w-full items-center justify-between gap-4'>

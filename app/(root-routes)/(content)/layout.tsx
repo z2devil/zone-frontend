@@ -46,7 +46,10 @@ const ContentLayout = (props: ContentLayoutProps) => {
       title: '写笔记',
       children: (
         <div className='mb-6'>
-          <RichEditor className=' max-h-[70vh]' onChange={handleEditorChange} />
+          <RichEditor
+            className=' max-h-[70vh] min-h-[320px]'
+            onChange={handleEditorChange}
+          />
         </div>
       ),
       okText: '发布',

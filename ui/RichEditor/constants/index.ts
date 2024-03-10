@@ -113,3 +113,9 @@ export const enum Language {
   LESS = 'less',
   SCSS = 'scss',
 }
+
+export enum DropType {
+  NONE = 0,
+  UP = 1,
+  DOWN = 2,
+}
