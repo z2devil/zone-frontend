@@ -75,7 +75,7 @@ const Modal = (props: ModalProps) => {
   return (
     <div
       className={clsx(
-        ' absolute left-0 right-0 top-1/2 flex w-full -translate-y-1/2 flex-col items-center justify-between overflow-hidden bg-gray-100 transition-all duration-300 max-sm:border-y max-sm:border-black-80 sm:mx-auto sm:w-[480px] sm:rounded-2xl sm:shadow-2xl',
+        ' absolute left-0 right-0 top-1/2 flex w-full -translate-y-1/2 flex-col items-center justify-between overflow-hidden bg-gray-100 transition-all duration-300 max-sm:border-y max-sm:border-black-80 sm:mx-auto sm:w-[640px] sm:rounded-2xl sm:shadow-2xl',
         outterCalssName
       )}
       style={{
