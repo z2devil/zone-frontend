@@ -9,7 +9,7 @@ import useKeyDown from '../../hooks/useKeyDown';
 import Element from '../Element';
 import Leaf from '../Leaf';
 import style from './style.module.scss';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import useCut from '../../hooks/useCut';
@@ -24,6 +24,10 @@ const Editor = (props: EditorProps) => {
   const { className, readonly } = props;
 
   const editor = useSlate();
+
+  const isSummary = useMemo(() => {
+    return editor.isSummary;
+  }, [editor.isSummary]);
 
   const renderLeaf = useCallback((props: RenderLeafProps) => {
     return <Leaf {...props} />;
@@ -58,6 +62,9 @@ const Editor = (props: EditorProps) => {
     <Editable
       className={clsx(
         style.editor,
+        {
+          [style.summary]: isSummary,
+        },
         twMerge(
           ' h-full w-full overflow-y-auto text-black-900 outline-none',
           className

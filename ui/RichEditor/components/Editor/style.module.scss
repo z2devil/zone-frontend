@@ -9,20 +9,52 @@
       margin-bottom: 0;
     }
   }
+  &.summary {
+    h1 {
+      display: block;
+      margin-bottom: 0.75rem;
+      & span {
+        font-weight: bold;
+        font-size: 1.3125rem;
+      }
+    }
+  }
   h1 {
     display: block;
     margin-bottom: 1.5rem;
     & span {
       font-weight: bold;
+      // 25px
       font-size: 1.5625rem;
+    }
+  }
+  &.summary {
+    h2 {
+      display: block;
+      margin-bottom: 0.5rem;
+      & span {
+        font-weight: bold;
+        font-size: 1.1875rem;
+      }
     }
   }
   h2 {
     display: block;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.3rem;
     & span {
       font-weight: bold;
+      // 23px
       font-size: 1.4375rem;
+    }
+  }
+  &.summary {
+    h3 {
+      display: block;
+      margin-bottom: 0.5rem;
+      & span {
+        font-weight: bold;
+        font-size: 1.0625rem;
+      }
     }
   }
   h3 {
@@ -30,7 +62,18 @@
     margin-bottom: 0.75rem;
     & span {
       font-weight: bold;
+      // 21px
       font-size: 1.3125rem;
+    }
+  }
+  &.summary {
+    h4 {
+      display: block;
+      margin-bottom: 0.2rem;
+      & span {
+        font-weight: bold;
+        font-size: 0.9375rem;
+      }
     }
   }
   h4 {
@@ -38,21 +81,43 @@
     margin-bottom: 0.5rem;
     & span {
       font-weight: bold;
+      // 19px
       font-size: 1.1875rem;
+    }
+  }
+  &.summary {
+    h5 {
+      display: block;
+      margin-bottom: 0.2rem;
+      & span {
+        font-weight: bold;
+        font-size: 0.9375rem;
+      }
     }
   }
   h5 {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.3rem;
     & span {
       font-weight: bold;
+      // 17px
       font-size: 1.0625rem;
+    }
+  }
+  &.summary {
+    h6 {
+      display: block;
+      & span {
+        font-weight: bold;
+        font-size: 0.9375rem;
+      }
     }
   }
   h6 {
     display: block;
     & span {
       font-weight: bold;
+      // 15px
       font-size: 0.9375rem;
     }
   }
