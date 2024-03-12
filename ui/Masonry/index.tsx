@@ -4,12 +4,13 @@ import {
   CSSProperties,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
 import { MasonryRecord, diffAndUpdateRecords } from './utils';
-import { useMount, useUnmount } from 'react-use';
+import { useLatest, useMount, useUnmount } from 'react-use';
 import useResize from './hooks/useResize';
 import { throttle } from 'lodash';
 
@@ -137,10 +138,11 @@ const Masonry = (props: MasonryProps) => {
               const cardId = (node as HTMLElement).getAttribute('data-id');
               const cardDOM = (node as HTMLElement).children[0];
               if (!cardId || !cardDOM) return;
+              const rect = cardDOM.getBoundingClientRect();
               recordsRef.current.forEach(record => {
                 if (record[keyField] === cardId) {
-                  record.height = cardDOM.clientHeight;
-                  record.width = cardDOM.clientWidth;
+                  record.height = rect.height;
+                  record.width = rect.width;
                   return true;
                 }
               });
@@ -251,7 +253,8 @@ const Masonry = (props: MasonryProps) => {
     await render();
   }, [data, keyField, containerWidth, columnWidth, prerender, render]);
 
-  useEffect(() => {
+  // bugfix: 修复更新并发问题
+  useLayoutEffect(() => {
     update();
   }, [update]);
 
@@ -263,8 +266,6 @@ const Masonry = (props: MasonryProps) => {
 
       scrollTopRef.current = containerDOM.getBoundingClientRect().top;
 
-      await render();
-
       // 触底
       if (
         -scrollTopRef.current + window.innerHeight + loadDistance >=
@@ -272,6 +273,8 @@ const Masonry = (props: MasonryProps) => {
         data.length
       ) {
         touchBottom?.();
+      } else {
+        await render();
       }
     }, [data.length, loadDistance, render, totalHeight, touchBottom]),
     100

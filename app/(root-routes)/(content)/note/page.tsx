@@ -41,18 +41,20 @@ const NotePage = () => {
   });
 
   const handleLoadData = useCallback(async () => {
+    if (notes.length >= noteTotal) {
+      return;
+    }
     if (isLoadingRef.current) return;
-    if (notes.length >= noteTotal) return;
-    setIsLoading(true);
     isLoadingRef.current = true;
+    setIsLoading(true);
     const nextCurrent = current + 1;
     setCurrent(nextCurrent);
     const res = await getNotesAPI(request)({
       current: nextCurrent,
       size: FETCH_SIZE,
     });
-    setIsLoading(false);
     isLoadingRef.current = false;
+    setIsLoading(false);
     setNotes([...notes, ...res.list]);
     setNoteTotal(res.total);
     return res.list;
