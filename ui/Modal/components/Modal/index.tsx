@@ -1,12 +1,12 @@
 import { useModalUtilsStore } from '@/lib/stores';
 import Button from '@/ui/Button';
 import clsx from 'clsx';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 export type ModalProps = {
   uuid: string;
-  title: string;
-  children: React.ReactNode;
+  title: React.ReactNode;
+  children: React.ReactNode | (() => JSX.Element);
   footer?: React.ReactNode;
   okText?: string;
   cancelText?: string;
@@ -21,7 +21,7 @@ const Modal = (props: ModalProps) => {
   const {
     uuid,
     title,
-    children,
+    children: Children,
     footer,
     okText,
     cancelText,
@@ -40,12 +40,13 @@ const Modal = (props: ModalProps) => {
   };
 
   const childrenRender = useMemo(() => {
-    if (typeof children === 'string' || typeof children === 'number') {
-      return <div className='p-6 text-17 text-black-900'>{children}</div>;
+    if (Children instanceof Function) return <Children />;
+    if (typeof Children === 'string' || typeof Children === 'number') {
+      return <div className='p-6 text-17 text-black-900'>{Children}</div>;
     } else {
-      return children;
+      return Children;
     }
-  }, [children]);
+  }, [Children]);
 
   const footerRender = useMemo(() => {
     if (footer) return footer;
@@ -61,7 +62,12 @@ const Modal = (props: ModalProps) => {
           )}
           {okText && (
             <Button
-              className=' relative flex h-11 flex-shrink-0 items-center justify-center rounded-xl border border-black-80 bg-primary-50 px-6 text-17 text-white hover:bg-primary-100'
+              className={clsx(
+                ' relative flex h-11 flex-shrink-0 items-center justify-center rounded-xl border border-black-80 bg-primary-50 px-6 text-17 text-white hover:bg-primary-100',
+                {
+                  'flex-grow': !cancelText,
+                }
+              )}
               onClick={onOk}>
               {okText}
             </Button>

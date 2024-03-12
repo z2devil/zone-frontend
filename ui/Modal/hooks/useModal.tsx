@@ -11,26 +11,24 @@ export interface ModalUtils {
   close: (uuid?: Key) => void;
 }
 
-interface ModalOpenOptions {
-  title: string;
-  children: React.ReactNode;
-  footer?: React.ReactNode;
-  okText?: string;
-  cancelText?: string;
-  closable?: boolean;
-  onOk?: () => void;
-  onCancel?: () => void;
-}
+type ModalOpenOptions = Omit<
+  ModalProps,
+  'uuid' | 'outterCalssName' | 'outterStyle'
+> & {
+  keepAlive?: boolean;
+};
 
-interface ModalInfo {
+export interface ModalInfo {
   key: Key;
-  options: ModalOpenOptions & { uuid: Key };
+  options: Omit<ModalProps, 'outterCalssName' | 'outterStyle'> & {
+    keepAlive?: boolean;
+  };
 }
 
 const useModal = () => {
   const [modals, setModals] = useState<ModalInfo[]>([]);
 
-  const calcCurrentModals = useMemo(() => {
+  const calcKeys = useMemo(() => {
     if (modals.length === 0) return [];
     return [modals[modals.length - 1]];
   }, [modals]);
@@ -43,7 +41,7 @@ const useModal = () => {
         const contextHolderDOM = contextHolderRef.current;
         if (!contextHolderDOM) throw new Error('contextHolderDOM unfined');
 
-        const { closable = true } = options;
+        const { closable = true, keepAlive = false } = options;
 
         const uuid = uniqueId('modal-');
 
@@ -52,6 +50,7 @@ const useModal = () => {
           options: {
             ...options,
             closable,
+            keepAlive,
             uuid,
           },
         };
@@ -91,7 +90,7 @@ const useModal = () => {
         <div
           className={clsx(
             ' absolute left-0 top-0 h-full w-full duration-500 max-sm:bg-white max-sm:bg-opacity-20 max-sm:backdrop-blur-3xl sm:bg-black-100',
-            calcCurrentModals.length > 0
+            calcKeys.length > 0
               ? 'pointer-events-auto opacity-100 delay-200'
               : 'pointer-events-none opacity-0 delay-200'
           )}
@@ -99,23 +98,20 @@ const useModal = () => {
         ></div>
       }
       {/* modal */}
-      <MotionList transitionDuration={0.4} keys={calcCurrentModals}>
+      <MotionList transitionDuration={0.4} keys={calcKeys}>
         {info => {
-          const { options, enterIn, leaveOut } = info as {
-            options: ModalProps;
-            visible: boolean;
-            transitionDuration: number;
-            style: React.CSSProperties;
-            enterIn: boolean;
-            leaveOut: boolean;
-          };
+          const { options, enterIn, leaveOut } = info;
+          console.log('[ info ]', info);
           return (
             <Modal
               outterCalssName={clsx(
                 enterIn && style.enterIn,
                 leaveOut && style.leaveOut
               )}
-              outterStyle={info.style}
+              outterStyle={{
+                ...info.style,
+                display: info.visible ? 'block' : 'none',
+              }}
               {...options}
             />
           );

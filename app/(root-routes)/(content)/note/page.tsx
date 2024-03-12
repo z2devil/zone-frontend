@@ -67,6 +67,7 @@ const NotePage = () => {
       type: NotificationType.WARNING,
       content: '暂未开放',
       duration: 3,
+      closable: true,
     });
   };
 

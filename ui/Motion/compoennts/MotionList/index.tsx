@@ -7,18 +7,27 @@ import {
   updateKeys,
 } from '../../utils/diff';
 
-export interface MotionListProps extends MotionProps {
-  keys: (Key | { key: Key; [name: string]: any })[];
+export type MotionListProps = Omit<MotionProps, 'visible' | 'keepAlive'> & {
+  keys: (
+    | Key
+    | {
+        key: Key;
+        options: {
+          keepAlive?: boolean;
+          [name: string]: any;
+        };
+      }
+  )[];
   component?: string | React.ComponentType | false;
-}
+};
 
 const MotionList = (props: MotionListProps) => {
   const {
     keys,
     component,
-    transitionDuration = 0.3,
     children,
-    ...restProps
+    transitionDuration = 0.3,
+    restProps,
   } = props;
 
   const [keyEntities, setKeyEntities] = useState<KeyEntity[]>([]);
@@ -38,13 +47,16 @@ const MotionList = (props: MotionListProps) => {
   return (
     <Component {...restProps}>
       {keyEntities.map(keyEntity => {
-        const { key, status, ...restEntityProps } = keyEntity;
+        const { key, status, options } = keyEntity;
+        console.log('[ options ]', options);
+        const { keepAlive, ...restOptions } = options;
         return (
           <Motion
             key={key}
             visible={status === EnityStatus.REMOVE ? false : true}
-            restProps={restEntityProps}
-            transitionDuration={transitionDuration}>
+            transitionDuration={transitionDuration}
+            keepAlive={keepAlive}
+            restProps={{ options: restOptions }}>
             {children}
           </Motion>
         );

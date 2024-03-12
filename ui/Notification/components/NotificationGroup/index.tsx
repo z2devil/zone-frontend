@@ -13,9 +13,9 @@ const NotificationGroup = (props: NotificationGroupProps) => {
   const { list, onClose } = props;
 
   const calcKeys = useMemo(() => {
-    return list.map(config => ({
-      key: config.uuid,
-      config,
+    return list.map(options => ({
+      key: options.uuid,
+      options,
     }));
   }, [list]);
 
@@ -30,7 +30,7 @@ const NotificationGroup = (props: NotificationGroupProps) => {
     <div className=' pointer-events-none fixed top-2 z-50 mx-auto flex w-full flex-col items-center'>
       <MotionList keys={calcKeys}>
         {(info, nodeRef) => {
-          const config = info.config as NotificationProps;
+          const { options } = info;
           return (
             <div
               className={clsx(
@@ -40,15 +40,7 @@ const NotificationGroup = (props: NotificationGroupProps) => {
               )}
               style={{ pointerEvents: 'all', ...info.style }}
               ref={nodeRef}>
-              <NotificationItem
-                uuid={config.uuid}
-                type={config.type}
-                content={config.content}
-                closable={config.closable}
-                duration={config.duration}
-                onClick={config.onClick}
-                onClose={handleClose}
-              />
+              <NotificationItem {...options} onClose={handleClose} />
             </div>
           );
         }}

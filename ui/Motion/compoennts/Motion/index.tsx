@@ -4,6 +4,7 @@ export interface MotionProps {
   restProps?: object;
   visible?: boolean;
   transitionDuration?: number;
+  keepAlive?: boolean;
   children?: (
     props: {
       visible?: boolean;
@@ -18,7 +19,13 @@ export interface MotionProps {
 }
 
 const Motion = forwardRef<any, MotionProps>((props, ref) => {
-  const { restProps, visible = true, transitionDuration = 0, children } = props;
+  const {
+    restProps,
+    visible = true,
+    transitionDuration = 0,
+    keepAlive = false,
+    children,
+  } = props;
 
   const [truthVisible, setTruthVisible] = useState(false);
 
@@ -64,14 +71,14 @@ const Motion = forwardRef<any, MotionProps>((props, ref) => {
 
   return (
     <>
-      {truthVisible
+      {keepAlive || truthVisible
         ? children?.(
             {
-              visible,
+              visible: truthVisible,
+              style: calcStyle,
               transitionDuration,
               enterIn,
               leaveOut,
-              style: calcStyle,
               ...restProps,
             },
             ref
