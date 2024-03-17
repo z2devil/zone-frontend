@@ -101,9 +101,9 @@ const useModal = () => {
       <MotionList transitionDuration={0.4} keys={calcKeys}>
         {info => {
           const { options, enterIn, leaveOut } = info;
-          console.log('[ info ]', info);
           return (
             <Modal
+              {...options}
               outterCalssName={clsx(
                 enterIn && style.enterIn,
                 leaveOut && style.leaveOut
@@ -112,7 +112,6 @@ const useModal = () => {
                 ...info.style,
                 display: info.visible ? 'block' : 'none',
               }}
-              {...options}
             />
           );
         }}

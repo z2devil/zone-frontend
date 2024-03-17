@@ -2,6 +2,7 @@ import { useModalUtilsStore } from '@/lib/stores';
 import Button from '@/ui/Button';
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 export type ModalProps = {
   uuid: string;
@@ -13,6 +14,7 @@ export type ModalProps = {
   closable?: boolean;
   onOk?: () => void;
   onCancel?: () => void;
+  onClose?: () => void;
   outterCalssName?: string;
   outterStyle?: React.CSSProperties;
 };
@@ -28,6 +30,7 @@ const Modal = (props: ModalProps) => {
     closable,
     onOk,
     onCancel,
+    onClose,
     outterCalssName,
     outterStyle,
   } = props;
@@ -35,6 +38,7 @@ const Modal = (props: ModalProps) => {
   const { utils: modalUtils } = useModalUtilsStore();
 
   const handleBack = () => {
+    if (onClose) onClose();
     if (!modalUtils) return;
     modalUtils.close(uuid);
   };
@@ -81,8 +85,10 @@ const Modal = (props: ModalProps) => {
   return (
     <div
       className={clsx(
-        ' absolute left-0 right-0 top-1/2 flex w-full -translate-y-1/2 flex-col items-center justify-between overflow-hidden bg-gray-100 transition-all duration-300 max-sm:border-y max-sm:border-black-80 sm:mx-auto sm:w-[640px] sm:rounded-2xl sm:shadow-2xl',
-        outterCalssName
+        twMerge(
+          ' absolute left-0 right-0 top-1/2 flex w-full -translate-y-1/2 flex-col items-center justify-between overflow-hidden bg-gray-100 transition-all duration-300 max-sm:border-y max-sm:border-black-80 sm:mx-auto sm:w-[480px] sm:rounded-2xl sm:shadow-2xl',
+          outterCalssName
+        )
       )}
       style={{
         pointerEvents: 'all',

@@ -1,10 +1,4 @@
-import {
-  NoteInfo,
-  NoteTypeEnum,
-  deleteNoteAPI,
-  getNoteAPI,
-  putNoteAPI,
-} from '@/lib/api/notes';
+import { NoteInfo, NoteTypeEnum, deleteNoteAPI } from '@/lib/api/notes';
 import dayjs from '@/lib/utils/dayjs';
 import RichView from '../RichView';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -16,8 +10,6 @@ import {
   useModalUtilsStore,
   useNotificationUtilsStore,
 } from '@/lib/stores';
-import RichEditor from '../RichEditor';
-import { Descendant } from 'slate';
 import useRequest from '@/lib/hooks/useRequest';
 import { useNotesStore } from '@/lib/stores/notes';
 import clsx from 'clsx';
@@ -54,12 +46,6 @@ const NoteCard = (props: NoteCardProps) => {
   ]);
 
   const isAdmin = usePermission([UserRole.ADMIN, UserRole.MANAGER]);
-
-  const editorContent = useRef<Descendant[]>([]);
-
-  const handleEditorContentChange = useCallback((value: Descendant[]) => {
-    editorContent.current = value;
-  }, []);
 
   const handleSetting = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -99,63 +85,8 @@ const NoteCard = (props: NoteCardProps) => {
             label: '编辑',
             icon: <i className='iconfont icon-edit text-19' />,
             onClick: () => {
-              const uuid = modalUtils?.open({
-                title: '编辑笔记',
-                children: (
-                  <div className='mb-6'>
-                    <RichEditor
-                      initialValue={JSON.parse(note.content)}
-                      className=' max-h-[70vh]'
-                      onChange={handleEditorContentChange}
-                    />
-                  </div>
-                ),
-                okText: '保存',
-                onOk: async () => {
-                  try {
-                    await putNoteAPI(request)({
-                      _id: note._id,
-                      type: NoteTypeEnum.NOTE,
-                      content: JSON.stringify(editorContent.current),
-                    });
-                    const nextNote = await getNoteAPI(request)(note._id);
-                    console.log(
-                      '[ nextNote ]',
-                      nextNote,
-                      notes.map(item => {
-                        if (item._id === note._id) {
-                          return nextNote;
-                        }
-                        return item;
-                      })
-                    );
-                    setNotes(
-                      notes.map(item => {
-                        if (item._id === note._id) {
-                          return nextNote;
-                        }
-                        return item;
-                      })
-                    );
-                    notificationUtils?.open({
-                      type: NotificationType.SUCCESS,
-                      content: '保存成功',
-                      duration: 3,
-                    });
-                    modalUtils?.close(uuid);
-                    navigation.refresh();
-                  } catch (error: any) {
-                    notificationUtils?.open({
-                      type: NotificationType.WARNING,
-                      content: error.message,
-                      duration: 3,
-                    });
-                  }
-                },
-                cancelText: '取消',
-                onCancel: () => {
-                  modalUtils.close();
-                },
+              navigation.push(`/write/${note._id}`, {
+                scroll: false,
               });
             },
           },
@@ -201,12 +132,10 @@ const NoteCard = (props: NoteCardProps) => {
     },
     [
       contextMenuUtils,
-      handleEditorContentChange,
       isAdmin,
       modalUtils,
       navigation,
       note._id,
-      note.content,
       notes,
       notificationUtils,
       request,
@@ -287,25 +216,27 @@ const NoteCard = (props: NoteCardProps) => {
             <RichView initialValue={JSON.parse(note.content)} isSummary />
           </div>
           {/* 底部 */}
-          {note.type === NoteTypeEnum.ARTICLE && (
-            <div className='flex items-center justify-between gap-1'>
+          <div className='flex items-center justify-between gap-1'>
+            {note.type === NoteTypeEnum.ARTICLE ? (
               <div className='flex items-center gap-1'>
                 <i className='iconfont icon-calender-filled text-17 text-black-250' />
                 <span className='text-[0.75rem] leading-[0.75rem] text-black-250'>
                   {dayjs(note.createdAt).format('YYYY-MM-DD')}
                 </span>
               </div>
-              <div className='flex gap-2.5'>
-                {[].map((tag, i) => (
-                  <div
-                    key={i}
-                    className='text-black text-xs font-normal text-opacity-40'>
-                    #{tag}
-                  </div>
-                ))}
-              </div>
+            ) : (
+              <div />
+            )}
+            <div className='flex gap-2.5'>
+              {note.tags.map(tag => (
+                <div
+                  key={tag._id}
+                  className='text-black text-xs font-normal text-primary-50'>
+                  #{tag.label}
+                </div>
+              ))}
             </div>
-          )}
+          </div>
         </div>
       </Link>
     </div>

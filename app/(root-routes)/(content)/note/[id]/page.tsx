@@ -7,7 +7,6 @@ import {
   deleteNoteAPI,
   getAdjacentNotesAPI,
   getNoteAPI,
-  putNoteAPI,
 } from '@/lib/api/notes';
 import { UserRole } from '@/lib/api/user';
 import usePermission from '@/lib/hooks/usePermission';
@@ -20,15 +19,14 @@ import {
 import { getContentSummary } from '@/lib/utils/editor';
 import EmptyInfo from '@/ui/EmptyInfo';
 import { NotificationType } from '@/ui/Notification/components/Notification';
-import RichEditor from '@/ui/RichEditor';
 import Editor from '@/ui/RichEditor/components/Editor';
 import TOC from '@/ui/TOC';
 import clsx from 'clsx';
 import dayjs from 'dayjs';
 import Link from 'next/link';
 import { notFound, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Descendant, createEditor } from 'slate';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { createEditor } from 'slate';
 import { withReact, Slate as SlateProvider } from 'slate-react';
 
 interface NoteDetailPageProps {
@@ -111,12 +109,6 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
    * ✨ 更多
    ************************************************/
 
-  const editorContent = useRef<Descendant[]>([]);
-
-  const handleEditorContentChange = useCallback((value: Descendant[]) => {
-    editorContent.current = value;
-  }, []);
-
   const handleSetting = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
@@ -155,53 +147,8 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
             label: '编辑',
             icon: <i className='iconfont icon-edit text-19' />,
             onClick: () => {
-              const uuid = modalUtils?.open({
-                title: '编辑笔记',
-                children: (
-                  <div className='mb-6'>
-                    <RichEditor
-                      initialValue={JSON.parse(note.content)}
-                      className=' max-h-[70vh]'
-                      onChange={handleEditorContentChange}
-                    />
-                  </div>
-                ),
-                okText: '保存',
-                onOk: async () => {
-                  try {
-                    await putNoteAPI(request)({
-                      _id: note._id,
-                      type: NoteTypeEnum.NOTE,
-                      content: JSON.stringify(editorContent.current),
-                    });
-                    notificationUtils?.open({
-                      type: NotificationType.SUCCESS,
-                      content: '保存成功',
-                      duration: 3,
-                    });
-                    modalUtils?.close(uuid);
-                    setNote(prevNote => {
-                      if (prevNote) {
-                        return {
-                          ...prevNote,
-                          content: JSON.stringify(editorContent.current),
-                        };
-                      }
-                      return prevNote;
-                    });
-                    navigation.refresh();
-                  } catch (error: any) {
-                    notificationUtils?.open({
-                      type: NotificationType.WARNING,
-                      content: error.message,
-                      duration: 3,
-                    });
-                  }
-                },
-                cancelText: '取消',
-                onCancel: () => {
-                  modalUtils.close();
-                },
+              navigation.push(`/write/${note._id}`, {
+                scroll: false,
               });
             },
           },
@@ -246,7 +193,6 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
     },
     [
       contextMenuUtils,
-      handleEditorContentChange,
       isAdmin,
       modalUtils,
       navigation,
@@ -298,25 +244,27 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
               <Editor readonly />
             </div>
             {/* 底部 */}
-            {note.type === NoteTypeEnum.ARTICLE && (
-              <div className='flex items-center justify-between gap-1'>
+            <div className='flex items-center justify-between gap-1'>
+              {note.type === NoteTypeEnum.ARTICLE ? (
                 <div className='flex items-center gap-1'>
                   <i className='iconfont icon-calender-filled text-17 text-black-250' />
                   <span className='text-[0.75rem] leading-[0.75rem] text-black-250'>
                     {dayjs(note.createdAt).format('YYYY-MM-DD')}
                   </span>
                 </div>
-                <div className='flex gap-2.5'>
-                  {[].map((tag, i) => (
-                    <div
-                      key={i}
-                      className='text-black text-xs font-normal text-opacity-40'>
-                      #{tag}
-                    </div>
-                  ))}
-                </div>
+              ) : (
+                <div />
+              )}
+              <div className='flex gap-2.5'>
+                {note.tags.map(tag => (
+                  <div
+                    key={tag._id}
+                    className='text-black text-xs font-normal text-primary-50'>
+                    #{tag.label}
+                  </div>
+                ))}
               </div>
-            )}
+            </div>
           </div>
           {/* 上下页 */}
           <div className='flex flex-col gap-4 p-5 md:flex-row'>

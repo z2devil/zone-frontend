@@ -48,7 +48,6 @@ const MotionList = (props: MotionListProps) => {
     <Component {...restProps}>
       {keyEntities.map(keyEntity => {
         const { key, status, options } = keyEntity;
-        console.log('[ options ]', options);
         const { keepAlive, ...restOptions } = options;
         return (
           <Motion

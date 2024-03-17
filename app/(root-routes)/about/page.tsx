@@ -1,25 +1,14 @@
 'use client';
 
-import {
-  NoteInfo,
-  NoteTypeEnum,
-  getNoteAPI,
-  putNoteAPI,
-} from '@/lib/api/notes';
+import { NoteInfo, NoteTypeEnum, getNoteAPI } from '@/lib/api/notes';
 import { UserRole } from '@/lib/api/user';
 import usePermission from '@/lib/hooks/usePermission';
 import useRequest from '@/lib/hooks/useRequest';
-import {
-  useContextMenuUtilsStore,
-  useModalUtilsStore,
-  useNotificationUtilsStore,
-} from '@/lib/stores';
-import { NotificationType } from '@/ui/Notification/components/Notification';
-import RichEditor from '@/ui/RichEditor';
+import { useContextMenuUtilsStore } from '@/lib/stores';
 import dayjs from 'dayjs';
 import { notFound, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Descendant, createEditor } from 'slate';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { createEditor } from 'slate';
 import { withReact, Slate as SlateProvider } from 'slate-react';
 import Editor from '@/ui/RichEditor/components/Editor';
 
@@ -31,10 +20,6 @@ const About = () => {
   const [request] = useRequest();
 
   const contextMenuUtils = useContextMenuUtilsStore(state => state.utils);
-
-  const { utils: modalUtils } = useModalUtilsStore();
-
-  const { utils: notificationUtils } = useNotificationUtilsStore();
 
   const isLogin = usePermission([
     UserRole.LOGIN,
@@ -75,12 +60,6 @@ const About = () => {
    * ✨ 更多
    ************************************************/
 
-  const editorContent = useRef<Descendant[]>([]);
-
-  const handleEditorContentChange = useCallback((value: Descendant[]) => {
-    editorContent.current = value;
-  }, []);
-
   const handleSetting = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
@@ -92,53 +71,8 @@ const About = () => {
             label: '编辑',
             icon: <i className='iconfont icon-edit text-19' />,
             onClick: () => {
-              const uuid = modalUtils?.open({
-                title: '编辑笔记',
-                children: (
-                  <div className='mb-6'>
-                    <RichEditor
-                      initialValue={JSON.parse(note.content)}
-                      className=' max-h-[70vh]'
-                      onChange={handleEditorContentChange}
-                    />
-                  </div>
-                ),
-                okText: '保存',
-                onOk: async () => {
-                  try {
-                    await putNoteAPI(request)({
-                      _id: note._id,
-                      type: NoteTypeEnum.NOTE,
-                      content: JSON.stringify(editorContent.current),
-                    });
-                    notificationUtils?.open({
-                      type: NotificationType.SUCCESS,
-                      content: '保存成功',
-                      duration: 3,
-                    });
-                    modalUtils?.close(uuid);
-                    setNote(prevNote => {
-                      if (prevNote) {
-                        return {
-                          ...prevNote,
-                          content: JSON.stringify(editorContent.current),
-                        };
-                      }
-                      return prevNote;
-                    });
-                    navigation.refresh();
-                  } catch (error: any) {
-                    notificationUtils?.open({
-                      type: NotificationType.WARNING,
-                      content: error.message,
-                      duration: 3,
-                    });
-                  }
-                },
-                cancelText: '取消',
-                onCancel: () => {
-                  modalUtils.close();
-                },
+              navigation.push(`/write/${note._id}`, {
+                scroll: false,
               });
             },
           },
@@ -147,16 +81,7 @@ const About = () => {
         document.querySelector('body') as HTMLElement
       );
     },
-    [
-      contextMenuUtils,
-      handleEditorContentChange,
-      isAdmin,
-      modalUtils,
-      navigation,
-      note,
-      notificationUtils,
-      request,
-    ]
+    [contextMenuUtils, isAdmin, navigation, note]
   );
 
   if (!note) return null;

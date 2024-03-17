@@ -1,3 +1,5 @@
+import { Descendant } from 'slate';
+import { TagInfo } from '../tags';
 import { CommonInfo } from '../types';
 import { IPageParams } from '../types';
 
@@ -33,6 +35,7 @@ export type NoteInfo = Pick<
   '_id' | 'type' | 'content' | 'title' | 'summary' | 'bannerPath' | 'createdAt'
 > & {
   author: string;
+  tags: TagInfo[];
 };
 
 /************************************************
@@ -63,7 +66,7 @@ export interface PostNoteParams {
   type: NoteTypeEnum;
   bannerPath?: string;
   title?: string;
-  summary?: string;
+  tags?: string[];
 }
 
 /**
