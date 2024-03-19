@@ -8,21 +8,18 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import { useNotificationUtilsStore } from '@/lib/stores';
 import useRequest from '@/lib/hooks/useRequest';
-import { useWorksStore } from '@/lib/stores/works';
 import EmptyInfo from '@/ui/EmptyInfo';
-import { useUnmount } from 'react-use';
 import { CARD_WIDTH, GAP } from '@/ui/Masonry/constants';
+import { useNotesStore } from '@/lib/stores/notes';
 
 const FETCH_SIZE = 20;
-
-const CARD_HEIGHT = 200;
 
 const WorksPage = () => {
   const [request] = useRequest();
 
-  const { works, setWorks } = useWorksStore();
+  const { notes, setNotes } = useNotesStore();
 
-  const [workTotal, setWorkTotal] = useState(Infinity);
+  const [noteTotal, setNoteTotal] = useState(Infinity);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -34,19 +31,17 @@ const WorksPage = () => {
 
   // 最后更新时间
   const lastUpdated = useMemo(() => {
-    if (!works.length) return;
-    return works[0].createdAt;
-  }, [works]);
-
-  useUnmount(() => {
-    setWorks([]);
-  });
+    if (!notes.length) return;
+    return notes[0].createdAt;
+  }, [notes]);
 
   const handleLoadData = useCallback(async () => {
+    if (notes.length >= noteTotal) {
+      return;
+    }
     if (isLoadingRef.current) return;
-    if (works.length >= workTotal) return;
-    setIsLoading(true);
     isLoadingRef.current = true;
+    setIsLoading(true);
     const nextCurrent = current + 1;
     setCurrent(nextCurrent);
     const res = await getNotesAPI(request)({
@@ -54,12 +49,12 @@ const WorksPage = () => {
       size: FETCH_SIZE,
       type: NoteTypeEnum.ARTICLE,
     });
-    setIsLoading(false);
     isLoadingRef.current = false;
-    setWorks([...works, ...res.list]);
-    setWorkTotal(res.total);
+    setIsLoading(false);
+    setNotes(current === 0 ? res.list : notes.concat(res.list));
+    setNoteTotal(res.total);
     return res.list;
-  }, [works, workTotal, current, request, setWorks]);
+  }, [notes, noteTotal, current, request, setNotes]);
 
   const { utils: notificationUtils } = useNotificationUtilsStore();
 
@@ -68,6 +63,7 @@ const WorksPage = () => {
       type: NotificationType.WARNING,
       content: '暂未开放',
       duration: 3,
+      closable: true,
     });
   };
 
@@ -83,12 +79,11 @@ const WorksPage = () => {
       <Masonry
         columnWidth={CARD_WIDTH}
         gap={GAP}
-        data={works}
+        data={notes}
         touchBottom={handleLoadData}>
         {(index, position) => {
-          const note = works[index];
-          if (!note) return null;
-          return (
+          const note = notes[index];
+          return note ? (
             <NoteCard
               key={note._id}
               style={{
@@ -100,14 +95,14 @@ const WorksPage = () => {
               }}
               note={note}
             />
-          );
+          ) : null;
         }}
       </Masonry>
       <div className=' flex w-full items-center justify-center py-4'>
         {isLoading ? (
           <div className=' text-17 text-black-600'>加载中...</div>
-        ) : works.length === 0 ? (
-          <EmptyInfo tip='暂无作品' />
+        ) : notes.length === 0 ? (
+          <EmptyInfo tip='暂无笔记' />
         ) : null}
       </div>
     </div>

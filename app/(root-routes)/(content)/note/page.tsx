@@ -11,7 +11,6 @@ import useRequest from '@/lib/hooks/useRequest';
 import { useNotesStore } from '@/lib/stores/notes';
 import EmptyInfo from '@/ui/EmptyInfo';
 import { CARD_WIDTH, GAP } from '@/ui/Masonry/constants';
-import { useUnmount } from 'react-use';
 
 const FETCH_SIZE = 20;
 
@@ -36,10 +35,6 @@ const NotePage = () => {
     return notes[0].createdAt;
   }, [notes]);
 
-  useUnmount(() => {
-    setNotes([]);
-  });
-
   const handleLoadData = useCallback(async () => {
     if (notes.length >= noteTotal) {
       return;
@@ -55,7 +50,7 @@ const NotePage = () => {
     });
     isLoadingRef.current = false;
     setIsLoading(false);
-    setNotes([...notes, ...res.list]);
+    setNotes(current === 0 ? res.list : notes.concat(res.list));
     setNoteTotal(res.total);
     return res.list;
   }, [current, notes, request, setNotes, noteTotal]);
