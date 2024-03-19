@@ -203,7 +203,7 @@ const NoteCard = (props: NoteCardProps) => {
         </div>
         <div className='flex flex-col gap-3'>
           {note.type === NoteTypeEnum.ARTICLE ? (
-            <div className=' relative mb-2 h-32 w-full overflow-hidden rounded-lg'>
+            <div className=' relative mb-2 aspect-[3/1] w-full overflow-hidden rounded-lg'>
               <Image
                 className=' h-full w-full object-cover'
                 src={note.bannerPath || ''}
