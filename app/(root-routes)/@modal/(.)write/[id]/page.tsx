@@ -12,7 +12,6 @@ import NotePublish, { NoteOptions } from '@/ui/NotePublish';
 import { useNotificationUtilsStore } from '@/lib/stores';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import {
-  NoteInfo,
   NoteTypeEnum,
   getNoteAPI,
   postNoteAPI,
@@ -23,6 +22,7 @@ import { useNotesStore } from '@/lib/stores/notes';
 import { Descendant } from 'slate';
 import { BlockElementType } from '@/ui/RichEditor/constants';
 import { useMount } from 'react-use';
+import { getContentSummary } from '@/lib/utils/editor';
 
 interface NoteDetailPageProps {
   params: { id: string };
@@ -118,11 +118,12 @@ export default function WriteNote(props: NoteDetailPageProps) {
       console.log('[ handlePublish ]', res);
       try {
         const data = {
-          title: res.title,
           type: res.type,
-          bannerPath: res.bannerPath,
-          tags: res.tags,
+          title: res.title,
           content: JSON.stringify(contentRef.current),
+          bannerPath: res.bannerPath,
+          summary: getContentSummary(contentRef.current),
+          tags: res.tags,
         };
         if (isCreate) {
           const nextNote = await postNoteAPI(request)(data);

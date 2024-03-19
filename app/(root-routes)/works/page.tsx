@@ -94,7 +94,7 @@ const WorksPage = () => {
               style={{
                 position: 'absolute',
                 width: `${position.width}px`,
-                height: `${CARD_HEIGHT}px`,
+                maxHeight: `30rem`,
                 transform: `translate(${position.x}px, ${position.y}px)`,
                 overflow: 'hidden',
               }}

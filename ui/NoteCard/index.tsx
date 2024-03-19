@@ -1,7 +1,7 @@
 import { NoteInfo, NoteTypeEnum, deleteNoteAPI } from '@/lib/api/notes';
 import dayjs from '@/lib/utils/dayjs';
 import RichView from '../RichView';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NotificationType } from '../Notification/components/Notification';
 import usePermission from '@/lib/hooks/usePermission';
 import { UserRole } from '@/lib/api/user';
@@ -17,6 +17,9 @@ import rem2px from '@/lib/utils/rem2px';
 import { twMerge } from 'tailwind-merge';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import imageLoader from 'config/image/loader';
+import { getRandomRgbDataURL } from '@/lib/utils/rgbDataURL';
 
 interface NoteCardProps {
   note: NoteInfo;
@@ -46,6 +49,20 @@ const NoteCard = (props: NoteCardProps) => {
   ]);
 
   const isAdmin = usePermission([UserRole.ADMIN, UserRole.MANAGER]);
+
+  const detailTime = useMemo(
+    () => dayjs(note.createdAt).format('YYYY-MM-DD HH:mm:ss'),
+    [note.createdAt]
+  );
+
+  const summaryTime = useMemo(
+    () => dayjs(note.createdAt).format('YYYY-MM-DD'),
+    [note.createdAt]
+  );
+
+  const blurDataURL = useMemo(() => {
+    return getRandomRgbDataURL();
+  }, []);
 
   const handleSetting = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -184,7 +201,21 @@ const NoteCard = (props: NoteCardProps) => {
             </>
           ) : null}
         </div>
-        <div className='flex flex-col gap-2'>
+        <div className='flex flex-col gap-3'>
+          {note.type === NoteTypeEnum.ARTICLE ? (
+            <div className=' relative mb-2 h-32 w-full overflow-hidden rounded-lg'>
+              <Image
+                className=' h-full w-full object-cover'
+                src={note.bannerPath || ''}
+                alt='封图'
+                width={600}
+                height={200}
+                loader={imageLoader}
+                placeholder='blur'
+                blurDataURL={blurDataURL}
+              />
+            </div>
+          ) : null}
           {/* 顶部 */}
           <div className='flex items-center justify-between gap-10'>
             {note.type === NoteTypeEnum.NOTE ? (
@@ -192,8 +223,8 @@ const NoteCard = (props: NoteCardProps) => {
                 <i className='iconfont icon-calender-filled text-17 text-black-250' />
                 <span
                   className='text-[0.75rem] leading-[0.75rem] text-black-250'
-                  title={dayjs(note.createdAt).format('YYYY-MM-DD HH:mm:ss')}>
-                  {dayjs(note.createdAt).format('YYYY-MM-DD')}
+                  title={detailTime}>
+                  {summaryTime}
                 </span>
               </div>
             ) : (
@@ -212,16 +243,24 @@ const NoteCard = (props: NoteCardProps) => {
             ) : null}
           </div>
           {/* 内容 */}
-          <div className=' pointer-events-none'>
-            <RichView initialValue={JSON.parse(note.content)} isSummary />
-          </div>
+          {note.type === NoteTypeEnum.NOTE ? (
+            <div className=' pointer-events-none'>
+              <RichView initialValue={JSON.parse(note.content)} isSummary />
+            </div>
+          ) : (
+            <div className=' text-[0.9375rem] text-black-600'>
+              {note.summary}
+            </div>
+          )}
           {/* 底部 */}
           <div className='flex items-center justify-between gap-1'>
             {note.type === NoteTypeEnum.ARTICLE ? (
               <div className='flex items-center gap-1'>
                 <i className='iconfont icon-calender-filled text-17 text-black-250' />
-                <span className='text-[0.75rem] leading-[0.75rem] text-black-250'>
-                  {dayjs(note.createdAt).format('YYYY-MM-DD')}
+                <span
+                  className='text-[0.75rem] leading-[0.75rem] text-black-250'
+                  title={detailTime}>
+                  {summaryTime}
                 </span>
               </div>
             ) : (
