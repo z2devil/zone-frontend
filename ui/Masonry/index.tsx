@@ -9,20 +9,20 @@ import {
   useRef,
   useState,
 } from 'react';
-import { MasonryRecord, diffAndUpdateRecords } from './utils';
-import { useLatest, useMount, useUnmount } from 'react-use';
+import { useMount } from 'react-use';
 import useResize from './hooks/useResize';
-import { throttle } from 'lodash';
+import { isEqual, throttle } from 'lodash';
 
-type Record = {
+type MasonryRecord = {
   x: number;
   y: number;
   width: number;
   height: number;
+  meta: any;
 };
 
 interface MasonryProps {
-  children: (index: number, record: Record) => React.ReactNode;
+  children: (record: MasonryRecord) => React.ReactNode;
   data: any[];
   columnWidth: number;
   gap?: number;
@@ -55,20 +55,20 @@ const Masonry = (props: MasonryProps) => {
   // 监听器引用
   const observerRef = useRef<MutationObserver>();
 
-  // 位置记录
-  const [records, setRecords] = useState<MasonryRecord[]>([]);
-
-  // 真实数据下标集合
-  const [renderIndexes, setRenderIndexes] = useState<number[]>([]);
-
-  // 预渲染数据下标集合
-  const [prerenderIds, setPrerenderIds] = useState<string[]>([]);
-
-  // 数据引用
-  const dataRef = useRef(data);
+  // 记录
+  const [recordMap, setRecordMap] = useState<Record<string, MasonryRecord>>({});
 
   // 记录的引用
-  const recordsRef = useRef<MasonryRecord[]>([]);
+  const recordMapRef = useRef<Record<string, MasonryRecord>>({});
+
+  // 真实数据下标集合
+  const [renderKeys, setRenderKeys] = useState<string[]>([]);
+
+  // 预渲染数据下标集合
+  const [prerenderKeys, setPrerenderKeys] = useState<string[]>([]);
+
+  // 数据引用
+  const dataRef = useRef<any[]>(data);
 
   // 上次容器宽度引用
   const latestContainerWidth = useRef<number>(0);
@@ -96,9 +96,6 @@ const Masonry = (props: MasonryProps) => {
 
   // 挂载
   const mount = useCallback(() => {
-    setRecords([]);
-    setRenderIndexes([]);
-
     touchBottom?.();
   }, [touchBottom]);
 
@@ -106,91 +103,59 @@ const Masonry = (props: MasonryProps) => {
     mount();
   });
 
-  // 卸载
-  const unmount = useCallback(() => {
-    setRecords([]);
-    setRenderIndexes([]);
+  // 预渲染（用于计算卡片大小）
+  const prerender = useCallback(async (keys: string[]) => {
+    const preRenderContainerDOM = prerenderContainerRef.current;
+    if (!preRenderContainerDOM) return;
+
+    let promiseResovle: () => void;
+    const promise = new Promise<void>(resovle => {
+      promiseResovle = resovle;
+    });
+
+    setPrerenderKeys(keys);
+
+    const recordMapRefValue = recordMapRef.current;
+
+    // 定义回调函数，当观察到变化时执行
+    const callback = (mutationsList: MutationRecord[]) => {
+      for (const mutation of mutationsList) {
+        if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+          mutation.addedNodes.forEach(node => {
+            if (node.nodeType !== 1) return;
+            const key = (node as HTMLElement).getAttribute('data-id');
+            const cardDOM = (node as HTMLElement).children[0];
+            if (!key || !cardDOM) return;
+            const rect = cardDOM.getBoundingClientRect();
+            recordMapRefValue[key] = {
+              ...recordMapRefValue[key],
+              width: rect.width,
+              height: rect.height,
+            };
+          });
+        }
+      }
+      recordMapRef.current = recordMapRefValue;
+      promiseResovle();
+    };
+
+    observerRef.current = new MutationObserver(callback);
+
+    observerRef.current.observe(preRenderContainerDOM, {
+      childList: true,
+    });
+
+    await promise;
+
+    observerRef.current.disconnect();
+
+    observerRef.current = undefined;
+
+    setPrerenderKeys([]);
   }, []);
 
-  useUnmount(() => {
-    unmount();
-  });
-
-  // 预渲染（用于计算卡片大小）
-  const prerender = useCallback(
-    async (ids: string[]) => {
-      const preRenderContainerDOM = prerenderContainerRef.current;
-      if (!preRenderContainerDOM) return;
-
-      let promiseResovle: () => void;
-      const promise = new Promise<void>(resovle => {
-        promiseResovle = resovle;
-      });
-
-      setPrerenderIds(ids);
-
-      // 定义回调函数，当观察到变化时执行
-      const callback = (mutationsList: MutationRecord[]) => {
-        for (const mutation of mutationsList) {
-          if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-            mutation.addedNodes.forEach(node => {
-              if (node.nodeType !== 1) return;
-              const cardId = (node as HTMLElement).getAttribute('data-id');
-              const cardDOM = (node as HTMLElement).children[0];
-              if (!cardId || !cardDOM) return;
-              const rect = cardDOM.getBoundingClientRect();
-              recordsRef.current.forEach(record => {
-                if (record[keyField] === cardId) {
-                  record.height = rect.height;
-                  record.width = rect.width;
-                  return true;
-                }
-              });
-            });
-          }
-        }
-        requestAnimationFrame(() => {
-          promiseResovle();
-        });
-      };
-
-      observerRef.current = new MutationObserver(callback);
-
-      observerRef.current.observe(preRenderContainerDOM, {
-        childList: true,
-      });
-
-      await promise;
-
-      observerRef.current.disconnect();
-
-      observerRef.current = undefined;
-
-      setPrerenderIds([]);
-    },
-    [keyField]
-  );
-
   // 渲染
-  const render = useCallback(async () => {
-    // 位置计算
-    const recordsRefValue = recordsRef.current;
-    const columnHeights = Array(column).fill(0);
-    for (let i = 0; i < recordsRefValue.length; i++) {
-      const record = recordsRefValue[i];
-      if (!record) throw new Error('record missing');
-      const minIndex = columnHeights.indexOf(Math.min(...columnHeights));
-      const wrapperWidth = column * (record.width + gap) - gap;
-      record.x =
-        minIndex * (record.width + gap) +
-        (containerWidthRef.current - wrapperWidth) / 2;
-      record.y = columnHeights[minIndex];
-      columnHeights[minIndex] += record.height + gap;
-    }
-    setTotalHeight(Math.max(...columnHeights) - gap);
-    setRecords([...recordsRefValue]);
-
-    // 渲染区域计算
+  const render = useCallback(() => {
     const visionTop = -scrollTopRef.current;
     const containerHeight = window.innerHeight;
 
@@ -199,35 +164,44 @@ const Masonry = (props: MasonryProps) => {
       visionTop + containerHeight + bufferOffset,
     ];
 
-    const nextRenderIndexes: number[] = [];
+    const nextRenderKeys: string[] = [];
 
-    for (let i = 0; i < recordsRefValue.length; i++) {
-      const record = recordsRefValue[i];
+    const recordMapRefValue = recordMapRef.current;
+    const columnHeights = Array(column).fill(0);
+
+    const recordMapRefValueKeys = Object.keys(recordMapRefValue);
+
+    for (let i = 0; i < recordMapRefValueKeys.length; i++) {
+      const record = recordMapRefValue[recordMapRefValueKeys[i]];
       if (!record) continue;
+      const minIndex = columnHeights.indexOf(Math.min(...columnHeights));
+      const wrapperWidth = column * (record.width + gap) - gap;
+      record.x =
+        minIndex * (record.width + gap) +
+        (containerWidthRef.current - wrapperWidth) / 2;
+      record.y = columnHeights[minIndex];
+      columnHeights[minIndex] += record.height + gap;
       if (
         record.y + record.height > visionRange[0] &&
         record.y < visionRange[1]
       ) {
-        nextRenderIndexes.push(i);
+        nextRenderKeys.push(recordMapRefValueKeys[i]);
       }
     }
 
-    setRenderIndexes(nextRenderIndexes);
+    setTotalHeight(Math.max(...columnHeights) - gap);
+
+    setRecordMap(recordMapRefValue);
+    setRenderKeys(nextRenderKeys);
   }, [bufferOffset, column, gap]);
 
   // 更新
   const update = useCallback(async () => {
-    const nextRecords = structuredClone(recordsRef.current);
-    const nextPrerenderIds = diffAndUpdateRecords(
-      nextRecords,
-      dataRef.current,
-      data,
-      keyField
-    );
+    if (isEqual(data, dataRef.current)) return;
 
     dataRef.current = data;
 
-    recordsRef.current = nextRecords;
+    const nextPrerenderIds: string[] = [];
 
     let needCalcSize = false;
 
@@ -242,16 +216,37 @@ const Masonry = (props: MasonryProps) => {
       containerWidthRef.current = containerWidth;
     }
 
-    if (needCalcSize) {
-      nextPrerenderIds.push(...data.map(record => record[keyField]));
-    }
+    const recordMapRefValue = recordMapRef.current;
+    const nextRecordMap: Record<string, MasonryRecord> = {};
+    data.forEach(d => {
+      const prevRecord = recordMapRefValue[d[keyField]];
+      if (!prevRecord) {
+        nextRecordMap[d[keyField]] = {
+          x: 0,
+          y: 0,
+          width: 0,
+          height: 0,
+          meta: d,
+        };
+        nextPrerenderIds.push(d[keyField]);
+        return;
+      }
+      if (needCalcSize) {
+        nextPrerenderIds.push(d[keyField]);
+      }
+      nextRecordMap[d[keyField]] = {
+        ...prevRecord,
+        meta: d,
+      };
+    });
+    recordMapRef.current = nextRecordMap;
 
     if (nextPrerenderIds.length) {
       await prerender(nextPrerenderIds);
     }
 
-    await render();
-  }, [data, keyField, containerWidth, columnWidth, prerender, render]);
+    render();
+  }, [data, containerWidth, render, columnWidth, keyField, prerender]);
 
   // bugfix: 修复更新并发问题
   useLayoutEffect(() => {
@@ -274,7 +269,7 @@ const Masonry = (props: MasonryProps) => {
       ) {
         touchBottom?.();
       } else {
-        await render();
+        render();
       }
     }, [data.length, loadDistance, render, totalHeight, touchBottom]),
     100
@@ -290,21 +285,20 @@ const Masonry = (props: MasonryProps) => {
 
   return (
     <div ref={containerRef} className='relative w-full' style={calcFillerStyle}>
-      {renderIndexes.map(index => {
-        const record = records[index];
-        if (!record) return null;
-        return children(index, record);
+      {renderKeys.map(key => {
+        return children(recordMap[key]);
       })}
       <div ref={prerenderContainerRef} className='invisible absolute'>
-        {prerenderIds.map(id => {
-          const index = data.findIndex(item => item[keyField] === id);
+        {prerenderKeys.map(key => {
+          const index = data.findIndex(item => item[keyField] === key);
           return (
-            <div key={id} data-id={id}>
-              {children(index, {
+            <div key={key} data-id={key}>
+              {children({
                 x: 0,
                 y: 0,
                 width: Math.min(columnWidth, containerWidth),
                 height: 0,
+                meta: data[index],
               })}
             </div>
           );

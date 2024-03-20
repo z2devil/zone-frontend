@@ -81,21 +81,21 @@ const WorksPage = () => {
         gap={GAP}
         data={notes}
         touchBottom={handleLoadData}>
-        {(index, position) => {
-          const note = notes[index];
-          return note ? (
+        {record => {
+          if (!record.meta) return null;
+          return (
             <NoteCard
-              key={note._id}
+              key={record.meta._id}
               style={{
                 position: 'absolute',
-                width: `${position.width}px`,
+                width: `${record.width}px`,
                 maxHeight: `30rem`,
-                transform: `translate(${position.x}px, ${position.y}px)`,
+                transform: `translate(${record.x}px, ${record.y}px)`,
                 overflow: 'hidden',
               }}
-              note={note}
+              note={record.meta}
             />
-          ) : null;
+          );
         }}
       </Masonry>
       <div className=' flex w-full items-center justify-center py-4'>
