@@ -197,15 +197,14 @@ const Masonry = (props: MasonryProps) => {
 
   // 更新
   const update = useCallback(async () => {
-    if (isEqual(data, dataRef.current)) return;
-
-    dataRef.current = data;
-
     const nextPrerenderIds: string[] = [];
 
     let needCalcSize = false;
 
+    let needCalcPosition = false;
+
     if (latestContainerWidth.current !== containerWidth) {
+      needCalcPosition = true;
       if (containerWidth < columnWidth) {
         latestContainerWidth.current = containerWidth;
         needCalcSize = true;
@@ -215,6 +214,12 @@ const Masonry = (props: MasonryProps) => {
       }
       containerWidthRef.current = containerWidth;
     }
+
+    if (!needCalcPosition && !needCalcSize && isEqual(data, dataRef.current)) {
+      return;
+    }
+
+    dataRef.current = data;
 
     const recordMapRefValue = recordMapRef.current;
     const nextRecordMap: Record<string, MasonryRecord> = {};
