@@ -11,6 +11,8 @@ import useRequest from '@/lib/hooks/useRequest';
 import { useNotesStore } from '@/lib/stores/notes';
 import EmptyInfo from '@/ui/EmptyInfo';
 import { CARD_WIDTH, GAP } from '@/ui/Masonry/constants';
+import clsx from 'clsx';
+import { throttle } from 'lodash';
 
 const FETCH_SIZE = 20;
 
@@ -35,25 +37,28 @@ const NotePage = () => {
     return notes[0].createdAt;
   }, [notes]);
 
-  const handleLoadData = useCallback(async () => {
-    if (notes.length >= noteTotal) {
-      return;
-    }
-    if (isLoadingRef.current) return;
-    isLoadingRef.current = true;
-    setIsLoading(true);
-    const nextCurrent = current + 1;
-    setCurrent(nextCurrent);
-    const res = await getNotesAPI(request)({
-      current: nextCurrent,
-      size: FETCH_SIZE,
-    });
-    isLoadingRef.current = false;
-    setIsLoading(false);
-    setNotes(current === 0 ? res.list : notes.concat(res.list));
-    setNoteTotal(res.total);
-    return res.list;
-  }, [current, notes, request, setNotes, noteTotal]);
+  const handleLoadData = throttle(
+    useCallback(async () => {
+      if (notes.length >= noteTotal) {
+        return;
+      }
+      if (isLoadingRef.current) return;
+      isLoadingRef.current = true;
+      setIsLoading(true);
+      const nextCurrent = current + 1;
+      setCurrent(nextCurrent);
+      const res = await getNotesAPI(request)({
+        current: nextCurrent,
+        size: FETCH_SIZE,
+      });
+      isLoadingRef.current = false;
+      setIsLoading(false);
+      setNotes(current === 0 ? res.list : notes.concat(res.list));
+      setNoteTotal(res.total);
+      return res.list;
+    }, [current, notes, request, setNotes, noteTotal]),
+    100
+  );
 
   const { utils: notificationUtils } = useNotificationUtilsStore();
 
@@ -98,11 +103,16 @@ const NotePage = () => {
         }}
       </Masonry>
       <div className=' flex w-full items-center justify-center py-4'>
-        {isLoading ? (
-          <div className=' text-17 text-black-600'>加载中...</div>
-        ) : notes.length === 0 ? (
+        {notes.length === 0 ? (
           <EmptyInfo tip='暂无笔记' />
-        ) : null}
+        ) : (
+          <div
+            className={clsx(' text-17 text-black-600', {
+              invisible: !isLoading,
+            })}>
+            加载中...
+          </div>
+        )}
       </div>
     </div>
   );

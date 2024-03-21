@@ -259,26 +259,23 @@ const Masonry = (props: MasonryProps) => {
   }, [update]);
 
   // 滚动事件
-  const handleScroll = throttle(
-    useCallback(async () => {
-      const containerDOM = containerRef.current;
-      if (!containerDOM) return;
+  const handleScroll = useCallback(async () => {
+    const containerDOM = containerRef.current;
+    if (!containerDOM) return;
 
-      scrollTopRef.current = containerDOM.getBoundingClientRect().top;
+    scrollTopRef.current = containerDOM.getBoundingClientRect().top;
 
-      // 触底
-      if (
-        -scrollTopRef.current + window.innerHeight + loadDistance >=
-          totalHeight &&
-        data.length
-      ) {
-        touchBottom?.();
-      } else {
-        render();
-      }
-    }, [data.length, loadDistance, render, totalHeight, touchBottom]),
-    100
-  );
+    // 触底
+    if (
+      -scrollTopRef.current + window.innerHeight + loadDistance >=
+        totalHeight &&
+      data.length
+    ) {
+      touchBottom?.();
+    } else {
+      render();
+    }
+  }, [data.length, loadDistance, render, totalHeight, touchBottom]);
 
   // 维护滚动事件
   useEffect(() => {
