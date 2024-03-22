@@ -255,29 +255,31 @@ const NoteCard = (props: NoteCardProps) => {
             </div>
           )}
           {/* 底部 */}
-          <div className='flex items-center justify-between gap-1'>
-            {note.type === NoteTypeEnum.ARTICLE ? (
-              <div className='flex items-center gap-1'>
-                <i className='iconfont icon-calender-filled text-17 text-black-250' />
-                <span
-                  className='text-[0.75rem] leading-[0.75rem] text-black-250'
-                  title={detailTime}>
-                  {summaryTime}
-                </span>
-              </div>
-            ) : (
-              <div />
-            )}
-            <div className='flex gap-2.5'>
-              {note.tags.map(tag => (
-                <div
-                  key={tag._id}
-                  className='text-black text-xs font-normal text-primary-50'>
-                  #{tag.label}
+          {note.type === NoteTypeEnum.ARTICLE && note.tags.length ? (
+            <div className='flex items-center justify-between gap-1'>
+              {note.type === NoteTypeEnum.ARTICLE ? (
+                <div className='flex items-center gap-1'>
+                  <i className='iconfont icon-calender-filled text-17 text-black-250' />
+                  <span
+                    className='text-[0.75rem] leading-[0.75rem] text-black-250'
+                    title={detailTime}>
+                    {summaryTime}
+                  </span>
                 </div>
-              ))}
+              ) : (
+                <div />
+              )}
+              <div className='flex gap-2.5'>
+                {note.tags.map(tag => (
+                  <div
+                    key={tag._id}
+                    className='text-black text-xs font-normal text-primary-50'>
+                    #{tag.label}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          ) : null}
         </div>
       </Link>
     </div>
