@@ -189,18 +189,6 @@ const NoteCard = (props: NoteCardProps) => {
       )}
       style={style}>
       <Link href={`/note/${props.note._id}`} target='_blank'>
-        <div className='absolute bottom-0 left-0 right-0 z-[1]'>
-          {isCollapsed ? (
-            <>
-              <div className='gradient-mask-y pointer-events-none absolute bottom-0 left-0 right-0 flex h-64 translate-y-32 select-none items-center justify-center gap-1 bg-white'></div>
-              <div className='flex h-12 translate-y-2 cursor-pointer items-center justify-center gap-1'>
-                <span className='inline-block overflow-hidden whitespace-nowrap text-15 text-black-600'>
-                  ···
-                </span>
-              </div>
-            </>
-          ) : null}
-        </div>
         <div className='flex flex-col gap-3'>
           {note.type === NoteTypeEnum.ARTICLE ? (
             <div className=' relative mb-2 aspect-[3/1] w-full overflow-hidden rounded-lg'>
@@ -244,8 +232,22 @@ const NoteCard = (props: NoteCardProps) => {
           </div>
           {/* 内容 */}
           {note.type === NoteTypeEnum.NOTE ? (
-            <div className=' pointer-events-none'>
-              <RichView initialValue={JSON.parse(note.content)} isSummary />
+            <div className=' pointer-events-none relative flex max-h-[30rem]  overflow-hidden'>
+              <div className='mb-[1px] flex-1 overflow-hidden'>
+                <RichView initialValue={JSON.parse(note.content)} isSummary />
+              </div>
+              <div className='absolute bottom-0 left-0 right-0'>
+                {isCollapsed ? (
+                  <>
+                    <div className='gradient-mask-y pointer-events-none absolute bottom-0 left-0 right-0 flex h-64 translate-y-32 select-none items-center justify-center gap-1 bg-gray-100'></div>
+                    <div className='flex h-12 translate-y-2 cursor-pointer items-center justify-center gap-1'>
+                      <span className='inline-block overflow-hidden whitespace-nowrap text-15 text-black-600'>
+                        ···
+                      </span>
+                    </div>
+                  </>
+                ) : null}
+              </div>
             </div>
           ) : (
             <div className=' text-[0.9375rem] text-black-600'>

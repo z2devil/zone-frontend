@@ -12,7 +12,6 @@ import EmptyInfo from '@/ui/EmptyInfo';
 import { CARD_WIDTH, GAP } from '@/ui/Masonry/constants';
 import { useNotesStore } from '@/lib/stores/notes';
 import clsx from 'clsx';
-import { throttle } from 'lodash';
 
 const FETCH_SIZE = 20;
 
@@ -37,29 +36,26 @@ const WorksPage = () => {
     return notes[0].createdAt;
   }, [notes]);
 
-  const handleLoadData = throttle(
-    useCallback(async () => {
-      if (notes.length >= noteTotal) {
-        return;
-      }
-      if (isLoadingRef.current) return;
-      isLoadingRef.current = true;
-      setIsLoading(true);
-      const nextCurrent = current + 1;
-      setCurrent(nextCurrent);
-      const res = await getNotesAPI(request)({
-        current: nextCurrent,
-        size: FETCH_SIZE,
-        type: NoteTypeEnum.ARTICLE,
-      });
-      isLoadingRef.current = false;
-      setIsLoading(false);
-      setNotes(current === 0 ? res.list : notes.concat(res.list));
-      setNoteTotal(res.total);
-      return res.list;
-    }, [notes, noteTotal, current, request, setNotes]),
-    100
-  );
+  const handleLoadData = useCallback(async () => {
+    if (notes.length >= noteTotal) {
+      return;
+    }
+    if (isLoadingRef.current) return;
+    isLoadingRef.current = true;
+    setIsLoading(true);
+    const nextCurrent = current + 1;
+    setCurrent(nextCurrent);
+    const res = await getNotesAPI(request)({
+      current: nextCurrent,
+      size: FETCH_SIZE,
+      type: NoteTypeEnum.ARTICLE,
+    });
+    isLoadingRef.current = false;
+    setIsLoading(false);
+    setNotes(current === 0 ? res.list : notes.concat(res.list));
+    setNoteTotal(res.total);
+    return res.list;
+  }, [notes, noteTotal, current, request, setNotes]);
 
   const { utils: notificationUtils } = useNotificationUtilsStore();
 
@@ -94,7 +90,6 @@ const WorksPage = () => {
               style={{
                 position: 'absolute',
                 width: `${record.width}px`,
-                maxHeight: `30rem`,
                 transform: `translate(${record.x}px, ${record.y}px)`,
                 overflow: 'hidden',
               }}

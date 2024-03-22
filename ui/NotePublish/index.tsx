@@ -97,7 +97,7 @@ const NotePublish = (props: NotePublishProps) => {
         const nextTag = await postTagAPI(request)({
           label: tag.label || '',
         });
-        setTags(prev => [...prev, nextTag]);
+        setTags(prev => [nextTag, ...prev]);
       }
     },
     [request]
@@ -216,6 +216,7 @@ const NotePublish = (props: NotePublishProps) => {
         </span>
       </div>
       <div className=' flex w-full flex-wrap gap-2'>
+        <Tag isEdit onSubmit={handleAddTag} />
         {tags.map(tag => (
           <Tag
             key={tag._id}
@@ -225,7 +226,6 @@ const NotePublish = (props: NotePublishProps) => {
             onClick={() => handleTagClick(tag._id)}
             onSubmit={handleAddTag}></Tag>
         ))}
-        <Tag isEdit onSubmit={handleAddTag} />
       </div>
       {type === NoteTypeEnum.ARTICLE ? (
         <>
