@@ -2,13 +2,14 @@ import { NoteTypeEnum } from '@/lib/api/notes';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Button from '../Button';
 import clsx from 'clsx';
-import { TagInfo, getTagsAPI } from '@/lib/api/tags';
+import { TagInfo, getTagsAPI, postTagAPI, putTagAPI } from '@/lib/api/tags';
 import useRequest from '@/lib/hooks/useRequest';
 import Tag from '../Tag';
 import { upload } from '@/lib/api/oss';
 import Image from 'next/image';
 import imageLoader from 'config/image/loader';
 import { getRandomRgbDataURL } from '@/lib/utils/rgbDataURL';
+import { produce } from 'immer';
 
 export interface NoteOptions {
   type: NoteTypeEnum;
@@ -71,6 +72,41 @@ const NotePublish = (props: NotePublishProps) => {
       }
       return [...prev, tagId];
     });
+  }, []);
+
+  const handleAddTag = useCallback(
+    async (tag: Partial<TagInfo>) => {
+      console.log('[ handleAddTag ]', tag);
+      if (tag._id) {
+        // 修改
+        const nextTag = await putTagAPI(request)({
+          _id: tag._id,
+          label: tag.label || '',
+        });
+        console.log('[ nextTag ]', nextTag);
+        setTags(
+          produce(draft => {
+            const index = draft.findIndex(t => t._id === tag._id);
+            if (index !== -1) {
+              draft[index] = nextTag;
+            }
+          })
+        );
+      } else {
+        // 创建
+        const nextTag = await postTagAPI(request)({
+          label: tag.label || '',
+        });
+        setTags(prev => [...prev, nextTag]);
+      }
+    },
+    [request]
+  );
+
+  const [editingTags, setEditingTags] = useState(false);
+
+  const handleEditTagToggle = useCallback(() => {
+    setEditingTags(prev => !prev);
   }, []);
 
   /************************************************
@@ -166,16 +202,30 @@ const NotePublish = (props: NotePublishProps) => {
         </Button>
       </div>
       {/* 标签 */}
-      <span className=' text-17 font-semibold text-black-600'>标签</span>
+      <div className='flex w-full items-center justify-between'>
+        <span className=' text-17 font-semibold text-black-600'>标签</span>
+        <span
+          className={clsx(
+            ' cursor-pointer text-15 transition-colors duration-100',
+            editingTags
+              ? 'text-primary-50'
+              : 'text-black-250 hover:text-black-600'
+          )}
+          onClick={handleEditTagToggle}>
+          编辑
+        </span>
+      </div>
       <div className=' flex w-full flex-wrap gap-2'>
         {tags.map(tag => (
           <Tag
             key={tag._id}
+            tag={tag}
+            isEdit={editingTags}
             checked={getTagChecked(tag._id)}
-            onClick={() => handleTagClick(tag._id)}>
-            {tag.label}
-          </Tag>
+            onClick={() => handleTagClick(tag._id)}
+            onSubmit={handleAddTag}></Tag>
         ))}
+        <Tag isEdit onSubmit={handleAddTag} />
       </div>
       {type === NoteTypeEnum.ARTICLE ? (
         <>

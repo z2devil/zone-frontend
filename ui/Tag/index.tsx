@@ -1,13 +1,53 @@
+import { TagInfo } from '@/lib/api/tags';
 import clsx from 'clsx';
+import { useCallback, useState } from 'react';
 
 interface TagProps {
-  children: React.ReactNode;
+  tag?: Partial<TagInfo>;
+  isEdit?: boolean;
   checked?: boolean;
   onClick?: () => void;
+  onSubmit?: (tag: Partial<TagInfo>) => void;
 }
 
 const Tag = (props: TagProps) => {
-  const { children, checked, onClick } = props;
+  const { tag, isEdit, checked, onClick, onSubmit } = props;
+
+  const [editing, setEditing] = useState(false);
+
+  const [tagName, setTagName] = useState(tag?.label || '');
+
+  const handleClick = useCallback(() => {
+    if (isEdit) {
+      setEditing(true);
+    } else {
+      onClick?.();
+    }
+  }, [isEdit, onClick]);
+
+  const handleCancelEdit = useCallback(() => {
+    setEditing(false);
+  }, []);
+
+  const handleTagNameChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setTagName(event.target.value);
+    },
+    []
+  );
+
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (event.key === 'Enter') {
+        setEditing(false);
+        onSubmit?.({
+          _id: tag?._id,
+          label: tagName,
+        });
+      }
+    },
+    [onSubmit, tag?._id, tagName]
+  );
 
   return (
     <div
@@ -17,8 +57,21 @@ const Tag = (props: TagProps) => {
           ? 'border-primary-50 font-medium text-primary-50'
           : ' border-transparent text-black-400 hover:border-black-250 hover:text-black-600'
       )}
-      onClick={onClick}>
-      {children}
+      onClick={handleClick}>
+      {editing ? (
+        <input
+          className='h-6 w-20 bg-transparent outline-none'
+          autoFocus
+          value={tagName}
+          onBlur={handleCancelEdit}
+          onInput={handleTagNameChange}
+          onKeyDown={handleKeyDown}
+        />
+      ) : tag ? (
+        tag.label
+      ) : (
+        <i className='iconfont icon-plus text-17 text-black-600'></i>
+      )}
     </div>
   );
 };

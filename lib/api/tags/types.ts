@@ -34,23 +34,18 @@ export type TagInfo = Pick<NoteEntity, '_id' | 'label' | 'createdAt'>;
  */
 export interface GetTagsParams extends IPageParams {
   search?: string;
-  type?: NoteTypeEnum;
 }
 
 /**
- * 创建 note 参数
+ * 创建 tag 参数
  */
-export interface PostNoteParams {
-  content: string;
-  type: NoteTypeEnum;
-  bannerPath?: string;
-  title?: string;
-  summary?: string;
+export interface PostTagParams {
+  label: string;
 }
 
 /**
- * 更新 note 参数
+ * 更新 tag 参数
  */
-export interface PutNoteParams extends PostNoteParams {
+export interface PutTagParams extends PostTagParams {
   _id: string;
 }

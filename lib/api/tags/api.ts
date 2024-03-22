@@ -1,6 +1,6 @@
 import { IRequest } from '@/lib/hooks/useRequest';
 import { IPageData } from '../types';
-import { GetTagsParams, TagInfo, PostNoteParams, PutNoteParams } from './types';
+import { GetTagsParams, PostTagParams, PutTagParams, TagInfo } from './types';
 import { cache } from 'react';
 
 // /**
@@ -18,15 +18,15 @@ export const getTagsAPI = (request: IRequest) =>
     return await request.get<IPageData<TagInfo>>('/tag', params);
   });
 
-// /**
-//  * 创建 tag
-//  */
-// export const postNoteAPI =
-//   (request: IRequest) => async (params: PostNoteParams) => {
-//     return await request.post<TagInfo>('/tag', {
-//       body: JSON.stringify(params),
-//     });
-//   };
+/**
+ * 创建 tag
+ */
+export const postTagAPI =
+  (request: IRequest) => async (params: PostTagParams) => {
+    return await request.post<TagInfo>('/tag', {
+      body: JSON.stringify(params),
+    });
+  };
 
 // /**
 //  * 删除 tag
@@ -39,12 +39,12 @@ export const getTagsAPI = (request: IRequest) =>
 //   });
 // };
 
-// /**
-//  * 更新 tag
-//  */
-// export const putNoteAPI =
-//   (request: IRequest) => async (params: PutNoteParams) => {
-//     return await request.put<TagInfo>('/tag', {
-//       body: JSON.stringify(params),
-//     });
-//   };
+/**
+ * 更新 tag
+ */
+export const putTagAPI =
+  (request: IRequest) => async (params: PutTagParams) => {
+    return await request.put<TagInfo>('/tag', {
+      body: JSON.stringify(params),
+    });
+  };
