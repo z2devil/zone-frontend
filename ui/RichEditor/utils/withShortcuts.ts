@@ -1,5 +1,5 @@
-import { Editor, Element, Node, Point, Range, Transforms } from 'slate';
-import { CustomElement, RichEditor } from 'types/slate';
+import { Editor, Element, Point, Range, Transforms } from 'slate';
+import { RichEditor } from 'types/slate';
 import {
   NON_WRAPPING_ELEMENTS,
   SHORTCUTS_MAP,
@@ -21,13 +21,31 @@ export const withShortcuts = (editor: RichEditor) => {
 
     if (!block) return;
 
+    // 获取上一行的节点的父节点
+    const parent = Editor.parent(editor, block[1]);
+
     const prevElementType = block[0].type;
 
     const prevText = Editor.string(editor, block[1]);
 
+    if (
+      [BlockElementType.OL_LIST, BlockElementType.UL_LIST].includes(
+        parent[0].type as BlockElementType
+      ) &&
+      block[0].type === BlockElementType.PARAGRAPH
+    ) {
+      Transforms.unwrapNodes(editor, {
+        match: n =>
+          !Editor.isEditor(n) &&
+          Element.isElement(n) &&
+          n.type === parent[0].type,
+        split: true,
+      });
+      return;
+    }
+
     if (NON_WRAPPING_ELEMENTS.includes(prevElementType)) {
       editorUtils.insertBlockNode(editor, BlockElementType.PARAGRAPH);
-
       return;
     }
 
@@ -79,6 +97,28 @@ export const withShortcuts = (editor: RichEditor) => {
 
         if (!Range.isCollapsed(range)) {
           Transforms.delete(editor);
+        }
+
+        if (
+          [BlockElementType.UL_LIST, BlockElementType.OL_LIST].includes(type)
+        ) {
+          const list = {
+            type,
+            children: [],
+          };
+          Transforms.setNodes<Element>(
+            editor,
+            {
+              type: BlockElementType.LIST_ITEM,
+            },
+            {
+              match: n => Element.isElement(n) && Editor.isBlock(editor, n),
+            }
+          );
+          Transforms.wrapNodes(editor, list, {
+            match: n => !Editor.isEditor(n) && Element.isElement(n),
+          });
+          return;
         }
 
         const nextProperties: Partial<Element> = {

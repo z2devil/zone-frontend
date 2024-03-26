@@ -42,6 +42,10 @@ const Element = (props: RenderElementProps) => {
     return !!attributes['data-slate-inline'];
   }, [attributes]);
 
+  const path = useMemo(() => {
+    return ReactEditor.findPath(editor, element);
+  }, [editor, element]);
+
   // 所有元素
   const elements = useMemo(() => {
     return {
@@ -96,6 +100,7 @@ const Element = (props: RenderElementProps) => {
       ),
       [BlockElementType.OL_LIST]: <ol {...attributes}>{children}</ol>,
       [BlockElementType.UL_LIST]: <ul {...attributes}>{children}</ul>,
+      [BlockElementType.LIST_ITEM]: <li {...attributes}>{children}</li>,
       [BlockElementType.BLOCK_QUOTE]: (
         <blockquote {...attributes}>{children}</blockquote>
       ),
@@ -147,7 +152,7 @@ const Element = (props: RenderElementProps) => {
   }, [attributes, children, element, key, props.element]);
 
   const elementRender = useMemo(() => {
-    if (isInline || readOnly) {
+    if (isInline || readOnly || path.length > 1) {
       return elements[element.type] || <p {...attributes}>{children}</p>;
     }
     return (
@@ -155,7 +160,16 @@ const Element = (props: RenderElementProps) => {
         {elements[element.type] || <p {...attributes}>{children}</p>}
       </BlockElementController>
     );
-  }, [isInline, readOnly, key, element, elements, attributes, children]);
+  }, [
+    isInline,
+    readOnly,
+    path.length,
+    key,
+    element,
+    elements,
+    attributes,
+    children,
+  ]);
 
   return elementRender;
 };

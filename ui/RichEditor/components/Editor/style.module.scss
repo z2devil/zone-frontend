@@ -123,13 +123,15 @@
   }
   ol {
     display: block;
-    counter-increment: list-item;
     margin-bottom: 0.5rem;
-    &::before {
-      margin-right: 0.5em;
-      content: counter(list-item) '.';
-      font-weight: bold;
-      font-family: 'Courier New', Courier, monospace;
+    li {
+      counter-increment: list-item;
+      &::before {
+        margin-right: 0.5em;
+        content: counter(list-item) '.';
+        font-weight: bold;
+        font-family: 'Courier New', Courier, monospace;
+      }
     }
     & span {
       font-size: 0.9375rem;
@@ -141,9 +143,11 @@
   ul {
     display: block;
     margin-bottom: 0.5rem;
-    &::before {
-      margin-right: 0.5em;
-      content: '•';
+    li {
+      &::before {
+        margin-right: 0.5em;
+        content: '•';
+      }
     }
     & span {
       font-size: 0.9375rem;

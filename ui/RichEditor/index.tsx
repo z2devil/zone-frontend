@@ -17,6 +17,7 @@ import {
 } from '@/lib/utils/scrollbarTrigger';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { withPasteMd } from './utils/withPasteMd';
 
 interface EditorProps {
   className?: string;
@@ -46,6 +47,7 @@ const RichEditor = (props: EditorProps) => {
       withInlines,
       withVoids,
       withShortcuts,
+      withPasteMd,
     ];
     return enhancers.reduce(
       (editor, enhancer) => enhancer(editor),

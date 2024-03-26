@@ -22,6 +22,7 @@ export enum BlockElementType {
   HEADING_6 = 'heading-6',
   OL_LIST = 'ol-list',
   UL_LIST = 'ul-list',
+  LIST_ITEM = 'list-item',
   BLOCK_QUOTE = 'block-quote',
   CODE_BLOCK = 'code-block',
   IMAGE = 'image',
@@ -78,6 +79,7 @@ export const NON_WRAPPING_ELEMENTS: ElementType[] = [
 export const NON_EMPTY_ELEMENTS: ElementType[] = [
   BlockElementType.OL_LIST,
   BlockElementType.UL_LIST,
+  BlockElementType.LIST_ITEM,
   BlockElementType.BLOCK_QUOTE,
 ];
 

@@ -3,7 +3,6 @@ import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
 import {
   BlockElementType,
-  DropType,
   InlineElementType,
   Language,
   MarkType,
@@ -53,19 +52,21 @@ export type HeadingElement = {
 
 export type OrderedListElement = {
   type: BlockElementType.OL_LIST;
-  align?: string;
   children: Descendant[];
 };
 
 export type UnorderedListElement = {
   type: BlockElementType.UL_LIST;
-  align?: string;
+  children: Descendant[];
+};
+
+export type ListItemElement = {
+  type: BlockElementType.LIST_ITEM;
   children: Descendant[];
 };
 
 export type BlockQuoteElement = {
   type: BlockElementType.BLOCK_QUOTE;
-  align?: string;
   children: Descendant[];
 };
 
@@ -76,10 +77,10 @@ export type CodeSpanElement = {
 
 export type CodeBlockElement = {
   type: BlockElementType.CODE_BLOCK;
-  children: CustomText[];
   language?: Language;
   content?: string;
   height?: number;
+  children: CustomText[];
 };
 
 export type LinkInlineElement = {
@@ -134,6 +135,7 @@ export type BlockElement =
   | HeadingElement
   | OrderedListElement
   | UnorderedListElement
+  | ListItemElement
   | BlockQuoteElement
   | CodeBlockElement
   | ImageBlockElement
@@ -164,4 +166,21 @@ declare module 'slate' {
       [key: string]: unknown;
     };
   }
+}
+
+export interface MdastNode {
+  type?: MdastNodeType;
+  ordered?: boolean;
+  value?: string;
+  text?: string;
+  children?: Array<MdastNode>;
+  depth?: 1 | 2 | 3 | 4 | 5 | 6;
+  url?: string;
+  alt?: string;
+  lang?: string;
+  // mdast metadata
+  position?: any;
+  spread?: any;
+  checked?: any;
+  indent?: any;
 }
