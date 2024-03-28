@@ -230,11 +230,11 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
         }}>
         <div className='flex w-full flex-col overflow-hidden bg-gray-100 md:w-[45rem]'>
           <div className='flex flex-col gap-4 p-8'>
-            {note.type === NoteTypeEnum.ARTICLE ? (
+            {note.type === NoteTypeEnum.ARTICLE && note.bannerPath ? (
               <div className=' relative mb-2 aspect-[3/1] w-full overflow-hidden rounded-lg'>
                 <Image
                   className=' h-full w-full object-cover'
-                  src={note.bannerPath || ''}
+                  src={note.bannerPath}
                   alt='封图'
                   width={600}
                   height={200}

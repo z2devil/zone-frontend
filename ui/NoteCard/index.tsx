@@ -190,11 +190,11 @@ const NoteCard = (props: NoteCardProps) => {
       style={style}>
       <Link href={`/note/${props.note._id}`} target='_blank'>
         <div className='flex flex-col gap-3'>
-          {note.type === NoteTypeEnum.ARTICLE ? (
+          {note.type === NoteTypeEnum.ARTICLE && note.bannerPath ? (
             <div className=' relative mb-2 aspect-[3/1] w-full overflow-hidden rounded-lg'>
               <Image
                 className=' h-full w-full object-cover'
-                src={note.bannerPath || ''}
+                src={note.bannerPath}
                 alt='封图'
                 width={600}
                 height={200}
