@@ -65,7 +65,12 @@ export const withShortcuts = (editor: RichEditor) => {
         match: n => Element.isElement(n) && Editor.isBlock(editor, n),
       });
 
-      editorUtils.insertBlockNode(editor, BlockElementType.CODE_BLOCK);
+      editorUtils.insertBlockNode(editor, BlockElementType.CODE_BLOCK, [
+        {
+          type: BlockElementType.PARAGRAPH,
+          children: [{ text: '' }],
+        },
+      ]);
 
       return;
     }

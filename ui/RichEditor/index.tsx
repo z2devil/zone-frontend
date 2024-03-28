@@ -5,7 +5,12 @@ import { useCallback, useMemo, useState } from 'react';
 import { Descendant, createEditor } from 'slate';
 import { Slate as SlateProvider, withReact } from 'slate-react';
 import Toolbar from './components/Toolbar';
-import { withShortcuts, withVoids, withInlines } from './utils';
+import {
+  withShortcuts,
+  withVoids,
+  withInlines,
+  withPasteMarkdown,
+} from './utils';
 import { withHistory } from 'slate-history';
 import { BlockElementType } from './constants';
 import Editor from './components/Editor';
@@ -17,7 +22,6 @@ import {
 } from '@/lib/utils/scrollbarTrigger';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { withPasteMd } from './utils/withPasteMd';
 
 interface EditorProps {
   className?: string;
@@ -47,7 +51,7 @@ const RichEditor = (props: EditorProps) => {
       withInlines,
       withVoids,
       withShortcuts,
-      withPasteMd,
+      withPasteMarkdown,
     ];
     return enhancers.reduce(
       (editor, enhancer) => enhancer(editor),

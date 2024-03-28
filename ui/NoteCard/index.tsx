@@ -255,7 +255,7 @@ const NoteCard = (props: NoteCardProps) => {
             </div>
           )}
           {/* 底部 */}
-          {note.type === NoteTypeEnum.ARTICLE && note.tags.length ? (
+          {note.type === NoteTypeEnum.ARTICLE || note.tags.length ? (
             <div className='flex items-center justify-between gap-1'>
               {note.type === NoteTypeEnum.ARTICLE ? (
                 <div className='flex items-center gap-1'>
