@@ -55,5 +55,10 @@ export const getContentSummary = (
     }
   }
 
-  return `${summary.slice(0, length)}...`;
+  // summary = summary
+  //   .replaceAll('\n', ' ')
+  //   .replaceAll('\r', '')
+  //   .replaceAll(' ', '');
+
+  return `${summary.replaceAll(' ', '').slice(0, length)}...`;
 };

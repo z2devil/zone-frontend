@@ -1,4 +1,3 @@
-import { Descendant } from 'slate';
 import { TagInfo } from '../tags';
 import { CommonInfo } from '../types';
 import { IPageParams } from '../types';

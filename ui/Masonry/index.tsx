@@ -11,7 +11,7 @@ import {
 } from 'react';
 import { useMount } from 'react-use';
 import useResize from './hooks/useResize';
-import { isEqual, throttle } from 'lodash';
+import { isEqual } from 'lodash';
 
 type MasonryRecord = {
   x: number;
@@ -31,6 +31,7 @@ interface MasonryProps {
   chunkSize?: number;
   keyField?: string;
   touchBottom?: () => void;
+  contentWidthChange?: (width: number) => void;
 }
 
 const Masonry = (props: MasonryProps) => {
@@ -44,6 +45,7 @@ const Masonry = (props: MasonryProps) => {
     chunkSize = 10,
     keyField = '_id',
     touchBottom,
+    contentWidthChange,
   } = props;
 
   // 容器引用
@@ -171,11 +173,13 @@ const Masonry = (props: MasonryProps) => {
 
     const recordMapRefValueKeys = Object.keys(recordMapRefValue);
 
+    let wrapperWidth = 0;
+
     for (let i = 0; i < recordMapRefValueKeys.length; i++) {
       const record = recordMapRefValue[recordMapRefValueKeys[i]];
       if (!record) continue;
       const minIndex = columnHeights.indexOf(Math.min(...columnHeights));
-      const wrapperWidth = column * (record.width + gap) - gap;
+      wrapperWidth = column * (record.width + gap) - gap;
       record.x =
         minIndex * (record.width + gap) +
         (containerWidthRef.current - wrapperWidth) / 2;
@@ -189,11 +193,14 @@ const Masonry = (props: MasonryProps) => {
       }
     }
 
+    console.log('[ wrapperWidth ]', wrapperWidth);
+    contentWidthChange?.(wrapperWidth);
+
     setTotalHeight(Math.max(...columnHeights) - gap);
 
     setRecordMap(recordMapRefValue);
     setRenderKeys(nextRenderKeys);
-  }, [bufferOffset, column, gap]);
+  }, [bufferOffset, column, contentWidthChange, gap]);
 
   // 更新
   const update = useCallback(async () => {
