@@ -1,5 +1,7 @@
 import clsx from 'clsx';
 import style from './style.module.scss';
+import { useCallback } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 interface SearchLayerProps {
   show: boolean;
@@ -8,6 +10,12 @@ interface SearchLayerProps {
 
 const SearchLayer = (props: SearchLayerProps) => {
   const { show, onHide } = props;
+
+  const pathname = usePathname();
+
+  const searchParams = useSearchParams();
+
+  const router = useRouter();
 
   const handleBack = () => {
     onHide();
@@ -20,6 +28,18 @@ const SearchLayer = (props: SearchLayerProps) => {
   //     enableScrollbar();
   //   }
   // }, [show]);
+
+  const handleSearch = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key !== 'Enter') return;
+      const tag = searchParams.get('tag');
+      const value = (e.target as HTMLInputElement).value;
+      if (!value) return;
+      router.push(`${pathname}?search=${value}${tag ? '&tag=' + tag : ''}`);
+      onHide();
+    },
+    [onHide, pathname, router, searchParams]
+  );
 
   return (
     <div
@@ -46,6 +66,7 @@ const SearchLayer = (props: SearchLayerProps) => {
             <input
               className=' flex-1 text-lg text-black-900 outline-none placeholder:text-black-250'
               placeholder='找你想要的'
+              onKeyDown={handleSearch}
             />
           </div>
           <button className=' group p-2'>

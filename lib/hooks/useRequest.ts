@@ -114,7 +114,14 @@ const useRequest = () => {
         params: Record<string, any> = {},
         config: RequestConfig = {}
       ) => {
+        // 过滤 undefined 参数
+        Object.keys(params).forEach(key => {
+          if (params[key] === void 0) {
+            delete params[key];
+          }
+        });
         const searchParams = new URLSearchParams(params).toString();
+        console.log('[ searchParams ]', searchParams);
         return fetcher<T>(`${url}?${searchParams}`, {
           ...config,
           method: 'GET',

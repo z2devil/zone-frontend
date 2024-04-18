@@ -4,7 +4,7 @@ import { NoteTypeEnum, getNotesAPI } from '@/lib/api/notes';
 import Masonry from '@/ui/Masonry';
 import NoteCard from '@/ui/NoteCard';
 import PageBanner from '@/ui/PageBanner';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import { useNotificationUtilsStore } from '@/lib/stores';
 import useRequest from '@/lib/hooks/useRequest';
@@ -12,19 +12,36 @@ import EmptyInfo from '@/ui/EmptyInfo';
 import { CARD_WIDTH, GAP } from '@/ui/Masonry/constants';
 import { useNotesStore } from '@/lib/stores/notes';
 import clsx from 'clsx';
+import SearchBanner from '@/ui/SearchBanner';
+import { useRouter } from 'next/navigation';
 
 const FETCH_SIZE = 20;
 
-const WorksPage = () => {
+const WorksPage = ({ searchParams }: any) => {
+  const router = useRouter();
+
+  const searchTag = useMemo(() => {
+    return (searchParams.tag as string) || void 0;
+  }, [searchParams]);
+
+  const latestSearchTag = useRef<string>();
+
+  const searchContent = useMemo(() => {
+    return (searchParams.search as string) || void 0;
+  }, [searchParams]);
+
+  const latestSearchContent = useRef<string>();
   const [request] = useRequest();
 
   const { notes, setNotes } = useNotesStore();
+
+  const { utils: notificationUtils } = useNotificationUtilsStore();
 
   const [noteTotal, setNoteTotal] = useState(Infinity);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const [current, setCurrent] = useState(0);
+  const currentRef = useRef(0);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -36,28 +53,46 @@ const WorksPage = () => {
     return notes[0].createdAt;
   }, [notes]);
 
-  const handleLoadData = useCallback(async () => {
-    if (notes.length >= noteTotal) {
+  const handleLoadData = useCallback(
+    async (force = false) => {
+      if (notes.length >= noteTotal && !force) {
+        return;
+      }
+      if (isLoadingRef.current) return;
+      isLoadingRef.current = true;
+      setIsLoading(true);
+      const current = currentRef.current;
+      const nextCurrent = current + 1;
+      currentRef.current = nextCurrent;
+      const res = await getNotesAPI(request)({
+        current: nextCurrent,
+        size: FETCH_SIZE,
+        type: NoteTypeEnum.ARTICLE,
+        tags: searchTag ? [searchTag] : void 0,
+        search: searchContent,
+      });
+      isLoadingRef.current = false;
+      setIsLoading(false);
+      setNotes(current === 0 ? res.list : notes.concat(res.list));
+      setNoteTotal(res.total);
+      return res.list;
+    },
+    [notes, noteTotal, request, searchTag, searchContent, setNotes]
+  );
+
+  useEffect(() => {
+    if (
+      searchContent === latestSearchContent.current &&
+      searchTag === latestSearchTag.current
+    ) {
       return;
     }
-    if (isLoadingRef.current) return;
-    isLoadingRef.current = true;
-    setIsLoading(true);
-    const nextCurrent = current + 1;
-    setCurrent(nextCurrent);
-    const res = await getNotesAPI(request)({
-      current: nextCurrent,
-      size: FETCH_SIZE,
-      type: NoteTypeEnum.ARTICLE,
-    });
-    isLoadingRef.current = false;
-    setIsLoading(false);
-    setNotes(current === 0 ? res.list : notes.concat(res.list));
-    setNoteTotal(res.total);
-    return res.list;
-  }, [notes, noteTotal, current, request, setNotes]);
-
-  const { utils: notificationUtils } = useNotificationUtilsStore();
+    latestSearchContent.current = searchContent;
+    latestSearchTag.current = searchTag;
+    currentRef.current = 0;
+    setNoteTotal(Infinity);
+    handleLoadData(true);
+  }, [handleLoadData, setNotes, searchContent, searchTag]);
 
   const handleChartClick = () => {
     notificationUtils?.open({
@@ -68,15 +103,27 @@ const WorksPage = () => {
     });
   };
 
+  const handleCancelSearch = useCallback(() => {
+    router.push('/works');
+  }, [router]);
+
   return (
     <div
       className='mx-auto flex h-full w-full flex-col items-center overflow-y-auto px-5'
       ref={containerRef}>
-      <PageBanner
-        title='作品'
-        lastUpdated={lastUpdated}
-        onChartClick={handleChartClick}
-      />
+      {searchContent ? (
+        <SearchBanner
+          content={searchContent}
+          total={noteTotal}
+          onCancelSearch={handleCancelSearch}
+        />
+      ) : (
+        <PageBanner
+          title='作品'
+          lastUpdated={lastUpdated}
+          onChartClick={handleChartClick}
+        />
+      )}
       <Masonry
         columnWidth={CARD_WIDTH}
         gap={GAP}

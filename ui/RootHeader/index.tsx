@@ -35,28 +35,25 @@ const RootHeader = () => {
 
   const { utils: notificationUtils } = useNotificationUtilsStore();
 
-  const handleMenuClick = useCallback(
-    (key: MenuKey) => {
-      const actions = {
-        [MenuKey.SEARCH]: () => {
-          // console.log('search');
-          notificationUtils?.open({
-            type: NotificationType.WARNING,
-            content: '暂未开放',
-            duration: 3,
-          });
-          // setShowLayer(MenuKey.SEARCH);
-        },
-        [MenuKey.MORE]: () => {
-          // console.log('more');
-          setShowLayer(MenuKey.MORE);
-        },
-      };
+  const handleMenuClick = useCallback((key: MenuKey) => {
+    const actions = {
+      [MenuKey.SEARCH]: () => {
+        // console.log('search');
+        // notificationUtils?.open({
+        //   type: NotificationType.WARNING,
+        //   content: '暂未开放',
+        //   duration: 3,
+        // });
+        setShowLayer(MenuKey.SEARCH);
+      },
+      [MenuKey.MORE]: () => {
+        // console.log('more');
+        setShowLayer(MenuKey.MORE);
+      },
+    };
 
-      actions[key]();
-    },
-    [notificationUtils]
-  );
+    actions[key]();
+  }, []);
 
   return (
     <>
