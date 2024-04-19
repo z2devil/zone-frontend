@@ -16,22 +16,20 @@ import { CategoryEntity, getCategoriesAPI } from '@/lib/api/aggregate';
 import { useMount } from 'react-use';
 import { getContentSummary } from '@/lib/utils/editor';
 import SearchBanner from '@/ui/SearchBanner';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const FETCH_SIZE = 20;
 
-const NotePage = ({ searchParams }: any) => {
+const NotePage = () => {
   const router = useRouter();
 
-  const searchTag = useMemo(() => {
-    return (searchParams.tag as string) || void 0;
-  }, [searchParams]);
+  const searchParams = useSearchParams();
+
+  const searchTag = searchParams.get('tag') || void 0;
 
   const latestSearchTag = useRef<string>();
 
-  const searchContent = useMemo(() => {
-    return (searchParams.search as string) || void 0;
-  }, [searchParams]);
+  const searchContent = searchParams.get('search') || void 0;
 
   const latestSearchContent = useRef<string>();
 
