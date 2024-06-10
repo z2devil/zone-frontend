@@ -4,8 +4,8 @@ import clsx from 'clsx';
 import jetBrainsMono from 'config/font/jetBrainsMono';
 
 export const metadata = {
-  title: 'ZONE',
-  description: '中二Devil的个人博客',
+  title: '黑山羊日志',
+  description: '黑山羊日志',
 };
 
 interface RootLayoutProps {
