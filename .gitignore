@@ -38,5 +38,3 @@ next-env.d.ts
 .turbo
 .vscode
 styles/dist.css
-
-pnpm-lock.yaml
