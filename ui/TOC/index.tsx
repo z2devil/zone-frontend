@@ -4,6 +4,7 @@ import { twMerge } from 'tailwind-merge';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { BlockElementType } from '../RichEditor/constants';
 import { ReactEditor, useSlate } from 'slate-react';
+import { Editor } from 'slate';
 
 export interface TOCTreeItem {
   label: string;
@@ -66,9 +67,11 @@ const TOC = (props: TOCProps) => {
 
       if (!level) return;
 
+      const path = ReactEditor.findPath(editor, child);
+
       const nextChild: TOCTreeItem = {
-        label: child.children?.[0].text || '',
-        path: ReactEditor.findPath(editor, child),
+        label: Editor.string(editor, path),
+        path,
       };
 
       currentPath[level - 1] = nextChild;
