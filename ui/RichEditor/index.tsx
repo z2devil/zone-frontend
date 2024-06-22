@@ -1,7 +1,13 @@
 'use client';
 
 import clsx from 'clsx';
-import { useCallback, useMemo, useState } from 'react';
+import {
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useMemo,
+  useState,
+} from 'react';
 import { Descendant, createEditor } from 'slate';
 import { Slate as SlateProvider, withReact } from 'slate-react';
 import Toolbar from './components/Toolbar';
@@ -22,13 +28,19 @@ import {
 } from '@/lib/utils/scrollbarTrigger';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { RichEditor as EditorInstance } from 'types/slate';
+
+export interface EditorRef {
+  getEditor: () => EditorInstance;
+}
 
 interface EditorProps {
   className?: string;
   initialValue?: Descendant[];
   onChange?: (value: Descendant[]) => void;
 }
-const RichEditor = (props: EditorProps) => {
+
+const RichEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
   const {
     className,
     initialValue = [
@@ -77,6 +89,10 @@ const RichEditor = (props: EditorProps) => {
     }
   }, []);
 
+  useImperativeHandle(ref, () => ({
+    getEditor: () => editor,
+  }));
+
   return (
     <DndProvider backend={HTML5Backend}>
       <SlateProvider
@@ -122,6 +138,8 @@ const RichEditor = (props: EditorProps) => {
       </SlateProvider>
     </DndProvider>
   );
-};
+});
+
+RichEditor.displayName = 'RichEditor';
 
 export default RichEditor;

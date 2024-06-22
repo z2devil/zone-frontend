@@ -1,5 +1,5 @@
 import { NoteTypeEnum } from '@/lib/api/notes';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Button from '../Button';
 import clsx from 'clsx';
 import { TagInfo, getTagsAPI, postTagAPI, putTagAPI } from '@/lib/api/tags';
@@ -44,17 +44,35 @@ const NotePublish = (props: NotePublishProps) => {
     options.tags || []
   );
 
+  const isTagLoading = useRef(false);
+
+  const tagCurrent = useRef(1);
+
+  const tagTotal = useRef(0);
+
   const [tags, setTags] = useState<TagInfo[]>([]);
 
   const loadTags = useCallback(async () => {
+    if (isTagLoading.current) return;
+    isTagLoading.current = true;
+    if (tagTotal.current !== 0 && tags.length >= tagTotal.current) {
+      return;
+    }
     const res = await getTagsAPI(request)({
-      current: 1,
-      size: 10,
+      current: tagCurrent.current,
+      size: 50,
     });
-    setTags(res.list);
-  }, [request]);
+    isTagLoading.current = false;
+    setTags(prev => [...prev, ...res.list]);
+    tagTotal.current = res.total;
+  }, [request, tags.length]);
 
   useEffect(() => {
+    loadTags();
+  }, [loadTags]);
+
+  const getMoreTags = useCallback(() => {
+    tagCurrent.current += 1;
     loadTags();
   }, [loadTags]);
 
@@ -226,6 +244,12 @@ const NotePublish = (props: NotePublishProps) => {
             onClick={() => handleTagClick(tag._id)}
             onSubmit={handleAddTag}></Tag>
         ))}
+        <Tag
+          tag={{
+            label: '更多',
+          }}
+          onClick={getMoreTags}
+        />
       </div>
       {type === NoteTypeEnum.ARTICLE ? (
         <>

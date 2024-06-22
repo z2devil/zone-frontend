@@ -2,7 +2,7 @@
 
 import { Modal } from '@/ui/Modal';
 import { MotionList } from '@/ui/Motion';
-import RichEditor from '@/ui/RichEditor';
+import RichEditor, { EditorRef } from '@/ui/RichEditor';
 import clsx from 'clsx';
 import { notFound, useRouter } from 'next/navigation';
 import { useCallback, useMemo, useRef, useState } from 'react';
@@ -30,6 +30,8 @@ interface NoteDetailPageProps {
 
 export default function WriteNote(props: NoteDetailPageProps) {
   const { params } = props;
+
+  const editorRef = useRef<EditorRef | null>(null);
 
   const isCreate = useMemo(() => params.id === 'new', [params.id]);
 
@@ -99,8 +101,17 @@ export default function WriteNote(props: NoteDetailPageProps) {
   }, []);
 
   const handleToConfig = useCallback(() => {
+    const editor = editorRef.current?.getEditor();
+    if (editor && editor?.string([0]).length === 0) {
+      notificationUtils?.open({
+        type: NotificationType.WARNING,
+        content: '内容不能为空',
+        duration: 3,
+      });
+      return;
+    }
     setStep(1);
-  }, []);
+  }, [notificationUtils]);
 
   /************************************************
    * ✨ 第二步 - 发布笔记
@@ -180,6 +191,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
           children: (
             <div className='mb-6'>
               <RichEditor
+                ref={editorRef}
                 initialValue={contentRef.current}
                 className=' max-h-[70vh]'
                 onChange={handleContentChange}
