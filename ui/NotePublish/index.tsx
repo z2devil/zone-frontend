@@ -10,6 +10,8 @@ import Image from 'next/image';
 import imageLoader from 'config/image/loader';
 import { getRandomRgbDataURL } from '@/lib/utils/rgbDataURL';
 import { produce } from 'immer';
+import { useLoading } from '@/lib/hooks/useLoading';
+import { useMount } from 'react-use';
 
 export interface NoteOptions {
   type: NoteTypeEnum;
@@ -40,11 +42,15 @@ const NotePublish = (props: NotePublishProps) => {
    * ✨ 标签
    ************************************************/
 
+  const {
+    isLoading: isTagLoading,
+    isUiLoading: isTagUiLoading,
+    setLoading: setTagLoading,
+  } = useLoading('tag');
+
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
     options.tags || []
   );
-
-  const isTagLoading = useRef(false);
 
   const tagCurrent = useRef(1);
 
@@ -53,23 +59,25 @@ const NotePublish = (props: NotePublishProps) => {
   const [tags, setTags] = useState<TagInfo[]>([]);
 
   const loadTags = useCallback(async () => {
-    if (isTagLoading.current) return;
-    isTagLoading.current = true;
+    console.log('[ loadTags ]', isTagLoading, isTagUiLoading);
+    if (isTagLoading || isTagUiLoading) return;
+    setTagLoading(true);
     if (tagTotal.current !== 0 && tags.length >= tagTotal.current) {
       return;
     }
     const res = await getTagsAPI(request)({
       current: tagCurrent.current,
-      size: 50,
+      size: 20,
     });
-    isTagLoading.current = false;
+    setTagLoading(false);
     setTags(prev => [...prev, ...res.list]);
     tagTotal.current = res.total;
-  }, [request, tags.length]);
+  }, [isTagLoading, isTagUiLoading, request, setTagLoading, tags.length]);
 
-  useEffect(() => {
+  useMount(() => {
+    console.log('[ ??? ]');
     loadTags();
-  }, [loadTags]);
+  });
 
   const getMoreTags = useCallback(() => {
     tagCurrent.current += 1;
@@ -234,7 +242,11 @@ const NotePublish = (props: NotePublishProps) => {
         </span>
       </div>
       <div className=' flex w-full flex-wrap gap-2'>
-        <Tag isEdit onSubmit={handleAddTag} />
+        {/* 添加标签 */}
+        <Tag isEdit onSubmit={handleAddTag}>
+          <i className='iconfont icon-plus text-17 text-black-600'></i>
+        </Tag>
+        {/* 标签列表 */}
         {tags.map(tag => (
           <Tag
             key={tag._id}
@@ -242,14 +254,20 @@ const NotePublish = (props: NotePublishProps) => {
             isEdit={editingTags}
             checked={getTagChecked(tag._id)}
             onClick={() => handleTagClick(tag._id)}
-            onSubmit={handleAddTag}></Tag>
+            onSubmit={handleAddTag}>
+            {tag.label}
+          </Tag>
         ))}
-        <Tag
-          tag={{
-            label: '更多',
-          }}
-          onClick={getMoreTags}
-        />
+        {/* 加载更多 */}
+        {tagTotal.current > tags.length && (
+          <Tag onClick={getMoreTags}>
+            <i
+              className={clsx(
+                'iconfont text-17 text-black-600',
+                isTagUiLoading ? 'icon-spinner animate-spin' : 'icon-ellipsis-h'
+              )}></i>
+          </Tag>
+        )}
       </div>
       {type === NoteTypeEnum.ARTICLE ? (
         <>

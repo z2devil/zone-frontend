@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { useCallback, useState } from 'react';
 
 interface TagProps {
+  children?: React.ReactNode;
   tag?: Partial<TagInfo>;
   isEdit?: boolean;
   checked?: boolean;
@@ -11,7 +12,7 @@ interface TagProps {
 }
 
 const Tag = (props: TagProps) => {
-  const { tag, isEdit, checked, onClick, onSubmit } = props;
+  const { children, tag, isEdit, checked, onClick, onSubmit } = props;
 
   const [editing, setEditing] = useState(false);
 
@@ -67,10 +68,8 @@ const Tag = (props: TagProps) => {
           onInput={handleTagNameChange}
           onKeyDown={handleKeyDown}
         />
-      ) : tag ? (
-        tag.label
       ) : (
-        <i className='iconfont icon-plus text-17 text-black-600'></i>
+        children
       )}
     </div>
   );
