@@ -3,8 +3,8 @@ import { useDrag, useDrop } from 'react-dnd';
 import { Identifier, XYCoord } from 'dnd-core';
 import clsx from 'clsx';
 import { CustomElement } from 'types/slate';
-import { Range, Transforms } from 'slate';
-import { ReactEditor, useSlate, useSlateSelection } from 'slate-react';
+import { Transforms } from 'slate';
+import { useSlate } from 'slate-react';
 import { DropType } from '@/ui/RichEditor/constants';
 import { useEditorStore } from '@/lib/stores';
 
@@ -60,6 +60,11 @@ const BlockElementController = (props: BlockElementControllerProps) => {
     collect: (monitor: any) => ({
       isDragging: monitor.isDragging(),
     }),
+    end: (item, monitor) => {
+      if (!monitor.didDrop()) {
+        editorStore.clearDragHovering();
+      }
+    },
   });
 
   const [, drop] = useDrop<DragItem, void, { handlerId: Identifier | null }>({
@@ -83,6 +88,7 @@ const BlockElementController = (props: BlockElementControllerProps) => {
         (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
 
       const clientOffset = monitor.getClientOffset();
+      if (!clientOffset) return;
 
       const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
 
@@ -104,8 +110,28 @@ const BlockElementController = (props: BlockElementControllerProps) => {
       const dragPath = dragId.split('-').map(Number);
       const hoverPath = hoverId.split('-').map(Number);
 
-      // TODO:上下元素有问题
-      console.log('[ drop ]', dragPath, hoverPath);
+      const hoverBoundingRect = ref.current.getBoundingClientRect();
+      const hoverMiddleY =
+        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+
+      const clientOffset = monitor.getClientOffset();
+      if (!clientOffset) return;
+
+      const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
+
+      const isHoverdUp = hoverClientY < hoverMiddleY;
+
+      const isDraggingUp = dragPath[0] > hoverPath[0];
+
+      if (isDraggingUp) {
+        if (!isHoverdUp) {
+          hoverPath[0] += 1;
+        }
+      } else {
+        if (isHoverdUp) {
+          hoverPath[0] -= 1;
+        }
+      }
 
       Transforms.moveNodes(editor, {
         at: dragPath,
@@ -119,21 +145,29 @@ const BlockElementController = (props: BlockElementControllerProps) => {
   return (
     <div
       ref={ref}
-      className={clsx('relative', {
-        ' opacity-30': isDragging,
-        'border-primary-50': dragHoveringType,
-        'border-t': dragHoveringType === DropType.UP,
-        'border-b': dragHoveringType === DropType.DOWN,
-      })}
+      className='relative'
       onMouseEnter={hover}
       onMouseLeave={unhover}>
+      {/* 拖拽按钮 */}
       {hovered ? (
         <div
           ref={drag}
-          className=' absolute left-0 top-1/2 flex h-full -translate-x-full -translate-y-1/2 cursor-grab items-center rounded p-[1px] text-black-400 hover:bg-gray-200'
+          className=' absolute -left-5 top-1/2 flex h-full w-5 -translate-y-1/2 cursor-grab items-center'
           contentEditable={false}>
-          <span className='iconfont icon-draggable-dots'></span>
+          <div className=' flex h-full w-4 items-center justify-center rounded text-black-400 hover:bg-gray-200'>
+            <span className='iconfont icon-draggable-dots'></span>
+          </div>
         </div>
+      ) : null}
+      {/* 拖拽位置标识 */}
+      {dragHoveringType ? (
+        <div
+          className={clsx(
+            ' absolute h-1 w-full bg-primary-50 bg-opacity-40',
+            dragHoveringType === DropType.UP
+              ? 'top-0 -translate-y-1/2'
+              : 'bottom-0 translate-y-1/2'
+          )}></div>
       ) : null}
       {children}
     </div>
