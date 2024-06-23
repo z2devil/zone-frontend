@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import style from './style.module.scss';
-import { useCallback } from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useRef } from 'react';
+import { useNotesStore } from '@/lib/stores/notes';
 
 interface SearchLayerProps {
   show: boolean;
@@ -11,34 +11,34 @@ interface SearchLayerProps {
 const SearchLayer = (props: SearchLayerProps) => {
   const { show, onHide } = props;
 
-  const pathname = usePathname();
-
-  const searchParams = useSearchParams();
-
-  const router = useRouter();
+  const { filter, setFilterContent } = useNotesStore();
 
   const handleBack = () => {
     onHide();
   };
 
-  // useEffect(() => {
-  //   if (show) {
-  //     disableScrollbar();
-  //   } else {
-  //     enableScrollbar();
-  //   }
-  // }, [show]);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!show) return;
+    const inputDOM = inputRef.current;
+    if (!inputDOM) return;
+    inputDOM.focus();
+    inputDOM.value = filter.content || '';
+  }, [filter.content, show]);
 
   const handleSearch = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key !== 'Enter') return;
-      const tag = searchParams.get('tag');
       const value = (e.target as HTMLInputElement).value;
       if (!value) return;
-      router.push(`${pathname}?search=${value}${tag ? '&tag=' + tag : ''}`);
+      setFilterContent(value);
       onHide();
+      const inputDOM = inputRef.current;
+      if (!inputDOM) return;
+      inputDOM.value = '';
     },
-    [onHide, pathname, router, searchParams]
+    [onHide, setFilterContent]
   );
 
   return (
@@ -64,6 +64,7 @@ const SearchLayer = (props: SearchLayerProps) => {
           <div className='flex flex-1 gap-[0.63rem]'>
             <i className=' iconfont icon-search text-2xl text-black-600'></i>
             <input
+              ref={inputRef}
               className=' flex-1 text-lg text-black-900 outline-none placeholder:text-black-250'
               placeholder='找你想要的'
               onKeyDown={handleSearch}

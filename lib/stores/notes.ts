@@ -4,18 +4,37 @@ import { immer } from 'zustand/middleware/immer';
 
 interface NotesState {
   notes: NoteInfo[];
+  filter: {
+    tags: string[];
+    content?: string;
+  };
 }
 
 interface NotesAction {
   setNotes: (notes: NoteInfo[]) => void;
+  setFilterTags: (tags: string[]) => void;
+  setFilterContent: (content?: string) => void;
 }
 
 export const useNotesStore = create(
   immer<NotesState & NotesAction>(set => ({
     notes: [],
+    filter: {
+      tags: [],
+    },
     setNotes: notes => {
       set(state => {
         state.notes = notes;
+      });
+    },
+    setFilterTags: tags => {
+      set(state => {
+        state.filter.tags = tags;
+      });
+    },
+    setFilterContent: content => {
+      set(state => {
+        state.filter.content = content;
       });
     },
   }))

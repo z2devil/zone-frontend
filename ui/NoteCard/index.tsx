@@ -183,7 +183,7 @@ const NoteCard = (props: NoteCardProps) => {
       ref={cardRef}
       className={clsx(
         twMerge(
-          ' group relative flex flex-col gap-2.5 overflow-hidden rounded-xl border border-black-80 bg-gray-100 p-5 transition-all duration-200 hover:border-primary-50',
+          ' group relative flex flex-col gap-2.5 overflow-hidden rounded-xl border border-black-80 bg-gray-100 p-5 transition-colors duration-200 hover:border-primary-50',
           className
         )
       )}

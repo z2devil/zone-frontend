@@ -16,26 +16,27 @@ import { CategoryEntity, getCategoriesAPI } from '@/lib/api/aggregate';
 import { useMount } from 'react-use';
 import { getContentSummary } from '@/lib/utils/editor';
 import SearchBanner from '@/ui/SearchBanner';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { isEqual, sortBy } from 'lodash';
+import SearchLayer from '@/ui/SearchLayer';
 
 const FETCH_SIZE = 20;
 
+const arraysEqualUnordered = (arr1: string[], arr2: string[]) => {
+  if (arr1.length !== arr2.length) return false;
+  const sortedArr1 = sortBy(arr1);
+  const sortedArr2 = sortBy(arr2);
+  return isEqual(sortedArr1, sortedArr2);
+};
+
 const NotePage = () => {
-  const router = useRouter();
+  const { notes, setNotes, filter, setFilterTags, setFilterContent } =
+    useNotesStore();
 
-  const searchParams = useSearchParams();
-
-  const searchTag = searchParams.get('tag') || void 0;
-
-  const latestSearchTag = useRef<string>();
-
-  const searchContent = searchParams.get('search') || void 0;
+  const latestSearchTag = useRef<string[]>([]);
 
   const latestSearchContent = useRef<string>();
 
   const [request] = useRequest();
-
-  const { notes, setNotes } = useNotesStore();
 
   const { utils: notificationUtils } = useNotificationUtilsStore();
 
@@ -71,8 +72,8 @@ const NotePage = () => {
       const res = await getNotesAPI(request)({
         current: nextCurrent,
         size: FETCH_SIZE,
-        tags: searchTag ? [searchTag] : void 0,
-        search: searchContent,
+        tags: filter.tags.length ? filter.tags : void 0,
+        search: filter.content,
       });
       isLoadingRef.current = false;
       setIsLoading(false);
@@ -80,22 +81,28 @@ const NotePage = () => {
       setNoteTotal(res.total);
       return res.list;
     },
-    [notes, noteTotal, request, searchTag, searchContent, setNotes]
+    [notes, noteTotal, request, filter.tags, filter.content, setNotes]
   );
 
   useEffect(() => {
     if (
-      searchContent === latestSearchContent.current &&
-      searchTag === latestSearchTag.current
+      filter.content === latestSearchContent.current &&
+      arraysEqualUnordered(filter.tags, latestSearchTag.current)
     ) {
       return;
     }
-    latestSearchContent.current = searchContent;
-    latestSearchTag.current = searchTag;
+    latestSearchContent.current = filter.content;
+    latestSearchTag.current = filter.tags;
     currentRef.current = 0;
     setNoteTotal(Infinity);
     handleLoadData(true);
-  }, [handleLoadData, setNotes, searchContent, searchTag]);
+  }, [handleLoadData, setNotes, filter.content, filter.tags]);
+
+  const [showSearchLayer, setShowSearchLayer] = useState(false);
+
+  const handleSearchClick = useCallback(() => {
+    setShowSearchLayer(true);
+  }, []);
 
   const handleChartClick = () => {
     notificationUtils?.open({
@@ -123,29 +130,36 @@ const NotePage = () => {
 
   const handleCategoryClick = useCallback(
     (id?: string) => {
-      router.push(`/note${id ? `?tag=${id}` : ''}`);
+      if (id === void 0) {
+        setFilterTags([]);
+      } else {
+        setFilterTags([id]);
+      }
     },
-    [router]
+    [setFilterTags]
   );
 
   const handleCancelSearch = useCallback(() => {
-    router.push('/note');
-  }, [router]);
+    setFilterContent();
+  }, [setFilterContent]);
 
   return (
     <div
       className='mx-auto flex h-full w-full flex-col items-center px-5'
       ref={containerRef}>
-      {searchContent ? (
+      {filter.content ? (
         <SearchBanner
-          content={searchContent}
+          content={filter.content}
           total={noteTotal}
           onCancelSearch={handleCancelSearch}
+          onSearchAgain={() => setShowSearchLayer(true)}
         />
       ) : (
         <PageBanner
           title='笔记'
+          canSearch
           lastUpdated={lastUpdated}
+          onSearchClick={handleSearchClick}
           onChartClick={handleChartClick}
         />
       )}
@@ -174,7 +188,9 @@ const NotePage = () => {
             key={category._id}
             className={clsx(
               'group flex w-60 shrink-0 cursor-pointer snap-start items-center justify-between gap-2 rounded-xl border border-black-80 bg-gray-100 px-5 py-4 transition-colors duration-100 hover:border-primary-50',
-              searchTag === category._id ? 'border-primary-50' : ''
+              {
+                'border-primary-50': filter.tags.includes(category._id),
+              }
             )}
             onClick={() => handleCategoryClick(category._id)}>
             <div className=' flex flex-1 flex-col overflow-hidden'>
@@ -231,6 +247,10 @@ const NotePage = () => {
           </div>
         )}
       </div>
+      <SearchLayer
+        show={showSearchLayer}
+        onHide={() => setShowSearchLayer(false)}
+      />
     </div>
   );
 };

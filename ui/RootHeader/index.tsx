@@ -3,24 +3,16 @@
 import clsx from 'clsx';
 import { useCallback, useState } from 'react';
 import NavLayer from '../RouterLayer';
-import SearchLayer from '../SearchLayer';
-import { NotificationType } from '../Notification/components/Notification';
 import { useNotificationUtilsStore } from '@/lib/stores';
 import { ROUTER } from '@/lib/constants/router';
 import { usePathname } from 'next/navigation';
 import RouterLink from './components/RouterLink';
 
 const enum MenuKey {
-  SEARCH,
   MORE,
 }
 
 const MENU = [
-  {
-    key: MenuKey.SEARCH,
-    name: '搜索',
-    icon: 'icon-search',
-  },
   {
     key: MenuKey.MORE,
     name: '更多',
@@ -37,15 +29,6 @@ const RootHeader = () => {
 
   const handleMenuClick = useCallback((key: MenuKey) => {
     const actions = {
-      [MenuKey.SEARCH]: () => {
-        // console.log('search');
-        // notificationUtils?.open({
-        //   type: NotificationType.WARNING,
-        //   content: '暂未开放',
-        //   duration: 3,
-        // });
-        setShowLayer(MenuKey.SEARCH);
-      },
       [MenuKey.MORE]: () => {
         // console.log('more');
         setShowLayer(MenuKey.MORE);
@@ -91,10 +74,6 @@ const RootHeader = () => {
           })}
         </div>
       </div>
-      <SearchLayer
-        show={showLayer === MenuKey.SEARCH}
-        onHide={() => setShowLayer(null)}
-      />
       <NavLayer
         show={showLayer === MenuKey.MORE}
         onHide={() => setShowLayer(null)}
