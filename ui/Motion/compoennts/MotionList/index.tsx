@@ -51,11 +51,11 @@ const MotionList = (props: MotionListProps) => {
         const { keepAlive, ...restOptions } = options;
         return (
           <Motion
-            key={key}
-            visible={status === EnityStatus.REMOVE ? false : true}
-            transitionDuration={transitionDuration}
             keepAlive={keepAlive}
-            restProps={{ options: restOptions }}>
+            key={key}
+            restProps={{ options: restOptions }}
+            transitionDuration={transitionDuration}
+            visible={status === EnityStatus.REMOVE ? false : true}>
             {children}
           </Motion>
         );

@@ -4,7 +4,7 @@ import { NoteTypeEnum, getNotesAPI } from '@/lib/api/notes';
 import Masonry from '@/ui/Masonry';
 import NoteCard from '@/ui/NoteCard';
 import PageBanner from '@/ui/PageBanner';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import { useNotificationUtilsStore } from '@/lib/stores';
 import useRequest from '@/lib/hooks/useRequest';
@@ -12,24 +12,10 @@ import EmptyInfo from '@/ui/EmptyInfo';
 import { CARD_WIDTH, GAP } from '@/ui/Masonry/constants';
 import { useNotesStore } from '@/lib/stores/notes';
 import clsx from 'clsx';
-import SearchBanner from '@/ui/SearchBanner';
-import { useRouter, useSearchParams } from 'next/navigation';
 
 const FETCH_SIZE = 20;
 
 const WorksPage = () => {
-  const router = useRouter();
-
-  const searchParams = useSearchParams();
-
-  const searchTag = searchParams.get('tag') || void 0;
-
-  const latestSearchTag = useRef<string>();
-
-  const searchContent = searchParams.get('search') || void 0;
-
-  const latestSearchContent = useRef<string>();
-
   const [request] = useRequest();
 
   const { notes, setNotes } = useNotesStore();
@@ -67,8 +53,6 @@ const WorksPage = () => {
         current: nextCurrent,
         size: FETCH_SIZE,
         type: NoteTypeEnum.ARTICLE,
-        tags: searchTag ? [searchTag] : void 0,
-        search: searchContent,
       });
       isLoadingRef.current = false;
       setIsLoading(false);
@@ -76,22 +60,8 @@ const WorksPage = () => {
       setNoteTotal(res.total);
       return res.list;
     },
-    [notes, noteTotal, request, searchTag, searchContent, setNotes]
+    [notes, noteTotal, request, setNotes]
   );
-
-  useEffect(() => {
-    if (
-      searchContent === latestSearchContent.current &&
-      searchTag === latestSearchTag.current
-    ) {
-      return;
-    }
-    latestSearchContent.current = searchContent;
-    latestSearchTag.current = searchTag;
-    currentRef.current = 0;
-    setNoteTotal(Infinity);
-    handleLoadData(true);
-  }, [handleLoadData, setNotes, searchContent, searchTag]);
 
   const handleChartClick = () => {
     notificationUtils?.open({
@@ -102,54 +72,42 @@ const WorksPage = () => {
     });
   };
 
-  const handleCancelSearch = useCallback(() => {
-    router.push('/works');
-  }, [router]);
-
   return (
     <div
       className='mx-auto flex h-full w-full flex-col items-center overflow-y-auto px-5'
       ref={containerRef}>
-      {searchContent ? (
-        <SearchBanner
-          content={searchContent}
-          total={noteTotal}
-          onCancelSearch={handleCancelSearch}
-        />
-      ) : (
-        <PageBanner
-          title='作品'
-          lastUpdated={lastUpdated}
-          onChartClick={handleChartClick}
-        />
-      )}
+      <PageBanner
+        lastUpdated={lastUpdated}
+        title='作品'
+        onChartClick={handleChartClick}
+      />
       <Masonry
         columnWidth={CARD_WIDTH}
-        gap={GAP}
         data={notes}
+        gap={GAP}
         touchBottom={handleLoadData}>
         {record => {
           if (!record.meta) return null;
           return (
             <NoteCard
               key={record.meta._id}
+              note={record.meta}
               style={{
                 position: 'absolute',
                 width: `${record.width}px`,
                 transform: `translate(${record.x}px, ${record.y}px)`,
                 overflow: 'hidden',
               }}
-              note={record.meta}
             />
           );
         }}
       </Masonry>
-      <div className=' flex w-full items-center justify-center py-4'>
+      <div className='flex w-full items-center justify-center py-4'>
         {notes.length === 0 ? (
           <EmptyInfo tip='暂无作品' />
         ) : (
           <div
-            className={clsx(' text-17 text-black-600', {
+            className={clsx('text-17 text-black-600', {
               invisible: !isLoading,
             })}>
             加载中...

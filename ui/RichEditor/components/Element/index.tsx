@@ -156,7 +156,7 @@ const Element = (props: RenderElementProps) => {
       return elements[element.type] || <p {...attributes}>{children}</p>;
     }
     return (
-      <BlockElementController id={key} element={element}>
+      <BlockElementController element={element} id={key}>
         {elements[element.type] || <p {...attributes}>{children}</p>}
       </BlockElementController>
     );

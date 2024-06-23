@@ -191,9 +191,9 @@ export default function WriteNote(props: NoteDetailPageProps) {
           children: (
             <div className='mb-6'>
               <RichEditor
-                ref={editorRef}
+                className='max-h-[70vh]'
                 initialValue={contentRef.current}
-                className=' max-h-[70vh]'
+                ref={editorRef}
                 onChange={handleContentChange}
               />
             </div>
@@ -227,7 +227,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
 
   return (
     <div
-      className=' fixed left-0 top-0 z-30 flex h-full w-full flex-col items-center justify-center'
+      className='fixed left-0 top-0 z-30 flex h-full w-full flex-col items-center justify-center'
       style={{
         pointerEvents: 'none',
       }}>
@@ -235,7 +235,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
       {
         <div
           className={clsx(
-            ' absolute left-0 top-0 h-full w-full duration-500 max-sm:bg-white max-sm:bg-opacity-20 max-sm:backdrop-blur-3xl sm:bg-black-100',
+            'absolute left-0 top-0 h-full w-full duration-500 max-sm:bg-white max-sm:bg-opacity-20 max-sm:backdrop-blur-3xl sm:bg-black-100',
             modals.length > 0
               ? 'pointer-events-auto opacity-100 delay-200'
               : 'pointer-events-none opacity-0 delay-200'
@@ -243,7 +243,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
           onClick={handleBack}></div>
       }
       {/* modal */}
-      <MotionList transitionDuration={0.4} keys={modals}>
+      <MotionList keys={modals} transitionDuration={0.4}>
         {info => {
           const { options, enterIn, leaveOut } = info;
           return (

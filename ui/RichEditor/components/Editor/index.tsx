@@ -66,22 +66,22 @@ const Editor = (props: EditorProps) => {
           [style.summary]: isSummary,
         },
         twMerge(
-          ' h-full w-full overflow-y-auto text-black-900 outline-none',
+          'h-full w-full overflow-y-auto text-black-900 outline-none',
           className
         )
       )}
-      tabIndex={0}
-      spellCheck={false}
+      decorate={decorate}
+      readOnly={readonly}
       renderElement={renderElement}
+      spellCheck={false}
+      tabIndex={0}
+      onCopy={handleCopy}
+      onCut={handleCut}
+      onDragStart={onDragStart}
+      onDrop={onDrop}
       renderLeaf={renderLeaf}
       // onDOMBeforeInput={handleDOMInput}
       onKeyDown={handleKeyDown}
-      onCopy={handleCopy}
-      onCut={handleCut}
-      onDrop={onDrop}
-      onDragStart={onDragStart}
-      decorate={decorate}
-      readOnly={readonly}
     />
   );
 };

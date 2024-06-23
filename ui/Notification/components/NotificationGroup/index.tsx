@@ -27,7 +27,7 @@ const NotificationGroup = (props: NotificationGroupProps) => {
   );
 
   return (
-    <div className=' pointer-events-none fixed top-2 z-50 mx-auto flex w-full flex-col items-center'>
+    <div className='pointer-events-none fixed top-2 z-50 mx-auto flex w-full flex-col items-center'>
       <MotionList keys={calcKeys}>
         {(info, nodeRef) => {
           const { options } = info;
@@ -38,8 +38,8 @@ const NotificationGroup = (props: NotificationGroupProps) => {
                 info.enterIn && style.enterIn,
                 info.leaveOut && style.leaveOut
               )}
-              style={{ pointerEvents: 'all', ...info.style }}
-              ref={nodeRef}>
+              ref={nodeRef}
+              style={{ pointerEvents: 'all', ...info.style }}>
               <NotificationItem {...options} onClose={handleClose} />
             </div>
           );

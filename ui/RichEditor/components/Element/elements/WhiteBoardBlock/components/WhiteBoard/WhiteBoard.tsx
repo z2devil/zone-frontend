@@ -20,7 +20,7 @@ const Excalidraw = dynamic(
   async () => (await import('@excalidraw/excalidraw')).Excalidraw,
   {
     loading: () => (
-      <div className=' flex h-full w-full items-center justify-center'>
+      <div className='flex h-full w-full items-center justify-center'>
         <div className='flex items-center gap-1'>
           <span className='iconfont icon-spinner animate-spin font-semibold'></span>
           <span>加载中...</span>
@@ -107,8 +107,9 @@ const WhiteBoard = (props: WhiteBoardProps) => {
       )}>
       <Excalidraw
         gridModeEnabled
-        viewModeEnabled={readOnly}
         zenModeEnabled
+        excalidrawAPI={(api: ExcalidrawImperativeAPI) => setExcalidrawAPI(api)}
+        initialData={initialData}
         UIOptions={{
           canvasActions: {
             changeViewBackgroundColor: false,
@@ -116,8 +117,7 @@ const WhiteBoard = (props: WhiteBoardProps) => {
             toggleTheme: false,
           },
         }}
-        excalidrawAPI={(api: ExcalidrawImperativeAPI) => setExcalidrawAPI(api)}
-        initialData={initialData}
+        viewModeEnabled={readOnly}
         onChange={handleChange}
       />
     </div>

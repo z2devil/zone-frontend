@@ -231,16 +231,16 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
         <div className='flex w-full flex-col overflow-hidden bg-gray-100 md:w-[45rem]'>
           <div className='flex flex-col gap-4 p-8'>
             {note.type === NoteTypeEnum.ARTICLE && note.bannerPath ? (
-              <div className=' relative mb-2 aspect-[3/1] w-full overflow-hidden rounded-lg'>
+              <div className='relative mb-2 aspect-[3/1] w-full overflow-hidden rounded-lg'>
                 <Image
-                  className=' h-full w-full object-cover'
-                  src={note.bannerPath}
                   alt='封图'
-                  width={600}
+                  blurDataURL={blurDataURL}
+                  className='h-full w-full object-cover'
                   height={200}
                   loader={imageLoader}
                   placeholder='blur'
-                  blurDataURL={blurDataURL}
+                  src={note.bannerPath}
+                  width={600}
                 />
               </div>
             ) : null}
@@ -264,7 +264,7 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
               )}
               {isLogin ? (
                 <button
-                  className=' group/more flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[0.5rem] border border-transparent transition-all duration-100 hover:bg-primary-50'
+                  className='group/more flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[0.5rem] border border-transparent transition-all duration-100 hover:bg-primary-50'
                   onClick={handleSetting}>
                   <i className='iconfont icon-ellipsis-v text-black-250 group-hover/more:text-white' />
                 </button>
@@ -291,8 +291,8 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
               <div className='flex gap-2.5'>
                 {note.tags.map(tag => (
                   <div
-                    key={tag._id}
-                    className='text-black text-xs font-normal text-primary-50'>
+                    className='text-black text-xs font-normal text-primary-50'
+                    key={tag._id}>
                     #{tag.label}
                   </div>
                 ))}
@@ -303,7 +303,7 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
           <div className='flex flex-col gap-4 p-5 md:flex-row'>
             <Link
               className={clsx(
-                ' group flex h-16 flex-1 cursor-pointer items-center justify-start gap-2.5 overflow-hidden rounded-xl border border-transparent bg-black-50 px-3.5 py-2.5 transition-colors duration-100 hover:border-blue-600',
+                'group flex h-16 flex-1 cursor-pointer items-center justify-start gap-2.5 overflow-hidden rounded-xl border border-transparent bg-black-50 px-3.5 py-2.5 transition-colors duration-100 hover:border-blue-600',
                 {
                   'pointer-events-none': !prevNoteInfo,
                 }
@@ -318,7 +318,7 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
             </Link>
             <Link
               className={clsx(
-                ' group flex h-16 flex-1 cursor-pointer items-center justify-end gap-2.5 overflow-hidden rounded-xl border border-transparent bg-black-50 px-3.5 py-2.5 transition-colors duration-100 hover:border-blue-600',
+                'group flex h-16 flex-1 cursor-pointer items-center justify-end gap-2.5 overflow-hidden rounded-xl border border-transparent bg-black-50 px-3.5 py-2.5 transition-colors duration-100 hover:border-blue-600',
                 {
                   'pointer-events-none': !nextNoteInfo,
                 }
