@@ -57,7 +57,7 @@ const TOCTree = (props: TOCTreeProps) => {
     <>
       <div
         className={clsx(
-          ' flex h-9 cursor-pointer items-center justify-between gap-2 px-4 text-sm transition-colors duration-100',
+          'flex h-9 cursor-pointer items-center justify-between gap-2 px-4 text-sm transition-colors duration-100',
           isActive
             ? 'text-primary-50 hover:text-primary-100'
             : 'text-black-250 hover:text-black-600'
@@ -68,7 +68,7 @@ const TOCTree = (props: TOCTreeProps) => {
         <span className='flex-1 truncate'>{data.label}</span>
         {data.children?.length ? (
           <button
-            className=' flex h-5 w-5 items-center justify-center'
+            className='flex h-5 w-5 items-center justify-center'
             onClick={handleToggleCollapse}>
             <span
               className='iconfont icon-angle-right block shrink-0'
@@ -78,10 +78,10 @@ const TOCTree = (props: TOCTreeProps) => {
       </div>
       {calcChildren.map((item, index) => (
         <TOCTree
-          key={index}
-          data={item}
-          level={level + 1}
           activePath={activePath}
+          data={item}
+          key={index}
+          level={level + 1}
         />
       ))}
     </>

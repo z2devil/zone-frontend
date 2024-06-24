@@ -24,10 +24,10 @@ const LinkPreview = (props: LinkPreviewProps) => {
 
   return (
     <a
-      href={url}
       className='text-primary-50 underline'
-      target='_blank'
-      rel='noreferrer'>
+      href={url}
+      rel='noreferrer'
+      target='_blank'>
       {children}
     </a>
   );

@@ -204,11 +204,11 @@ const NotePublish = (props: NotePublishProps) => {
   return (
     <div className='flex flex-col gap-5 p-6'>
       {/* 类型 */}
-      <span className=' text-17 font-semibold text-black-600'>类型</span>
+      <span className='text-17 font-semibold text-black-600'>类型</span>
       <div className='flex gap-5'>
         <Button
           className={clsx(
-            ' relative h-12 flex-grow rounded-xl border text-17',
+            'relative h-12 flex-grow rounded-xl border text-17',
             type === NoteTypeEnum.NOTE
               ? 'border-primary-50 font-medium text-primary-50'
               : 'border-black-80 text-black-600'
@@ -218,7 +218,7 @@ const NotePublish = (props: NotePublishProps) => {
         </Button>
         <Button
           className={clsx(
-            ' relative h-12 flex-grow rounded-xl border text-17',
+            'relative h-12 flex-grow rounded-xl border text-17',
             type === NoteTypeEnum.ARTICLE
               ? 'border-primary-50 font-medium text-primary-50'
               : 'border-black-80 text-black-600'
@@ -229,10 +229,10 @@ const NotePublish = (props: NotePublishProps) => {
       </div>
       {/* 标签 */}
       <div className='flex w-full items-center justify-between'>
-        <span className=' text-17 font-semibold text-black-600'>标签</span>
+        <span className='text-17 font-semibold text-black-600'>标签</span>
         <span
           className={clsx(
-            ' cursor-pointer text-15 transition-colors duration-100',
+            'cursor-pointer text-15 transition-colors duration-100',
             editingTags
               ? 'text-primary-50'
               : 'text-black-250 hover:text-black-600'
@@ -241,7 +241,7 @@ const NotePublish = (props: NotePublishProps) => {
           编辑
         </span>
       </div>
-      <div className=' flex w-full flex-wrap gap-2'>
+      <div className='flex w-full flex-wrap gap-2'>
         {/* 添加标签 */}
         <Tag isEdit onSubmit={handleAddTag}>
           <i className='iconfont icon-plus text-17 text-black-600'></i>
@@ -249,10 +249,10 @@ const NotePublish = (props: NotePublishProps) => {
         {/* 标签列表 */}
         {tags.map(tag => (
           <Tag
+            checked={getTagChecked(tag._id)}
+            isEdit={editingTags}
             key={tag._id}
             tag={tag}
-            isEdit={editingTags}
-            checked={getTagChecked(tag._id)}
             onClick={() => handleTagClick(tag._id)}
             onSubmit={handleAddTag}>
             {tag.label}
@@ -272,27 +272,27 @@ const NotePublish = (props: NotePublishProps) => {
       {type === NoteTypeEnum.ARTICLE ? (
         <>
           {/* 标题 */}
-          <span className=' text-17 font-semibold text-black-600'>标题</span>
+          <span className='text-17 font-semibold text-black-600'>标题</span>
           <div className='flex h-10 w-full gap-5 rounded-xl bg-gray-50 px-4'>
             <input
-              className=' h-full w-full flex-grow bg-transparent text-17 font-medium text-black-600 outline-none'
+              className='h-full w-full flex-grow bg-transparent text-17 font-medium text-black-600 outline-none'
               value={title}
               onInput={handleTitleChange}
             />
           </div>
           {/* 封图 */}
-          <span className=' text-17 font-semibold text-black-600'>封图</span>
+          <span className='text-17 font-semibold text-black-600'>封图</span>
           <div className='group relative aspect-[3/1] w-full overflow-hidden rounded-xl border-black-300'>
             <div className='relative h-full w-full bg-gray-50'>
               {bannerPath ? (
                 <Image
-                  className='block object-cover group-hover:blur-lg'
-                  src={bannerPath}
-                  alt='封图'
                   fill
+                  alt='封图'
+                  blurDataURL={blurDataURL}
+                  className='block object-cover group-hover:blur-lg'
                   loader={imageLoader}
                   placeholder='blur'
-                  blurDataURL={blurDataURL}
+                  src={bannerPath}
                 />
               ) : null}
               {isLoading ? (
@@ -311,10 +311,10 @@ const NotePublish = (props: NotePublishProps) => {
                   )}
                   onClick={handleUpload}>
                   <i className='iconfont icon-image-plus text-xl text-black-600'></i>
-                  <span className=' text-17 font-bold text-black-600'>
+                  <span className='text-17 font-bold text-black-600'>
                     {!bannerPath ? '点击上传图片' : '点击更换图片'}
                   </span>
-                  <span className=' text-xs font-bold text-black-250'>
+                  <span className='text-xs font-bold text-black-250'>
                     最大支持 25MB
                   </span>
                 </div>
@@ -326,7 +326,7 @@ const NotePublish = (props: NotePublishProps) => {
       <div className='flex w-full'>
         <Button
           className={clsx(
-            ' relative flex h-11 flex-shrink-0 flex-grow items-center justify-center rounded-xl border border-black-80 bg-primary-50 text-17 text-white hover:bg-primary-100'
+            'relative flex h-11 flex-shrink-0 flex-grow items-center justify-center rounded-xl border border-black-80 bg-primary-50 text-17 text-white hover:bg-primary-100'
           )}
           onClick={handlePublish}>
           继续发布

@@ -293,15 +293,15 @@ const Masonry = (props: MasonryProps) => {
   }, [handleScroll]);
 
   return (
-    <div ref={containerRef} className='relative w-full' style={calcFillerStyle}>
+    <div className='relative w-full' ref={containerRef} style={calcFillerStyle}>
       {renderKeys.map(key => {
         return children(recordMap[key]);
       })}
-      <div ref={prerenderContainerRef} className='invisible absolute'>
+      <div className='invisible absolute' ref={prerenderContainerRef}>
         {prerenderKeys.map(key => {
           const index = data.findIndex(item => item[keyField] === key);
           return (
-            <div key={key} data-id={key}>
+            <div data-id={key} key={key}>
               {children({
                 x: 0,
                 y: 0,

@@ -18,14 +18,14 @@ const UserInfo = (props: UserInfoProps) => {
   return (
     <div className='flex items-center gap-[0.63rem]'>
       <Image
-        className=' h-[3.75rem] w-[3.75rem] rounded-full border-2 border-black-250'
-        src={avatarPath ? avatarPath : DEFAULT_USER_AVATAR_PATH}
         alt='avatar'
-        width={60}
+        blurDataURL={getRandomRgbDataURL()}
+        className='h-[3.75rem] w-[3.75rem] rounded-full border-2 border-black-250'
         height={60}
         loader={imageLoader}
         placeholder='blur'
-        blurDataURL={getRandomRgbDataURL()}
+        src={avatarPath ? avatarPath : DEFAULT_USER_AVATAR_PATH}
+        width={60}
       />
       {nickname && roleName ? (
         <div className='flex flex-col gap-[0.3rem]'>

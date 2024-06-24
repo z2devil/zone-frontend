@@ -104,7 +104,7 @@ const RichEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
             <div
               className={clsx(
                 twMerge(
-                  ' fixed inset-0 z-50 flex flex-col overflow-hidden bg-gray-200',
+                  'fixed inset-0 z-50 flex flex-col overflow-hidden bg-gray-200',
                   className,
                   'min-h-screen'
                 )
@@ -124,7 +124,7 @@ const RichEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
           <div
             className={clsx(
               twMerge(
-                ' relative flex flex-1 flex-col overflow-hidden',
+                'relative flex flex-1 flex-col overflow-hidden',
                 className
               )
             )}>

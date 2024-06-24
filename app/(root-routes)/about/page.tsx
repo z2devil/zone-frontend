@@ -118,7 +118,7 @@ const About = () => {
                 )}
                 {isLogin ? (
                   <button
-                    className=' group/more flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[0.5rem] border border-transparent transition-all duration-100 hover:bg-primary-50'
+                    className='group/more flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[0.5rem] border border-transparent transition-all duration-100 hover:bg-primary-50'
                     onClick={handleSetting}>
                     <i className='iconfont icon-ellipsis-v text-black-250 group-hover/more:text-white' />
                   </button>
@@ -141,8 +141,8 @@ const About = () => {
                 <div className='flex gap-2.5'>
                   {[].map((tag, i) => (
                     <div
-                      key={i}
-                      className='text-black text-xs font-normal text-opacity-40'>
+                      className='text-black text-xs font-normal text-opacity-40'
+                      key={i}>
                       #{tag}
                     </div>
                   ))}

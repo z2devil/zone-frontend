@@ -52,11 +52,11 @@ const Toolbar = (props: ToolbarProps) => {
     <div
       className={clsx(
         twMerge(
-          ' sticky top-0 flex h-12 flex-shrink-0 px-5 text-black-600 shadow-main',
+          'sticky top-0 flex h-12 flex-shrink-0 px-5 text-black-600 shadow-main',
           className
         )
       )}>
-      <div className=' flex h-full w-full flex-grow items-center gap-2 overflow-auto'>
+      <div className='flex h-full w-full flex-grow items-center gap-2 overflow-auto'>
         {/* 标题 */}
         <button
           onMouseDown={event => {
@@ -243,7 +243,7 @@ const Toolbar = (props: ToolbarProps) => {
         </button>
       </div>
       {/* 分割线 */}
-      <div className=' flex h-full flex-shrink-0 items-center gap-2 border-l border-gray-50 pl-2'>
+      <div className='flex h-full flex-shrink-0 items-center gap-2 border-l border-gray-50 pl-2'>
         <button
           onMouseDown={event => {
             event.preventDefault();

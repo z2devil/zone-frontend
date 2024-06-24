@@ -98,7 +98,6 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
   return (
     <div {...attributes}>
       <div
-        contentEditable={false}
         className={clsx(
           'group relative w-full overflow-hidden',
           !readOnly
@@ -107,19 +106,20 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
               : 'border-2 border-dashed border-black-300'
             : '',
           !hasSize && 'aspect-[3/1]'
-        )}>
+        )}
+        contentEditable={false}>
         {element.url ? (
           <Image
-            className='block'
-            src={element.url}
             alt='图片'
+            blurDataURL={blurDataURL}
+            className='block'
             fill={!hasSize}
-            width={element.width}
             height={element.height}
-            onLoad={handleLoad}
             loader={imageLoader}
             placeholder='blur'
-            blurDataURL={blurDataURL}
+            src={element.url}
+            width={element.width}
+            onLoad={handleLoad}
           />
         ) : null}
         {!readOnly ? (
@@ -139,10 +139,10 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
               )}
               onClick={handleUpload}>
               <i className='iconfont icon-image-plus text-xl text-black-600'></i>
-              <span className=' text-17 font-bold text-black-600'>
+              <span className='text-17 font-bold text-black-600'>
                 {!hasSize ? '点击上传图片' : '点击更换图片'}
               </span>
-              <span className=' text-xs font-bold text-black-250'>
+              <span className='text-xs font-bold text-black-250'>
                 最大支持 25MB
               </span>
             </div>

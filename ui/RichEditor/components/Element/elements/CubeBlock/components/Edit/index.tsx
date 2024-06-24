@@ -38,9 +38,9 @@ const CubeEdit = (props: CubePreviewProps) => {
 
   return (
     <>
-      <div className=' flex w-full flex-col gap-4'>
+      <div className='flex w-full flex-col gap-4'>
         <input defaultValue={url} onInput={handleInput}></input>
-        <canvas ref={canvasRef} className='aspect-video h-full w-full'></canvas>
+        <canvas className='aspect-video h-full w-full' ref={canvasRef}></canvas>
       </div>
     </>
   );

@@ -33,12 +33,12 @@ const CubePreview = (props: CubePreviewProps) => {
     <>
       {isSummary ? (
         <Image
-          src={defaultImg}
           alt='placeholder'
           className='aspect-video w-full object-contain'
+          src={defaultImg}
         />
       ) : (
-        <canvas ref={canvasRef} className='aspect-video w-full'></canvas>
+        <canvas className='aspect-video w-full' ref={canvasRef}></canvas>
       )}
     </>
   );

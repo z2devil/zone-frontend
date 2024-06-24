@@ -18,15 +18,15 @@ const MusicBlock = ({ attributes, children, element }: MusicBlockProps) => {
   return (
     <div {...attributes}>
       <div
-        contentEditable={false}
         className={clsx(
-          ' border-1 mb-2 flex overflow-hidden rounded-lg border bg-gray-50',
+          'border-1 mb-2 flex overflow-hidden rounded-lg border bg-gray-50',
           !readOnly
             ? selected
               ? 'border-primary-50'
               : 'border-transparent'
             : ''
-        )}>
+        )}
+        contentEditable={false}>
         {readOnly ? (
           <MusicPreview element={element} />
         ) : (

@@ -59,7 +59,7 @@ const Modal = (props: ModalProps) => {
         <div className='flex w-full justify-center gap-5 px-6'>
           {cancelText && (
             <Button
-              className=' relative flex h-11 flex-grow items-center justify-center rounded-xl border border-black-80 text-17 text-black-600 hover:text-black-900'
+              className='relative flex h-11 flex-grow items-center justify-center rounded-xl border border-black-80 text-17 text-black-600 hover:text-black-900'
               onClick={onCancel}>
               {cancelText}
             </Button>
@@ -67,7 +67,7 @@ const Modal = (props: ModalProps) => {
           {okText && (
             <Button
               className={clsx(
-                ' relative flex h-11 flex-shrink-0 items-center justify-center rounded-xl border border-black-80 bg-primary-50 px-6 text-17 text-white hover:bg-primary-100',
+                'relative flex h-11 flex-shrink-0 items-center justify-center rounded-xl border border-black-80 bg-primary-50 px-6 text-17 text-white hover:bg-primary-100',
                 {
                   'flex-grow': !cancelText,
                 }
@@ -86,7 +86,7 @@ const Modal = (props: ModalProps) => {
     <div
       className={clsx(
         twMerge(
-          ' absolute left-0 right-0 top-1/2 flex w-full -translate-y-1/2 flex-col items-center justify-between overflow-hidden bg-gray-100 transition-all duration-300 max-sm:border-y max-sm:border-black-80 sm:mx-auto sm:w-[480px] sm:rounded-2xl sm:shadow-2xl',
+          'absolute left-0 right-0 top-1/2 flex w-full -translate-y-1/2 flex-col items-center justify-between overflow-hidden bg-gray-100 transition-all duration-300 max-sm:border-y max-sm:border-black-80 sm:mx-auto sm:w-[480px] sm:rounded-2xl sm:shadow-2xl',
           outterCalssName
         )
       )}
@@ -100,9 +100,9 @@ const Modal = (props: ModalProps) => {
           {title}
         </span>
         {closable && (
-          <button className=' group p-2'>
+          <button className='group p-2'>
             <i
-              className=' iconfont icon-error text-[1.5rem] font-medium leading-6 text-black-600 transition-colors duration-100 group-hover:text-black-900'
+              className='iconfont icon-error text-[1.5rem] font-medium leading-6 text-black-600 transition-colors duration-100 group-hover:text-black-900'
               onClick={handleBack}></i>
           </button>
         )}

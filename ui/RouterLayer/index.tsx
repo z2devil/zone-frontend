@@ -132,20 +132,20 @@ const NavLayer = (props: NavLayerProps) => {
 
   return (
     <div
-      className={clsx(' fixed left-0 top-0 z-20 flex h-full w-full flex-col', {
+      className={clsx('fixed left-0 top-0 z-20 flex h-full w-full flex-col', {
         'pointer-events-none': !show,
       })}>
       {/* mask */}
       <div
         className={clsx(
-          ' absolute left-0 top-0 h-full w-full bg-black-100 duration-500 max-sm:bg-white max-sm:bg-opacity-20 max-sm:backdrop-blur-3xl',
+          'absolute left-0 top-0 h-full w-full bg-black-100 duration-500 max-sm:bg-white max-sm:bg-opacity-20 max-sm:backdrop-blur-3xl',
           show ? '' : 'pointer-events-none opacity-0 delay-200'
         )}
         onClick={handleBack}></div>
       {/* modal */}
       <div
         className={clsx(
-          ' absolute left-0 right-0 top-1/2 flex w-full flex-col items-center justify-between transition-all duration-300 sm:mx-auto sm:w-[480px] sm:rounded-2xl sm:bg-gray-100 sm:shadow-2xl',
+          'absolute left-0 right-0 top-1/2 flex w-full flex-col items-center justify-between transition-all duration-300 sm:mx-auto sm:w-[480px] sm:rounded-2xl sm:bg-gray-100 sm:shadow-2xl',
           show ? 'delay-200' : 'pointer-events-none opacity-0',
           show ? style.modalShow : style.modalHide
         )}>
@@ -158,43 +158,43 @@ const NavLayer = (props: NavLayerProps) => {
             />
           ) : null}
           {isLogin ? (
-            <div className=' flex items-center gap-2'>
+            <div className='flex items-center gap-2'>
               <button
-                className=' group p-2'
-                onClick={handleSetting}
-                title='编辑信息'>
+                className='group p-2'
+                title='编辑信息'
+                onClick={handleSetting}>
                 <i className='iconfont icon-setting-filled text-2xl text-black-600 transition-colors duration-100 group-hover:text-black-900'></i>
               </button>
               <button
-                className=' group p-2'
-                onClick={handleLogout}
-                title='退出登录'>
+                className='group p-2'
+                title='退出登录'
+                onClick={handleLogout}>
                 <i className='iconfont icon-signout-filled text-2xl text-black-600 transition-colors duration-100 group-hover:text-black-900'></i>
               </button>
             </div>
           ) : null}
         </div>
         {isEditting ? (
-          <div className=' flex w-full flex-col gap-7 pb-8 pt-6'>
+          <div className='flex w-full flex-col gap-7 pb-8 pt-6'>
             {/* user info */}
-            <div className=' flex flex-col gap-6 px-8'>
-              <div className=' flex flex-col gap-1'>
-                <label className=' text-15 text-black-600'>昵称</label>
+            <div className='flex flex-col gap-6 px-8'>
+              <div className='flex flex-col gap-1'>
+                <label className='text-15 text-black-600'>昵称</label>
                 <input
+                  className='h-10 w-full rounded-md border border-gray-200 px-3 focus:border-primary-50 focus:outline-none'
                   type='text'
-                  className=' h-10 w-full rounded-md border border-gray-200 px-3 focus:border-primary-50 focus:outline-none'
                   value={form.nickname}
                   onChange={e => setForm({ ...form, nickname: e.target.value })}
                 />
               </div>
               <div className='flex w-full justify-center gap-5'>
                 <Button
-                  className=' relative flex h-11 flex-grow items-center justify-center rounded-xl border border-black-80 text-17 text-black-600 hover:text-black-900 active:border-primary-50'
+                  className='relative flex h-11 flex-grow items-center justify-center rounded-xl border border-black-80 text-17 text-black-600 hover:text-black-900 active:border-primary-50'
                   onClick={handleSetting}>
                   取消
                 </Button>
                 <Button
-                  className=' relative flex h-11 flex-shrink-0 items-center justify-center rounded-xl border border-black-80 bg-primary-50 px-6 text-17 text-white hover:bg-primary-100'
+                  className='relative flex h-11 flex-shrink-0 items-center justify-center rounded-xl border border-black-80 bg-primary-50 px-6 text-17 text-white hover:bg-primary-100'
                   onClick={handleSave}>
                   保存
                 </Button>
@@ -202,7 +202,7 @@ const NavLayer = (props: NavLayerProps) => {
             </div>
           </div>
         ) : (
-          <div className=' flex w-full flex-col gap-7 py-6'>
+          <div className='flex w-full flex-col gap-7 py-6'>
             {/* router list */}
             {ROUTER.map(item => {
               return (
@@ -215,9 +215,9 @@ const NavLayer = (props: NavLayerProps) => {
         )}
         {/* back button */}
         <div
-          className=' group absolute bottom-0 flex h-12 w-12 flex-shrink-0 translate-y-24 cursor-pointer items-center justify-center rounded-full bg-white px-5 transition-colors duration-100 hover:bg-primary-50 sm:shadow-2xl'
+          className='group absolute bottom-0 flex h-12 w-12 flex-shrink-0 translate-y-24 cursor-pointer items-center justify-center rounded-full bg-white px-5 transition-colors duration-100 hover:bg-primary-50 sm:shadow-2xl'
           onClick={handleBack}>
-          <i className=' iconfont icon-error text-2xl text-black-600 transition-colors duration-100 group-hover:text-white'></i>
+          <i className='iconfont icon-error text-2xl text-black-600 transition-colors duration-100 group-hover:text-white'></i>
         </div>
       </div>
     </div>

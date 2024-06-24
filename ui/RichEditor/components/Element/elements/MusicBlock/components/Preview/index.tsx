@@ -179,8 +179,8 @@ const MusicPreview = (props: MusicPreviewProps) => {
   return (
     <>
       {/* 左侧 */}
-      <div className=' relative flex h-16 w-16 flex-shrink-0 items-center justify-center'>
-        <button className=' z-10' onClick={handlePlayPause}>
+      <div className='relative flex h-16 w-16 flex-shrink-0 items-center justify-center'>
+        <button className='z-10' onClick={handlePlayPause}>
           <span
             className={clsx(
               'iconfont text-white shadow-sm',
@@ -188,28 +188,28 @@ const MusicPreview = (props: MusicPreviewProps) => {
             )}></span>
         </button>
         <Image
-          className=' absolute inset-0'
+          alt='音乐封面'
+          className='absolute inset-0'
+          height={64}
           src={coverUrl}
           width={64}
-          height={64}
-          alt='音乐封面'
         />
       </div>
       {/* 右侧 */}
       <div className='flex flex-1 flex-col gap-2 overflow-hidden p-2'>
         <audio
-          ref={audioRef}
-          controls={false}
           autoPlay={false}
-          onTimeUpdate={handleTimeUpdate}
-          src={isSummary ? '' : url}></audio>
+          controls={false}
+          ref={audioRef}
+          src={isSummary ? '' : url}
+          onTimeUpdate={handleTimeUpdate}></audio>
         <div className='flex flex-col gap-1'>
           {/* info */}
           <div className='flex w-full items-center justify-between gap-4'>
-            <span className=' truncate text-13 font-semibold text-black-500'>
+            <span className='truncate text-13 font-semibold text-black-500'>
               {element.title}
             </span>
-            <button className=' flex-shrink-0' onClick={handleVolumeChange}>
+            <button className='flex-shrink-0' onClick={handleVolumeChange}>
               <span
                 className={clsx(
                   'iconfont text-black-250',
@@ -222,11 +222,11 @@ const MusicPreview = (props: MusicPreviewProps) => {
             <span>{currentTimeStr}</span>
             <div className='relative flex-1'>
               <div
-                ref={sliderBarRef}
-                className=' h-[2px] flex-1 rounded-sm bg-black-50'></div>
+                className='h-[2px] flex-1 rounded-sm bg-black-50'
+                ref={sliderBarRef}></div>
               <div
+                className='absolute top-[1px] h-2 w-2 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-primary-50 hover:h-3 hover:w-3'
                 ref={sliderRef}
-                className=' absolute top-[1px] h-2 w-2 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-primary-50 hover:h-3 hover:w-3'
                 style={{
                   left: sliderLeftStr,
                 }}

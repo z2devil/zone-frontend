@@ -55,10 +55,10 @@ const useContextMenu = () => {
 
   const contextHolder = (
     <ContextMenu
-      rootRef={rootRef}
-      visible={visible}
       menus={menus}
       position={position}
+      rootRef={rootRef}
+      visible={visible}
       onClose={close}
     />
   );

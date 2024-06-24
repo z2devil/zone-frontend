@@ -88,24 +88,24 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
   );
 
   return (
-    <div className=' relative mb-2' {...attributes}>
+    <div className='relative mb-2' {...attributes}>
       <div
         className={clsx(
-          ' flex flex-col overflow-hidden rounded-md border bg-gray-200 text-black-600',
+          'flex flex-col overflow-hidden rounded-md border bg-gray-200 text-black-600',
           !readOnly && selected ? 'border-[#2f8ef4]' : 'border-black-50'
         )}>
         <div
-          ref={toolbarRef}
-          className=' relative flex select-none items-center justify-between rounded-sm border-b border-black-50 bg-gray-50 px-4 py-2'
-          contentEditable={false}>
+          className='relative flex select-none items-center justify-between rounded-sm border-b border-black-50 bg-gray-50 px-4 py-2'
+          contentEditable={false}
+          ref={toolbarRef}>
           <div>
             {isLanguageEditing ? (
               <select
+                autoFocus
                 className='bg-transparent text-black-600'
                 value={language}
-                autoFocus
-                onChange={handleLanguageChange}
-                onBlur={() => handleLanguageEdit(false)}>
+                onBlur={() => handleLanguageEdit(false)}
+                onChange={handleLanguageChange}>
                 {SUPPORTED_LANGUAGES.map(language => (
                   <option key={language} value={language}>
                     {language}

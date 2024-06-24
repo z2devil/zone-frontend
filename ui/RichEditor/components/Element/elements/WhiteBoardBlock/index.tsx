@@ -21,17 +21,17 @@ const WhiteBoardBlock = ({
   const selected = useSelected();
 
   return (
-    <div className=' relative mb-2' {...attributes}>
+    <div className='relative mb-2' {...attributes}>
       <div
-        contentEditable={false}
         className={clsx(
-          ' border-1 mb-2 flex aspect-[4/3] overflow-hidden rounded-lg border bg-gray-50',
+          'border-1 mb-2 flex aspect-[4/3] overflow-hidden rounded-lg border bg-gray-50',
           !readOnly
             ? selected
               ? 'border-primary-50'
               : 'border-transparent'
             : ''
-        )}>
+        )}
+        contentEditable={false}>
         <WhiteBoard element={element} readOnly={readOnly} />
       </div>
       <div

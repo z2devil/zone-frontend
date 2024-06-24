@@ -156,11 +156,11 @@ const NotePage = () => {
         />
       ) : (
         <PageBanner
-          title='笔记'
           canSearch
           lastUpdated={lastUpdated}
-          onSearchClick={handleSearchClick}
+          title='笔记'
           onChartClick={handleChartClick}
+          onSearchClick={handleSearchClick}
         />
       )}
       <div
@@ -172,42 +172,42 @@ const NotePage = () => {
         <div
           className='w-30 group flex shrink-0 cursor-pointer snap-start items-center justify-between gap-2 rounded-xl border border-black-80 bg-gray-100 px-5 py-4 transition-colors duration-100 hover:border-primary-50'
           onClick={() => handleCategoryClick()}>
-          <div className=' flex flex-1 flex-col overflow-hidden'>
-            <div className=' flex gap-[6px] text-17 font-semibold text-black-250'>
-              <span className=' truncate text-black-600 transition-colors duration-100 group-hover:text-primary-50'>
+          <div className='flex flex-1 flex-col overflow-hidden'>
+            <div className='flex gap-[6px] text-17 font-semibold text-black-250'>
+              <span className='truncate text-black-600 transition-colors duration-100 group-hover:text-primary-50'>
                 全部
               </span>
             </div>
           </div>
-          <div className=' flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-md text-black-250 transition-colors duration-100 group-hover:text-primary-50'>
+          <div className='flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-md text-black-250 transition-colors duration-100 group-hover:text-primary-50'>
             <span className='iconfont icon-angle-right font-semibold'></span>
           </div>
         </div>
         {categories.map(category => (
           <div
-            key={category._id}
             className={clsx(
               'group flex w-60 shrink-0 cursor-pointer snap-start items-center justify-between gap-2 rounded-xl border border-black-80 bg-gray-100 px-5 py-4 transition-colors duration-100 hover:border-primary-50',
               {
                 'border-primary-50': filter.tags.includes(category._id),
               }
             )}
+            key={category._id}
             onClick={() => handleCategoryClick(category._id)}>
-            <div className=' flex flex-1 flex-col overflow-hidden'>
-              <div className=' flex gap-[6px] text-17 font-semibold text-black-250'>
-                <span className=' truncate text-black-600 transition-colors duration-100 group-hover:text-primary-50'>
+            <div className='flex flex-1 flex-col overflow-hidden'>
+              <div className='flex gap-[6px] text-17 font-semibold text-black-250'>
+                <span className='truncate text-black-600 transition-colors duration-100 group-hover:text-primary-50'>
                   {category.label}
                 </span>
                 <span className='shrink-0'>·</span>
                 <span className='shrink-0'>{category.count}篇</span>
               </div>
-              <span className=' truncate text-xs text-black-250'>
+              <span className='truncate text-xs text-black-250'>
                 {category.latestNote.type === NoteTypeEnum.ARTICLE
                   ? category.latestNote.summary?.replaceAll(' ', '')
                   : getContentSummary(category.latestNote.content)}
               </span>
             </div>
-            <div className=' flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-md text-black-250 transition-colors duration-100 group-hover:text-primary-50'>
+            <div className='flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-md text-black-250 transition-colors duration-100 group-hover:text-primary-50'>
               <span className='iconfont icon-angle-right font-semibold'></span>
             </div>
           </div>
@@ -215,32 +215,32 @@ const NotePage = () => {
       </div>
       <Masonry
         columnWidth={CARD_WIDTH}
-        gap={GAP}
+        contentWidthChange={handleContentWidthChange}
         data={notes}
-        touchBottom={handleLoadData}
-        contentWidthChange={handleContentWidthChange}>
+        gap={GAP}
+        touchBottom={handleLoadData}>
         {record => {
           if (!record.meta) return null;
           return (
             <NoteCard
               key={record.meta._id}
+              note={record.meta}
               style={{
                 position: 'absolute',
                 width: `${record.width}px`,
                 transform: `translate(${record.x}px, ${record.y}px)`,
                 overflow: 'hidden',
               }}
-              note={record.meta}
             />
           );
         }}
       </Masonry>
-      <div className=' flex w-full items-center justify-center py-4'>
+      <div className='flex w-full items-center justify-center py-4'>
         {notes.length === 0 ? (
           <EmptyInfo tip='暂无笔记' />
         ) : (
           <div
-            className={clsx(' text-17 text-black-600', {
+            className={clsx('text-17 text-black-600', {
               invisible: !isLoading,
             })}>
             加载中...

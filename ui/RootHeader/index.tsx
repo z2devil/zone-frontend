@@ -46,8 +46,8 @@ const RootHeader = () => {
           <i className='iconfont icon-logo text-[2rem] text-black-900'></i>
         </div>
         {/* 导航 */}
-        <div className=' pointer-events-none absolute left-0 top-0 flex h-full w-full justify-center px-28 max-sm:hidden'>
-          <div className=' pointer-events-auto flex h-full max-w-lg flex-1 items-center justify-between'>
+        <div className='pointer-events-none absolute left-0 top-0 flex h-full w-full justify-center px-28 max-sm:hidden'>
+          <div className='pointer-events-auto flex h-full max-w-lg flex-1 items-center justify-between'>
             {ROUTER.map(item => {
               return (
                 <RouterLink
