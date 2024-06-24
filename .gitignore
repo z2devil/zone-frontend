@@ -36,5 +36,4 @@ next-env.d.ts
 
 # tailwind
 .turbo
-.vscode
 styles/dist.css
