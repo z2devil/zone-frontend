@@ -28,7 +28,7 @@ const VideoEdit = (props: VideoPreviewProps) => {
 
   return (
     <>
-      <div className=' flex w-full flex-col gap-4'>
+      <div className='flex w-full flex-col gap-4'>
         <input defaultValue={url} onInput={handleInput}></input>
         <iframe className='aspect-video h-full w-full' src={url}></iframe>
       </div>

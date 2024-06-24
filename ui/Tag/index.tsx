@@ -53,16 +53,16 @@ const Tag = (props: TagProps) => {
   return (
     <div
       className={clsx(
-        ' relative inline-flex h-8 cursor-pointer items-center justify-center rounded-full border bg-gray-50 px-4 text-17 transition-colors duration-100',
+        'relative inline-flex h-8 cursor-pointer items-center justify-center rounded-full border bg-gray-50 px-4 text-17 transition-colors duration-100',
         checked
           ? 'border-primary-50 font-medium text-primary-50'
-          : ' border-transparent text-black-400 hover:border-black-250 hover:text-black-600'
+          : 'border-transparent text-black-400 hover:border-black-250 hover:text-black-600'
       )}
       onClick={handleClick}>
       {editing ? (
         <input
-          className='h-6 w-20 bg-transparent outline-none'
           autoFocus
+          className='h-6 w-20 bg-transparent outline-none'
           value={tagName}
           onBlur={handleCancelEdit}
           onInput={handleTagNameChange}

@@ -40,10 +40,7 @@ const Button = (props: ButtonProps) => {
 
   return (
     <button
-      className={clsx(
-        className,
-        ' overflow-hidden transition-all duration-100'
-      )}
+      className={clsx(className, 'overflow-hidden transition-all duration-100')}
       style={clacStyle}
       onClick={handleClick}>
       <div
@@ -53,7 +50,7 @@ const Button = (props: ButtonProps) => {
             'opacity-0': !isLoading,
           }
         )}>
-        <i className=' iconfont icon-spinner z-10 animate-spin text-2xl font-bold text-white'></i>
+        <i className='iconfont icon-spinner z-10 animate-spin text-2xl font-bold text-white'></i>
       </div>
       <div
         className={clsx(

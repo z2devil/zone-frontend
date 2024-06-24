@@ -118,7 +118,7 @@ const LoginPage = () => {
   const calcTip = useMemo(() => {
     if (!tip) return null;
     return (
-      <span className=' relative animate-flash text-base font-medium text-black-250'>
+      <span className='relative animate-flash text-base font-medium text-black-250'>
         {tip}
       </span>
     );
@@ -129,8 +129,8 @@ const LoginPage = () => {
       return (
         <input
           className='h-[3.25rem] w-[17.5rem] rounded-full text-center text-lg font-medium text-black-900 placeholder:text-center placeholder:text-lg placeholder:text-black-250'
-          placeholder='邮箱'
           maxLength={30}
+          placeholder='邮箱'
           value={email}
           onChange={e => setEmail(e.target.value)}
           onKeyUp={e => {
@@ -156,7 +156,7 @@ const LoginPage = () => {
       <div className='mb-10 flex items-center gap-3'>
         {step === 0 && (
           <Button
-            className=' relative flex h-12 items-center justify-center gap-2.5 rounded-3xl bg-primary-50 py-3.5 pl-7 pr-5'
+            className='relative flex h-12 items-center justify-center gap-2.5 rounded-3xl bg-primary-50 py-3.5 pl-7 pr-5'
             onClick={handleSendVerificationCode}>
             <span className='text-lg font-medium text-white'>获取验证码</span>
             <i className='iconfont icon-arrow-right text-2xl text-white' />
@@ -165,12 +165,12 @@ const LoginPage = () => {
         {step === 1 && (
           <>
             <Button
-              className=' relative flex h-12 w-12 items-center justify-center gap-2.5 rounded-3xl bg-black-250 py-3.5 pr-1'
+              className='relative flex h-12 w-12 items-center justify-center gap-2.5 rounded-3xl bg-black-250 py-3.5 pr-1'
               onClick={handleBack}>
               <i className='iconfont icon-angle-left text-2xl text-white' />
             </Button>
             <Button
-              className=' relative flex h-12 items-center justify-center gap-2.5 rounded-3xl bg-primary-50 py-3.5 pl-7 pr-5'
+              className='relative flex h-12 items-center justify-center gap-2.5 rounded-3xl bg-primary-50 py-3.5 pl-7 pr-5'
               onClick={handleSign}>
               <span className='text-lg font-medium text-white'>登录</span>
               <i className='iconfont icon-arrow-right text-2xl text-white' />
@@ -182,13 +182,13 @@ const LoginPage = () => {
   }, [handleBack, handleSendVerificationCode, handleSign, step]);
 
   return (
-    <div className=' flex h-full items-center justify-center'>
+    <div className='flex h-full items-center justify-center'>
       <div className='flex h-full max-h-[40rem] w-96 flex-col items-center justify-between gap-32'>
         {/* main */}
         <div className='relative top-14 flex flex-col items-center justify-center gap-16'>
           <div className='flex flex-col items-center justify-center gap-7'>
             <i className='iconfont icon-logo text-[72px] text-[#FFC445]'></i>
-            <div className=' flex flex-col items-center gap-[0.63rem]'>
+            <div className='flex flex-col items-center gap-[0.63rem]'>
               <span className='text-3xl font-medium text-black-900'>
                 {calcTitle}
               </span>

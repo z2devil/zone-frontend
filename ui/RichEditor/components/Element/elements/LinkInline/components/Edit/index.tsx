@@ -29,11 +29,11 @@ const LinkEdit = (props: LinkPreviewProps) => {
     <>
       {selected ? (
         <span
-          className=' absolute bottom-0 left-0 block w-40 -translate-y-full rounded border border-gray-300 bg-gray-50 px-2 py-1'
+          className='absolute bottom-0 left-0 block w-40 -translate-y-full rounded border border-gray-300 bg-gray-50 px-2 py-1'
           contentEditable={false}>
           <input
+            className='w-full border-none bg-transparent outline-none'
             defaultValue={url}
-            className=' w-full border-none bg-transparent outline-none'
             onInput={handleInput}
           />
         </span>

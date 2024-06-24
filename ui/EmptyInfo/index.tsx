@@ -14,13 +14,13 @@ const EmptyInfo = (props: EmptyInfoProps) => {
   return (
     <div className='mx-auto flex h-fit w-fit flex-col items-center justify-center overflow-hidden'>
       <Image
-        className=' pointer-events-none select-none'
-        src={EmptyTipImg}
         alt='empty'
-        width={256}
+        className='pointer-events-none select-none'
         height={256}
+        src={EmptyTipImg}
+        width={256}
       />
-      <span className=' text-center text-17 text-black-600'>{tip}</span>
+      <span className='text-center text-17 text-black-600'>{tip}</span>
       {buttonText ? (
         <Button className='' onClick={onButtonClick}>
           {buttonText}

@@ -47,10 +47,13 @@ const useNotification = (options: UseNotificationOptions) => {
               }
             })
           );
-          setTimeout(() => {
-            resolve(uuid);
-            // TODO: 消除魔法数字
-          }, (config.duration || 5) * 1000);
+          setTimeout(
+            () => {
+              resolve(uuid);
+              // TODO: 消除魔法数字
+            },
+            (config.duration || 5) * 1000
+          );
           return uuid;
         });
       },

@@ -79,9 +79,9 @@ const Notification = (props: NotificationProps) => {
   return (
     <div
       className='notification flex h-12 items-center justify-between gap-10 rounded-full border border-gray-50 bg-white pl-4 pr-5 shadow-main'
+      onClick={onClick}
       onMouseEnter={() => setHovering(true)}
-      onMouseLeave={() => setHovering(false)}
-      onClick={onClick}>
+      onMouseLeave={() => setHovering(false)}>
       <div className='flex items-center gap-2'>
         <i className={clsx('iconfont text-2xl', calcIconClassName)}></i>
         <span>{content}</span>

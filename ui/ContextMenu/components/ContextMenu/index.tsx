@@ -93,17 +93,17 @@ const ContextMenu = (props: ContextMenuProps) => {
   useClickAway(onClose, contextMenuRef);
 
   return (
-    <div ref={contextMenuRef} className='absolute z-30' style={style}>
-      <div className=' flex flex-col gap-2 divide-y divide-gray-300 rounded-xl bg-gray-100 p-4 shadow-main'>
+    <div className='absolute z-30' ref={contextMenuRef} style={style}>
+      <div className='flex flex-col gap-2 divide-y divide-gray-300 rounded-xl bg-gray-100 p-4 shadow-main'>
         {stickyMenus.length ? (
           <div
-            className={clsx(' flex justify-between gap-2', {
+            className={clsx('flex justify-between gap-2', {
               'px-2 pb-2': defaultMenus.length,
             })}>
             {stickyMenus.map(menuItem => (
               <div
+                className='flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-gray-300 text-black-900 transition-colors duration-100 hover:border hover:border-primary-50 hover:bg-primary-50 hover:text-white'
                 key={menuItem.key}
-                className=' flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-gray-300 text-black-900 transition-colors duration-100 hover:border hover:border-primary-50 hover:bg-primary-50 hover:text-white'
                 title={menuItem.label}
                 onClick={() => handleClick(menuItem)}>
                 {menuItem.icon}
@@ -113,22 +113,22 @@ const ContextMenu = (props: ContextMenuProps) => {
         ) : null}
         {defaultMenus.length ? (
           <div
-            className={clsx(' flex flex-col gap-1', {
+            className={clsx('flex flex-col gap-1', {
               'pt-4': stickyMenus.length,
             })}>
             {defaultMenus.map(menuItem => (
               <div
+                className='flex min-w-[9rem] cursor-pointer items-center justify-between rounded-lg border border-transparent py-1 pl-2 pr-1 text-black-600 transition-colors duration-100 hover:border hover:border-primary-50 hover:bg-black-50 hover:text-black-900'
                 key={menuItem.key}
-                className=' flex min-w-[9rem] cursor-pointer items-center justify-between rounded-lg border border-transparent py-1 pl-2 pr-1 text-black-600 transition-colors duration-100 hover:border hover:border-primary-50 hover:bg-black-50 hover:text-black-900'
                 title={menuItem.label}
                 onClick={() => handleClick(menuItem)}>
-                <div className=' flex items-center'>
+                <div className='flex items-center'>
                   {menuItem.icon ? (
                     <div className='mr-2'>{menuItem.icon}</div>
                   ) : null}
                   <div>{menuItem.label}</div>
                 </div>
-                <i className=' iconfont icon-angle-right'></i>
+                <i className='iconfont icon-angle-right'></i>
               </div>
             ))}
           </div>

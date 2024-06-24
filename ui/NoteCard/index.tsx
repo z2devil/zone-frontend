@@ -180,27 +180,27 @@ const NoteCard = (props: NoteCardProps) => {
 
   return (
     <div
-      ref={cardRef}
       className={clsx(
         twMerge(
-          ' group relative flex flex-col gap-2.5 overflow-hidden rounded-xl border border-black-80 bg-gray-100 p-5 transition-colors duration-200 hover:border-primary-50',
+          'group relative flex flex-col gap-2.5 overflow-hidden rounded-xl border border-black-80 bg-gray-100 p-5 transition-colors duration-200 hover:border-primary-50',
           className
         )
       )}
+      ref={cardRef}
       style={style}>
       <Link href={`/note/${props.note._id}`} target='_blank'>
         <div className='flex flex-col gap-3'>
           {note.type === NoteTypeEnum.ARTICLE && note.bannerPath ? (
-            <div className=' relative mb-2 aspect-[3/1] w-full overflow-hidden rounded-lg'>
+            <div className='relative mb-2 aspect-[3/1] w-full overflow-hidden rounded-lg'>
               <Image
-                className=' h-full w-full object-cover'
-                src={note.bannerPath}
                 alt='封图'
-                width={600}
+                blurDataURL={blurDataURL}
+                className='h-full w-full object-cover'
                 height={200}
                 loader={imageLoader}
                 placeholder='blur'
-                blurDataURL={blurDataURL}
+                src={note.bannerPath}
+                width={600}
               />
             </div>
           ) : null}
@@ -224,7 +224,7 @@ const NoteCard = (props: NoteCardProps) => {
             )}
             {isLogin ? (
               <button
-                className=' group/more flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[0.5rem] border border-transparent transition-all duration-100 hover:bg-primary-50'
+                className='group/more flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[0.5rem] border border-transparent transition-all duration-100 hover:bg-primary-50'
                 onClick={handleSetting}>
                 <i className='iconfont icon-ellipsis-v text-black-250 group-hover/more:text-white' />
               </button>
@@ -232,9 +232,9 @@ const NoteCard = (props: NoteCardProps) => {
           </div>
           {/* 内容 */}
           {note.type === NoteTypeEnum.NOTE ? (
-            <div className=' pointer-events-none relative flex max-h-[30rem]  overflow-hidden'>
+            <div className='pointer-events-none relative flex max-h-[30rem] overflow-hidden'>
               <div className='mb-[1px] flex-1 overflow-hidden'>
-                <RichView initialValue={JSON.parse(note.content)} isSummary />
+                <RichView isSummary initialValue={JSON.parse(note.content)} />
               </div>
               <div className='absolute bottom-0 left-0 right-0'>
                 {isCollapsed ? (
@@ -250,7 +250,7 @@ const NoteCard = (props: NoteCardProps) => {
               </div>
             </div>
           ) : (
-            <div className=' text-[0.9375rem] text-black-600'>
+            <div className='text-[0.9375rem] text-black-600'>
               {note.summary}
             </div>
           )}
@@ -272,8 +272,8 @@ const NoteCard = (props: NoteCardProps) => {
               <div className='flex gap-2.5'>
                 {note.tags.map(tag => (
                   <div
-                    key={tag._id}
-                    className='text-black text-xs font-normal text-primary-50'>
+                    className='text-black text-xs font-normal text-primary-50'
+                    key={tag._id}>
                     #{tag.label}
                   </div>
                 ))}

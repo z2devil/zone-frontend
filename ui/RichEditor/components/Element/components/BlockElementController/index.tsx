@@ -144,17 +144,17 @@ const BlockElementController = (props: BlockElementControllerProps) => {
 
   return (
     <div
-      ref={ref}
       className='relative'
+      ref={ref}
       onMouseEnter={hover}
       onMouseLeave={unhover}>
       {/* 拖拽按钮 */}
       {hovered ? (
         <div
-          ref={drag}
-          className=' absolute -left-5 top-1/2 flex h-full w-5 -translate-y-1/2 cursor-grab items-center'
-          contentEditable={false}>
-          <div className=' flex h-full w-4 items-center justify-center rounded text-black-400 hover:bg-gray-200'>
+          className='absolute -left-5 top-1/2 flex h-full w-5 -translate-y-1/2 cursor-grab items-center'
+          contentEditable={false}
+          ref={drag}>
+          <div className='flex h-full w-4 items-center justify-center rounded text-black-400 hover:bg-gray-200'>
             <span className='iconfont icon-draggable-dots'></span>
           </div>
         </div>
@@ -163,7 +163,7 @@ const BlockElementController = (props: BlockElementControllerProps) => {
       {dragHoveringType ? (
         <div
           className={clsx(
-            ' absolute h-1 w-full bg-primary-50 bg-opacity-40',
+            'absolute h-1 w-full bg-primary-50 bg-opacity-40',
             dragHoveringType === DropType.UP
               ? 'top-0 -translate-y-1/2'
               : 'bottom-0 translate-y-1/2'

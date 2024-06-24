@@ -96,18 +96,18 @@ const VerificationCodeInput = (props: VerificationCodeInputProps) => {
   };
 
   return (
-    <div ref={containerRef} className=' flex gap-[1.25rem]'>
+    <div className='flex gap-[1.25rem]' ref={containerRef}>
       {code.map((value, index) => (
         <input
+          autoFocus={index === 0}
           className='flex h-[3.25rem] w-[3.25rem] rounded-xl text-center text-lg font-medium text-black-900'
           key={index}
+          maxLength={1}
           type='text'
           value={value}
           onChange={() => void 0}
-          onPaste={handlePaste}
           onKeyDown={handleKeyDown}
-          maxLength={1}
-          autoFocus={index === 0}
+          onPaste={handlePaste}
         />
       ))}
     </div>

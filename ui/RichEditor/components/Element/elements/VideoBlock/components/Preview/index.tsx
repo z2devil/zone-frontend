@@ -23,9 +23,9 @@ const VideoPreview = (props: VideoPreviewProps) => {
     <>
       {isSummary ? (
         <Image
-          src={defaultImg}
           alt='placeholder'
           className='aspect-video w-full object-contain'
+          src={defaultImg}
         />
       ) : (
         <iframe className='aspect-video h-full w-full' src={url}></iframe>
