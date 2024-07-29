@@ -66,7 +66,7 @@ const Editor = (props: EditorProps) => {
           [style.summary]: isSummary,
         },
         twMerge(
-          'h-full w-full overflow-y-auto text-black-900 outline-none',
+          'h-full overflow-y-auto  w-full text-black-900 outline-none',
           className
         )
       )}

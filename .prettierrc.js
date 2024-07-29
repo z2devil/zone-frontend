@@ -1,9 +1,9 @@
-/**  @type {import('prettier').Options} */
+/** @type {import('prettier').Options} */
 module.exports = {
   plugins: [import('prettier-plugin-tailwindcss')],
   pluginSearchDirs: ['.'],
   tailwindFunctions: ['clsx'],
-  printWidth: 80,
+  printWidth: 80,  
   tabWidth: 2,
   useTabs: false,
   semi: true,
