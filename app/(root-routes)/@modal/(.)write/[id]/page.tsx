@@ -5,11 +5,11 @@ import { MotionList } from '@/ui/Motion';
 import RichEditor, { EditorRef } from '@/ui/RichEditor';
 import clsx from 'clsx';
 import { notFound, useRouter } from 'next/navigation';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import style from './style.module.scss';
 import { ModalInfo } from '@/ui/Modal/hooks/useModal';
 import NotePublish, { NoteOptions } from '@/ui/NotePublish';
-import { useNotificationUtilsStore } from '@/lib/stores';
+import { useModalUtilsStore, useNotificationUtilsStore } from '@/lib/stores';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import {
   NoteTypeEnum,
@@ -19,7 +19,7 @@ import {
 } from '@/lib/api/notes';
 import useRequest from '@/lib/hooks/useRequest';
 import { useNotesStore } from '@/lib/stores/notes';
-import { Descendant } from 'slate';
+import { Descendant, Element, Node, Transforms } from 'slate';
 import { BlockElementType } from '@/ui/RichEditor/constants';
 import { useMount } from 'react-use';
 import { getContentSummary } from '@/lib/utils/editor';
@@ -41,17 +41,66 @@ export default function WriteNote(props: NoteDetailPageProps) {
 
   const { utils: notificationUtils } = useNotificationUtilsStore();
 
+  const { utils: modalUtils } = useModalUtilsStore();
+
   const { notes, setNotes } = useNotesStore();
 
   const [step, setStep] = useState(0);
 
+  const [isSaved, setIsSaved] = useState(false);
+
   const handleBack = useCallback(() => {
-    setStep(step - 1);
-    if (step > 0) return;
-    setTimeout(() => {
-      navagation.back();
-    }, 400);
-  }, [navagation, step]);
+    if (editorRef.current && Node.string(editorRef.current.getEditor())) {
+      const uuid = modalUtils?.open({
+        title: '退出编辑',
+        children: '确定退出编辑吗？',
+        okText: '确定',
+        onOk: () => {
+          modalUtils?.close(uuid);
+          setStep(step - 1);
+          if (step > 0) return;
+          setTimeout(() => {
+            navagation.back();
+          }, 400);
+        },
+        cancelText: '取消',
+        onCancel: () => {
+          modalUtils?.close(uuid);
+        },
+      });
+    } else {
+      setStep(step - 1);
+      if (step > 0) return;
+      setTimeout(() => {
+        navagation.back();
+      }, 400);
+    }
+  }, [modalUtils, navagation, step]);
+
+  const handleBeforeUnload = useCallback((e: BeforeUnloadEvent) => {
+    if (editorRef.current && Node.string(editorRef.current.getEditor())) {
+      e.preventDefault();
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    const noteDraft = localStorage.getItem('note-draft');
+    if (noteDraft) {
+      const draft = JSON.parse(noteDraft);
+      const editor = editorRef.current?.getEditor();
+      if (editor) {
+        Transforms.removeNodes(editor, {
+          at: [],
+          match: node => Element.isElement(node),
+        });
+        Transforms.insertNodes(editor, draft);
+      }
+    }
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [handleBeforeUnload]);
 
   /************************************************
    * ✨ 初始化
@@ -195,7 +244,16 @@ export default function WriteNote(props: NoteDetailPageProps) {
                 initialValue={contentRef.current}
                 ref={editorRef}
                 onChange={handleContentChange}
+                onSaved={() => setIsSaved(true)}
               />
+              <div className='flex items-center justify-end gap-1 px-6'>
+                <div
+                  className={clsx(
+                    'h-1 w-1 rounded-full',
+                    isSaved ? 'bg-green-500' : 'bg-gray-300'
+                  )}></div>
+                <span className='text-xs'>{isSaved ? '已保存' : '未保存'}</span>
+              </div>
             </div>
           ),
         },
@@ -222,12 +280,13 @@ export default function WriteNote(props: NoteDetailPageProps) {
     handleToConfig,
     inited,
     isCreate,
+    isSaved,
     step,
   ]);
 
   return (
     <div
-      className='fixed left-0 top-0 z-30 flex h-full w-full flex-col items-center justify-center'
+      className='fixed left-0 top-0 z-20 flex h-full w-full flex-col items-center justify-center'
       style={{
         pointerEvents: 'none',
       }}>
