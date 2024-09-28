@@ -32,6 +32,7 @@ export type RichEditor = BaseEditor &
     >;
   } & {
     isSummary?: boolean;
+    onElementClick?: (element: Element) => void;
   };
 
 export type ParagraphElement = {

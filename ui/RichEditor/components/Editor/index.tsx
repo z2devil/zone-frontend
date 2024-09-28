@@ -73,14 +73,13 @@ const Editor = (props: EditorProps) => {
       decorate={decorate}
       readOnly={readonly}
       renderElement={renderElement}
+      renderLeaf={renderLeaf}
       spellCheck={false}
       tabIndex={0}
       onCopy={handleCopy}
       onCut={handleCut}
       onDragStart={onDragStart}
       onDrop={onDrop}
-      renderLeaf={renderLeaf}
-      // onDOMBeforeInput={handleDOMInput}
       onKeyDown={handleKeyDown}
     />
   );

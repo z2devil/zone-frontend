@@ -24,6 +24,7 @@ import VideoBlock from './elements/VideoBlock';
 import LinkInline from './elements/LinkInline';
 import CubeBlock from './elements/CubeBlock';
 import BlockElementController from './components/BlockElementController';
+import ElementWrapper from './components/ElementWrapper';
 
 const Element = (props: RenderElementProps) => {
   const { attributes, children, element } = props;
@@ -153,11 +154,17 @@ const Element = (props: RenderElementProps) => {
 
   const elementRender = useMemo(() => {
     if (isInline || readOnly || path.length > 1) {
-      return elements[element.type] || <p {...attributes}>{children}</p>;
+      return (
+        <ElementWrapper element={element} id={key}>
+          {elements[element.type] || <p {...attributes}>{children}</p>}
+        </ElementWrapper>
+      );
     }
     return (
       <BlockElementController element={element} id={key}>
-        {elements[element.type] || <p {...attributes}>{children}</p>}
+        <ElementWrapper element={element} id={key}>
+          {elements[element.type] || <p {...attributes}>{children}</p>}
+        </ElementWrapper>
       </BlockElementController>
     );
   }, [
