@@ -26,6 +26,8 @@ const WorksPage = () => {
 
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const [contentWidth, setContentWidth] = useState(0);
+
   const currentRef = useRef(0);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -72,17 +74,23 @@ const WorksPage = () => {
     });
   };
 
+  const handleContentWidthChange = useCallback((width: number) => {
+    setContentWidth(width);
+  }, []);
+
   return (
     <div
       className='mx-auto flex h-full w-full flex-col items-center overflow-y-auto px-5'
       ref={containerRef}>
       <PageBanner
+        containerWidth={contentWidth}
         lastUpdated={lastUpdated}
         title='作品'
         onChartClick={handleChartClick}
       />
       <Masonry
         columnWidth={CARD_WIDTH}
+        contentWidthChange={handleContentWidthChange}
         data={notes}
         gap={GAP}
         touchBottom={handleLoadData}>
