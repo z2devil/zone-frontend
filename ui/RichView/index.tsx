@@ -60,4 +60,4 @@ const RichView = (props: EditorProps) => {
 
 RichView.displayName = 'RichView';
 
-export default RichView;
+export default memo(RichView, (prev, next) => isEqual(prev, next))
