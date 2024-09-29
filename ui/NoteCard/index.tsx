@@ -291,4 +291,4 @@ const NoteCard = (props: NoteCardProps) => {
   );
 };
 
-export default memo(NoteCard, (prev, next) => isEqual(prev, next))
+export default NoteCard;
