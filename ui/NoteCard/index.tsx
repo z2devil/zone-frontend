@@ -1,7 +1,7 @@
 import { NoteInfo, NoteTypeEnum, deleteNoteAPI } from '@/lib/api/notes';
 import dayjs from '@/lib/utils/dayjs';
 import RichView from '../RichView';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NotificationType } from '../Notification/components/Notification';
 import usePermission from '@/lib/hooks/usePermission';
 import { UserRole } from '@/lib/api/user';
@@ -20,6 +20,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import imageLoader from 'config/image/loader';
 import { getRandomRgbDataURL } from '@/lib/utils/rgbDataURL';
+import { isEqual } from 'lodash';
 
 interface NoteCardProps {
   note: NoteInfo;
@@ -234,7 +235,11 @@ const NoteCard = (props: NoteCardProps) => {
           {note.type === NoteTypeEnum.NOTE ? (
             <div className='pointer-events-none relative flex max-h-[30rem] overflow-hidden'>
               <div className='mb-[1px] flex-1 overflow-hidden'>
-                <RichView isSummary initialValue={JSON.parse(note.content)} />
+                <RichView
+                  isSummary
+                  initialValue={JSON.parse(note.content)}
+                  value={JSON.parse(note.content)}
+                />
               </div>
               <div className='absolute bottom-0 left-0 right-0'>
                 {isCollapsed ? (
@@ -286,4 +291,4 @@ const NoteCard = (props: NoteCardProps) => {
   );
 };
 
-export default NoteCard;
+export default memo(NoteCard, (prev, next) => isEqual(prev, next))

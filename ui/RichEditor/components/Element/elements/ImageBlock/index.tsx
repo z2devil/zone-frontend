@@ -91,21 +91,19 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
     [editor, element, readOnly]
   );
 
-  const blurDataURL = useMemo(() => {
-    return getRandomRgbDataURL();
-  }, []);
+  const blurDataURL = useMemo(() => getRandomRgbDataURL(), []);
 
   return (
     <div {...attributes}>
       <div
         className={clsx(
-          'group relative w-full overflow-hidden',
+          'group relative overflow-hidden rounded-lg',
+          hasSize ? 'w-fit' : 'w-full aspect-[3/1]',
           !readOnly
-            ? selected
-              ? 'border-2 border-dashed border-primary-50'
-              : 'border-2 border-dashed border-black-300'
-            : '',
-          !hasSize && 'aspect-[3/1]'
+          ? selected
+            ? 'border border-primary-50'
+            : 'border border-black-200'
+          : '',
         )}
         contentEditable={false}>
         {element.url ? (
@@ -124,7 +122,7 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
         ) : null}
         {!readOnly ? (
           isLoading ? (
-            <div className='absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col items-center justify-center gap-1 bg-white bg-opacity-50 backdrop-blur-lg'>
+            <div className='absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col items-center justify-center gap-1 bg-white bg-opacity-50'>
               <span className='text-17 font-bold text-black-600'>
                 上传中...
               </span>
@@ -133,9 +131,7 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
             <div
               className={clsx(
                 'absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col items-center justify-center gap-1',
-                !hasSize
-                  ? ''
-                  : 'bg-white bg-opacity-50 opacity-0 backdrop-blur-lg transition-all duration-100 group-hover:opacity-100'
+                hasSize && 'bg-white bg-opacity-50 opacity-0 transition-all duration-100 group-hover:opacity-100'
               )}
               onClick={handleUpload}>
               <i className='iconfont icon-image-plus text-xl text-black-600'></i>

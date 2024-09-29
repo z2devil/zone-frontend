@@ -1,5 +1,5 @@
 import { NoteTypeEnum } from '@/lib/api/notes';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import Button from '../Button';
 import clsx from 'clsx';
 import { TagInfo, getTagsAPI, postTagAPI, putTagAPI } from '@/lib/api/tags';

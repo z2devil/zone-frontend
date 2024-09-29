@@ -5,6 +5,9 @@
 @import './iconfont/iconfont.css';
 
 @layer utilities {
+
+  /* 渐变遮罩 */
+  
   .gradient-mask-x {
     mask-image: linear-gradient(
       to right,
@@ -31,5 +34,26 @@
       black calc(100% - 50px),
       transparent
     );
+  }
+
+  /* 自定义滚动条 */
+
+  .scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
+  }
+
+  .scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb-color);
+    border-radius: 4px;
+  }
+
+  .scrollbar::-webkit-scrollbar-track {
+    background-color: var(--scrollbar-track-color);
   }
 }

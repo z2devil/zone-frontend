@@ -14,7 +14,7 @@ const ACTIONS: Record<string, (editor: RichEditor) => void> = {
   u: editor => {
     editorUtils.toggleMark(editor, MarkType.UNDERLINE);
   },
-  s: editor => {
+  d: editor => {
     editorUtils.toggleMark(editor, MarkType.STRIKETHROUGH);
   },
   e: editor => {
@@ -38,7 +38,7 @@ const useKeyDown = (editor: RichEditor, readOnly = false) => {
 
       if (metaKey || ctrlKey) {
         const action = ACTIONS[key];
-        if (action) {
+        if (action && !editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK)) {
           e.preventDefault();
           action(editor);
         }

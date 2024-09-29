@@ -157,6 +157,7 @@ const NotePage = () => {
       ) : (
         <PageBanner
           canSearch
+          containerWidth={contentWidth}
           lastUpdated={lastUpdated}
           title='笔记'
           onChartClick={handleChartClick}

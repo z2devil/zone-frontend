@@ -11,8 +11,7 @@ const READONLY_INLINE_ELEMENTS: ElementType[] = [];
 const UNSELECTABLE_INLINE_ELEMENTS: ElementType[] = [];
 
 export const withInlines = (editor: RichEditor) => {
-  const { insertData, insertText, isInline, isElementReadOnly, isSelectable } =
-    editor;
+  const { isInline, isElementReadOnly, isSelectable } = editor;
 
   editor.isInline = element => {
     return INLINE_ELEMENTS.includes(element.type) ? true : isInline(element);

@@ -25,7 +25,7 @@ const enum ItemTypes {
 }
 
 const BlockElementController = (props: BlockElementControllerProps) => {
-  const { id, children, element } = props;
+  const { id, children } = props;
 
   const [hovered, setHovered] = useState(false);
 

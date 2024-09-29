@@ -61,7 +61,6 @@ const WhiteBoard = (props: WhiteBoardProps) => {
   );
 
   useEffect(() => {
-    console.log('[ refresh ]', readOnly, selected, excalidrawAPI?.refresh);
     if (readOnly || !selected) return;
     requestAnimationFrame(() => excalidrawAPI?.refresh());
   }, [excalidrawAPI, readOnly, selected]);
@@ -77,7 +76,6 @@ const WhiteBoard = (props: WhiteBoardProps) => {
       const elementsClone = structuredClone(elements);
       if (isElementsEqual(latestElementsRef.current, elementsClone)) return;
       latestElementsRef.current = elementsClone;
-      console.log('[ 更新 ]', elementsClone);
       Transforms.setNodes(
         editor,
         {
