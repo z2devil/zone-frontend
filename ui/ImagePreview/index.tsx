@@ -1,3 +1,5 @@
+'use client'
+
 import { getRandomRgbDataURL } from '@/lib/utils/rgbDataURL';
 import clsx from 'clsx';
 import imageLoader from 'config/image/loader';

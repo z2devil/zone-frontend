@@ -1,3 +1,5 @@
+'use client'
+
 import { getStatisticsAPI } from "@/lib/api/statistics";
 import useRequest from "@/lib/hooks/useRequest";
 import clsx from "clsx";
