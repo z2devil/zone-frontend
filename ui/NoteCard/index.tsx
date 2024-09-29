@@ -1,7 +1,7 @@
 import { NoteInfo, NoteTypeEnum, deleteNoteAPI } from '@/lib/api/notes';
 import dayjs from '@/lib/utils/dayjs';
 import RichView from '../RichView';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NotificationType } from '../Notification/components/Notification';
 import usePermission from '@/lib/hooks/usePermission';
 import { UserRole } from '@/lib/api/user';
@@ -20,6 +20,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import imageLoader from 'config/image/loader';
 import { getRandomRgbDataURL } from '@/lib/utils/rgbDataURL';
+import { isEqual } from 'lodash';
 
 interface NoteCardProps {
   note: NoteInfo;
@@ -290,4 +291,4 @@ const NoteCard = (props: NoteCardProps) => {
   );
 };
 
-export default NoteCard;
+export default memo(NoteCard, (prev, next) => isEqual(prev, next))

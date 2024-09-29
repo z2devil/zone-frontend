@@ -193,7 +193,6 @@ const Masonry = (props: MasonryProps) => {
       }
     }
 
-    console.log('[ wrapperWidth ]', wrapperWidth);
     contentWidthChange?.(wrapperWidth);
 
     setTotalHeight(Math.max(...columnHeights) - gap);

@@ -1,9 +1,10 @@
-import { useEffect, useMemo } from 'react';
+import { memo, useEffect, useMemo } from 'react';
 import { Descendant, createEditor } from 'slate';
 import { Slate as SlateProvider, withReact } from 'slate-react';
 import clsx from 'clsx';
 import Editor from '../RichEditor/components/Editor';
 import { BlockElementType } from '../RichEditor/constants';
+import { isEqual } from 'lodash';
 
 interface EditorProps {
   className?: string;
@@ -59,4 +60,4 @@ const RichView = (props: EditorProps) => {
 
 RichView.displayName = 'RichView';
 
-export default RichView;
+export default memo(RichView, (prev, next) => isEqual(prev, next))

@@ -38,6 +38,7 @@ interface EditorProps {
   className?: string;
   initialValue?: Descendant[];
   onChange?: (value: Descendant[]) => void;
+  onSaved?: () => void;
 }
 
 const RichEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
@@ -115,7 +116,7 @@ const RichEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
                 onChangeFullScreen={handleFullScreen}
               />
               <div className='flex flex-1 overflow-auto bg-gray-100 sm:py-10'>
-                <Editor className='mx-auto h-fit max-w-[45rem] overflow-y-hidden p-6' />
+                <Editor className='mx-auto h-fit max-w-[45rem] overflow-y-hidden p-6 border-2 border-dashed border-black-50' />
               </div>
             </div>,
             document.body
