@@ -1,14 +1,12 @@
 'use client';
 
-import { ClipboardEvent, KeyboardEvent, useRef, useState } from 'react';
+import { ClipboardEvent, FormEvent, KeyboardEvent, useRef, useState } from 'react';
 import { produce } from 'immer';
 
 interface VerificationCodeInputProps {
   length: number;
   onChange: (code: string) => void;
 }
-
-const SupportInputRegExp = /^[0-9]*$/;
 
 const VerificationCodeInput = (props: VerificationCodeInputProps) => {
   const { length, onChange } = props;
@@ -85,27 +83,39 @@ const VerificationCodeInput = (props: VerificationCodeInputProps) => {
           inputDOMs[index + 1]?.focus();
         }
         break;
-      default: {
-        if (!SupportInputRegExp.test(key)) {
-          e.preventDefault();
-          return;
-        }
-        handleChange(index, key);
-      }
     }
   };
+
+  const handleInput = (e: FormEvent<HTMLInputElement>) => {
+    const { target } = e;
+    const containerDOM = containerRef.current;
+    if (!containerDOM) return;
+
+    const inputDOMs =
+      containerDOM.children as HTMLCollectionOf<HTMLInputElement>;
+
+    const index = Array.from(inputDOMs).indexOf(target as HTMLInputElement);
+    const value = (target as HTMLInputElement).value;
+
+    if (value.trim().length === 0 || isNaN(Number(value.trim()))) {
+      e.preventDefault();
+      return;
+    }
+    
+    handleChange(index, value[0]);
+  }
 
   return (
     <div className='flex gap-[1.25rem]' ref={containerRef}>
       {code.map((value, index) => (
         <input
           autoFocus={index === 0}
-          className='flex h-[3.25rem] w-[3.25rem] rounded-xl text-center text-lg font-medium text-black-900'
+          className="flex h-[3.25rem] w-[3.25rem] rounded-xl text-center text-lg font-medium text-black-900"
           key={index}
           maxLength={1}
           type='text'
           value={value}
-          onChange={() => void 0}
+          onInput={handleInput}
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
         />
