@@ -50,7 +50,11 @@ export default function WriteNote(props: NoteDetailPageProps) {
   const [isSaved, setIsSaved] = useState(false);
 
   const handleBack = useCallback(() => {
-    if (editorRef.current && Node.string(editorRef.current.getEditor())) {
+    if (
+      step === 0 &&
+      editorRef.current &&
+      Node.string(editorRef.current.getEditor())
+    ) {
       const uuid = modalUtils?.open({
         title: '退出编辑',
         children: '确定退出编辑吗？',
@@ -225,6 +229,49 @@ export default function WriteNote(props: NoteDetailPageProps) {
     ]
   );
 
+  /************************************************
+   * ✨ 草稿
+   ************************************************/
+
+  const hasDraft = useMemo(() => {
+    const draft = localStorage.getItem('note-draft');
+    return draft && JSON.parse(draft).length > 0;
+  }, []);
+
+  const [hideDraftTip, setHideDraftTip] = useState(false);
+
+  const handleApplyDraft = useCallback(() => {
+    const draft = localStorage.getItem('note-draft');
+    if (draft) {
+      const editor = editorRef.current?.getEditor();
+      if (editor) {
+        Transforms.removeNodes(editor, {
+          at: [],
+          match: node => Element.isElement(node),
+        });
+        Transforms.insertNodes(editor, JSON.parse(draft));
+      }
+    }
+    setHideDraftTip(true);
+  }, []);
+
+  const handleCloseDraftTip = useCallback(() => {
+    setHideDraftTip(true);
+  }, []);
+
+  const handleSavaDraft = useCallback(() => {
+    const editor = editorRef.current?.getEditor();
+    if (!editor) return;
+    const draft = editor.children;
+    localStorage.setItem('note-draft', JSON.stringify(draft));
+    setIsSaved(true);
+    notificationUtils?.open({
+      type: NotificationType.SUCCESS,
+      content: '保存成功',
+      duration: 3,
+    });
+  }, [notificationUtils]);
+
   const modals = useMemo<ModalInfo[]>(() => {
     if (!inited) return [];
     return [
@@ -239,13 +286,37 @@ export default function WriteNote(props: NoteDetailPageProps) {
           onOk: handleToConfig,
           children: (
             <div className='mb-6'>
+              {/* 存在草稿，询问是否使用 */}
+              {hasDraft && !hideDraftTip ? (
+                <div className='flex items-center justify-between bg-yellow-100 px-6 py-2'>
+                  <div className='flex-1'>
+                    <span className='text-sm text-gray-500'>
+                      检测到上次有未保存的草稿，是否继续编辑？
+                    </span>
+                  </div>
+                  <div className='flex gap-2'>
+                    <button
+                      className='text-sm text-primary-50 hover:text-primary-100'
+                      onClick={handleApplyDraft}>
+                      继续编辑
+                    </button>
+                    <button
+                      className='text-sm text-primary-50 hover:text-primary-100'
+                      onClick={handleCloseDraftTip}>
+                      不再提醒
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+              {/* 编辑器 */}
               <RichEditor
                 className='max-h-[70vh]'
                 initialValue={contentRef.current}
                 ref={editorRef}
                 onChange={handleContentChange}
-                onSaved={() => setIsSaved(true)}
+                onSaved={handleSavaDraft}
               />
+              {/* 保存状态 */}
               <div className='flex items-center justify-end gap-1 px-6'>
                 <div
                   className={clsx(
@@ -275,9 +346,14 @@ export default function WriteNote(props: NoteDetailPageProps) {
       },
     ].filter(Boolean) as ModalInfo[];
   }, [
+    handleApplyDraft,
+    handleCloseDraftTip,
     handleContentChange,
     handlePublish,
+    handleSavaDraft,
     handleToConfig,
+    hasDraft,
+    hideDraftTip,
     inited,
     isCreate,
     isSaved,
