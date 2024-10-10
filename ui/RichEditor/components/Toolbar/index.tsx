@@ -41,7 +41,7 @@ const Toolbar = (props: ToolbarProps) => {
             return (
               <button
                 className={clsx(
-                  'rounded aspect-square overflow-hidden flex p-1 transition-colors duration-100 hover:bg-gray-50 items-center',
+                  'rounded aspect-square overflow-hidden flex p-1 transition-colors duration-100 hover:bg-gray-50 items-center flex-shrink-0',
                   disabled ? 'cursor-not-allowed text-black-400 hover:text-black-600' : 'hover:bg-gray-50 hover:text-black-900',
                   {
                     'text-primary-50' : active,
