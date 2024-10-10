@@ -4,8 +4,10 @@ import clsx from 'clsx';
 import {
   forwardRef,
   useCallback,
+  useEffect,
   useImperativeHandle,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { Descendant, createEditor } from 'slate';
@@ -55,7 +57,10 @@ const RichEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
       },
     ],
     onChange,
+    onSaved,
   } = props;
+
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const editor = useMemo(() => {
     const enhancers = [
@@ -94,6 +99,27 @@ const RichEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
     getEditor: () => editor,
   }));
 
+  /************************************************
+   * ✨ 保存
+   ************************************************/
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === 's' && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault();
+        onSaved?.();
+      }
+    },
+    [onSaved]
+  );
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleKeyDown, onSaved]);
+
   return (
     <DndProvider backend={HTML5Backend}>
       <SlateProvider
@@ -109,14 +135,15 @@ const RichEditor = forwardRef<EditorRef, EditorProps>((props, ref) => {
                   className,
                   'min-h-screen'
                 )
-              )}>
+              )}
+              ref={containerRef}>
               <Toolbar
                 className='z-10 bg-gray-100'
                 fullScreen={fullScreen}
                 onChangeFullScreen={handleFullScreen}
               />
               <div className='flex flex-1 overflow-auto bg-gray-100 sm:py-10'>
-                <Editor className='mx-auto h-fit max-w-[45rem] overflow-y-hidden p-6 border-2 border-dashed border-black-50' />
+                <Editor className='mx-auto h-fit max-w-[45rem] overflow-y-hidden border-2 border-dashed border-black-50 p-6' />
               </div>
             </div>,
             document.body
