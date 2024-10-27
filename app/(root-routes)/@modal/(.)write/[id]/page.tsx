@@ -151,11 +151,12 @@ export default function WriteNote(props: NoteDetailPageProps) {
 
   const handleContentChange = useCallback((content: Descendant[]) => {
     contentRef.current = content;
+    setIsSaved(false);
   }, []);
 
   const handleToConfig = useCallback(() => {
     const editor = editorRef.current?.getEditor();
-    if (editor && editor?.string([0]).length === 0) {
+    if (editor && editor?.string([]).length === 0) {
       notificationUtils?.open({
         type: NotificationType.WARNING,
         content: '内容不能为空',
@@ -256,6 +257,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
   }, []);
 
   const handleCloseDraftTip = useCallback(() => {
+    localStorage.removeItem('note-draft')
     setHideDraftTip(true);
   }, []);
 
@@ -288,20 +290,20 @@ export default function WriteNote(props: NoteDetailPageProps) {
             <div className='mb-6'>
               {/* 存在草稿，询问是否使用 */}
               {hasDraft && !hideDraftTip ? (
-                <div className='flex items-center justify-between bg-yellow-100 px-6 py-2'>
+                <div className='flex items-center justify-between bg-primary-50 bg-opacity-10 px-6 py-2'>
                   <div className='flex-1'>
-                    <span className='text-sm text-gray-500'>
-                      检测到上次有未保存的草稿，是否继续编辑？
+                    <span className='text-sm text-primary-50'>
+                      有已保存的草稿，是否继续编辑？
                     </span>
                   </div>
                   <div className='flex gap-2'>
                     <button
-                      className='text-sm text-primary-50 hover:text-primary-100'
+                      className='text-xs text-primary-50 hover:bg-black-50 border border-primary-50 px-2 py-1 rounded-md'
                       onClick={handleApplyDraft}>
                       继续编辑
                     </button>
                     <button
-                      className='text-sm text-primary-50 hover:text-primary-100'
+                      className='text-xs text-primary-50 hover:bg-black-50 border border-primary-50 px-2 py-1 rounded-md'
                       onClick={handleCloseDraftTip}>
                       不再提醒
                     </button>
@@ -321,9 +323,9 @@ export default function WriteNote(props: NoteDetailPageProps) {
                 <div
                   className={clsx(
                     'h-1 w-1 rounded-full',
-                    isSaved ? 'bg-green-500' : 'bg-gray-300'
+                    isSaved ? 'bg-green-500' : 'bg-black-400'
                   )}></div>
-                <span className='text-xs'>{isSaved ? '已保存' : '未保存'}</span>
+                <span className='text-xs text-black-600'>{isSaved ? '已保存' : '未保存'}</span>
               </div>
             </div>
           ),
