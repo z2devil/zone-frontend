@@ -1,7 +1,13 @@
 'use client';
 
-import { ClipboardEvent, FormEvent, KeyboardEvent, useRef, useState } from 'react';
-import { produce } from 'immer';
+import {
+  ClipboardEvent,
+  FormEvent,
+  KeyboardEvent,
+  useCallback,
+  useRef,
+  useState,
+} from 'react';
 
 interface VerificationCodeInputProps {
   length: number;
@@ -11,110 +17,126 @@ interface VerificationCodeInputProps {
 const VerificationCodeInput = (props: VerificationCodeInputProps) => {
   const { length, onChange } = props;
 
-  const [code, setCode] = useState(Array(length).fill(''));
+  const [code, setCode] = useState<string[]>(Array(length).fill(''));
 
-  const containerRef: React.RefObject<HTMLDivElement> = useRef(null);
+  const [isPreventCompositing, setIsPreventCompositing] = useState(false);
 
-  // 输入变化
-  const handleChange = (index: number, value: string) => {
-    const containerDOM = containerRef.current;
-    if (!containerDOM) return;
+  const containerRef = useRef<HTMLDivElement>(null);
 
-    const inputDOMs =
-      containerDOM.children as HTMLCollectionOf<HTMLInputElement>;
-    const nextIndex = index + (value === '' ? -1 : 1);
-    const nextValue = code[nextIndex];
+  const handleChange = useCallback(
+    (index: number, value: string) => {
+      const updatedCode = [...code];
+      updatedCode[index] = value;
 
-    if (nextIndex >= 0 && nextIndex < index) {
-      inputDOMs[nextIndex]?.focus();
-    }
-    if (nextIndex < length && nextIndex > index && nextValue === '') {
-      inputDOMs[nextIndex]?.focus();
-    }
+      setCode(updatedCode);
+      onChange(updatedCode.join(''));
 
-    setCode(
-      produce(code, draft => {
-        draft[index] = value;
-        onChange(draft.join(''));
-      })
-    );
-  };
+      // Focus the next or previous input
+      const nextIndex = index + (value === '' ? -1 : 1);
+      const containerDOM = containerRef.current;
+      if (containerDOM) {
+        const inputDOMs =
+          containerDOM.children as HTMLCollectionOf<HTMLInputElement>;
+        if (nextIndex >= 0 && nextIndex < length) {
+          inputDOMs[nextIndex]?.focus();
+        }
+      }
+    },
+    [code, length, onChange]
+  );
 
-  // 粘贴
-  const handlePaste = (e: ClipboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    const pastedData = e.clipboardData.getData('text/plain').trim();
-    const pastedCode = pastedData.slice(0, length).split('');
+  const handlePaste = useCallback(
+    (e: ClipboardEvent<HTMLInputElement>) => {
+      e.preventDefault();
+      const pastedData = e.clipboardData
+        .getData('text/plain')
+        .trim()
+        .slice(0, length);
 
-    setCode(
-      produce(code, draft => {
-        pastedCode.forEach((value, index) => {
-          draft[index] = value;
-        });
-      })
-    );
-  };
+      const updatedCode = [...code];
+      [...pastedData].forEach((value, index) => {
+        if (index < length) {
+          updatedCode[index] = value;
+        }
+      });
 
-  // 按键监听
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    const { key, target } = e;
-    const containerDOM = containerRef.current;
-    if (!containerDOM) return;
+      setCode(updatedCode);
+      onChange(updatedCode.join(''));
+    },
+    [code, length, onChange]
+  );
 
-    const inputDOMs =
-      containerDOM.children as HTMLCollectionOf<HTMLInputElement>;
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLInputElement>) => {
+      const { key, target } = e;
+      const containerDOM = containerRef.current;
+      if (!containerDOM) return;
 
-    const index = Array.from(inputDOMs).indexOf(target as HTMLInputElement);
+      const inputDOMs =
+        containerDOM.children as HTMLCollectionOf<HTMLInputElement>;
+      const index = Array.from(inputDOMs).indexOf(target as HTMLInputElement);
 
-    switch (key) {
-      case 'Backspace':
-        {
+      switch (key) {
+        case 'Backspace':
           e.preventDefault();
           handleChange(index, '');
-        }
-        break;
-      case 'ArrowLeft':
-        {
-          inputDOMs[index - 1]?.focus();
-        }
-        break;
-      case 'ArrowRight':
-        {
-          inputDOMs[index + 1]?.focus();
-        }
-        break;
-    }
-  };
+          break;
+        case 'ArrowLeft':
+          if (index > 0) {
+            inputDOMs[index - 1]?.focus();
+          }
+          break;
+        case 'ArrowRight':
+          if (index < length - 1) {
+            inputDOMs[index + 1]?.focus();
+          }
+          break;
+      }
+    },
+    [handleChange, length]
+  );
 
-  const handleInput = (e: FormEvent<HTMLInputElement>) => {
-    const { target } = e;
-    const containerDOM = containerRef.current;
-    if (!containerDOM) return;
+  const handleInput = useCallback(
+    (e: FormEvent<HTMLInputElement>) => {
+      if (isPreventCompositing) {
+        e.preventDefault();
+        setIsPreventCompositing(false);
+        return;
+      }
 
-    const inputDOMs =
-      containerDOM.children as HTMLCollectionOf<HTMLInputElement>;
+      const { target } = e;
+      const value = (target as HTMLInputElement).value;
 
-    const index = Array.from(inputDOMs).indexOf(target as HTMLInputElement);
-    const value = (target as HTMLInputElement).value;
+      // 只接受数字
+      if (value && !/^[0-9]*$/.test(value)) {
+        e.preventDefault();
+        return;
+      }
 
-    if (value.trim().length === 0 || isNaN(Number(value.trim()))) {
-      e.preventDefault();
-      return;
-    }
-    
-    handleChange(index, value[0]);
-  }
+      const index = Array.from(
+        containerRef.current?.children as HTMLCollectionOf<HTMLInputElement>
+      ).indexOf(target as HTMLInputElement);
+      handleChange(index, value.slice(0, 1));
+    },
+    [handleChange, isPreventCompositing]
+  );
+
+  const handleCompositionStart = useCallback(() => {
+    setIsPreventCompositing(true);
+  }, []);
 
   return (
     <div className='flex gap-[1.25rem]' ref={containerRef}>
       {code.map((value, index) => (
         <input
+          aria-label={`Verification code input ${index + 1}`}
           autoFocus={index === 0}
-          className="flex h-[3.25rem] w-[3.25rem] rounded-xl text-center text-lg font-medium text-black-900"
+          className='flex h-[3.25rem] w-[3.25rem] rounded-xl text-center text-lg font-medium text-black-900'
           key={index}
           maxLength={1}
           type='text'
           value={value}
+          onCompositionStartCapture={handleCompositionStart}
           onInput={handleInput}
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}

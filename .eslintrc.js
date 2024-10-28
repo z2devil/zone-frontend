@@ -29,8 +29,8 @@ module.exports = {
   ],
   plugins: ['react', 'react-hooks', '@typescript-eslint'],
   rules: {
-    '@typescript-eslint/no-explicit-any': ['off', { ignoreRestArgs: false }],
-    '@typescript-eslint/no-var-requires': 0,
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-var-requires': 'off',
     'react/jsx-sort-props': [
       1,
       {
