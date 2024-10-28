@@ -3,7 +3,13 @@ import NextImage from 'next/image';
 import { Transforms } from 'slate';
 import { ReactEditor, useReadOnly, useSelected, useSlate } from 'slate-react';
 import { ImageBlockElement } from 'types/slate';
-import { ReactEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  ReactEventHandler,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { upload } from '@/lib/api/oss';
 import useRequest from '@/lib/hooks/useRequest';
 import imageLoader from 'config/image/loader';
@@ -32,7 +38,11 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const isLegalImageUrl = useMemo(() => {
-    return element.url && (element.url.startsWith(`https://${process.env.OSS_BUCKET}`) || element.url.startsWith('zone/image/'));
+    return (
+      element.url &&
+      (element.url.startsWith(`https://${process.env.OSS_BUCKET}`) ||
+        element.url.startsWith('zone/image/'))
+    );
   }, [element.url]);
 
   useEffect(() => {
@@ -40,12 +50,15 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
     const uploadExternalImage = async (url: string) => {
       try {
         // 通过代理请求下载外部图片
-        const response = await fetcher(`http://localhost:3000/api/external-image?url=${url}`, {
+        const response = await fetcher(`/api/external-image?url=${url}`, {
           method: 'GET',
+          isLocal: true,
         });
         console.log('[ response ]', response);
-        const file = new File([response], 'downloaded-image', { type: response.type });
-        
+        const file = new File([response], 'downloaded-image', {
+          type: response.type,
+        });
+
         // 上传文件并获取文件名
         const fileName = await upload(fetcher)({ file, fileType: 'image' });
         return `${process.env.OSS_ROOT}/image/${fileName}`;
@@ -56,7 +69,10 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
     };
 
     const processImageUpload = async () => {
-      if (element.url && ["https://", "http://"].some(prefix => element.url!.startsWith(prefix))) {
+      if (
+        element.url &&
+        ['https://', 'http://'].some(prefix => element.url!.startsWith(prefix))
+      ) {
         setIsLoading(true);
         try {
           const newUrl = await uploadExternalImage(element.url);
@@ -68,10 +84,10 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
                 { url: newUrl },
                 { at: ReactEditor.findPath(editor, element) }
               );
-            })
+            });
           }
         } catch (error) {
-          console.error("Failed to process external image upload:", error);
+          console.error('Failed to process external image upload:', error);
         } finally {
           setIsLoading(false);
         }
@@ -156,12 +172,12 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
       <div
         className={clsx(
           'group relative overflow-hidden rounded-lg',
-          hasSize ? 'w-fit' : 'w-full aspect-[3/1]',
+          hasSize ? 'w-fit' : 'aspect-[3/1] w-full',
           !readOnly
-          ? selected
-            ? 'border border-primary-50'
-            : 'border border-black-200'
-          : '',
+            ? selected
+              ? 'border border-primary-50'
+              : 'border border-black-200'
+            : ''
         )}
         contentEditable={false}>
         {isLegalImageUrl ? (
@@ -189,7 +205,8 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
             <div
               className={clsx(
                 'absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col items-center justify-center gap-1',
-                hasSize && 'bg-white bg-opacity-50 opacity-0 transition-all duration-100 group-hover:opacity-100'
+                hasSize &&
+                  'bg-white bg-opacity-50 opacity-0 transition-all duration-100 group-hover:opacity-100'
               )}
               onClick={handleUpload}>
               <i className='iconfont icon-image-plus text-xl text-black-600'></i>

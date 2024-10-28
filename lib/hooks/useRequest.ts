@@ -49,7 +49,9 @@ const useRequest = () => {
   const fetcher = useCallback(
     async <T = any>(
       url: string,
-      config: Omit<RequestInit, 'url'> = {},
+      config: Omit<RequestInit, 'url'> & {
+        isLocal?: boolean;
+      } = {},
       enabledToken = true
     ) => {
       try {
@@ -71,7 +73,10 @@ const useRequest = () => {
 
         // 发送请求
         const response = await fetch(
-          url.startsWith('http') ? url : configs.request.baseURL + url,
+          ['https://', 'http://'].some(prefix => url.startsWith(prefix)) ||
+            config.isLocal
+            ? url
+            : configs.request.baseURL + url,
           requestConfig
         );
 
@@ -91,21 +96,25 @@ const useRequest = () => {
         const contentType = response.headers.get('Content-Type') || '';
 
         if (contentType.includes('application/json')) {
-          const { code, data, message } = (await response.json()) as IResponse<T>;
-  
+          const { code, data, message } =
+            (await response.json()) as IResponse<T>;
+
           console.log('[ JSON Response ]', url, code, data, message);
-  
+
           if (code !== 200) {
             if (isArray(message)) {
               const { message: msg } = message[0];
               throw new Error(msg);
             } else {
-              throw new Error(message as any || 'Unknown error');
+              throw new Error((message as any) || 'Unknown error');
             }
           }
-          
+
           return data;
-        } else if (contentType.includes('image') || contentType.includes('octet-stream')) {
+        } else if (
+          contentType.includes('image') ||
+          contentType.includes('octet-stream')
+        ) {
           // 如果是二进制数据，直接返回 blob
           const blob = await response.blob();
           console.log('[ Blob Response ]', blob);

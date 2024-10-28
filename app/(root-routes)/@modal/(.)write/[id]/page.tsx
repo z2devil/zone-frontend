@@ -47,8 +47,6 @@ export default function WriteNote(props: NoteDetailPageProps) {
 
   const [step, setStep] = useState(0);
 
-  const [isSaved, setIsSaved] = useState(false);
-
   const handleBack = useCallback(() => {
     if (
       step === 0 &&
@@ -151,7 +149,6 @@ export default function WriteNote(props: NoteDetailPageProps) {
 
   const handleContentChange = useCallback((content: Descendant[]) => {
     contentRef.current = content;
-    setIsSaved(false);
   }, []);
 
   const handleToConfig = useCallback(() => {
@@ -230,50 +227,6 @@ export default function WriteNote(props: NoteDetailPageProps) {
     ]
   );
 
-  /************************************************
-   * ✨ 草稿
-   ************************************************/
-
-  const hasDraft = useMemo(() => {
-    const draft = localStorage.getItem('note-draft');
-    return draft && JSON.parse(draft).length > 0;
-  }, []);
-
-  const [hideDraftTip, setHideDraftTip] = useState(false);
-
-  const handleApplyDraft = useCallback(() => {
-    const draft = localStorage.getItem('note-draft');
-    if (draft) {
-      const editor = editorRef.current?.getEditor();
-      if (editor) {
-        Transforms.removeNodes(editor, {
-          at: [],
-          match: node => Element.isElement(node),
-        });
-        Transforms.insertNodes(editor, JSON.parse(draft));
-      }
-    }
-    setHideDraftTip(true);
-  }, []);
-
-  const handleCloseDraftTip = useCallback(() => {
-    localStorage.removeItem('note-draft')
-    setHideDraftTip(true);
-  }, []);
-
-  const handleSavaDraft = useCallback(() => {
-    const editor = editorRef.current?.getEditor();
-    if (!editor) return;
-    const draft = editor.children;
-    localStorage.setItem('note-draft', JSON.stringify(draft));
-    setIsSaved(true);
-    notificationUtils?.open({
-      type: NotificationType.SUCCESS,
-      content: '保存成功',
-      duration: 3,
-    });
-  }, [notificationUtils]);
-
   const modals = useMemo<ModalInfo[]>(() => {
     if (!inited) return [];
     return [
@@ -288,45 +241,13 @@ export default function WriteNote(props: NoteDetailPageProps) {
           onOk: handleToConfig,
           children: (
             <div className='mb-6'>
-              {/* 存在草稿，询问是否使用 */}
-              {hasDraft && !hideDraftTip ? (
-                <div className='flex items-center justify-between bg-primary-50 bg-opacity-10 px-6 py-2'>
-                  <div className='flex-1'>
-                    <span className='text-sm text-primary-50'>
-                      有已保存的草稿，是否继续编辑？
-                    </span>
-                  </div>
-                  <div className='flex gap-2'>
-                    <button
-                      className='text-xs text-primary-50 hover:bg-black-50 border border-primary-50 px-2 py-1 rounded-md'
-                      onClick={handleApplyDraft}>
-                      继续编辑
-                    </button>
-                    <button
-                      className='text-xs text-primary-50 hover:bg-black-50 border border-primary-50 px-2 py-1 rounded-md'
-                      onClick={handleCloseDraftTip}>
-                      不再提醒
-                    </button>
-                  </div>
-                </div>
-              ) : null}
               {/* 编辑器 */}
               <RichEditor
                 className='max-h-[70vh]'
                 initialValue={contentRef.current}
                 ref={editorRef}
                 onChange={handleContentChange}
-                onSaved={handleSavaDraft}
               />
-              {/* 保存状态 */}
-              <div className='flex items-center justify-end gap-1 px-6'>
-                <div
-                  className={clsx(
-                    'h-1 w-1 rounded-full',
-                    isSaved ? 'bg-green-500' : 'bg-black-400'
-                  )}></div>
-                <span className='text-xs text-black-600'>{isSaved ? '已保存' : '未保存'}</span>
-              </div>
             </div>
           ),
         },
@@ -348,17 +269,11 @@ export default function WriteNote(props: NoteDetailPageProps) {
       },
     ].filter(Boolean) as ModalInfo[];
   }, [
-    handleApplyDraft,
-    handleCloseDraftTip,
     handleContentChange,
     handlePublish,
-    handleSavaDraft,
     handleToConfig,
-    hasDraft,
-    hideDraftTip,
     inited,
     isCreate,
-    isSaved,
     step,
   ]);
 

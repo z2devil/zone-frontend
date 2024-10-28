@@ -1,37 +1,35 @@
-'use server'
+'use server';
 
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * 获取远端图片
  */
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function GET(req: NextRequest) {
   try {
     // 从请求体中获取参数
     const url = req.nextUrl.searchParams.get('url');
 
-    console.log('[ url ]', url);
-
     // 检查参数是否存在
     if (!url) {
-      return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Missing required parameters' },
+        { status: 400 }
+      );
     }
 
     const response = await fetch(url);
 
-    console.log('[ response ]', response);
-
     // 检查请求是否成功
     if (!response.ok) {
-      return NextResponse.json({ error: 'Failed to fetch image' }, { status: 500 });
+      return NextResponse.json(
+        { error: 'Failed to fetch image' },
+        { status: 500 }
+      );
     }
 
     // 获取图片的二进制数据
     const buffer = await response.arrayBuffer();
-
-    console.log('[ buffer ]', buffer, response.headers.get('Content-Type'));
-    
-    // res.headers.set('Content-Type', response.headers.get('Content-Type') || 'image/jpeg');
 
     return new NextResponse(buffer, {
       status: 200,
@@ -41,7 +39,6 @@ export async function GET(req: NextRequest, res: NextResponse) {
       },
     });
   } catch (error) {
-    console.error('Error fetching image:', error);
     return NextResponse.json({ error: Error }, { status: 500 });
   }
 }
