@@ -1,8 +1,11 @@
-import { jsx } from 'slate-hyperscript'
-import { BlockElementType, InlineElementType } from '../../constants'
+import { jsx } from 'slate-hyperscript';
+import { BlockElementType, InlineElementType } from '../../constants';
 
-const ELEMENT_TAGS: Record<string, (el: Node) => any> = {
-  A: (el) => ({ type: InlineElementType.LINK, url: el.getAttribute('href') || void 0 }),
+const ELEMENT_TAGS: Record<string, (el: any) => any> = {
+  A: el => ({
+    type: InlineElementType.LINK,
+    url: el.getAttribute('href') || void 0,
+  }),
   BLOCKQUOTE: () => ({ type: BlockElementType.BLOCK_QUOTE }),
   H1: () => ({ type: BlockElementType.HEADING_1 }),
   H2: () => ({ type: BlockElementType.HEADING_2 }),
@@ -10,13 +13,16 @@ const ELEMENT_TAGS: Record<string, (el: Node) => any> = {
   H4: () => ({ type: BlockElementType.HEADING_4 }),
   H5: () => ({ type: BlockElementType.HEADING_5 }),
   H6: () => ({ type: BlockElementType.HEADING_6 }),
-  IMG: (el) => ({ type: BlockElementType.IMAGE, url: el.getAttribute('src') || void 0 }),
+  IMG: el => ({
+    type: BlockElementType.IMAGE,
+    url: el.getAttribute('src') || void 0,
+  }),
   LI: () => ({ type: BlockElementType.LIST_ITEM }),
   OL: () => ({ type: BlockElementType.OL_LIST }),
   P: () => ({ type: BlockElementType.PARAGRAPH }),
   PRE: () => ({ type: BlockElementType.CODE_BLOCK }),
   UL: () => ({ type: BlockElementType.UL_LIST }),
-}
+};
 
 const TEXT_TAGS: Record<string, (el: Node) => any> = {
   CODE: () => ({ code: true }),
@@ -26,48 +32,48 @@ const TEXT_TAGS: Record<string, (el: Node) => any> = {
   S: () => ({ strikethrough: true }),
   STRONG: () => ({ bold: true }),
   U: () => ({ underline: true }),
-}
+};
 
 const deserialize = (el: Node) => {
   if (el.nodeType === 3) {
-    return el.textContent
+    return el.textContent;
   } else if (el.nodeType !== 1) {
-    return null
+    return null;
   } else if (el.nodeName === 'BR') {
-    return '\n'
+    return '\n';
   }
 
-  const { nodeName } = el
-  let parent = el
+  const { nodeName } = el;
+  let parent = el;
 
   if (
     nodeName === 'PRE' &&
     el.childNodes[0] &&
     el.childNodes[0].nodeName === 'CODE'
   ) {
-    parent = el.childNodes[0] as HTMLElement
+    parent = el.childNodes[0] as HTMLElement;
   }
-  let children: any = Array.from(parent.childNodes).map(deserialize).flat()
+  let children: any = Array.from(parent.childNodes).map(deserialize).flat();
 
   if (children.length === 0) {
-    children = [{ text: '' }]
+    children = [{ text: '' }];
   }
 
   if (el.nodeName === 'BODY') {
-    return jsx('fragment', {}, children)
+    return jsx('fragment', {}, children);
   }
 
   if (ELEMENT_TAGS[nodeName]) {
-    const attrs = ELEMENT_TAGS[nodeName](el)
-    return jsx('element', attrs, children)
+    const attrs = ELEMENT_TAGS[nodeName](el);
+    return jsx('element', attrs, children);
   }
 
   if (TEXT_TAGS[nodeName]) {
-    const attrs = TEXT_TAGS[nodeName](el)
-    return children.map((child: any) => jsx('text', attrs, child))
+    const attrs = TEXT_TAGS[nodeName](el);
+    return children.map((child: any) => jsx('text', attrs, child));
   }
 
-  return children
-}
+  return children;
+};
 
 export default deserialize;
