@@ -81,25 +81,25 @@ const Editor = (props: EditorProps) => {
       onDragStart={onDragStart}
       onDrop={onDrop}
       onKeyDown={handleKeyDown}
-      onPaste={e => {
-        const items = e.clipboardData.items;
-        console.log('[ items ]', items);
-        for (const item of items) {
-          console.log('[ item ]', item, item.getAsString(null));
-          if (item.type.startsWith("image/")) {
-            // 找到了图片文件，处理图片数据
-            const file = item.getAsFile();
-            // 可以将图片读取为 URL 或 Blob 来展示
-            const reader = new FileReader();
-            reader.onload = function(e) {
-              const imgElement = document.createElement("img");
-              imgElement.src = e.target.result;
-              document.body.appendChild(imgElement); // 示例展示
-            };
-            reader.readAsDataURL(file);
-          }
-        }
-      }}
+      // onPaste={e => {
+      //   const items = e.clipboardData.items;
+      //   console.log('[ items ]', items);
+      //   for (const item of items) {
+      //     console.log('[ item ]', item, item.getAsString(null));
+      //     if (item.type.startsWith("image/")) {
+      //       // 找到了图片文件，处理图片数据
+      //       const file = item.getAsFile();
+      //       // 可以将图片读取为 URL 或 Blob 来展示
+      //       const reader = new FileReader();
+      //       reader.onload = function(e) {
+      //         const imgElement = document.createElement("img");
+      //         imgElement.src = e.target.result;
+      //         document.body.appendChild(imgElement); // 示例展示
+      //       };
+      //       reader.readAsDataURL(file);
+      //     }
+      //   }
+      // }}
     />
   );
 };
