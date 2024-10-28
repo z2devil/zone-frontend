@@ -75,30 +75,44 @@ const useRequest = () => {
           requestConfig
         );
 
-        // 解析响应
-        const { code, data, message } = (await response.json()) as IResponse<T>;
-
-        console.log('[ Response ]', url, code, data, message);
-
-        if (code !== 200) {
-          if (code === 401 || code === 403) {
+        // 检查响应状态
+        if (!response.ok) {
+          if (response.status === 401 || response.status === 403) {
             clear();
             router.push('/login');
           }
-
-          if (code === 429 && pathname !== '/too-many-requests') {
+          if (response.status === 429 && pathname !== '/too-many-requests') {
             router.push('/too-many-requests');
           }
-
-          if (isArray(message)) {
-            const { message: msg } = message[0];
-            throw new Error(msg);
-          } else {
-            throw new Error(message as any);
-          }
+          throw new Error(`Request failed with status ${response.status}`);
         }
 
-        return data;
+        // 根据 Content-Type 处理响应
+        const contentType = response.headers.get('Content-Type') || '';
+
+        if (contentType.includes('application/json')) {
+          const { code, data, message } = (await response.json()) as IResponse<T>;
+  
+          console.log('[ JSON Response ]', url, code, data, message);
+  
+          if (code !== 200) {
+            if (isArray(message)) {
+              const { message: msg } = message[0];
+              throw new Error(msg);
+            } else {
+              throw new Error(message as any || 'Unknown error');
+            }
+          }
+          
+          return data;
+        } else if (contentType.includes('image') || contentType.includes('octet-stream')) {
+          // 如果是二进制数据，直接返回 blob
+          const blob = await response.blob();
+          console.log('[ Blob Response ]', blob);
+          return blob as T;
+        } else {
+          throw new Error('Unsupported Content-Type');
+        }
       } catch (error) {
         console.error(error);
         throw error;

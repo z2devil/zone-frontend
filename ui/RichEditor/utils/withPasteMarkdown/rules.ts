@@ -129,4 +129,16 @@ export const remarkElementRules: Record<
       return elements;
     },
   },
+  image: {
+    transform: node => {
+      return {
+        type: BlockElementType.IMAGE,
+        url: node.url,
+        alt: node.alt,
+        children: [{
+          text: '',
+        }],
+      } as CustomElement;
+    },
+  },
 };

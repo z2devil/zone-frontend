@@ -62,6 +62,7 @@
     "sass": "^1.68.0",
     "slate": "^0.103.0",
     "slate-history": "^0.109.0",
+    "slate-hyperscript": "^0.100.0",
     "slate-react": "^0.110.1",
     "swr": "^2.2.4",
     "tailwind-merge": "^2.0.0",
