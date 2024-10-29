@@ -37,12 +37,10 @@ const CubeEdit = (props: CubePreviewProps) => {
   }, [url]);
 
   return (
-    <>
-      <div className='flex w-full flex-col gap-4'>
-        <input defaultValue={url} onInput={handleInput}></input>
-        <canvas className='aspect-video h-full w-full' ref={canvasRef}></canvas>
-      </div>
-    </>
+    <div className='flex w-full flex-col gap-4'>
+      <input defaultValue={url} onInput={handleInput}></input>
+      <canvas className='aspect-video h-full w-full' ref={canvasRef}></canvas>
+    </div>
   );
 };
 

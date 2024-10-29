@@ -231,7 +231,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
     if (!inited) return [];
     return [
       step === 0 && {
-        key: 0,
+        key: '0',
         options: {
           uuid: 'edit',
           keepAlive: true,
@@ -253,7 +253,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
         },
       },
       step === 1 && {
-        key: 1,
+        key: '1',
         options: {
           uuid: 'config',
           keepAlive: true,

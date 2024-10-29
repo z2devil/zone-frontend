@@ -30,7 +30,7 @@ export enum BlockElementType {
   BUTTON = 'button',
   MUSIC = 'music',
   WHITE_BOARD = 'white-board',
-  CUBE = 'cube',
+  // CUBE = 'cube',
 }
 
 export const SHORTCUTS = {

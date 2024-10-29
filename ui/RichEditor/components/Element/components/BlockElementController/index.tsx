@@ -153,7 +153,7 @@ const BlockElementController = (props: BlockElementControllerProps) => {
         <div
           className='absolute -left-5 top-1/2 flex h-full w-5 -translate-y-1/2 cursor-grab items-center'
           contentEditable={false}
-          ref={drag}>
+          ref={drag as any}>
           <div className='flex h-full w-4 items-center justify-center rounded text-black-400 hover:bg-gray-200'>
             <span className='iconfont icon-draggable-dots'></span>
           </div>

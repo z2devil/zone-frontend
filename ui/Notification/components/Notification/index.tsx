@@ -1,5 +1,4 @@
 import {
-  Key,
   MouseEvent,
   MouseEventHandler,
   ReactNode,
@@ -17,13 +16,13 @@ export enum NotificationType {
 }
 
 export interface NotificationProps {
-  uuid: Key;
+  uuid: string;
   type?: NotificationType;
   content?: ReactNode;
   closable?: boolean;
   duration?: number;
   onClick?: MouseEventHandler<HTMLDivElement>;
-  onClose?: (uuid: Key) => void;
+  onClose?: (uuid: string) => void;
 }
 
 const ICONS = {

@@ -1,4 +1,4 @@
-import { Fragment, Key, useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import Motion, { MotionProps } from '../Motion';
 import {
   EnityStatus,
@@ -9,9 +9,9 @@ import {
 
 export type MotionListProps = Omit<MotionProps, 'visible' | 'keepAlive'> & {
   keys: (
-    | Key
+    | string
     | {
-        key: Key;
+        key: string;
         options: {
           keepAlive?: boolean;
           [name: string]: any;
