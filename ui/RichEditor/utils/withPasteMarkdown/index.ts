@@ -26,7 +26,7 @@ export const withPasteMarkdown = (editor: RichEditor) => {
     if (html) {
       const parsed = new DOMParser().parseFromString(html, 'text/html');
       const fragment = deserializeHTML(parsed.body);
-      editor.insertFragment(fragment);
+      editor.insertFragment(fragment as any);
       return;
     } else if (text) {
       const fragment = unified()

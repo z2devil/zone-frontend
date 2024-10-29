@@ -1,8 +1,9 @@
 import { jsx } from 'slate-hyperscript';
 import { BlockElementType, InlineElementType } from '../../constants';
+import { Descendant } from 'slate';
 
-const ELEMENT_TAGS: Record<string, (el: any) => any> = {
-  A: el => ({
+const ELEMENT_TAGS = {
+  A: (el: Element) => ({
     type: InlineElementType.LINK,
     url: el.getAttribute('href') || void 0,
   }),
@@ -13,7 +14,7 @@ const ELEMENT_TAGS: Record<string, (el: any) => any> = {
   H4: () => ({ type: BlockElementType.HEADING_4 }),
   H5: () => ({ type: BlockElementType.HEADING_5 }),
   H6: () => ({ type: BlockElementType.HEADING_6 }),
-  IMG: el => ({
+  IMG: (el: Element) => ({
     type: BlockElementType.IMAGE,
     url: el.getAttribute('src') || void 0,
   }),
@@ -24,7 +25,7 @@ const ELEMENT_TAGS: Record<string, (el: any) => any> = {
   UL: () => ({ type: BlockElementType.UL_LIST }),
 };
 
-const TEXT_TAGS: Record<string, (el: Node) => any> = {
+const TEXT_TAGS = {
   CODE: () => ({ code: true }),
   DEL: () => ({ strikethrough: true }),
   EM: () => ({ italic: true }),
@@ -53,7 +54,9 @@ const deserialize = (el: Node) => {
   ) {
     parent = el.childNodes[0] as HTMLElement;
   }
-  let children: any = Array.from(parent.childNodes).map(deserialize).flat();
+  let children: (Descendant | string | null)[] = Array.from(parent.childNodes)
+    .map(deserialize)
+    .flat();
 
   if (children.length === 0) {
     children = [{ text: '' }];
@@ -63,14 +66,14 @@ const deserialize = (el: Node) => {
     return jsx('fragment', {}, children);
   }
 
-  if (ELEMENT_TAGS[nodeName]) {
-    const attrs = ELEMENT_TAGS[nodeName](el);
+  if ((ELEMENT_TAGS as any)[nodeName]) {
+    const attrs = (ELEMENT_TAGS as any)[nodeName](el);
     return jsx('element', attrs, children);
   }
 
-  if (TEXT_TAGS[nodeName]) {
-    const attrs = TEXT_TAGS[nodeName](el);
-    return children.map((child: any) => jsx('text', attrs, child));
+  if ((TEXT_TAGS as any)[nodeName]) {
+    const attrs = (TEXT_TAGS as any)[nodeName](el);
+    return children.map(child => jsx('text', attrs, child));
   }
 
   return children;
