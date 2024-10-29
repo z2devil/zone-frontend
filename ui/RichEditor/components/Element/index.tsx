@@ -9,7 +9,6 @@ import { BlockElementType, InlineElementType } from '../../constants';
 import InlineChromiumBugfix from './elements/InlineChromiumBugfix';
 import {
   CodeBlockElement,
-  CubeBlockElement,
   ImageBlockElement,
   LinkInlineElement,
   MusicBlockElement,
@@ -22,7 +21,7 @@ import MusicBlock from './elements/MusicBlock';
 import WhiteBoardBlock from './elements/WhiteBoardBlock';
 import VideoBlock from './elements/VideoBlock';
 import LinkInline from './elements/LinkInline';
-import CubeBlock from './elements/CubeBlock';
+// import CubeBlock from './elements/CubeBlock';
 import BlockElementController from './components/BlockElementController';
 import ElementWrapper from './components/ElementWrapper';
 
@@ -105,7 +104,6 @@ const Element = (props: RenderElementProps) => {
       [BlockElementType.BLOCK_QUOTE]: (
         <blockquote {...attributes}>{children}</blockquote>
       ),
-
       [BlockElementType.CODE_BLOCK]: (
         <CodeBlock
           attributes={attributes}
@@ -142,13 +140,13 @@ const Element = (props: RenderElementProps) => {
           {children}
         </WhiteBoardBlock>
       ),
-      [BlockElementType.CUBE]: (
-        <CubeBlock
-          attributes={attributes}
-          element={element as CubeBlockElement}>
-          {children}
-        </CubeBlock>
-      ),
+      // [BlockElementType.CUBE]: (
+      //   <CubeBlock
+      //     attributes={attributes}
+      //     element={element as CubeBlockElement}>
+      //     {children}
+      //   </CubeBlock>
+      // ),
     };
   }, [attributes, children, element, key, props.element]);
 

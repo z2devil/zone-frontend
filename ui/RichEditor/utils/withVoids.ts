@@ -8,7 +8,7 @@ export const VOID_ELEMENTS: ElementType[] = [
   BlockElementType.BUTTON,
   BlockElementType.MUSIC,
   BlockElementType.WHITE_BOARD,
-  BlockElementType.CUBE,
+  // BlockElementType.CUBE,
 ];
 
 export const withVoids = (editor: RichEditor) => {

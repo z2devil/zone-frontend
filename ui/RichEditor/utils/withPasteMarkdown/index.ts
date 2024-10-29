@@ -9,21 +9,23 @@ export const withPasteMarkdown = (editor: RichEditor) => {
   const { insertData } = editor;
 
   editor.insertData = data => {
-    navigator.clipboard.read().then((items) => {
-      for (const item of items) {
-        console.log('[ item ]', item);
-      }
-    }).catch(err => {
-      console.error("Error accessing clipboard: ", err);
-    });
-    // TODO: 之后再处理 html
+    navigator.clipboard
+      .read()
+      .then(items => {
+        for (const item of items) {
+          console.log('[ item ]', item);
+        }
+      })
+      .catch(err => {
+        console.error('Error accessing clipboard: ', err);
+      });
     const html = data.getData('text/html');
     console.log('[ html ]', html);
     const text = data.getData('text/plain');
     console.log('[ text ]', text);
     if (html) {
-      const parsed = new DOMParser().parseFromString(html, 'text/html')
-      const fragment = deserializeHTML(parsed.body)
+      const parsed = new DOMParser().parseFromString(html, 'text/html');
+      const fragment = deserializeHTML(parsed.body);
       editor.insertFragment(fragment);
       return;
     } else if (text) {

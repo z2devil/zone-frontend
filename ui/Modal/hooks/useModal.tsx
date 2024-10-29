@@ -1,4 +1,4 @@
-import { Key, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import Modal, { ModalProps } from '../components/Modal';
 import { uniqueId } from 'lodash';
 import { produce } from 'immer';
@@ -7,8 +7,8 @@ import style from './style.module.scss';
 import clsx from 'clsx';
 
 export interface ModalUtils {
-  open: (options: ModalOpenOptions) => Key;
-  close: (uuid?: Key) => void;
+  open: (options: ModalOpenOptions) => string;
+  close: (uuid?: string) => void;
 }
 
 type ModalOpenOptions = Omit<
@@ -19,7 +19,7 @@ type ModalOpenOptions = Omit<
 };
 
 export interface ModalInfo {
-  key: Key;
+  key: string;
   options: Omit<ModalProps, 'outterCalssName' | 'outterStyle'> & {
     keepAlive?: boolean;
   };
@@ -63,7 +63,7 @@ const useModal = () => {
 
         return uuid;
       },
-      close: (uuid?: Key) => {
+      close: (uuid?: string) => {
         setModals(
           produce(draft => {
             if (uuid) {

@@ -1,4 +1,4 @@
-import { Key, useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import NotificationItem, { NotificationProps } from '../Notification';
 import { MotionList } from '@/ui/Motion';
 import style from './style.module.scss';
@@ -6,7 +6,7 @@ import clsx from 'clsx';
 
 export interface NotificationGroupProps {
   list: NotificationProps[];
-  onClose?: (uuid: Key) => void;
+  onClose?: (uuid: string) => void;
 }
 
 const NotificationGroup = (props: NotificationGroupProps) => {
@@ -20,7 +20,7 @@ const NotificationGroup = (props: NotificationGroupProps) => {
   }, [list]);
 
   const handleClose = useCallback(
-    (uuid: Key) => {
+    (uuid: string) => {
       onClose?.(uuid);
     },
     [onClose]

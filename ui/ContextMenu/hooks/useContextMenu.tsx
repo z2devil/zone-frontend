@@ -1,8 +1,8 @@
-import { Key, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import ContextMenu from '../components/ContextMenu';
 
 export interface ContextMenuItem {
-  key: Key;
+  key: string;
   label: string;
   onClick: () => void;
   icon?: string | React.ReactNode;

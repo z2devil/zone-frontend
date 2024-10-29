@@ -1,18 +1,16 @@
-import { Key } from 'react';
-
 export enum EnityStatus {
   ADD = 'add',
   REMOVE = 'remove',
 }
 
 export interface KeyEntity {
-  key: Key;
+  key: string;
   status?: EnityStatus;
   [name: string]: any;
 }
 
 // 转换keys
-const parseKeys = (keys: (Key | { key: Key; [name: string]: any })[]) => {
+const parseKeys = (keys: (string | { key: string; [name: string]: any })[]) => {
   return keys.map(key => {
     if (key && typeof key === 'object') {
       return key;
@@ -66,7 +64,7 @@ const updateKeys = (prevKeys: KeyEntity[], nextKeys: KeyEntity[]) => {
   }
 
   // key字典
-  const keys: Record<Key, number> = {};
+  const keys: Record<string, number> = {};
   res.forEach(({ key }) => {
     keys[key] = (keys[key] || 0) + 1;
   });

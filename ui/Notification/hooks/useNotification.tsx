@@ -1,4 +1,4 @@
-import { Key, useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import NotificationGroup from '../components/NotificationGroup';
 import { NotificationProps } from '../components/Notification';
 import { produce } from 'immer';
@@ -7,8 +7,8 @@ import { uniqueId } from 'lodash';
 export type NotificationConfig = Omit<NotificationProps, 'uuid'>;
 
 export interface NotificationUtils {
-  open: (config: NotificationConfig) => Promise<Key>;
-  close: (key: Key) => void;
+  open: (config: NotificationConfig) => Promise<string>;
+  close: (key: string) => void;
   destroy: () => void;
 }
 
@@ -20,7 +20,7 @@ enum NotificationTaskType {
 
 interface UseNotificationOptions {
   maxCount?: number;
-  onClose?: (uuid: Key) => void;
+  onClose?: (uuid: string) => void;
 }
 
 const useNotification = (options: UseNotificationOptions) => {
@@ -33,7 +33,7 @@ const useNotification = (options: UseNotificationOptions) => {
   const utils = useMemo<NotificationUtils>(() => {
     const actions = {
       [NotificationTaskType.OPEN]: (config: NotificationConfig) => {
-        return new Promise<Key>(resolve => {
+        return new Promise<string>(resolve => {
           const uuid = uniqueId();
           setNotificationList(
             produce(draft => {
@@ -57,7 +57,7 @@ const useNotification = (options: UseNotificationOptions) => {
           return uuid;
         });
       },
-      [NotificationTaskType.CLOSE]: (uuid: Key) => {
+      [NotificationTaskType.CLOSE]: (uuid: string) => {
         setNotificationList(
           produce(draft => {
             const index = draft.findIndex(item => item.uuid === uuid);
@@ -95,7 +95,7 @@ const useNotification = (options: UseNotificationOptions) => {
   }, [maxCount]);
 
   const handleClose = useCallback(
-    (key: Key) => {
+    (key: string) => {
       utils.close(key);
       onClose?.(key);
     },

@@ -143,8 +143,8 @@ export type BlockElement =
   | VideoBlockElement
   | ButtonElement
   | MusicBlockElement
-  | WhiteBoardBlockElement
-  | CubeBlockElement;
+  | WhiteBoardBlockElement;
+// | CubeBlockElement;
 
 export type CustomElement = InlineElement | BlockElement;
 
