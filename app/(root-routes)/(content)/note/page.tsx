@@ -18,6 +18,7 @@ import { getContentSummary } from '@/lib/utils/editor';
 import SearchBanner from '@/ui/SearchBanner';
 import { isEqual, sortBy } from 'lodash';
 import SearchLayer from '@/ui/SearchLayer';
+import SiteRecord from '@/ui/SiteRecord/SiteRecord';
 
 const FETCH_SIZE = 20;
 
@@ -252,6 +253,7 @@ const NotePage = () => {
         show={showSearchLayer}
         onHide={() => setShowSearchLayer(false)}
       />
+      <SiteRecord />
     </div>
   );
 };

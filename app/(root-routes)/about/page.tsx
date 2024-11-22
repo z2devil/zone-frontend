@@ -11,6 +11,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createEditor } from 'slate';
 import { withReact, Slate as SlateProvider } from 'slate-react';
 import Editor from '@/ui/RichEditor/components/Editor';
+import SiteRecord from '@/ui/SiteRecord/SiteRecord';
 
 const ABOUT_ID = '65ebc4f8f3cdb3499f7c32bb';
 
@@ -152,6 +153,7 @@ const About = () => {
           </div>
         </div>
       </div>
+      <SiteRecord />
     </SlateProvider>
   );
 };

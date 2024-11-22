@@ -1,5 +1,4 @@
 import RootHeader from '@/ui/RootHeader';
-import SiteRecord from '@/ui/SiteRecord/SiteRecord';
 
 interface ContentLayoutProps {
   modal: React.ReactNode;
@@ -14,7 +13,6 @@ const RootRoutesLayout = (props: ContentLayoutProps) => {
       <RootHeader />
       {modal}
       {children}
-      <SiteRecord />
     </>
   );
 };

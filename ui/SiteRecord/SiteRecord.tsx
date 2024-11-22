@@ -3,7 +3,7 @@ import GonganLogoImg from '../../public/gongan-logo.png';
 
 const SiteRecord = () => {
   return (
-    <div className='flex h-9 w-full items-center justify-center gap-4'>
+    <div className='fixed bottom-0 flex h-9 w-full items-center justify-center gap-4'>
       <a
         className='flex items-center gap-1 text-xs text-black-600'
         href='http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010502054444'
