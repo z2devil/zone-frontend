@@ -12,6 +12,7 @@ import EmptyInfo from '@/ui/EmptyInfo';
 import { CARD_WIDTH, GAP } from '@/ui/Masonry/constants';
 import { useNotesStore } from '@/lib/stores/notes';
 import clsx from 'clsx';
+import SiteRecord from '@/ui/SiteRecord/SiteRecord';
 
 const FETCH_SIZE = 20;
 
@@ -122,6 +123,7 @@ const WorksPage = () => {
           </div>
         )}
       </div>
+      <SiteRecord />
     </div>
   );
 };
