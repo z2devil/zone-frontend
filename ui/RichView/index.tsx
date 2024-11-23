@@ -9,15 +9,13 @@ import RichEditor from '../RichEditor';
 interface EditorProps {
   className?: string;
   value: Descendant[];
-  initialValue?: Descendant[];
   isSummary?: boolean;
 }
 
 const RichView = (props: EditorProps) => {
   const {
     className,
-    value,
-    initialValue = [
+    value = [
       {
         type: BlockElementType.PARAGRAPH,
         children: [
@@ -43,7 +41,7 @@ const RichView = (props: EditorProps) => {
     if (value) {
       editor.children = value;
     }
-  }, [value, initialValue, editor]);
+  }, [value, editor]);
 
   return (
     <div
@@ -51,7 +49,7 @@ const RichView = (props: EditorProps) => {
         'relative flex flex-1 flex-col overflow-hidden',
         className
       )}>
-      <SlateProvider editor={editor} initialValue={initialValue}>
+      <SlateProvider editor={editor} initialValue={value}>
         <RichEditor readonly />
       </SlateProvider>
     </div>
