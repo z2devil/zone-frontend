@@ -1,13 +1,8 @@
 import { BaseEditor, BaseRange, Element } from 'slate';
 import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
-import {
-  BlockElementType,
-  InlineElementType,
-  Language,
-  MarkType,
-} from '@/ui/RichEditor/constants';
 import { ExcalidrawElement } from '@excalidraw/excalidraw/types/element/types';
+import { BlockElementType, InlineElementType, MarkType } from '@/lib/constants';
 
 export type ElementType = BlockElementType | InlineElementType;
 
@@ -169,8 +164,10 @@ declare module 'slate' {
   }
 }
 
+export type MdastNodeType = string;
+
 export interface MdastNode {
-  type?: MdastNodeType;
+  type: MdastNodeType;
   ordered?: boolean;
   value?: string;
   text?: string;

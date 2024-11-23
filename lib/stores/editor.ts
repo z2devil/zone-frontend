@@ -1,6 +1,6 @@
-import { DropType } from '@/ui/RichEditor/constants';
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
+import { DropType } from '../constants';
 
 interface EditorState {
   dragHoveringElementInfo: {
