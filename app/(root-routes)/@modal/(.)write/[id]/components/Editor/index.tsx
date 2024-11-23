@@ -93,9 +93,9 @@ const Editor = (props: EditorProps) => {
    ************************************************/
 
   const handlePublish = useCallback(() => {
-    setFullScreen(false);
+    handleFullScreen(false);
     onPublish();
-  }, [onPublish]);
+  }, [handleFullScreen, onPublish]);
 
   return (
     <>
