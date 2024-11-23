@@ -99,8 +99,6 @@ const useRequest = () => {
           const { code, data, message } =
             (await response.json()) as IResponse<T>;
 
-          console.log('[ JSON Response ]', url, code, data, message);
-
           if (code !== 200) {
             if (isArray(message)) {
               const { message: msg } = message[0];
@@ -144,7 +142,6 @@ const useRequest = () => {
           }
         });
         const searchParams = new URLSearchParams(params).toString();
-        console.log('[ searchParams ]', searchParams);
         return fetcher<T>(`${url}?${searchParams}`, {
           ...config,
           method: 'GET',
