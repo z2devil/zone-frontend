@@ -2,7 +2,6 @@
 
 import { Modal } from '@/ui/Modal';
 import { MotionList } from '@/ui/Motion';
-import RichEditor, { EditorRef } from '@/ui/RichEditor';
 import clsx from 'clsx';
 import { notFound, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -20,9 +19,11 @@ import {
 import useRequest from '@/lib/hooks/useRequest';
 import { useNotesStore } from '@/lib/stores/notes';
 import { Descendant, Element, Node, Transforms } from 'slate';
-import { BlockElementType } from '@/ui/RichEditor/constants';
 import { useMount } from 'react-use';
 import { getContentSummary } from '@/lib/utils/editor';
+import { EditorRef } from './components/Editor';
+import { BlockElementType } from '@/lib/constants';
+import Editor from './components/Editor';
 
 interface NoteDetailPageProps {
   params: { id: string };
@@ -242,11 +243,11 @@ export default function WriteNote(props: NoteDetailPageProps) {
           children: (
             <div className='mb-6'>
               {/* 编辑器 */}
-              <RichEditor
-                className='max-h-[70vh]'
+              <Editor
                 initialValue={contentRef.current}
                 ref={editorRef}
                 onChange={handleContentChange}
+                onPublish={handleToConfig}
               />
             </div>
           ),

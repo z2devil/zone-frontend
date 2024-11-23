@@ -1,5 +1,5 @@
+import { BlockElementType } from '@/lib/constants';
 import { Descendant } from 'slate';
-import { BlockElementType } from '../../constants';
 
 function CodeTransfromToElementChildren(value = ''): Descendant[] {
   if (!value || value.length === 0) {

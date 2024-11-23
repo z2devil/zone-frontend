@@ -9,6 +9,7 @@ import {
   getNoteAPI,
 } from '@/lib/api/notes';
 import { UserRole } from '@/lib/api/user';
+import { BlockElementType } from '@/lib/constants';
 import usePermission from '@/lib/hooks/usePermission';
 import useRequest from '@/lib/hooks/useRequest';
 import {
@@ -21,10 +22,8 @@ import { getRandomRgbDataURL } from '@/lib/utils/rgbDataURL';
 import EmptyInfo from '@/ui/EmptyInfo';
 import ImagePreview from '@/ui/ImagePreview';
 import { NotificationType } from '@/ui/Notification/components/Notification';
-import Editor from '@/ui/RichEditor/components/Editor';
-import { BlockElementType } from '@/ui/RichEditor/constants';
-import { withElementClick } from '@/ui/RichEditor/utils';
 import TOC from '@/ui/TOC';
+import { withElementClick } from '@/ui/RichEditor/utils';
 import clsx from 'clsx';
 import imageLoader from 'config/image/loader';
 import dayjs from 'dayjs';
@@ -35,6 +34,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Element, Node, createEditor } from 'slate';
 import { withReact, Slate as SlateProvider } from 'slate-react';
 import { ImageBlockElement } from 'types/slate';
+import RichEditor from '@/ui/RichEditor';
 
 interface NoteDetailPageProps {
   params: { id: string };
@@ -328,7 +328,7 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
             </div>
             {/* 内容 */}
             <div className='relative flex flex-1 flex-col overflow-hidden'>
-              <Editor readonly />
+              <RichEditor readonly />
             </div>
             {/* 底部 */}
             <div className='flex items-center justify-between gap-1'>

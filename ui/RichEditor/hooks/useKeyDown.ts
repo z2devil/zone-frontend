@@ -2,7 +2,7 @@ import { KeyboardEvent, MutableRefObject, useCallback, useRef } from 'react';
 import { Editor, Element, Path, Range, Transforms } from 'slate';
 import { RichEditor, CustomElement } from 'types/slate';
 import { editorUtils } from '../utils';
-import { BlockElementType, InlineElementType, MarkType } from '../constants';
+import { BlockElementType, InlineElementType, MarkType } from '@/lib/constants';
 
 const ACTIONS: Record<string, (editor: RichEditor) => void> = {
   b: editor => {
@@ -38,7 +38,10 @@ const useKeyDown = (editor: RichEditor, readOnly = false) => {
 
       if (metaKey || ctrlKey) {
         const action = ACTIONS[key];
-        if (action && !editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK)) {
+        if (
+          action &&
+          !editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK)
+        ) {
           e.preventDefault();
           action(editor);
         }

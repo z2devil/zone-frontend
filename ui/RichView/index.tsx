@@ -2,9 +2,9 @@ import { memo, useEffect, useMemo } from 'react';
 import { Descendant, createEditor } from 'slate';
 import { Slate as SlateProvider, withReact } from 'slate-react';
 import clsx from 'clsx';
-import Editor from '../RichEditor/components/Editor';
-import { BlockElementType } from '../RichEditor/constants';
 import { isEqual } from 'lodash';
+import { BlockElementType } from '@/lib/constants';
+import RichEditor from '../RichEditor';
 
 interface EditorProps {
   className?: string;
@@ -52,7 +52,7 @@ const RichView = (props: EditorProps) => {
         className
       )}>
       <SlateProvider editor={editor} initialValue={initialValue}>
-        <Editor readonly />
+        <RichEditor readonly />
       </SlateProvider>
     </div>
   );
@@ -60,4 +60,4 @@ const RichView = (props: EditorProps) => {
 
 RichView.displayName = 'RichView';
 
-export default memo(RichView, (prev, next) => isEqual(prev, next))
+export default memo(RichView, (prev, next) => isEqual(prev, next));

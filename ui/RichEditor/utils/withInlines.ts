@@ -1,5 +1,5 @@
+import { InlineElementType } from '@/lib/constants';
 import { RichEditor, ElementType } from 'types/slate';
-import { InlineElementType } from '../constants';
 
 const INLINE_ELEMENTS: ElementType[] = [
   InlineElementType.CODE_SPAN,

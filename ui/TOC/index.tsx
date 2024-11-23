@@ -2,9 +2,9 @@ import clsx from 'clsx';
 import TOCTree from './components/Tree';
 import { twMerge } from 'tailwind-merge';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { BlockElementType } from '../RichEditor/constants';
 import { ReactEditor, useSlate } from 'slate-react';
 import { Editor } from 'slate';
+import { BlockElementType } from '@/lib/constants';
 
 export interface TOCTreeItem {
   label: string;
@@ -107,8 +107,12 @@ const TOC = (props: TOCProps) => {
   }, [editor]);
 
   useEffect(() => {
-    init();
-  }, [init]);
+    const { onChange } = editor;
+    editor.onChange = () => {
+      onChange();
+      requestAnimationFrame(init);
+    };
+  }, [editor, init]);
 
   if (!toc || !toc.children?.length) return null;
 

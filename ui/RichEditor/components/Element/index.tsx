@@ -5,7 +5,6 @@ import {
   useSlate,
 } from 'slate-react';
 import CodeBlock from './elements/CodeBlock';
-import { BlockElementType, InlineElementType } from '../../constants';
 import InlineChromiumBugfix from './elements/InlineChromiumBugfix';
 import {
   CodeBlockElement,
@@ -24,6 +23,7 @@ import LinkInline from './elements/LinkInline';
 // import CubeBlock from './elements/CubeBlock';
 import BlockElementController from './components/BlockElementController';
 import ElementWrapper from './components/ElementWrapper';
+import { BlockElementType, InlineElementType } from '@/lib/constants';
 
 const Element = (props: RenderElementProps) => {
   const { attributes, children, element } = props;
