@@ -205,8 +205,8 @@ const Editor = forwardRef<EditorRef, EditorProps>((props, ref) => {
                     </div>
                   </div>
                 </div>
+                <TOC className='fixed right-10 top-32 hidden h-fit shrink-0 lg:flex' />
               </div>
-              <TOC className='fixed right-6 top-32 hidden h-fit shrink-0 lg:flex' />
             </div>,
             document.body
           )

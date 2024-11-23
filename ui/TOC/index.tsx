@@ -103,7 +103,6 @@ const TOC = (props: TOCProps) => {
     observerRef.current = observer;
 
     setToc(toc);
-    console.log('[ toc ]', toc);
   }, [editor]);
 
   useEffect(() => {
@@ -112,6 +111,7 @@ const TOC = (props: TOCProps) => {
       onChange();
       requestAnimationFrame(init);
     };
+    init();
   }, [editor, init]);
 
   if (!toc || !toc.children?.length) return null;
