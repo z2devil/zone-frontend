@@ -247,7 +247,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
           title: res.title,
           content: JSON.stringify(contentRef.current),
           bannerPath: res.bannerPath,
-          summary: getContentSummary(contentRef.current),
+          summary: res.summary || getContentSummary(contentRef.current),
           tags: res.tags,
         };
         if (isCreate) {
