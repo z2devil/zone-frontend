@@ -133,11 +133,16 @@ export default function WriteNote(props: NoteDetailPageProps) {
     if (isCreate) return setInited(true);
     try {
       const res = await getNoteAPI(request)(params.id);
-      contentRef.current = JSON.parse(res.content);
+      Transforms.removeNodes(editor, {
+        at: [],
+        match: node => Element.isElement(node),
+      });
+      Transforms.insertNodes(editor, JSON.parse(res.content));
       optionsRef.current = {
-        title: res.title,
         type: res.type,
         bannerPath: res.bannerPath,
+        title: res.title,
+        summary: res.summary,
         tags: res.tags.map(tag => tag._id),
       };
     } catch (error) {
@@ -145,7 +150,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
     } finally {
       setInited(true);
     }
-  }, [isCreate, params.id, request]);
+  }, [editor, isCreate, params.id, request]);
 
   useMount(() => {
     init();
