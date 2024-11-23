@@ -319,7 +319,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
         onChange={handleContentChange}>
         {/* 主要内容 */}
         <div className='flex gap-8 bg-gray-200' ref={containerRef}>
-          <div className='w-full flex-col bg-gray-100'>
+          <div className='min-h-screen w-full flex-col bg-gray-100'>
             {/* 工具栏 */}
             <Toolbar
               className='z-10 bg-gray-100'
