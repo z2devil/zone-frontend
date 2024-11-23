@@ -2,22 +2,20 @@ import { memo, useEffect, useMemo } from 'react';
 import { Descendant, createEditor } from 'slate';
 import { Slate as SlateProvider, withReact } from 'slate-react';
 import clsx from 'clsx';
-import Editor from '../RichEditor/components/Editor';
-import { BlockElementType } from '../RichEditor/constants';
 import { isEqual } from 'lodash';
+import { BlockElementType } from '@/lib/constants';
+import RichEditor from '../RichEditor';
 
 interface EditorProps {
   className?: string;
   value: Descendant[];
-  initialValue?: Descendant[];
   isSummary?: boolean;
 }
 
 const RichView = (props: EditorProps) => {
   const {
     className,
-    value,
-    initialValue = [
+    value = [
       {
         type: BlockElementType.PARAGRAPH,
         children: [
@@ -43,7 +41,7 @@ const RichView = (props: EditorProps) => {
     if (value) {
       editor.children = value;
     }
-  }, [value, initialValue, editor]);
+  }, [value, editor]);
 
   return (
     <div
@@ -51,8 +49,8 @@ const RichView = (props: EditorProps) => {
         'relative flex flex-1 flex-col overflow-hidden',
         className
       )}>
-      <SlateProvider editor={editor} initialValue={initialValue}>
-        <Editor readonly />
+      <SlateProvider editor={editor} initialValue={value}>
+        <RichEditor readonly />
       </SlateProvider>
     </div>
   );
@@ -60,4 +58,4 @@ const RichView = (props: EditorProps) => {
 
 RichView.displayName = 'RichView';
 
-export default memo(RichView, (prev, next) => isEqual(prev, next))
+export default memo(RichView, (prev, next) => isEqual(prev, next));

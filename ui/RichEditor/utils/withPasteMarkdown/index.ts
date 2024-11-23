@@ -23,12 +23,13 @@ export const withPasteMarkdown = (editor: RichEditor) => {
     console.log('[ html ]', html);
     const text = data.getData('text/plain');
     console.log('[ text ]', text);
-    if (html) {
-      const parsed = new DOMParser().parseFromString(html, 'text/html');
-      const fragment = deserializeHTML(parsed.body);
-      editor.insertFragment(fragment as any);
-      return;
-    } else if (text) {
+    // if (html) {
+    //   const parsed = new DOMParser().parseFromString(html, 'text/html');
+    //   const fragment = deserializeHTML(parsed.body);
+    //   editor.insertFragment(fragment as any);
+    //   return;
+    // } else
+    if (text) {
       const fragment = unified()
         .use(remarkParse)
         .use(slateParse)

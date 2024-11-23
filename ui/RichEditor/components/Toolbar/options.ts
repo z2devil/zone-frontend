@@ -1,8 +1,8 @@
 import { RichEditor } from 'types/slate';
 import { editorUtils } from '../../utils';
-import { BlockElementType, InlineElementType, MarkType } from '../../constants';
 import { Element, Transforms } from 'slate';
 import { MouseEvent } from 'react';
+import { BlockElementType, InlineElementType, MarkType } from '@/lib/constants';
 
 export type ToolbarOption =
   | {

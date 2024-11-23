@@ -1,5 +1,5 @@
-import { BlockElementType } from '@/ui/RichEditor/constants';
 import { Descendant, Node } from 'slate';
+import { BlockElementType } from '../constants';
 
 export const getContentTitle = (contentString: string | Descendant[]) => {
   const content = !Array.isArray(contentString)

@@ -235,11 +235,7 @@ const NoteCard = (props: NoteCardProps) => {
           {note.type === NoteTypeEnum.NOTE ? (
             <div className='pointer-events-none relative flex max-h-[30rem] overflow-hidden'>
               <div className='mb-[1px] flex-1 overflow-hidden'>
-                <RichView
-                  isSummary
-                  initialValue={JSON.parse(note.content)}
-                  value={JSON.parse(note.content)}
-                />
+                <RichView isSummary value={JSON.parse(note.content)} />
               </div>
               <div className='absolute bottom-0 left-0 right-0'>
                 {isCollapsed ? (
@@ -291,4 +287,4 @@ const NoteCard = (props: NoteCardProps) => {
   );
 };
 
-export default memo(NoteCard, (prev, next) => isEqual(prev, next))
+export default memo(NoteCard, (prev, next) => isEqual(prev, next));

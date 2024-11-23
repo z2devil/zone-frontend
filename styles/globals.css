@@ -5,9 +5,8 @@
 @import './iconfont/iconfont.css';
 
 @layer utilities {
-
   /* 渐变遮罩 */
-  
+
   .gradient-mask-x {
     mask-image: linear-gradient(
       to right,

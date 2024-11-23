@@ -3,8 +3,8 @@ import { useCallback, useRef, useState } from 'react';
 import { CodeBlockElement } from 'types/slate';
 import { Transforms } from 'slate';
 import { ReactEditor, useReadOnly, useSelected, useSlate } from 'slate-react';
-import { Language } from '@/ui/RichEditor/constants';
 import './style.css';
+import { Language } from '@/lib/constants';
 
 interface CodeBlockProps {
   attributes: any;

@@ -5,8 +5,8 @@ import clsx from 'clsx';
 import { CustomElement } from 'types/slate';
 import { Transforms } from 'slate';
 import { useSlate } from 'slate-react';
-import { DropType } from '@/ui/RichEditor/constants';
 import { useEditorStore } from '@/lib/stores';
+import { DropType } from '@/lib/constants';
 
 interface BlockElementControllerProps {
   id: string;

@@ -1,8 +1,8 @@
 import { Editor, Element, Node } from 'slate';
 import { ReactEditor } from 'slate-react';
-import { SHORTCUTS } from '../constants';
 import { RichEditor } from 'types/slate';
 import { useCallback } from 'react';
+import { SHORTCUTS } from '@/lib/constants';
 
 const useDOMBeforeInput = (editor: RichEditor) => {
   const handleDOMBeforeInput = useCallback(

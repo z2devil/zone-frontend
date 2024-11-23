@@ -1,12 +1,12 @@
 import { Editor, Element, Point, Range, Transforms } from 'slate';
 import { RichEditor } from 'types/slate';
+import { editorUtils } from './editorUtils';
 import {
+  BlockElementType,
+  NON_EMPTY_ELEMENTS,
   NON_WRAPPING_ELEMENTS,
   SHORTCUTS_MAP,
-  NON_EMPTY_ELEMENTS,
-  BlockElementType,
-} from '../constants';
-import { editorUtils } from './editorUtils';
+} from '@/lib/constants';
 
 export const withShortcuts = (editor: RichEditor) => {
   const { insertBreak, insertSoftBreak, deleteBackward, insertText } = editor;

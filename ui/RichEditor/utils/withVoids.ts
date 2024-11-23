@@ -1,5 +1,5 @@
+import { BlockElementType } from '@/lib/constants';
 import { RichEditor, ElementType } from 'types/slate';
-import { BlockElementType } from '../constants';
 
 export const VOID_ELEMENTS: ElementType[] = [
   // BlockElementType.CODE_BLOCK,

@@ -7,11 +7,9 @@ import useRequest from '@/lib/hooks/useRequest';
 import { useContextMenuUtilsStore } from '@/lib/stores';
 import dayjs from 'dayjs';
 import { notFound, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { createEditor } from 'slate';
-import { withReact, Slate as SlateProvider } from 'slate-react';
-import Editor from '@/ui/RichEditor/components/Editor';
+import { useCallback, useEffect, useState } from 'react';
 import SiteRecord from '@/ui/SiteRecord/SiteRecord';
+import RichView from '@/ui/RichView';
 
 const ABOUT_ID = '65ebc4f8f3cdb3499f7c32bb';
 
@@ -31,14 +29,6 @@ const About = () => {
   const isAdmin = usePermission([UserRole.ADMIN, UserRole.MANAGER]);
 
   const [note, setNote] = useState<NoteInfo | null>(null);
-
-  const editor = useMemo(() => {
-    const enhancers = [withReact];
-    return enhancers.reduce(
-      (editor, enhancer) => enhancer(editor),
-      createEditor()
-    );
-  }, []);
 
   /************************************************
    * ✨ 初始化
@@ -88,7 +78,7 @@ const About = () => {
   if (!note) return null;
 
   return (
-    <SlateProvider editor={editor} initialValue={JSON.parse(note.content)}>
+    <>
       <div
         className='mx-auto flex gap-8 md:w-fit'
         style={{
@@ -128,7 +118,7 @@ const About = () => {
             ) : null}
             {/* 内容 */}
             <div className='relative flex flex-1 flex-col overflow-hidden'>
-              <Editor readonly />
+              <RichView value={JSON.parse(note.content)} />
             </div>
             {/* 底部 */}
             {note.type === NoteTypeEnum.ARTICLE && (
@@ -154,7 +144,7 @@ const About = () => {
         </div>
       </div>
       <SiteRecord />
-    </SlateProvider>
+    </>
   );
 };
 

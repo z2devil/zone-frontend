@@ -1,6 +1,6 @@
 import { jsx } from 'slate-hyperscript';
-import { BlockElementType, InlineElementType } from '../../constants';
 import { Descendant } from 'slate';
+import { BlockElementType, InlineElementType } from '@/lib/constants';
 
 const ELEMENT_TAGS = {
   A: (el: Element) => ({

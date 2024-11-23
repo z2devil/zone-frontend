@@ -1,9 +1,9 @@
 import { CustomElement, MdastNode } from 'types/slate';
-import { BlockElementType } from '../../constants';
 import { Descendant } from 'slate';
 import remarkTransformElementChildren from './remarkTransformElementChildren';
 import remarkTransformInline from './remarkTransformInline';
 import CodeTransfromToElementChildren from './CodeTransfromToElementChildren';
+import { BlockElementType } from '@/lib/constants';
 
 // 内联块元素类型
 const inlineBlockTypes = ['code-span'];
@@ -135,9 +135,11 @@ export const remarkElementRules: Record<
         type: BlockElementType.IMAGE,
         url: node.url,
         alt: node.alt,
-        children: [{
-          text: '',
-        }],
+        children: [
+          {
+            text: '',
+          },
+        ],
       } as CustomElement;
     },
   },

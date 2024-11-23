@@ -2,7 +2,6 @@
 
 import { Modal } from '@/ui/Modal';
 import { MotionList } from '@/ui/Motion';
-import RichEditor, { EditorRef } from '@/ui/RichEditor';
 import clsx from 'clsx';
 import { notFound, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -19,10 +18,21 @@ import {
 } from '@/lib/api/notes';
 import useRequest from '@/lib/hooks/useRequest';
 import { useNotesStore } from '@/lib/stores/notes';
-import { Descendant, Element, Node, Transforms } from 'slate';
-import { BlockElementType } from '@/ui/RichEditor/constants';
+import { createEditor, Descendant, Element, Node, Transforms } from 'slate';
 import { useMount } from 'react-use';
 import { getContentSummary } from '@/lib/utils/editor';
+import { BlockElementType } from '@/lib/constants';
+import Editor from './components/Editor';
+import { DndProvider } from 'react-dnd';
+import { Slate as SlateProvider, withReact } from 'slate-react';
+import { withHistory } from 'slate-history';
+import {
+  withInlines,
+  withPasteMarkdown,
+  withShortcuts,
+  withVoids,
+} from '@/ui/RichEditor/utils';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 interface NoteDetailPageProps {
   params: { id: string };
@@ -31,7 +41,20 @@ interface NoteDetailPageProps {
 export default function WriteNote(props: NoteDetailPageProps) {
   const { params } = props;
 
-  const editorRef = useRef<EditorRef | null>(null);
+  const editor = useMemo(() => {
+    const enhancers = [
+      withReact,
+      withHistory,
+      withInlines,
+      withVoids,
+      withShortcuts,
+      withPasteMarkdown,
+    ];
+    return enhancers.reduce(
+      (editor, enhancer) => enhancer(editor),
+      createEditor()
+    );
+  }, []);
 
   const isCreate = useMemo(() => params.id === 'new', [params.id]);
 
@@ -48,11 +71,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
   const [step, setStep] = useState(0);
 
   const handleBack = useCallback(() => {
-    if (
-      step === 0 &&
-      editorRef.current &&
-      Node.string(editorRef.current.getEditor())
-    ) {
+    if (step === 0 && Node.string(editor)) {
       const uuid = modalUtils?.open({
         title: '退出编辑',
         children: '确定退出编辑吗？',
@@ -77,32 +96,32 @@ export default function WriteNote(props: NoteDetailPageProps) {
         navagation.back();
       }, 400);
     }
-  }, [modalUtils, navagation, step]);
+  }, [editor, modalUtils, navagation, step]);
 
-  const handleBeforeUnload = useCallback((e: BeforeUnloadEvent) => {
-    if (editorRef.current && Node.string(editorRef.current.getEditor())) {
-      e.preventDefault();
-    }
-  }, []);
+  const handleBeforeUnload = useCallback(
+    (e: BeforeUnloadEvent) => {
+      if (Node.string(editor)) {
+        e.preventDefault();
+      }
+    },
+    [editor]
+  );
 
   useEffect(() => {
     window.addEventListener('beforeunload', handleBeforeUnload);
     const noteDraft = localStorage.getItem('note-draft');
     if (noteDraft) {
       const draft = JSON.parse(noteDraft);
-      const editor = editorRef.current?.getEditor();
-      if (editor) {
-        Transforms.removeNodes(editor, {
-          at: [],
-          match: node => Element.isElement(node),
-        });
-        Transforms.insertNodes(editor, draft);
-      }
+      Transforms.removeNodes(editor, {
+        at: [],
+        match: node => Element.isElement(node),
+      });
+      Transforms.insertNodes(editor, draft);
     }
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, [handleBeforeUnload]);
+  }, [editor, handleBeforeUnload]);
 
   /************************************************
    * ✨ 初始化
@@ -152,7 +171,6 @@ export default function WriteNote(props: NoteDetailPageProps) {
   }, []);
 
   const handleToConfig = useCallback(() => {
-    const editor = editorRef.current?.getEditor();
     if (editor && editor?.string([]).length === 0) {
       notificationUtils?.open({
         type: NotificationType.WARNING,
@@ -162,7 +180,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
       return;
     }
     setStep(1);
-  }, [notificationUtils]);
+  }, [editor, notificationUtils]);
 
   /************************************************
    * ✨ 第二步 - 发布笔记
@@ -184,7 +202,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
           title: res.title,
           content: JSON.stringify(contentRef.current),
           bannerPath: res.bannerPath,
-          summary: getContentSummary(contentRef.current),
+          summary: res.summary || getContentSummary(contentRef.current),
           tags: res.tags,
         };
         if (isCreate) {
@@ -242,12 +260,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
           children: (
             <div className='mb-6'>
               {/* 编辑器 */}
-              <RichEditor
-                className='max-h-[70vh]'
-                initialValue={contentRef.current}
-                ref={editorRef}
-                onChange={handleContentChange}
-              />
+              <Editor onPublish={handleToConfig} />
             </div>
           ),
         },
@@ -268,54 +281,54 @@ export default function WriteNote(props: NoteDetailPageProps) {
         },
       },
     ].filter(Boolean) as ModalInfo[];
-  }, [
-    handleContentChange,
-    handlePublish,
-    handleToConfig,
-    inited,
-    isCreate,
-    step,
-  ]);
+  }, [handlePublish, handleToConfig, inited, isCreate, step]);
 
   return (
-    <div
-      className='fixed left-0 top-0 z-20 flex h-full w-full flex-col items-center justify-center'
-      style={{
-        pointerEvents: 'none',
-      }}>
-      {/* mask */}
-      {
+    <DndProvider backend={HTML5Backend}>
+      <SlateProvider
+        editor={editor}
+        initialValue={contentRef.current}
+        onChange={handleContentChange}>
         <div
-          className={clsx(
-            'absolute left-0 top-0 h-full w-full duration-500 max-sm:bg-white max-sm:bg-opacity-20 max-sm:backdrop-blur-3xl sm:bg-black-100',
-            modals.length > 0
-              ? 'pointer-events-auto opacity-100 delay-200'
-              : 'pointer-events-none opacity-0 delay-200'
-          )}
-          onClick={handleBack}></div>
-      }
-      {/* modal */}
-      <MotionList keys={modals} transitionDuration={0.4}>
-        {info => {
-          const { options, enterIn, leaveOut } = info;
-          return (
-            <Modal
-              {...options}
-              key={options.key}
-              outterCalssName={clsx(
-                'sm:w-[640px]',
-                enterIn && style.enterIn,
-                leaveOut && style.leaveOut
+          className='fixed left-0 top-0 z-20 flex h-full w-full flex-col items-center justify-center'
+          style={{
+            pointerEvents: 'none',
+          }}>
+          {/* mask */}
+          {
+            <div
+              className={clsx(
+                'absolute left-0 top-0 h-full w-full duration-500 max-sm:bg-white max-sm:bg-opacity-20 max-sm:backdrop-blur-3xl sm:bg-black-100',
+                modals.length > 0
+                  ? 'pointer-events-auto opacity-100 delay-200'
+                  : 'pointer-events-none opacity-0 delay-200'
               )}
-              outterStyle={{
-                ...info.style,
-                display: info.visible ? 'block' : 'none',
-              }}
-              onClose={handleBack}
-            />
-          );
-        }}
-      </MotionList>
-    </div>
+              onClick={handleBack}></div>
+          }
+          {/* modal */}
+          <MotionList keys={modals} transitionDuration={0.4}>
+            {info => {
+              const { options, enterIn, leaveOut } = info;
+              return (
+                <Modal
+                  {...options}
+                  key={options.key}
+                  outterCalssName={clsx(
+                    'sm:w-[640px]',
+                    enterIn && style.enterIn,
+                    leaveOut && style.leaveOut
+                  )}
+                  outterStyle={{
+                    ...info.style,
+                    display: info.visible ? 'block' : 'none',
+                  }}
+                  onClose={handleBack}
+                />
+              );
+            }}
+          </MotionList>
+        </div>
+      </SlateProvider>
+    </DndProvider>
   );
 }
