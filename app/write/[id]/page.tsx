@@ -47,7 +47,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
 
   const isCreate = useMemo(() => params.id === 'new', [params.id]);
 
-  const navagation = useRouter();
+  const navigation = useRouter();
 
   const [request] = useRequest();
 
@@ -87,7 +87,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
           setStep(step - 1);
           if (step > 0) return;
           setTimeout(() => {
-            navagation.back();
+            navigation.back();
           }, 400);
         },
         cancelText: '取消',
@@ -99,10 +99,10 @@ export default function WriteNote(props: NoteDetailPageProps) {
       setStep(step - 1);
       if (step > 0) return;
       setTimeout(() => {
-        navagation.back();
+        navigation.back();
       }, 400);
     }
-  }, [modalUtils, navagation, step]);
+  }, [modalUtils, navigation, step]);
 
   const handleBeforeUnload = useCallback(
     (e: BeforeUnloadEvent) => {
@@ -274,7 +274,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
           duration: 3,
         });
         setTimeout(() => {
-          navagation.back();
+          navigation.back();
         }, 400);
       } catch (error: any) {
         notificationUtils?.open({
@@ -286,7 +286,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
     },
     [
       isCreate,
-      navagation,
+      navigation,
       notes,
       notificationUtils,
       params.id,

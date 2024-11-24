@@ -99,13 +99,13 @@ const WorksPage = () => {
           if (!record.meta) return null;
           return (
             <NoteCard
+              className='absolute'
               key={record.meta._id}
               note={record.meta}
               style={{
-                position: 'absolute',
-                width: `${record.width}px`,
-                transform: `translate(${record.x}px, ${record.y}px)`,
-                overflow: 'hidden',
+                width: record.width,
+                x: record.x,
+                y: record.y,
               }}
             />
           );
