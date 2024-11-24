@@ -1,20 +1,32 @@
 .editor {
-  p {
-    @apply mb-2 block;
-    & span {
-      font-size: 0.9375rem;
-    }
-    &:last-child {
-      margin-bottom: 0;
-    }
+  --font-color: #555;
+  --heading-color: #222;
+  --list-count-color: #6b7280;
+  --blockquote-color: #6a737d;
+
+  @apply text-15 leading-7;
+  color: var(--font-color);
+
+  & > :first-child {
+    margin-top: 0;
   }
+
+  p {
+    @apply my-5 leading-7;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply block font-bold;
+    color: var(--heading-color);
+  }
+
   h1 {
-    @apply my-6 block;
-    & span {
-      font-weight: bold;
-      // 25px
-      font-size: 1.5625rem;
-    }
+    @apply my-6 text-2xl;
     &.summary {
       display: block;
       margin-bottom: 0.75rem;
@@ -24,14 +36,9 @@
       }
     }
   }
+
   h2 {
-    display: block;
-    @apply my-5 block;
-    & span {
-      font-weight: bold;
-      // 23px
-      font-size: 1.4375rem;
-    }
+    @apply my-5 text-xl;
     &.summary {
       display: block;
       margin-bottom: 0.5rem;
@@ -41,15 +48,9 @@
       }
     }
   }
+
   h3 {
-    display: block;
-    margin-top: 0.75rem;
-    margin-bottom: 0.75rem;
-    & span {
-      font-weight: bold;
-      // 21px
-      font-size: 1.3125rem;
-    }
+    @apply my-4 text-19;
     &.summary {
       display: block;
       margin-bottom: 0.5rem;
@@ -59,15 +60,9 @@
       }
     }
   }
+
   h4 {
-    display: block;
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
-    & span {
-      font-weight: bold;
-      // 19px
-      font-size: 1.1875rem;
-    }
+    @apply my-3 text-17;
     &.summary {
       display: block;
       margin-bottom: 0.2rem;
@@ -77,15 +72,9 @@
       }
     }
   }
+
   h5 {
-    display: block;
-    margin-top: 0.3rem;
-    margin-bottom: 0.3rem;
-    & span {
-      font-weight: bold;
-      // 17px
-      font-size: 1.0625rem;
-    }
+    @apply my-2 text-15;
     &.summary {
       display: block;
       margin-bottom: 0.2rem;
@@ -95,13 +84,9 @@
       }
     }
   }
+
   h6 {
-    display: block;
-    & span {
-      font-weight: bold;
-      // 15px
-      font-size: 0.9375rem;
-    }
+    @apply my-1 text-13;
     &.summary {
       display: block;
       & span {
@@ -110,95 +95,43 @@
       }
     }
   }
-  ol {
-    display: block;
-    margin-bottom: 0.5rem;
-    li {
-      counter-increment: list-item;
-      &::before {
-        margin-right: 0.5em;
-        content: counter(list-item) '.';
-        font-weight: bold;
-        font-family: 'Courier New', Courier, monospace;
-      }
-    }
-    & span {
-      font-size: 0.9375rem;
-    }
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
+
+  ol,
   ul {
-    display: block;
-    margin-bottom: 0.5rem;
+    @apply my-5 list-none;
+  }
+
+  ol {
     li {
+      @apply relative my-2 pl-7;
       &::before {
-        margin-right: 0.5em;
-        content: '•';
+        @apply absolute left-0;
+        content: counter(list-item, decimal) '.';
+        color: var(--list-count-color);
       }
     }
-    & span {
-      font-size: 0.9375rem;
-    }
-    &:last-child {
-      margin-bottom: 0;
+  }
+
+  ul {
+    li {
+      @apply relative my-2 pl-7;
+      &::before {
+        @apply absolute left-1 top-2.5 h-1.5 w-1.5 rounded-full;
+        content: '';
+        background-color: var(--list-count-color);
+      }
     }
   }
+
   blockquote {
-    display: block;
-    margin-bottom: 0.5rem;
-    border: 1px solid #eceeef;
-    border-radius: 0.5rem;
-    padding: 0.5rem;
-    & span {
-      color: #6a737d;
-      font-size: 0.8125rem;
-    }
-    &:last-child {
-      margin-bottom: 0;
-    }
+    @apply my-5 rounded-lg p-4 text-13 leading-6 ring-1 ring-inset ring-black-50;
   }
+
   code-span {
-    display: inline;
-    margin: 1px 3px;
-    border: solid 1px #0000001a;
-    border-radius: 4px;
-    background-color: #0000000d;
-    padding: 0 4px;
-    & span {
-      text-indent: 0;
-      word-break: break-all;
-    }
+    @apply mx-1 break-all rounded-md bg-black-50 px-1.5 py-0.5 ring-1 ring-inset ring-black-100;
   }
-  code span {
-    font-size: 0.8125rem;
-  }
-  em {
-    font-style: italic;
-  }
-  del {
-    text-decoration: line-through;
-  }
-  underline {
-    text-decoration: underline;
-  }
-  strong {
-    font-weight: bold;
-  }
+
   link {
-    color: #007bff;
-    text-decoration: underline;
-  }
-  image {
-    display: inline-block;
-    margin: 1px 3px;
-    border: solid 1px #e7e9e8;
-    border-radius: 4px;
-    background-color: #0000000f;
-    padding: 0 4px;
-    font-size: 15px;
-    text-indent: 0;
-    word-break: break-all;
+    @apply text-primary-50 underline;
   }
 }
