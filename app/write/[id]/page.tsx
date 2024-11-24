@@ -185,12 +185,17 @@ export default function WriteNote(props: NoteDetailPageProps) {
         bannerPath: res.bannerPath,
         tags: res.tags.map(tag => tag._id),
       };
+      Transforms.removeNodes(editor, {
+        at: [],
+        match: node => Element.isElement(node),
+      });
+      Transforms.insertNodes(editor, contentRef.current);
     } catch (error) {
       return notFound();
     } finally {
       setInited(true);
     }
-  }, [isCreate, params.id, request]);
+  }, [editor, isCreate, params.id, request]);
 
   useMount(() => {
     init();

@@ -223,6 +223,7 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
       <div
         style={{
           fontSize: '0',
+          lineHeight: '0',
         }}>
         {children}
       </div>
