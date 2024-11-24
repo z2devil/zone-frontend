@@ -10,10 +10,10 @@ const Leaf = (props: RenderLeafProps) => {
     <span
       {...attributes}
       className={clsx(
-        bold && style.bold,
-        italic && style.italic,
-        underline && style.underline,
-        strikethrough && style.strikethrough,
+        bold && style['text-bold'],
+        italic && style['text-italic'],
+        underline && style['text-underline'],
+        strikethrough && style['text-strikethrough'],
         ...Object.keys(rest)
       )}>
       {children}

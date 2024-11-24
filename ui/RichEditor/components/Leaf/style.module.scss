@@ -1,12 +1,12 @@
-.bold {
-  font-weight: bold;
+.text-bold {
+  @apply px-1 font-bold;
 }
-.italic {
-  font-style: italic;
+.text-italic {
+  @apply px-1 italic;
 }
-.underline {
-  text-decoration: underline;
+.text-underline {
+  @apply px-1 underline;
 }
-.strikethrough {
-  text-decoration: line-through;
+.text-strikethrough {
+  @apply px-1 line-through;
 }

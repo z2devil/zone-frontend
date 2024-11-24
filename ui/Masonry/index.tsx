@@ -137,7 +137,6 @@ const Masonry = (props: MasonryProps) => {
           });
         }
       }
-      recordMapRef.current = recordMapRefValue;
       promiseResovle();
     };
 
