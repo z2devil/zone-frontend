@@ -19,6 +19,7 @@ import SearchBanner from '@/ui/SearchBanner';
 import { isEqual, sortBy } from 'lodash';
 import SearchLayer from '@/ui/SearchLayer';
 import SiteRecord from '@/ui/SiteRecord/SiteRecord';
+import { motion } from 'motion/react';
 
 const FETCH_SIZE = 20;
 
@@ -61,6 +62,7 @@ const NotePage = () => {
 
   const handleLoadData = useCallback(
     async (force = false) => {
+      console.log('[ handleLoadData ]');
       if (notes.length >= noteTotal && !force) {
         return;
       }
@@ -225,19 +227,19 @@ const NotePage = () => {
           if (!record.meta) return null;
           return (
             <NoteCard
+              className='absolute'
               key={record.meta._id}
               note={record.meta}
               style={{
-                position: 'absolute',
-                width: `${record.width}px`,
-                transform: `translate(${record.x}px, ${record.y}px)`,
-                overflow: 'hidden',
+                width: record.width,
+                x: record.x,
+                y: record.y,
               }}
             />
           );
         }}
       </Masonry>
-      <div className='flex w-full items-center justify-center py-4'>
+      <motion.div className='flex w-full items-center justify-center py-4'>
         {notes.length === 0 ? (
           <EmptyInfo tip='暂无笔记' />
         ) : (
@@ -248,7 +250,7 @@ const NotePage = () => {
             加载中...
           </div>
         )}
-      </div>
+      </motion.div>
       <SearchLayer
         show={showSearchLayer}
         onHide={() => setShowSearchLayer(false)}
