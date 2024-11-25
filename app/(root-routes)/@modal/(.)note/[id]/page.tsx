@@ -2,11 +2,9 @@
 
 import {
   AdjacentNotes,
-  NoteInfo,
   NoteTypeEnum,
   deleteNoteAPI,
   getAdjacentNotesAPI,
-  getNoteAPI,
 } from '@/lib/api/notes';
 import { UserRole } from '@/lib/api/user';
 import { BlockElementType } from '@/lib/constants';
@@ -35,11 +33,12 @@ import { Element, Node, createEditor } from 'slate';
 import { withReact, Slate as SlateProvider } from 'slate-react';
 import { ImageBlockElement } from 'types/slate';
 import RichEditor from '@/ui/RichEditor';
-import { motion } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 import {
   disableScrollbar,
   enableScrollbar,
 } from '@/lib/utils/scrollbarTrigger';
+import { useNotesStore } from '@/lib/stores/notes';
 
 interface NoteDetailPageProps {
   params: { id: string };
@@ -51,6 +50,13 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
   const navigation = useRouter();
 
   const [request] = useRequest();
+
+  const { notes } = useNotesStore();
+
+  const note = useMemo(
+    () => notes.find(note => note._id === params.id),
+    [notes, params.id]
+  );
 
   const contextMenuUtils = useContextMenuUtilsStore(state => state.utils);
 
@@ -65,8 +71,6 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
   ]);
 
   const isAdmin = usePermission([UserRole.ADMIN, UserRole.MANAGER]);
-
-  const [note, setNote] = useState<NoteInfo | null>(null);
 
   const detailTime = useMemo(
     () => dayjs(note?.createdAt).format('YYYY-MM-DD HH:mm:ss'),
@@ -165,8 +169,8 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
 
   const init = useCallback(async () => {
     try {
-      const res = await getNoteAPI(request)(params.id);
-      setNote(res);
+      // const res = await getNoteAPI(request)(params.id);
+      // setNote(res);
       const adjacentNotes = await getAdjacentNotesAPI(request)(params.id);
       setAdjacentNotes(adjacentNotes);
       console.log('[ adjacentNotes ]', adjacentNotes);
@@ -280,153 +284,192 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
     return withElementClick(withReact(createEditor()), handleElementClick);
   }, [handleElementClick]);
 
+  const [isExit, setIsExit] = useState(false);
+
   const handleBack = useCallback(() => {
-    navigation.back();
-  }, [navigation]);
+    setIsExit(true);
+  }, []);
+
+  useEffect(() => {
+    if (isExit) {
+      setTimeout(() => {
+        navigation.back();
+      }, 300);
+    }
+  }, [isExit, navigation]);
 
   useEffect(() => {
     disableScrollbar();
     return enableScrollbar;
   }, []);
 
-  if (!note) return null;
-
   return (
-    <SlateProvider editor={editor} initialValue={JSON.parse(note.content)}>
-      <Link href='/note' scroll={false}>
-        <div className='fixed inset-0 z-10 overflow-y-auto'>
-          {/* mask */}
-          <motion.div
-            animate={{ opacity: 1 }}
-            className='pointer-events-none fixed z-0 h-full w-full bg-black-80'
-            exit={{ opacity: 0 }}
-            initial={{ opacity: 0 }}
-            transition={{ duration: 0.2, delay: 0.1 }}
-          />
-          {/* note */}
-          <motion.div
-            className='relative z-10 mx-auto flex gap-8 md:w-fit'
-            layoutId={`note-card-${note._id}`}
-            style={{
-              marginTop: '3.625rem',
-              minHeight: 'calc(100vh - 3.625rem)',
-            }}
-            onClick={e => e.stopPropagation()}>
-            <div className='flex w-full flex-col overflow-hidden bg-gray-100 md:w-[45rem]'>
-              <div className='flex flex-col gap-4 p-8'>
-                {note.type === NoteTypeEnum.ARTICLE && note.bannerPath ? (
-                  <div className='relative mb-2 aspect-[3/1] w-full overflow-hidden rounded-lg'>
-                    <Image
-                      alt='封图'
-                      blurDataURL={blurDataURL}
-                      className='h-full w-full object-cover'
-                      height={200}
-                      loader={imageLoader}
-                      placeholder='blur'
-                      src={note.bannerPath}
-                      width={600}
-                    />
-                  </div>
-                ) : null}
-                {/* 顶部 */}
-                <div className='mb-4 flex items-center justify-between gap-10'>
-                  {note.type === NoteTypeEnum.NOTE ? (
-                    <div className='flex items-center gap-1'>
-                      <i className='iconfont icon-calender-filled text-17 text-black-250' />
-                      <span
-                        className='text-[0.75rem] leading-[0.75rem] text-black-250'
-                        title={detailTime}>
-                        {summaryTime}
-                      </span>
-                    </div>
-                  ) : (
-                    <span
-                      className='overflow-hidden text-ellipsis whitespace-nowrap text-19 font-semibold text-black-900 group-hover:text-primary-50'
-                      title={note.title}>
-                      {note.title}
-                    </span>
-                  )}
-                  {isLogin ? (
-                    <button
-                      className='group/more flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[0.5rem] border border-transparent transition-all duration-100 hover:bg-primary-50'
-                      onClick={handleSetting}>
-                      <i className='iconfont icon-ellipsis-v text-black-250 group-hover/more:text-white' />
-                    </button>
-                  ) : null}
-                </div>
-                {/* 内容 */}
-                <div className='relative flex flex-1 flex-col overflow-hidden'>
-                  <RichEditor readonly />
-                </div>
-                {/* 底部 */}
-                <div className='flex items-center justify-between gap-1'>
-                  {note.type === NoteTypeEnum.ARTICLE ? (
-                    <div className='flex items-center gap-1'>
-                      <i className='iconfont icon-calender-filled text-17 text-black-250' />
-                      <span
-                        className='text-[0.75rem] leading-[0.75rem] text-black-250'
-                        title={detailTime}>
-                        {summaryTime}
-                      </span>
-                    </div>
-                  ) : (
-                    <div />
-                  )}
-                  <div className='flex gap-2.5'>
-                    {note.tags.map(tag => (
-                      <div
-                        className='text-black text-xs font-normal text-primary-50'
-                        key={tag._id}>
-                        #{tag.label}
+    <SlateProvider
+      editor={editor}
+      initialValue={JSON.parse(note?.content || '')}>
+      <div className='fixed inset-0 z-10 overflow-y-auto' onClick={handleBack}>
+        <AnimatePresence>
+          {!isExit ? (
+            <>
+              {/* mask */}
+              <motion.div
+                animate={{ opacity: 1 }}
+                className='pointer-events-none fixed z-0 h-full w-full bg-black-80'
+                exit={{ opacity: 0 }}
+                initial={{ opacity: 0 }}
+              />
+              {/* note */}
+              <motion.div
+                animate={{ opacity: 1, top: 0 }}
+                className='relative z-10 mx-auto flex gap-8 md:w-fit'
+                exit={{
+                  opacity: 0,
+                  top: -50,
+                }}
+                initial={{ opacity: 0, top: -50 }}
+                style={{
+                  marginTop: '3.625rem',
+                  minHeight: 'calc(100vh - 3.625rem)',
+                }}
+                transition={{ type: 'tween' }}
+                onClick={e => e.stopPropagation()}>
+                <div className='flex w-full flex-col overflow-hidden bg-gray-100 md:w-[45rem]'>
+                  {note ? (
+                    <div className='flex flex-col gap-4 p-8'>
+                      {note.type === NoteTypeEnum.ARTICLE && note.bannerPath ? (
+                        <div className='relative mb-2 aspect-[3/1] w-full overflow-hidden rounded-lg'>
+                          <Image
+                            alt='封图'
+                            blurDataURL={blurDataURL}
+                            className='h-full w-full object-cover'
+                            height={200}
+                            loader={imageLoader}
+                            placeholder='blur'
+                            src={note.bannerPath}
+                            width={600}
+                          />
+                        </div>
+                      ) : null}
+                      {/* 顶部 */}
+                      <div className='mb-4 flex items-center justify-between gap-10'>
+                        {note.type === NoteTypeEnum.NOTE ? (
+                          <div className='flex items-center gap-1'>
+                            <i className='iconfont icon-calender-filled text-17 text-black-250' />
+                            <span
+                              className='text-[0.75rem] leading-[0.75rem] text-black-250'
+                              title={detailTime}>
+                              {summaryTime}
+                            </span>
+                          </div>
+                        ) : (
+                          <span
+                            className='overflow-hidden text-ellipsis whitespace-nowrap text-19 font-semibold text-black-900 group-hover:text-primary-50'
+                            title={note.title}>
+                            {note.title}
+                          </span>
+                        )}
+                        {isLogin ? (
+                          <button
+                            className='group/more flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[0.5rem] border border-transparent transition-all duration-100 hover:bg-primary-50'
+                            onClick={handleSetting}>
+                            <i className='iconfont icon-ellipsis-v text-black-250 group-hover/more:text-white' />
+                          </button>
+                        ) : null}
                       </div>
-                    ))}
+                      {/* 内容 */}
+                      <div className='relative flex flex-1 flex-col overflow-hidden'>
+                        <RichEditor readonly />
+                      </div>
+                      {/* 底部 */}
+                      <div className='flex items-center justify-between gap-1'>
+                        {note.type === NoteTypeEnum.ARTICLE ? (
+                          <div className='flex items-center gap-1'>
+                            <i className='iconfont icon-calender-filled text-17 text-black-250' />
+                            <span
+                              className='text-[0.75rem] leading-[0.75rem] text-black-250'
+                              title={detailTime}>
+                              {summaryTime}
+                            </span>
+                          </div>
+                        ) : (
+                          <div />
+                        )}
+                        <div className='flex gap-2.5'>
+                          {note.tags.map(tag => (
+                            <div
+                              className='text-black text-xs font-normal text-primary-50'
+                              key={tag._id}>
+                              #{tag.label}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+                  {/* 上下页 */}
+                  <div className='flex flex-col gap-4 p-5 md:flex-row'>
+                    <Link
+                      className={clsx(
+                        'group flex h-16 flex-1 cursor-pointer items-center justify-start gap-2.5 overflow-hidden rounded-xl border border-transparent bg-black-50 px-3.5 py-2.5 transition-colors duration-100 hover:border-blue-600',
+                        {
+                          'pointer-events-none': !prevNoteInfo,
+                        }
+                      )}
+                      href={`/note/${prevNoteInfo?.id}`}
+                      replace={true}
+                      scroll={false}>
+                      <span className='iconfont icon-angle-left relative shrink-0 text-19 font-semibold text-black-600 transition-colors duration-100 group-hover:text-primary-50' />
+                      <span
+                        className='flex-1 truncate text-base font-semibold text-black-600 transition-colors duration-100 group-hover:text-primary-50'
+                        title={prevNoteInfo?.title}>
+                        {'上一篇：' + (prevNoteInfo?.title || '无')}
+                      </span>
+                    </Link>
+                    <Link
+                      className={clsx(
+                        'group flex h-16 flex-1 cursor-pointer items-center justify-end gap-2.5 overflow-hidden rounded-xl border border-transparent bg-black-50 px-3.5 py-2.5 transition-colors duration-100 hover:border-blue-600',
+                        {
+                          'pointer-events-none': !nextNoteInfo,
+                        }
+                      )}
+                      href={`/note/${nextNoteInfo?.id}`}
+                      replace={true}
+                      scroll={false}>
+                      <span
+                        className='flex-1 truncate text-base font-semibold text-black-600 transition-colors duration-100 group-hover:text-primary-50'
+                        title={nextNoteInfo?.title}>
+                        {'下一篇：' + (nextNoteInfo?.title || '无')}
+                      </span>
+                      <span className='iconfont icon-angle-right relative shrink-0 text-19 font-semibold text-black-600 transition-colors duration-100 group-hover:text-primary-50' />
+                    </Link>
+                  </div>
+                  {/* 评论 */}
+                  <div className='flex px-5 pb-20 pt-5'>
+                    <EmptyInfo tip='暂无评论' />
                   </div>
                 </div>
-              </div>
-              {/* 上下页 */}
-              <div className='flex flex-col gap-4 p-5 md:flex-row'>
-                <Link
-                  className={clsx(
-                    'group flex h-16 flex-1 cursor-pointer items-center justify-start gap-2.5 overflow-hidden rounded-xl border border-transparent bg-black-50 px-3.5 py-2.5 transition-colors duration-100 hover:border-blue-600',
-                    {
-                      'pointer-events-none': !prevNoteInfo,
-                    }
-                  )}
-                  href={`/note/${prevNoteInfo?.id}`}
-                  scroll={false}>
-                  <span className='iconfont icon-angle-left relative shrink-0 text-19 font-semibold text-black-600 transition-colors duration-100 group-hover:text-primary-50' />
-                  <span
-                    className='flex-1 truncate text-base font-semibold text-black-600 transition-colors duration-100 group-hover:text-primary-50'
-                    title={prevNoteInfo?.title}>
-                    {'上一篇：' + (prevNoteInfo?.title || '无')}
-                  </span>
-                </Link>
-                <Link
-                  className={clsx(
-                    'group flex h-16 flex-1 cursor-pointer items-center justify-end gap-2.5 overflow-hidden rounded-xl border border-transparent bg-black-50 px-3.5 py-2.5 transition-colors duration-100 hover:border-blue-600',
-                    {
-                      'pointer-events-none': !nextNoteInfo,
-                    }
-                  )}
-                  href={`/note/${nextNoteInfo?.id}`}
-                  scroll={false}>
-                  <span
-                    className='flex-1 truncate text-base font-semibold text-black-600 transition-colors duration-100 group-hover:text-primary-50'
-                    title={nextNoteInfo?.title}>
-                    {'下一篇：' + (nextNoteInfo?.title || '无')}
-                  </span>
-                  <span className='iconfont icon-angle-right relative shrink-0 text-19 font-semibold text-black-600 transition-colors duration-100 group-hover:text-primary-50' />
-                </Link>
-              </div>
-              {/* 评论 */}
-              <div className='flex px-5 pb-20 pt-5'>
-                <EmptyInfo tip='暂无评论' />
-              </div>
-            </div>
-            <TOC className='sticky top-24 hidden h-fit shrink-0 lg:flex' />
-          </motion.div>
-        </div>
-      </Link>
+                <motion.div
+                  animate={{
+                    opacity: 1,
+                    x: 0,
+                  }}
+                  className='fixed top-24 ml-[47rem] hidden h-fit lg:flex'
+                  exit={{
+                    opacity: 0,
+                    x: 50,
+                  }}
+                  initial={{
+                    opacity: 0,
+                    x: 50,
+                  }}
+                  transition={{ type: 'tween' }}>
+                  <TOC />
+                </motion.div>
+              </motion.div>
+            </>
+          ) : null}
+        </AnimatePresence>
+      </div>
       {showImagePreview ? (
         <ImagePreview
           images={images}
