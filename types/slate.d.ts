@@ -88,8 +88,9 @@ export type LinkInlineElement = {
 export type ImageBlockElement = {
   type: BlockElementType.IMAGE;
   url?: string;
+  originWidth?: number;
+  originHeight?: number;
   width?: number;
-  height?: number;
   children: CustomText[];
 };
 

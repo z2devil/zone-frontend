@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { WhiteBoardBlockElement } from 'types/slate';
-import { useReadOnly, useSelected, useSlate } from 'slate-react';
+import { useReadOnly, useSelected } from 'slate-react';
 import WhiteBoard from './components/WhiteBoard/WhiteBoard';
 
 interface WhiteBoardBlockProps {
@@ -14,14 +14,12 @@ const WhiteBoardBlock = ({
   children,
   element,
 }: WhiteBoardBlockProps) => {
-  const editor = useSlate();
-
   const readOnly = useReadOnly();
 
   const selected = useSelected();
 
   return (
-    <div className='relative mb-2' {...attributes}>
+    <div className='relative mb-2' {...attributes} contentEditable={false}>
       <div
         className={clsx(
           'border-1 mb-2 flex aspect-[4/3] overflow-hidden rounded-lg border bg-gray-50',
@@ -30,16 +28,10 @@ const WhiteBoardBlock = ({
               ? 'border-primary-50'
               : 'border-transparent'
             : ''
-        )}
-        contentEditable={false}>
+        )}>
         <WhiteBoard element={element} readOnly={readOnly} />
       </div>
-      <div
-        style={{
-          fontSize: '0',
-        }}>
-        {children}
-      </div>
+      {children}
     </div>
   );
 };

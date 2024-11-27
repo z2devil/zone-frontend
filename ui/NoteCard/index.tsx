@@ -209,7 +209,7 @@ const NoteCard = (props: NoteCardProps) => {
               initial={{ opacity: 0, top: -50 }}
               transition={{ type: 'tween' }}
               whileInView={{ opacity: 1, top: 0 }}
-              whileTap={{ scale: 0.9 }}>
+              whileTap={{ scale: 0.95 }}>
               <div className='flex flex-col gap-3'>
                 {note.type === NoteTypeEnum.ARTICLE && note.bannerPath ? (
                   <div className='relative mb-2 aspect-[3/1] w-full overflow-hidden rounded-lg'>

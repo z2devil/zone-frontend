@@ -16,7 +16,7 @@ const VideoBlock = ({ attributes, children, element }: VideoBlockProps) => {
   const selected = useSelected();
 
   return (
-    <div {...attributes}>
+    <div {...attributes} contentEditable={false}>
       <div
         className={clsx(
           'border-1 mb-2 flex overflow-hidden rounded-lg border bg-gray-50',
@@ -25,20 +25,14 @@ const VideoBlock = ({ attributes, children, element }: VideoBlockProps) => {
               ? 'border-primary-50'
               : 'border-transparent'
             : ''
-        )}
-        contentEditable={false}>
+        )}>
         {readOnly ? (
           <VideoPreview element={element} />
         ) : (
           <VideoEdit element={element} />
         )}
       </div>
-      <div
-        style={{
-          fontSize: '0',
-        }}>
-        {children}
-      </div>
+      {children}
     </div>
   );
 };

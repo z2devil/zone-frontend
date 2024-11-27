@@ -16,7 +16,7 @@ const MusicBlock = ({ attributes, children, element }: MusicBlockProps) => {
   const selected = useSelected();
 
   return (
-    <div {...attributes}>
+    <div {...attributes} contentEditable={false}>
       <div
         className={clsx(
           'border-1 mb-2 flex overflow-hidden rounded-lg border bg-gray-50',
@@ -25,20 +25,14 @@ const MusicBlock = ({ attributes, children, element }: MusicBlockProps) => {
               ? 'border-primary-50'
               : 'border-transparent'
             : ''
-        )}
-        contentEditable={false}>
+        )}>
         {readOnly ? (
           <MusicPreview element={element} />
         ) : (
           <MusicEdit element={element} />
         )}
       </div>
-      <div
-        style={{
-          fontSize: '0',
-        }}>
-        {children}
-      </div>
+      {children}
     </div>
   );
 };

@@ -176,7 +176,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
   }, []);
 
   const handleToConfig = useCallback(() => {
-    if (editor && editor?.string([]).length === 0) {
+    if (editor && !editor.children.length) {
       notificationUtils?.open({
         type: NotificationType.WARNING,
         content: '内容不能为空',
