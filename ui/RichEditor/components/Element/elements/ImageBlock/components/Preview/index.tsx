@@ -13,8 +13,7 @@ const ImagePreview = (props: ImagePreviewProps) => {
 
   const styles = useMemo(() => {
     const res: CSSProperties = {};
-    if (element.width)
-      res.width = `${Math.min((element.width / 592) * 100, 100)}%`;
+    if (element.width) res.width = `${element.width}%`;
     if (element.originHeight && element.originWidth) {
       res.aspectRatio = element.originWidth / element.originHeight;
     }

@@ -2,6 +2,7 @@ import { useReadOnly } from 'slate-react';
 import { ImageBlockElement } from 'types/slate';
 import ImageEdit from './components/Edit';
 import ImagePreview from './components/Preview';
+import { useMemo, useRef } from 'react';
 
 interface CodeBlockProps {
   attributes: any;
@@ -12,13 +13,23 @@ interface CodeBlockProps {
 const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
   const readOnly = useReadOnly();
 
+  const ref = useRef<HTMLDivElement>(null);
+
+  const styles = useMemo(() => {
+    const res: React.CSSProperties = {};
+    res.justifyContent = element.align || 'center';
+    return res;
+  }, [element.align]);
+
   return (
-    <div {...attributes} className='overflow-hidden' contentEditable={false}>
-      {readOnly ? (
-        <ImagePreview element={element} />
-      ) : (
-        <ImageEdit element={element} />
-      )}
+    <div {...attributes} contentEditable={false}>
+      <div className='flex' ref={ref} style={styles}>
+        {readOnly ? (
+          <ImagePreview element={element} />
+        ) : (
+          <ImageEdit containerRef={ref} element={element} />
+        )}
+      </div>
       {children}
     </div>
   );

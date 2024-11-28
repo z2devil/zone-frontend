@@ -91,6 +91,7 @@ export type ImageBlockElement = {
   originWidth?: number;
   originHeight?: number;
   width?: number;
+  align?: 'left' | 'center' | 'right';
   children: CustomText[];
 };
 

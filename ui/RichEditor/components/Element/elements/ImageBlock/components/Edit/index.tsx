@@ -4,6 +4,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import NextImage from 'next/image';
@@ -21,10 +22,11 @@ import imageLoader from 'config/image/loader';
 
 interface ImageEditProps {
   element: ImageBlockElement;
+  containerRef: React.RefObject<HTMLDivElement>;
 }
 
 const ImageEdit = (props: ImageEditProps) => {
-  const { element } = props;
+  const { element, containerRef } = props;
 
   const editor = useSlate();
 
@@ -40,7 +42,7 @@ const ImageEdit = (props: ImageEditProps) => {
 
   const styles = useMemo(() => {
     const res: CSSProperties = {};
-    if (element.width) res.width = `${element.width}px`;
+    if (element.width) res.width = `${element.width}%`;
     if (overrideWidth) res.width = `${overrideWidth}px`;
     if (element.originHeight && element.originWidth) {
       res.aspectRatio = element.originWidth / element.originHeight;
@@ -168,24 +170,67 @@ const ImageEdit = (props: ImageEditProps) => {
 
   const blurDataURL = useMemo(() => getRandomRgbDataURL(), []);
 
-  const handleResizing = useCallback((size: { width: number }) => {
-    console.log('[ handleResizing ]');
-    setOverrideWidth(size.width);
-  }, []);
+  /************************************************
+   * ✨ 缩放
+   ************************************************/
+
+  const containerWidth = useRef(0);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      containerWidth.current = containerRef.current.offsetWidth;
+    }
+  }, [containerRef]);
+
+  const [isResizing, setIsResizing] = useState(false);
+
+  const currentWidth = useMemo(() => {
+    return overrideWidth
+      ? Math.round((overrideWidth / containerWidth.current) * 100)
+      : element.width;
+  }, [element.width, overrideWidth]);
+
+  const handleResizing = useCallback(
+    (size: { width: number }) => {
+      const width = Math.round((size.width / containerWidth.current) * 100);
+      if (width < 10 || width > 100) return;
+      setOverrideWidth(size.width);
+      if (!isResizing) {
+        setIsResizing(true);
+      }
+    },
+    [isResizing]
+  );
 
   const handleResized = useCallback(
     (size: { width: number }) => {
-      console.log('[ handleResized ]');
+      const width = Math.round((size.width / containerWidth.current) * 100);
       Transforms.setNodes(
         editor,
         {
-          width: size.width,
+          width: Math.min(Math.max(width, 10), 100),
         },
         { at: ReactEditor.findPath(editor, element) }
       );
       requestAnimationFrame(() => {
         setOverrideWidth(null);
+        setIsResizing(false);
       });
+    },
+    [editor, element]
+  );
+
+  /************************************************
+   * ✨ 对齐
+   ************************************************/
+
+  const handleAlign = useCallback(
+    (align: 'left' | 'center' | 'right') => {
+      Transforms.setNodes(
+        editor,
+        { align },
+        { at: ReactEditor.findPath(editor, element) }
+      );
     },
     [editor, element]
   );
@@ -194,7 +239,7 @@ const ImageEdit = (props: ImageEditProps) => {
     <Resizable
       className={clsx(
         twMerge(
-          'group flex h-full min-h-32 w-full min-w-16 max-w-full select-none overflow-hidden rounded-lg',
+          'group flex h-full min-h-32 w-full min-w-16 max-w-full select-none rounded-lg',
           selected ? 'border border-primary-50' : 'border border-black-200'
         )
       )}
@@ -206,7 +251,7 @@ const ImageEdit = (props: ImageEditProps) => {
         <NextImage
           alt='图片'
           blurDataURL={blurDataURL}
-          className='block object-cover'
+          className='block rounded-lg object-cover'
           fill={true}
           loader={imageLoader}
           placeholder='blur'
@@ -215,26 +260,56 @@ const ImageEdit = (props: ImageEditProps) => {
         />
       ) : null}
       {isLoading ? (
-        <div className='absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col items-center justify-center gap-1 bg-white bg-opacity-50'>
+        <div className='absolute inset-0 flex cursor-pointer flex-col items-center justify-center gap-1 bg-white bg-opacity-50'>
           <span className='text-17 font-bold text-black-600'>上传中...</span>
         </div>
       ) : (
-        <div
-          className={clsx(
-            'absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col items-center justify-center gap-1',
-            hasUrl &&
-              'bg-white bg-opacity-50 opacity-0 transition-all duration-100 group-hover:opacity-100'
-          )}
-          onClick={handleUpload}>
-          <i className='iconfont icon-image-plus text-xl text-black-600'></i>
-          <span className='text-17 font-bold text-black-600'>
-            {!hasUrl ? '点击上传图片' : '点击更换图片'}
-          </span>
-          <span className='text-xs font-bold text-black-250'>
-            最大支持 25MB
-          </span>
+        <div className=''>
+          <div
+            className={clsx(
+              'absolute inset-0 flex cursor-pointer flex-col items-center justify-center gap-2',
+              hasUrl &&
+                'bg-white bg-opacity-50 opacity-0 transition-all duration-100 group-hover:opacity-100'
+            )}>
+            <div
+              className='flex flex-col items-center justify-center rounded-lg bg-white px-4 py-2 ring-1 ring-black-50'
+              onClick={handleUpload}>
+              <i className='iconfont icon-image-plus text-xl text-black-600'></i>
+              <span className='text-17 font-bold text-black-600'>
+                {!hasUrl ? '上传图片' : '更换图片'}
+              </span>
+              <span className='border-t border-black-50 pt-2 text-xs font-bold text-black-250'>
+                最大支持 25MB
+              </span>
+            </div>
+            <div className='flex items-center justify-center gap-1 rounded-md bg-white p-1 ring-1 ring-black-50'>
+              <div
+                className='flex h-6 w-6 cursor-pointer items-center justify-center rounded p-1 text-black-600 hover:bg-black-50 hover:text-black-900'
+                title='居左'
+                onClick={() => handleAlign('left')}>
+                <i className='iconfont icon-align-left-bold text-xl'></i>
+              </div>
+              <div
+                className='flex h-6 w-6 cursor-pointer items-center justify-center rounded p-1 text-black-600 hover:bg-black-50 hover:text-black-900'
+                title='居中'
+                onClick={() => handleAlign('center')}>
+                <i className='iconfont icon-align-horizontal-center-bold text-xl'></i>
+              </div>
+              <div
+                className='flex h-6 w-6 cursor-pointer items-center justify-center rounded p-1 text-black-600 hover:bg-black-50 hover:text-black-900'
+                title='居右'
+                onClick={() => handleAlign('right')}>
+                <i className='iconfont icon-align-right-bold text-xl'></i>
+              </div>
+            </div>
+          </div>
         </div>
       )}
+      {isResizing ? (
+        <div className='absolute -top-9 left-1/2 flex -translate-x-1/2 items-center justify-center rounded-lg bg-white px-2 ring-1 ring-black-50'>
+          <span className='text-13 font-bold text-black-600'>{`${currentWidth}%`}</span>
+        </div>
+      ) : null}
     </Resizable>
   );
 };
