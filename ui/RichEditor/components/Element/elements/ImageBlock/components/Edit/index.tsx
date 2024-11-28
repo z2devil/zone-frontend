@@ -3,6 +3,7 @@ import {
   ReactEventHandler,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -176,11 +177,15 @@ const ImageEdit = (props: ImageEditProps) => {
 
   const containerWidth = useRef(0);
 
-  useEffect(() => {
+  const updateContainerWidth = useCallback(() => {
     if (containerRef.current) {
-      containerWidth.current = containerRef.current.offsetWidth;
+      containerWidth.current = containerRef.current.clientWidth;
     }
   }, [containerRef]);
+
+  useLayoutEffect(() => {
+    requestAnimationFrame(updateContainerWidth);
+  }, [updateContainerWidth]);
 
   const [isResizing, setIsResizing] = useState(false);
 
@@ -192,14 +197,17 @@ const ImageEdit = (props: ImageEditProps) => {
 
   const handleResizing = useCallback(
     (size: { width: number }) => {
+      if (!containerWidth.current) {
+        updateContainerWidth();
+      }
       const width = Math.round((size.width / containerWidth.current) * 100);
-      if (width < 10 || width > 100) return;
+      if (width < 20 || width > 100) return;
       setOverrideWidth(size.width);
       if (!isResizing) {
         setIsResizing(true);
       }
     },
-    [isResizing]
+    [isResizing, updateContainerWidth]
   );
 
   const handleResized = useCallback(
@@ -208,7 +216,7 @@ const ImageEdit = (props: ImageEditProps) => {
       Transforms.setNodes(
         editor,
         {
-          width: Math.min(Math.max(width, 10), 100),
+          width: Math.min(Math.max(width, 20), 100),
         },
         { at: ReactEditor.findPath(editor, element) }
       );
