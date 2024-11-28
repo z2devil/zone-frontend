@@ -5,7 +5,7 @@ import React from 'react';
 
 interface BlockElementControllerProps {
   id: string;
-  children: React.ReactElement; // 确保 children 是单个元素
+  children: React.ReactElement;
   element: CustomElement;
 }
 
@@ -18,9 +18,7 @@ const ElementWrapper = (props: BlockElementControllerProps) => {
     editor.onElementClick?.(element);
   }, [editor, element]);
 
-  return React.cloneElement(children, {
-    onClick: handleElementClick,
-  });
+  return <span onClick={handleElementClick}>{children}</span>;
 };
 
 export default ElementWrapper;

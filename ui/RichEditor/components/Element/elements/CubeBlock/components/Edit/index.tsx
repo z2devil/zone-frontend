@@ -4,11 +4,11 @@ import { Application } from '@splinetool/runtime';
 import { ReactEditor, useSlate } from 'slate-react';
 import { Transforms } from 'slate';
 
-interface CubePreviewProps {
+interface CubeEditProps {
   element: CubeBlockElement;
 }
 
-const CubeEdit = (props: CubePreviewProps) => {
+const CubeEdit = (props: CubeEditProps) => {
   const { element } = props;
 
   const editor = useSlate();
