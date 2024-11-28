@@ -117,37 +117,38 @@ const ImageEdit = (props: ImageEditProps) => {
   }, [element.url, editor, element, fetcher, request]);
 
   const handleUpload = useCallback(async () => {
-    const { promise, resolve } = Promise.withResolvers();
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.onchange = async () => {
-      const file = input.files?.[0];
-      if (!file) return resolve(null);
-      setIsLoading(true);
-      let fileName = '';
-      try {
-        fileName = await upload(fetcher)({
-          file,
-          fileType: 'image',
+    const promise = new Promise(resolve => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = async () => {
+        const file = input.files?.[0];
+        if (!file) return resolve(null);
+        setIsLoading(true);
+        let fileName = '';
+        try {
+          fileName = await upload(fetcher)({
+            file,
+            fileType: 'image',
+          });
+        } catch (error) {
+          setIsLoading(false);
+          return resolve(null);
+        }
+        HistoryEditor.withoutSaving(editor, () => {
+          Transforms.setNodes(
+            editor,
+            {
+              url: `${process.env.OSS_ROOT}/image/${fileName}`,
+            },
+            { at: ReactEditor.findPath(editor, element) }
+          );
         });
-      } catch (error) {
         setIsLoading(false);
-        return resolve(null);
-      }
-      HistoryEditor.withoutSaving(editor, () => {
-        Transforms.setNodes(
-          editor,
-          {
-            url: `${process.env.OSS_ROOT}/image/${fileName}`,
-          },
-          { at: ReactEditor.findPath(editor, element) }
-        );
-      });
-      setIsLoading(false);
-      resolve(null);
-    };
-    input.click();
+        resolve(null);
+      };
+      input.click();
+    });
     await promise;
   }, [editor, element, fetcher]);
 
