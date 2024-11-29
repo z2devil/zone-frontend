@@ -115,15 +115,15 @@ export default function WriteNote(props: NoteDetailPageProps) {
 
   useEffect(() => {
     window.addEventListener('beforeunload', handleBeforeUnload);
-    const noteDraft = localStorage.getItem('note-draft');
-    if (noteDraft) {
-      const draft = JSON.parse(noteDraft);
-      Transforms.removeNodes(editor, {
-        at: [],
-        match: node => Element.isElement(node),
-      });
-      Transforms.insertNodes(editor, draft);
-    }
+    // const noteDraft = localStorage.getItem('note-draft');
+    // if (noteDraft) {
+    //   const draft = JSON.parse(noteDraft);
+    //   Transforms.removeNodes(editor, {
+    //     at: [],
+    //     match: node => Element.isElement(node),
+    //   });
+    //   Transforms.insertNodes(editor, draft);
+    // }
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
