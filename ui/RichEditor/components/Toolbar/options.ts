@@ -59,6 +59,14 @@ const options: ToolbarOption[] = [
           split: true,
         }
       );
+      Transforms.setNodes(
+        editor,
+        { type: BlockElementType.CODE_LINE_BLOCK },
+        {
+          match: n =>
+            Element.isElement(n) && n.type === BlockElementType.PARAGRAPH,
+        }
+      );
     },
   },
   {

@@ -76,6 +76,11 @@ export type CodeBlockElement = {
   language?: Language;
   content?: string;
   height?: number;
+  children: CodeLineBlockElement[];
+};
+
+export type CodeLineBlockElement = {
+  type: BlockElementType.CODE_LINE_BLOCK;
   children: CustomText[];
 };
 
@@ -136,6 +141,7 @@ export type BlockElement =
   | ListItemElement
   | BlockQuoteElement
   | CodeBlockElement
+  | CodeLineBlockElement
   | ImageBlockElement
   | VideoBlockElement
   | ButtonElement

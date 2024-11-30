@@ -35,6 +35,7 @@ import {
   withPasteMarkdown,
   withShortcuts,
   withVoids,
+  withNormalizeCodeBlock,
 } from '@/ui/RichEditor/utils';
 import Button from '@/ui/Button';
 
@@ -67,6 +68,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
       withVoids,
       withShortcuts,
       withPasteMarkdown,
+      withNormalizeCodeBlock,
     ];
     return enhancers.reduce(
       (editor, enhancer) => enhancer(editor),

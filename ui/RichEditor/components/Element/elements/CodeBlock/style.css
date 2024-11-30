@@ -5,7 +5,8 @@ pre {
   caret-color: #000;
 }
 
-code > p {
+code p {
+  margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
 
