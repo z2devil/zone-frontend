@@ -33,6 +33,10 @@ import {
   withVoids,
 } from '@/ui/RichEditor/utils';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import {
+  disableScrollbar,
+  enableScrollbar,
+} from '@/lib/utils/scrollbarTrigger';
 
 interface NoteDetailPageProps {
   params: { id: string };
@@ -122,6 +126,11 @@ export default function WriteNote(props: NoteDetailPageProps) {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [editor, handleBeforeUnload]);
+
+  useEffect(() => {
+    disableScrollbar();
+    return enableScrollbar;
+  }, []);
 
   /************************************************
    * ✨ 初始化
