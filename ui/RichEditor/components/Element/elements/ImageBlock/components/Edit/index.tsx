@@ -248,7 +248,7 @@ const ImageEdit = (props: ImageEditProps) => {
     <Resizable
       className={clsx(
         twMerge(
-          'group flex h-full min-h-32 w-full min-w-16 max-w-full select-none rounded-lg',
+          'group flex h-full min-h-48 w-full min-w-16 max-w-full select-none rounded-lg',
           selected ? 'border border-primary-50' : 'border border-black-200'
         )
       )}

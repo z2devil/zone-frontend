@@ -31,6 +31,8 @@ export enum BlockElementType {
   BUTTON = 'button',
   MUSIC = 'music',
   WHITE_BOARD = 'white-board',
+  LAYOUT = 'layout',
+  LAYOUT_ITEM = 'layout-item',
   // CUBE = 'cube',
 }
 

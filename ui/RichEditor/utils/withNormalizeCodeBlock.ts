@@ -9,31 +9,27 @@ export const withNormalizeCodeBlock = (editor: Editor) => {
 
     const [node, path] = entry;
 
-    if (!Element.isElement(node)) {
+    if (!Element.isElement(node) || node.type !== BlockElementType.CODE_BLOCK) {
       return;
     }
 
-    const isCodeBlockRoot = node.type === BlockElementType.CODE_BLOCK;
-
-    if (isCodeBlockRoot) {
-      // Children should all be code lines
-      let nonCodeLinePath;
-      let nonCodeLineNode;
-      node.children.some((child, index) => {
-        if (child.type !== BlockElementType.CODE_LINE_BLOCK) {
-          nonCodeLinePath = [...path, index];
-          nonCodeLineNode = child;
-          return true;
-        }
-      });
-
-      if (nonCodeLineNode) {
-        Transforms.setNodes(
-          editor,
-          { type: BlockElementType.CODE_LINE_BLOCK },
-          { at: nonCodeLinePath }
-        );
+    // Children should all be code lines
+    let nonCodeLinePath;
+    let nonCodeLineNode;
+    node.children.some((child, index) => {
+      if (child.type !== BlockElementType.CODE_LINE_BLOCK) {
+        nonCodeLinePath = [...path, index];
+        nonCodeLineNode = child;
+        return true;
       }
+    });
+
+    if (nonCodeLineNode) {
+      Transforms.setNodes(
+        editor,
+        { type: BlockElementType.CODE_LINE_BLOCK },
+        { at: nonCodeLinePath }
+      );
     }
   };
 

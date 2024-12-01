@@ -131,6 +131,17 @@ export type CubeBlockElement = {
   children: CustomText[];
 };
 
+export type LayoutBlockElement = {
+  type: BlockElementType.LAYOUT;
+  children: LayoutItemBlockElement[];
+};
+
+export type LayoutItemBlockElement = {
+  type: BlockElementType.LAYOUT;
+  wdith: number;
+  children: CustomText[];
+};
+
 export type InlineElement = CodeSpanElement | LinkInlineElement;
 
 export type BlockElement =
@@ -146,7 +157,10 @@ export type BlockElement =
   | VideoBlockElement
   | ButtonElement
   | MusicBlockElement
-  | WhiteBoardBlockElement;
+  | WhiteBoardBlockElement
+  | LayoutBlockElement
+  | LayoutItemBlockElement;
+
 // | CubeBlockElement;
 
 export type CustomElement = InlineElement | BlockElement;
