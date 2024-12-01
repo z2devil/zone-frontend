@@ -136,7 +136,7 @@ export type LayoutBlockElement = {
 };
 
 export type LayoutItemBlockElement = {
-  type: BlockElementType.LAYOUT;
+  type: BlockElementType.LAYOUT_ITEM;
   width: number;
   children: CustomText[];
 };

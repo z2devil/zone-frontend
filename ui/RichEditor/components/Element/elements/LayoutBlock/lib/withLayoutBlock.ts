@@ -1,79 +1,42 @@
 import { BlockElementType } from '@/lib/constants';
 import { Editor, Element, Range, Transforms } from 'slate';
-import { LayoutBlockElement, LayoutItemBlockElement } from 'types/slate';
+import { LayoutBlockElement } from 'types/slate';
 
 export const withColumn = (editor: Editor) => {
   const { deleteBackward, isEmpty, normalizeNode } = editor;
 
   editor.normalizeNode = entry => {
+    normalizeNode(entry);
+
     const [n, path] = entry;
 
-    if (Element.isElement(n) && n.type === BlockElementType.LAYOUT) {
-      const node = n as LayoutBlockElement;
+    if (!Element.isElement(n) || n.type !== BlockElementType.LAYOUT) return;
 
+    const node = n as LayoutBlockElement;
+
+    node.children.forEach((child, index) => {
       if (
-        !node.children.some(
-          child =>
-            Element.isElement(child) && child.type === BlockElementType.LAYOUT
-        )
+        Element.isElement(child) &&
+        child.type !== BlockElementType.LAYOUT_ITEM
       ) {
-        Transforms.removeNodes(editor, { at: path });
-
-        return;
+        Transforms.removeNodes(editor, { at: path.concat(index) });
       }
+    });
 
-      if (node.children.length < 2) {
-        editor.withoutNormalizing(() => {
-          Transforms.unwrapNodes(editor, { at: path });
-          Transforms.unwrapNodes(editor, { at: path });
-        });
+    if (node.children.length < 2) {
+      editor.withoutNormalizing(() => {
+        Transforms.unwrapNodes(editor, { at: path });
+        Transforms.unwrapNodes(editor, { at: path });
+      });
 
-        return;
-      }
-
-      // const prevChildrenCnt = node.children.length;
-      // const currentLayout = node.layout;
-
-      // if (currentLayout) {
-      //   const currentChildrenCnt = currentLayout.length;
-
-      //   const groupPathRef = createPathRef(editor, path);
-
-      //   if (prevChildrenCnt === 2 && currentChildrenCnt === 3) {
-      //     const lastChildPath = getLastChildPath(entry);
-
-      //     insertColumn(editor, {
-      //       at: lastChildPath,
-      //     });
-
-      //     setColumnWidth(editor, groupPathRef, currentLayout);
-
-      //     return;
-      //   }
-      //   if (prevChildrenCnt === 3 && currentChildrenCnt === 2) {
-      //     moveMiddleColumn(editor, entry, { direction: 'left' });
-      //     setColumnWidth(editor, groupPathRef, currentLayout);
-
-      //     return;
-      //   }
-      //   if (prevChildrenCnt === currentChildrenCnt) {
-      //     setColumnWidth(editor, groupPathRef, currentLayout);
-
-      //     return;
-      //   }
-      // }
-    }
-    if (Element.isElement(n) && n.type === BlockElementType.LAYOUT) {
-      const node = n as LayoutItemBlockElement;
-
-      if (node.children.length === 0) {
-        Transforms.removeNodes(editor, { at: path });
-
-        return;
-      }
+      return;
     }
 
-    return normalizeNode(entry);
+    if (node.children.length === 0) {
+      Transforms.removeNodes(editor, { at: path });
+
+      return;
+    }
   };
 
   editor.deleteBackward = unit => {
