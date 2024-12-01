@@ -9,6 +9,8 @@ import InlineChromiumBugfix from './elements/InlineChromiumBugfix';
 import {
   CodeBlockElement,
   ImageBlockElement,
+  LayoutBlockElement,
+  LayoutItemBlockElement,
   LinkInlineElement,
   MusicBlockElement,
   VideoBlockElement,
@@ -22,8 +24,9 @@ import VideoBlock from './elements/VideoBlock';
 import LinkInline from './elements/LinkInline';
 // import CubeBlock from './elements/CubeBlock';
 import BlockElementController from './components/BlockElementController';
-import ElementWrapper from './components/ElementWrapper';
 import { BlockElementType, InlineElementType } from '@/lib/constants';
+import LayoutBlock from './elements/LayoutBlock';
+import LayoutItemBlock from './elements/LayoutItemBlock';
 
 const Element = (props: RenderElementProps) => {
   const { attributes, children, element } = props;
@@ -111,6 +114,20 @@ const Element = (props: RenderElementProps) => {
           {children}
         </CodeBlock>
       ),
+      [BlockElementType.LAYOUT]: (
+        <LayoutBlock
+          attributes={attributes}
+          element={props.element as LayoutBlockElement}>
+          {children}
+        </LayoutBlock>
+      ),
+      [BlockElementType.LAYOUT_ITEM]: (
+        <LayoutItemBlock
+          attributes={attributes}
+          element={props.element as LayoutItemBlockElement}>
+          {children}
+        </LayoutItemBlock>
+      ),
       [BlockElementType.IMAGE]: (
         <ImageBlock
           attributes={attributes}
@@ -152,17 +169,11 @@ const Element = (props: RenderElementProps) => {
 
   const elementRender = useMemo(() => {
     if (isInline || readOnly || path.length > 1) {
-      return (
-        <ElementWrapper element={element} id={key}>
-          {elements[element.type] || <p {...attributes}>{children}</p>}
-        </ElementWrapper>
-      );
+      return elements[element.type] || <p {...attributes}>{children}</p>;
     }
     return (
       <BlockElementController element={element} id={key}>
-        <ElementWrapper element={element} id={key}>
-          {elements[element.type] || <p {...attributes}>{children}</p>}
-        </ElementWrapper>
+        {elements[element.type] || <p {...attributes}>{children}</p>}
       </BlockElementController>
     );
   }, [

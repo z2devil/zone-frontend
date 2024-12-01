@@ -27,7 +27,6 @@ export type RichEditor = BaseEditor &
     >;
   } & {
     isSummary?: boolean;
-    onElementClick?: (element: Element) => void;
   };
 
 export type ParagraphElement = {
@@ -138,7 +137,7 @@ export type LayoutBlockElement = {
 
 export type LayoutItemBlockElement = {
   type: BlockElementType.LAYOUT;
-  wdith: number;
+  width: number;
   children: CustomText[];
 };
 

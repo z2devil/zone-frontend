@@ -23,7 +23,6 @@ import EmptyInfo from '@/ui/EmptyInfo';
 import ImagePreview from '@/ui/ImagePreview';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import TOC from '@/ui/TOC';
-import { withElementClick } from '@/ui/RichEditor/utils';
 import clsx from 'clsx';
 import imageLoader from 'config/image/loader';
 import dayjs from 'dayjs';
@@ -272,8 +271,8 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
   );
 
   const editor = useMemo(() => {
-    return withElementClick(withReact(createEditor()), handleElementClick);
-  }, [handleElementClick]);
+    return withReact(createEditor());
+  }, []);
 
   if (!note) return null;
 

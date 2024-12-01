@@ -1,0 +1,21 @@
+.layout-item-container {
+  @apply relative px-1;
+  &:first-child {
+    @apply pl-0;
+  }
+  &:last-child {
+    @apply pr-0;
+  }
+  .layout-item {
+    @apply h-full py-1;
+    &.editable {
+      @apply rounded-lg border border-dashed border-black-100 px-2;
+    }
+    & > p:first-child {
+      margin-top: 0;
+    }
+    & > p:last-child {
+      margin-bottom: 0;
+    }
+  }
+}

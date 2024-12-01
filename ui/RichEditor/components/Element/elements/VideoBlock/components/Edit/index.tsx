@@ -3,11 +3,11 @@ import { ReactEditor, useSlate } from 'slate-react';
 import { VideoBlockElement } from 'types/slate';
 import { Transforms } from 'slate';
 
-interface VideoPreviewProps {
+interface VideoEditProps {
   element: VideoBlockElement;
 }
 
-const VideoEdit = (props: VideoPreviewProps) => {
+const VideoEdit = (props: VideoEditProps) => {
   const { element } = props;
 
   const editor = useSlate();

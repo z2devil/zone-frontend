@@ -1,5 +1,5 @@
 import { BlockElementType, InlineElementType, MarkType } from '@/lib/constants';
-import { Editor, Element, Node, Range, Transforms } from 'slate';
+import { Editor, Element, Node, Range, Text, Transforms } from 'slate';
 import { RichEditor, CustomElement, ElementType } from 'types/slate';
 import { CustomText } from 'types/slate';
 
@@ -55,7 +55,7 @@ export const editorUtils = {
   insertBlockNode(
     editor: RichEditor,
     type: BlockElementType,
-    children: (CustomText | CustomElement)[] = [{ text: '' }]
+    children: (Text | Element)[] = [{ text: '' }]
   ) {
     // TODO: 需要先获取当前选中的行，判断行内是否有除了 p 以外的其他元素，如果有，则将 btn 置灰；
     // 不同按钮的置灰逻辑不同，需要根据具体的按钮来判断

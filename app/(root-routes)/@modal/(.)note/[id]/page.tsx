@@ -21,7 +21,6 @@ import EmptyInfo from '@/ui/EmptyInfo';
 import ImagePreview from '@/ui/ImagePreview';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import TOC from '@/ui/TOC';
-import { withElementClick } from '@/ui/RichEditor/utils';
 import clsx from 'clsx';
 import imageLoader from 'config/image/loader';
 import dayjs from 'dayjs';
@@ -29,7 +28,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Element, Node, createEditor } from 'slate';
+import { Editor, Element, Node, createEditor } from 'slate';
 import { withReact, Slate as SlateProvider } from 'slate-react';
 import { ImageBlockElement } from 'types/slate';
 import RichEditor from '@/ui/RichEditor';
@@ -281,8 +280,8 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
   );
 
   const editor = useMemo(() => {
-    return withElementClick(withReact(createEditor()), handleElementClick);
-  }, [handleElementClick]);
+    return withReact(createEditor());
+  }, []);
 
   const [isExit, setIsExit] = useState(false);
 

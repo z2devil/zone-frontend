@@ -1,0 +1,6 @@
+.layout-edit {
+  @apply pointer-events-none absolute h-full w-full gap-2;
+  .controller {
+    @apply pointer-events-auto relative z-10 h-full w-1 -translate-x-1/2 cursor-col-resize bg-transparent hover:bg-primary-50;
+  }
+}

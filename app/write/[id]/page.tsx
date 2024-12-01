@@ -24,7 +24,14 @@ import {
 } from '@/lib/api/notes';
 import useRequest from '@/lib/hooks/useRequest';
 import { useNotesStore } from '@/lib/stores/notes';
-import { createEditor, Descendant, Element, Node, Transforms } from 'slate';
+import {
+  createEditor,
+  Descendant,
+  Editor,
+  Element,
+  Node,
+  Transforms,
+} from 'slate';
 import { Slate as SlateProvider, withReact } from 'slate-react';
 import { useMount } from 'react-use';
 import { getContentSummary } from '@/lib/utils/editor';
@@ -61,6 +68,14 @@ export default function WriteNote(props: NoteDetailPageProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const editor = useMemo(() => {
+    const enhance = (e: Editor) => {
+      const { select } = e;
+      e.select = properties => {
+        console.log('[ select ]', properties);
+        select(properties);
+      };
+      return e;
+    };
     const enhancers = [
       withReact,
       withHistory,
@@ -69,6 +84,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
       withShortcuts,
       withPasteMarkdown,
       withNormalizeCodeBlock,
+      enhance,
     ];
     return enhancers.reduce(
       (editor, enhancer) => enhancer(editor),
