@@ -4,6 +4,7 @@ import style from './style.module.scss';
 import { useOverride } from '../OverrideProvider';
 import { Transforms } from 'slate';
 import { ReactEditor, useSlate } from 'slate-react';
+import { BlockElementType } from '@/lib/constants';
 
 interface LayoutEditProps {
   element: LayoutBlockElement;
@@ -18,7 +19,7 @@ const LayoutEdit = (props: LayoutEditProps) => {
 
   const newWidths = useRef<number[] | null>();
 
-  const handleMouseDown = useCallback(
+  const handleResizeStart = useCallback(
     (idx: number, initialX: number) => {
       const containerWidth = override?.containerRef.current?.clientWidth;
       if (!containerWidth) return;
@@ -51,7 +52,6 @@ const LayoutEdit = (props: LayoutEditProps) => {
         const widths = newWidths.current;
 
         const bothTotalWidth = widths[idx] + widths[idx + 1];
-        widths[idx] = Math.floor(widths[idx]);
         widths[idx + 1] = bothTotalWidth - widths[idx];
 
         const currentPath = ReactEditor.findPath(editor, element);
@@ -83,22 +83,90 @@ const LayoutEdit = (props: LayoutEditProps) => {
     [override, element, editor]
   );
 
+  const canAdd = useMemo(() => {
+    return element.children.length < 5;
+  }, [element.children.length]);
+
+  const handleAdd = useCallback(
+    (index: number) => {
+      let needWidth = 100 / (element.children.length + 1);
+      const newWidth = needWidth;
+      const newWidths = element.children.map(child => child.width);
+      for (let i = 0; i < newWidths.length; i++) {
+        const prevWidth = newWidths[i];
+        newWidths[i] = Math.max(
+          prevWidth -
+            needWidth *
+              (prevWidth / newWidths.slice(i).reduce((a, b) => a + b, 0)),
+          10
+        );
+        needWidth -= prevWidth - newWidths[i];
+        Transforms.setNodes(
+          editor,
+          { width: newWidths[i] },
+          { at: [...ReactEditor.findPath(editor, element), i] }
+        );
+      }
+      newWidths.splice(index + 1, 0, newWidth);
+      Transforms.insertNodes(
+        editor,
+        {
+          type: BlockElementType.LAYOUT_ITEM,
+          width: newWidth,
+          children: [
+            {
+              type: BlockElementType.PARAGRAPH,
+              children: [
+                {
+                  text: '',
+                },
+              ],
+            },
+          ],
+        } as any,
+        {
+          at: [...ReactEditor.findPath(editor, element), index + 1],
+          select: true,
+        }
+      );
+    },
+    [editor, element]
+  );
+
   const controllers = useMemo(() => {
-    return (override?.widths || element.children.map(child => child.width))
+    return (
+      override?.isResizing
+        ? override?.widths || []
+        : element.children.map(child => child.width)
+    )
       .slice(0, -1)
       .map((width, idx) => {
         const controllerStyle = {
-          left: `${width}%`,
+          marginLeft: `${width}%`,
         };
         return (
-          <div
-            className={style.controller}
-            key={idx}
-            style={controllerStyle}
-            onMouseDown={e => handleMouseDown(idx, e.clientX)}></div>
+          <div className={style.controller} key={idx} style={controllerStyle}>
+            {canAdd ? (
+              <div className={style.addHandler} onClick={() => handleAdd(idx)}>
+                <div className={style.btn}>
+                  <span className='iconfont icon-plus'></span>
+                </div>
+              </div>
+            ) : null}
+            <div
+              className={style.resizeHandler}
+              onMouseDown={e => handleResizeStart(idx, e.clientX)}></div>
+          </div>
         );
       });
-  }, [element.children, handleMouseDown, override?.widths]);
+  }, [
+    canAdd,
+    element.children,
+    handleAdd,
+    handleResizeStart,
+    override?.isResizing,
+    override?.widths,
+  ]);
 
   return (
     <div className={style.layoutEdit} contentEditable={false}>

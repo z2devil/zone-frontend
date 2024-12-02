@@ -1,6 +1,5 @@
 import { BlockElementType } from '@/lib/constants';
 import { Editor, Element, Range, Transforms } from 'slate';
-import { LayoutBlockElement } from 'types/slate';
 
 export const withColumn = (editor: Editor) => {
   const { deleteBackward, isEmpty, normalizeNode } = editor;
@@ -8,11 +7,27 @@ export const withColumn = (editor: Editor) => {
   editor.normalizeNode = entry => {
     normalizeNode(entry);
 
-    const [n, path] = entry;
+    const [node, path] = entry;
 
-    if (!Element.isElement(n) || n.type !== BlockElementType.LAYOUT) return;
+    if (!Element.isElement(node) || node.type !== BlockElementType.LAYOUT)
+      return;
 
-    const node = n as LayoutBlockElement;
+    const totalWidth = node.children.reduce(
+      (acc, child) => acc + child.width,
+      0
+    );
+
+    if (Math.floor(totalWidth) !== 100) {
+      const lastChild = node.children[node.children.length - 1];
+      const remainingWidth = 100 - totalWidth;
+
+      // 调整最后一个子节点的宽度
+      Transforms.setNodes(
+        editor,
+        { width: lastChild.width + remainingWidth },
+        { at: path.concat(node.children.length - 1) }
+      );
+    }
 
     node.children.forEach((child, index) => {
       if (

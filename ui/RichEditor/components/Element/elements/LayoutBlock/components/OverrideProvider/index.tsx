@@ -1,4 +1,5 @@
 import React, {
+  useEffect,
   createContext,
   useContext,
   ReactNode,
@@ -17,23 +18,33 @@ interface OverrideContextType {
 const OverrideContext = createContext<OverrideContextType | null>(null);
 
 interface OverrideProviderProps {
-  initialWidths: number[];
+  widths: number[];
   containerRef: RefObject<HTMLDivElement>;
   children: ReactNode;
 }
 
 const OverrideProvider: React.FC<OverrideProviderProps> = ({
-  initialWidths,
+  widths,
   containerRef,
   children,
 }) => {
-  const [widths, setWidths] = useState<number[]>(initialWidths);
+  const [privateWidths, setPrivateWdiths] = useState(widths);
 
   const [isResizing, setIsResizing] = useState(false);
 
+  useEffect(() => {
+    setPrivateWdiths(widths);
+  }, [widths]);
+
   return (
     <OverrideContext.Provider
-      value={{ widths, setWidths, isResizing, setIsResizing, containerRef }}>
+      value={{
+        widths: privateWidths,
+        setWidths: setPrivateWdiths,
+        isResizing,
+        setIsResizing,
+        containerRef,
+      }}>
       {children}
     </OverrideContext.Provider>
   );

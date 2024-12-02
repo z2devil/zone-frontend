@@ -1,6 +1,24 @@
 .layout-edit {
-  @apply pointer-events-none absolute h-full w-full gap-2;
+  @apply pointer-events-none absolute flex h-full w-full;
   .controller {
-    @apply pointer-events-auto relative z-10 h-full w-1 -translate-x-1/2 cursor-col-resize bg-transparent hover:bg-primary-50;
+    @apply relative z-10 h-full w-0;
+    .add-handler {
+      @apply pointer-events-auto absolute -top-3 flex h-4 w-4 -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center;
+      &:hover .btn {
+        @apply h-4 w-4 bg-primary-50;
+      }
+      .btn {
+        @apply flex h-1 w-1 items-center justify-center rounded-full bg-black-100 transition-all duration-100;
+      }
+      &:hover span {
+        @apply scale-100;
+      }
+      span {
+        @apply scale-0 text-[12px] leading-[0px] text-white transition-all duration-100;
+      }
+    }
+    .resize-handler {
+      @apply pointer-events-auto relative h-full w-1 -translate-x-1/2 cursor-col-resize bg-transparent hover:bg-primary-50;
+    }
   }
 }
