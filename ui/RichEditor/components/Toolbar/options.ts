@@ -59,6 +59,14 @@ const options: ToolbarOption[] = [
           split: true,
         }
       );
+      Transforms.setNodes(
+        editor,
+        { type: BlockElementType.CODE_LINE_BLOCK },
+        {
+          match: n =>
+            Element.isElement(n) && n.type === BlockElementType.PARAGRAPH,
+        }
+      );
     },
   },
   {
@@ -103,20 +111,20 @@ const options: ToolbarOption[] = [
       editorUtils.insertBlockNode(editor, BlockElementType.MUSIC);
     },
   },
-  {
-    title: '画板',
-    icon: 'icon-white-board',
-    active: editor => {
-      return editorUtils.isElementActive(editor, BlockElementType.MUSIC);
-    },
-    disabled: editor => {
-      return editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK);
-    },
-    onClick: (e, editor) => {
-      e.preventDefault();
-      editorUtils.insertBlockNode(editor, BlockElementType.MUSIC);
-    },
-  },
+  // {
+  //   title: '画板',
+  //   icon: 'icon-white-board',
+  //   active: editor => {
+  //     return editorUtils.isElementActive(editor, BlockElementType.WHITE_BOARD);
+  //   },
+  //   disabled: editor => {
+  //     return editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK);
+  //   },
+  //   onClick: (e, editor) => {
+  //     e.preventDefault();
+  //     editorUtils.insertBlockNode(editor, BlockElementType.WHITE_BOARD);
+  //   },
+  // },
   // {
   //   title: 'spline',
   //   icon: 'icon-cube',
@@ -131,6 +139,49 @@ const options: ToolbarOption[] = [
   //     editorUtils.insertBlockNode(editor, BlockElementType.CUBE);
   //   }
   // },
+  {
+    title: '多列布局',
+    icon: 'icon-cube',
+    active: editor => {
+      return editorUtils.isElementActive(editor, BlockElementType.LAYOUT);
+    },
+    disabled: editor => {
+      return editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK);
+    },
+    onClick: (e, editor) => {
+      e.preventDefault();
+      editorUtils.insertBlockNode(editor, BlockElementType.LAYOUT, [
+        {
+          type: BlockElementType.LAYOUT_ITEM,
+          width: 50,
+          children: [
+            {
+              type: BlockElementType.PARAGRAPH,
+              children: [
+                {
+                  text: '',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: BlockElementType.LAYOUT_ITEM,
+          width: 50,
+          children: [
+            {
+              type: BlockElementType.PARAGRAPH,
+              children: [
+                {
+                  text: '',
+                },
+              ],
+            },
+          ],
+        },
+      ]);
+    },
+  },
   'separator',
   {
     title: '加粗',

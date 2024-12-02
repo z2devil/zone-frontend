@@ -31,8 +31,14 @@ import {
   withPasteMarkdown,
   withShortcuts,
   withVoids,
+  withNormalizeCodeBlock,
 } from '@/ui/RichEditor/utils';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import {
+  disableScrollbar,
+  enableScrollbar,
+} from '@/lib/utils/scrollbarTrigger';
+import { withColumn } from '@/ui/RichEditor/components/Element/elements/LayoutBlock/lib';
 
 interface NoteDetailPageProps {
   params: { id: string };
@@ -49,6 +55,8 @@ export default function WriteNote(props: NoteDetailPageProps) {
       withVoids,
       withShortcuts,
       withPasteMarkdown,
+      withNormalizeCodeBlock,
+      withColumn,
     ];
     return enhancers.reduce(
       (editor, enhancer) => enhancer(editor),
@@ -109,19 +117,24 @@ export default function WriteNote(props: NoteDetailPageProps) {
 
   useEffect(() => {
     window.addEventListener('beforeunload', handleBeforeUnload);
-    const noteDraft = localStorage.getItem('note-draft');
-    if (noteDraft) {
-      const draft = JSON.parse(noteDraft);
-      Transforms.removeNodes(editor, {
-        at: [],
-        match: node => Element.isElement(node),
-      });
-      Transforms.insertNodes(editor, draft);
-    }
+    // const noteDraft = localStorage.getItem('note-draft');
+    // if (noteDraft) {
+    //   const draft = JSON.parse(noteDraft);
+    //   Transforms.removeNodes(editor, {
+    //     at: [],
+    //     match: node => Element.isElement(node),
+    //   });
+    //   Transforms.insertNodes(editor, draft);
+    // }
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [editor, handleBeforeUnload]);
+
+  useEffect(() => {
+    disableScrollbar();
+    return enableScrollbar;
+  }, []);
 
   /************************************************
    * ✨ 初始化

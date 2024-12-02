@@ -27,7 +27,6 @@ export type RichEditor = BaseEditor &
     >;
   } & {
     isSummary?: boolean;
-    onElementClick?: (element: Element) => void;
   };
 
 export type ParagraphElement = {
@@ -76,6 +75,11 @@ export type CodeBlockElement = {
   language?: Language;
   content?: string;
   height?: number;
+  children: CodeLineBlockElement[];
+};
+
+export type CodeLineBlockElement = {
+  type: BlockElementType.CODE_LINE_BLOCK;
   children: CustomText[];
 };
 
@@ -126,6 +130,17 @@ export type CubeBlockElement = {
   children: CustomText[];
 };
 
+export type LayoutBlockElement = {
+  type: BlockElementType.LAYOUT;
+  children: LayoutItemBlockElement[];
+};
+
+export type LayoutItemBlockElement = {
+  type: BlockElementType.LAYOUT_ITEM;
+  width: number;
+  children: CustomText[];
+};
+
 export type InlineElement = CodeSpanElement | LinkInlineElement;
 
 export type BlockElement =
@@ -136,11 +151,15 @@ export type BlockElement =
   | ListItemElement
   | BlockQuoteElement
   | CodeBlockElement
+  | CodeLineBlockElement
   | ImageBlockElement
   | VideoBlockElement
   | ButtonElement
   | MusicBlockElement
-  | WhiteBoardBlockElement;
+  | WhiteBoardBlockElement
+  | LayoutBlockElement
+  | LayoutItemBlockElement;
+
 // | CubeBlockElement;
 
 export type CustomElement = InlineElement | BlockElement;

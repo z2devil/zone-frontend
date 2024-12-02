@@ -25,11 +25,14 @@ export enum BlockElementType {
   LIST_ITEM = 'list-item',
   BLOCK_QUOTE = 'block-quote',
   CODE_BLOCK = 'code-block',
+  CODE_LINE_BLOCK = 'code-line-block',
   IMAGE = 'image',
   VIDEO = 'video',
   BUTTON = 'button',
   MUSIC = 'music',
   WHITE_BOARD = 'white-board',
+  LAYOUT = 'layout',
+  LAYOUT_ITEM = 'layout-item',
   // CUBE = 'cube',
 }
 
