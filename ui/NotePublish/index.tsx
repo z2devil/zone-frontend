@@ -282,6 +282,7 @@ const NotePublish = (props: NotePublishProps) => {
                     className='block object-cover group-hover:blur-lg'
                     loader={imageLoader}
                     placeholder='blur'
+                    sizes='100vw'
                     src={bannerPath}
                   />
                 ) : null}

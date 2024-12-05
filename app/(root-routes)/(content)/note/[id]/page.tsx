@@ -9,7 +9,6 @@ import {
   getNoteAPI,
 } from '@/lib/api/notes';
 import { UserRole } from '@/lib/api/user';
-import { BlockElementType } from '@/lib/constants';
 import usePermission from '@/lib/hooks/usePermission';
 import useRequest from '@/lib/hooks/useRequest';
 import {
@@ -20,7 +19,6 @@ import {
 import { getContentSummary } from '@/lib/utils/editor';
 import { getRandomRgbDataURL } from '@/lib/utils/rgbDataURL';
 import EmptyInfo from '@/ui/EmptyInfo';
-import ImagePreview from '@/ui/ImagePreview';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import TOC from '@/ui/TOC';
 import clsx from 'clsx';
@@ -30,9 +28,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Element, Node, createEditor } from 'slate';
+import { createEditor } from 'slate';
 import { withReact, Slate as SlateProvider } from 'slate-react';
-import { ImageBlockElement } from 'types/slate';
 import RichEditor from '@/ui/RichEditor';
 
 interface NoteDetailPageProps {
@@ -93,65 +90,9 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
     };
   }, [adjacentNotes]);
 
-  /************************************************
-   * ✨ 图像预览
-   ************************************************/
-
   const blurDataURL = useMemo(() => {
     return getRandomRgbDataURL();
   }, []);
-
-  const images = useMemo(() => {
-    if (!note) return [];
-
-    const content = JSON.parse(note.content) as Node[];
-    if (!content) return [];
-
-    const res: ImageBlockElement[] = [];
-    const deep = (node: Node) => {
-      if (!Element.isElement(node)) return;
-      if (node.type === BlockElementType.IMAGE && node.url) {
-        res.push(node);
-      }
-      if (node.children) {
-        node.children.forEach(child => deep(child));
-      }
-    };
-    content.forEach(node => deep(node));
-
-    return res;
-  }, [note]);
-
-  const [showImagePreview, setShowImagePreview] = useState(false);
-
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  const handlePreviewImage = useCallback(
-    (element: ImageBlockElement) => {
-      const index = images.findIndex(img => img.url === element.url);
-      console.log('[ index ]', index, images, element);
-      setCurrentImageIndex(index);
-      setShowImagePreview(true);
-    },
-    [images]
-  );
-
-  const handleCloseImagePreview = useCallback(() => {
-    setShowImagePreview(false);
-  }, [setShowImagePreview]);
-
-  const handleElementClick = useCallback(
-    (element: Node) => {
-      console.log('[ handleElementClick ]', element);
-      if (
-        Element.isElement(element) &&
-        element.type === BlockElementType.IMAGE
-      ) {
-        handlePreviewImage(element);
-      }
-    },
-    [handlePreviewImage]
-  );
 
   /************************************************
    * ✨ 初始化
@@ -394,13 +335,6 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
         </div>
         <TOC className='sticky top-24 hidden h-fit shrink-0 lg:flex' />
       </div>
-      {showImagePreview ? (
-        <ImagePreview
-          images={images}
-          index={currentImageIndex}
-          onClose={handleCloseImagePreview}
-        />
-      ) : null}
     </SlateProvider>
   );
 };

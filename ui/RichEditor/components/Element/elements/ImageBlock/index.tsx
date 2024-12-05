@@ -30,7 +30,13 @@ const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
           <ImageEdit containerRef={ref} element={element} />
         )}
       </div>
-      {children}
+      <div
+        style={{
+          fontSize: 0,
+          height: 0,
+        }}>
+        {children}
+      </div>
     </div>
   );
 };

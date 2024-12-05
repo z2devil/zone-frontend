@@ -37,6 +37,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import {
   disableScrollbar,
   enableScrollbar,
+  isDisabledScrollbar,
 } from '@/lib/utils/scrollbarTrigger';
 import { withColumn } from '@/ui/RichEditor/components/Element/elements/LayoutBlock/lib';
 
@@ -132,6 +133,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
   }, [editor, handleBeforeUnload]);
 
   useEffect(() => {
+    if (isDisabledScrollbar()) return;
     disableScrollbar();
     return enableScrollbar;
   }, []);
