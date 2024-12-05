@@ -6,6 +6,7 @@ import { createPortal } from 'react-dom';
 import {
   disableScrollbar,
   enableScrollbar,
+  isDisabledScrollbar,
 } from '@/lib/utils/scrollbarTrigger';
 import { useNotificationUtilsStore } from '@/lib/stores';
 import { NotificationType } from '@/ui/Notification/components/Notification';
@@ -34,6 +35,7 @@ const Editor = (props: EditorProps) => {
 
   const handleFullScreen = useCallback((nextFullScreen: boolean) => {
     setFullScreen(nextFullScreen);
+    if (isDisabledScrollbar()) return;
     if (nextFullScreen) {
       disableScrollbar();
     } else {

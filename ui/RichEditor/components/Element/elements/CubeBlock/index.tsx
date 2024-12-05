@@ -35,7 +35,8 @@ const CubeBlock = ({ attributes, children, element }: CubeBlockProps) => {
       </div>
       <div
         style={{
-          fontSize: '0',
+          fontSize: 0,
+          height: 0,
         }}>
         {children}
       </div>

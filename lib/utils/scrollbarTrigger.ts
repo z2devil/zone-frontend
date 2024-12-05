@@ -1,4 +1,11 @@
+export let disabled = false;
+
+export const isDisabledScrollbar = () => {
+  return disabled;
+};
+
 export const disableScrollbar = () => {
+  disabled = true;
   // 计算滚动条宽度（避免滚动条消失后页面内容闪烁）
   const scrollbarWidth = window.innerWidth - document.body.clientWidth;
 
@@ -12,6 +19,7 @@ export const disableScrollbar = () => {
 };
 
 export const enableScrollbar = () => {
+  disabled = false;
   // 恢复原始样式
   document.body.style.overflow = '';
   document.body.style.paddingRight = '';

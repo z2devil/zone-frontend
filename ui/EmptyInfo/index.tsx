@@ -14,6 +14,7 @@ const EmptyInfo = (props: EmptyInfoProps) => {
   return (
     <div className='mx-auto flex h-fit w-fit flex-col items-center justify-center overflow-hidden'>
       <Image
+        priority
         alt='empty'
         className='pointer-events-none select-none'
         height={256}

@@ -258,12 +258,13 @@ const ImageEdit = (props: ImageEditProps) => {
       onResizing={handleResizing}>
       {isLegalImageUrl ? (
         <NextImage
+          fill
           alt='图片'
           blurDataURL={blurDataURL}
           className='block rounded-lg object-cover'
-          fill={true}
           loader={imageLoader}
           placeholder='blur'
+          sizes='100vw'
           src={element.url || ''}
           onLoad={handleLoad}
         />
