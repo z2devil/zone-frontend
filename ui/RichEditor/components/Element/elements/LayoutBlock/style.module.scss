@@ -1,3 +1,9 @@
 .layout {
-  @apply relative my-2 flex;
+  @apply relative;
+  .container {
+    @apply relative my-2 flex;
+  }
+  .edit {
+    @apply absolute inset-0 flex-1 select-none;
+  }
 }

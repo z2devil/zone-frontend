@@ -138,7 +138,7 @@ export type LayoutBlockElement = {
 export type LayoutItemBlockElement = {
   type: BlockElementType.LAYOUT_ITEM;
   width: number;
-  children: CustomText[];
+  children: ParagraphElement[];
 };
 
 export type InlineElement = CodeSpanElement | LinkInlineElement;

@@ -21,11 +21,11 @@ const LayoutBlock = ({ attributes, children, element }: MusicBlockProps) => {
   }, [element.children]);
 
   return (
-    <div {...attributes}>
+    <div {...attributes} className={style.layout}>
       <OverrideProvider containerRef={containerRef} widths={widths}>
-        <div className={style.layout} ref={containerRef}>
+        <div className={style.container}>{children}</div>
+        <div className={style.edit} ref={containerRef}>
           {!readOnly ? <LayoutEdit element={element} /> : null}
-          {children}
         </div>
       </OverrideProvider>
     </div>
