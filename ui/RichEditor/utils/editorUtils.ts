@@ -1,7 +1,6 @@
 import { BlockElementType, InlineElementType, MarkType } from '@/lib/constants';
 import { Editor, Element, Node, Range, Text, Transforms } from 'slate';
-import { RichEditor, CustomElement, ElementType } from 'types/slate';
-import { CustomText } from 'types/slate';
+import { RichEditor, ElementType } from 'types/slate';
 
 export const editorUtils = {
   /**
@@ -105,7 +104,7 @@ export const editorUtils = {
       const { selection } = editor;
       const isCollapsed = selection && Range.isCollapsed(selection);
       const text = selection ? Editor.string(editor, selection) : '';
-      const element: CustomElement = {
+      const element: any = {
         type,
         children: [{ text }],
       };

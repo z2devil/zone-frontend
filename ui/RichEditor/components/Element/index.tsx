@@ -8,6 +8,7 @@ import CodeBlock from './elements/CodeBlock';
 import InlineChromiumBugfix from './elements/InlineChromiumBugfix';
 import {
   CodeBlockElement,
+  CodeLineBlockElement,
   ImageBlockElement,
   LayoutBlockElement,
   LayoutItemBlockElement,
@@ -27,6 +28,7 @@ import BlockElementController from './components/BlockElementController';
 import { BlockElementType, InlineElementType } from '@/lib/constants';
 import LayoutBlock from './elements/LayoutBlock';
 import LayoutItemBlock from './elements/LayoutItemBlock';
+import CodeLineBlock from './elements/CodeLineBlock';
 
 const Element = (props: RenderElementProps) => {
   const { attributes, children, element } = props;
@@ -113,6 +115,13 @@ const Element = (props: RenderElementProps) => {
           element={props.element as CodeBlockElement}>
           {children}
         </CodeBlock>
+      ),
+      [BlockElementType.CODE_LINE_BLOCK]: (
+        <CodeLineBlock
+          attributes={attributes}
+          element={props.element as CodeLineBlockElement}>
+          {children}
+        </CodeLineBlock>
       ),
       [BlockElementType.LAYOUT]: (
         <LayoutBlock
