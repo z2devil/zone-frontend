@@ -141,7 +141,7 @@ const options: ToolbarOption[] = [
   // },
   {
     title: '多列布局',
-    icon: 'icon-cube',
+    icon: 'icon-columns',
     active: editor => {
       return editorUtils.isElementActive(editor, BlockElementType.LAYOUT);
     },
