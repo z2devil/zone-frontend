@@ -4,6 +4,6 @@
     @apply relative my-2 flex;
   }
   .edit {
-    @apply absolute inset-0 flex-1 select-none;
+    @apply pointer-events-none absolute inset-0 flex-1 select-none;
   }
 }
