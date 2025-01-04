@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: ['class'],
   content: [
     './app/**/*.{js,ts,jsx,tsx}',
     './lib/**/*.{js,ts,jsx,tsx}',
@@ -12,6 +13,8 @@ module.exports = {
         primary: {
           50: '#0A59F7',
           100: '#317AF7',
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
         },
         danger: {
           50: '#F84026',
@@ -26,10 +29,10 @@ module.exports = {
           100: '#5BA854',
         },
         gray: {
-          50: '#F3F1F2', // 页面背景
-          100: '#F8F8F8', // 卡片背景1
-          200: '#EFEFED', // 卡片背景2
-          300: '#EBE9E9', // 边框
+          50: '#F3F1F2',
+          100: '#F8F8F8',
+          200: '#EFEFED',
+          300: '#EBE9E9',
         },
         black: {
           50: 'rgba(0, 0, 0, 0.05)',
@@ -44,6 +47,42 @@ module.exports = {
           700: 'rgba(0, 0, 0, 0.7)',
           800: 'rgba(0, 0, 0, 0.8)',
           900: 'rgba(0, 0, 0, 0.9)',
+        },
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
+        },
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))',
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
+        },
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        chart: {
+          1: 'hsl(var(--chart-1))',
+          2: 'hsl(var(--chart-2))',
+          3: 'hsl(var(--chart-3))',
+          4: 'hsl(var(--chart-4))',
+          5: 'hsl(var(--chart-5))',
         },
       },
       fontSize: {
@@ -73,7 +112,12 @@ module.exports = {
           '100%': {},
         },
       }),
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
+      },
     },
   },
-  plugins: [],
+  plugins: [require('tailwindcss-animate')],
 };

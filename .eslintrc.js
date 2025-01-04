@@ -41,6 +41,7 @@ module.exports = {
         noSortAlphabetically: false,
       },
     ],
+    'react/prop-types': 'off',
   },
   overrides: [
     {
