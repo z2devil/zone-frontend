@@ -1,6 +1,8 @@
 import { IRequest } from '@/lib/hooks/useRequest';
 import {
   GetInfoResponse,
+  GetUserListParams,
+  GetUserListResponse,
   GetVerificationCodeParams,
   PutInfoParams,
   PutInfoResponse,
@@ -41,5 +43,15 @@ export const putUserInfoAPI =
   (request: IRequest) => (params: PutInfoParams) => {
     return request.put<PutInfoResponse>('/user', {
       body: JSON.stringify(params),
+    });
+  };
+
+/**
+ * 获取用户列表
+ */
+export const getUserListAPI =
+  (request: IRequest) => (params: GetUserListParams) => {
+    return request.get<GetUserListResponse>('/user/list', {
+      ...params,
     });
   };
