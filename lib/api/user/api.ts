@@ -1,11 +1,13 @@
 import { IRequest } from '@/lib/hooks/useRequest';
 import {
+  CreateUserParams,
   GetInfoResponse,
   GetUserListParams,
   GetUserListResponse,
   GetVerificationCodeParams,
   PutInfoParams,
   PutInfoResponse,
+  PutUserParams,
   SignParams,
   SignResponse,
 } from './types';
@@ -55,3 +57,31 @@ export const getUserListAPI =
       ...params,
     });
   };
+
+/**
+ * 创建权限信息
+ */
+export const createUserAPI =
+  (request: IRequest) => (params: CreateUserParams) => {
+    return request.post('/user', {
+      body: JSON.stringify(params),
+    });
+  };
+
+/**
+ * 删除权限信息
+ */
+export const removeUserAPI = (request: IRequest) => (_id: string) => {
+  return request.delete(`/user`, {
+    body: JSON.stringify({ _id }),
+  });
+};
+
+/**
+ * 更新用户信息
+ */
+export const updateUserAPI = (request: IRequest) => (params: PutUserParams) => {
+  return request.put('/user', {
+    body: JSON.stringify(params),
+  });
+};

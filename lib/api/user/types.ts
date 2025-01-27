@@ -68,3 +68,10 @@ export interface PutInfoResponse {
 export type GetUserListParams = IPageParams;
 
 export type GetUserListResponse = IPageData<UserInfo>;
+
+export type CreateUserParams = Pick<UserEntity, 'nickname' | 'email' | 'lv'>;
+
+export type PutUserParams = Pick<
+  UserEntity,
+  '_id' | 'nickname' | 'email' | 'lv'
+>;

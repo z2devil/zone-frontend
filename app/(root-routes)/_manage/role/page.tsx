@@ -238,7 +238,7 @@ const RolePage = () => {
             </div>
             <div className='flex w-full flex-col gap-2'>
               <Label className='pl-1'>权限</Label>
-              <Select
+              {/* <Select
                 multiple
                 value={currentRolePermissions}
                 onChange={setCurrentRolePermissions}>
@@ -252,7 +252,7 @@ const RolePage = () => {
                     </SelectItem>
                   ))}
                 </SelectContent>
-              </Select>
+              </Select> */}
             </div>
           </div>
         ),

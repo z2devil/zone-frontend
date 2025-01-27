@@ -1,10 +1,10 @@
 'use client';
 
 import {
-  getUserListAPI,
   createUserAPI,
-  putUserAPI,
+  getUserListAPI,
   removeUserAPI,
+  updateUserAPI,
   UserInfo,
   UserRole,
 } from '@/lib/api/user';
@@ -17,13 +17,10 @@ import {
 } from '@/lib/stores';
 import { notFound, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Contact, KeyRound, User } from 'lucide-react';
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -38,24 +35,13 @@ import {
   PaginationPrevious,
 } from '@/ui/components/ui/pagination';
 import { Button } from '@/ui/components/ui/button';
-import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/ui/components/ui/form';
 import { Input } from '@/ui/components/ui/input';
-import { useForm } from 'react-hook-form';
 import { Label } from '@/ui/components/ui/label';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/ui/components/ui/select';
@@ -92,7 +78,7 @@ const UserPage = () => {
         size: 20,
       });
       console.log('[ res ]', res);
-      setUserList(res[0]);
+      setUserList((res as any)[0]);
     } catch (error) {
       return notFound();
     }
@@ -151,7 +137,8 @@ const UserPage = () => {
           await createUserAPI(request)({
             email: addFormData.current.email,
             nickname: addFormData.current.nickname,
-            role: addFormData.current.role,
+            lv: 0,
+            // role: addFormData.current.role,
           });
           notificationUtils?.open({
             type: NotificationType.SUCCESS,
@@ -225,11 +212,12 @@ const UserPage = () => {
         onOk: async () => {
           // ...表单校验逻辑...
           try {
-            await putUserAPI(request)({
+            await updateUserAPI(request)({
               _id: editFormData.current._id,
               email: editFormData.current.email,
               nickname: editFormData.current.nickname,
-              role: editFormData.current.role,
+              lv: 0,
+              // role: editFormData.current.role,
             });
             notificationUtils?.open({
               type: NotificationType.SUCCESS,
