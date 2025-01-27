@@ -50,7 +50,7 @@ export const generateSummary = async (note: string): Promise<string> => {
       },
     ],
     temperature: 0.3, // 降低随机性保证专业度
-    max_tokens: 150, // 给予少量溢出空间
+    max_tokens: 300, // 给予少量溢出空间
     stop: ['\n\n'], // 防止生成多段落
   });
 
