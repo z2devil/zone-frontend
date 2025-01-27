@@ -1,4 +1,4 @@
-import { CommonInfo } from '../types';
+import { CommonInfo, IPageData, IPageParams } from '../types';
 
 /************************************************
  * ✨ 实体
@@ -64,3 +64,14 @@ export interface PutInfoResponse {
   token: string;
   info: UserInfo;
 }
+
+export type GetUserListParams = IPageParams;
+
+export type GetUserListResponse = IPageData<UserInfo>;
+
+export type CreateUserParams = Pick<UserEntity, 'nickname' | 'email' | 'lv'>;
+
+export type PutUserParams = Pick<
+  UserEntity,
+  '_id' | 'nickname' | 'email' | 'lv'
+>;

@@ -6,14 +6,6 @@ import { IPageParams } from '../types';
  ************************************************/
 
 /**
- * 标签类型枚举
- */
-export enum NoteTypeEnum {
-  NOTE = 0,
-  ARTICLE,
-}
-
-/**
  * 标签实体
  */
 export interface NoteEntity extends CommonInfo {

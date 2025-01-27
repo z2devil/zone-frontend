@@ -124,12 +124,6 @@ export type WhiteBoardBlockElement = {
   children: CustomText[];
 };
 
-export type CubeBlockElement = {
-  type: BlockElementType.CUBE;
-  url?: string;
-  children: CustomText[];
-};
-
 export type LayoutBlockElement = {
   type: BlockElementType.LAYOUT;
   children: LayoutItemBlockElement[];

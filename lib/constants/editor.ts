@@ -33,7 +33,6 @@ export enum BlockElementType {
   WHITE_BOARD = 'white-board',
   LAYOUT = 'layout',
   LAYOUT_ITEM = 'layout-item',
-  // CUBE = 'cube',
 }
 
 export const SHORTCUTS = {

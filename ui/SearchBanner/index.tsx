@@ -23,16 +23,16 @@ const SearchBanner = forwardRef<any, SearchBannerProps>((props, ref) => {
         </span>
         <div className='flex gap-2'>
           <button
-            className='group flex h-10 w-10 items-center justify-center gap-1 rounded-xl border border-black-80 px-3 transition-colors duration-100 hover:border-primary-50'
+            className='group flex h-10 w-10 items-center justify-center gap-1 rounded-xl bg-white px-3 ring-1 ring-inset ring-black-50 transition-colors duration-100 hover:ring-primary-50'
             title='取消搜索'
             onClick={onCancelSearch}>
-            <i className='iconfont icon-error block h-5 w-5 text-[1.25rem] leading-5 text-black-250 transition-colors duration-100 group-hover:text-primary-50' />
+            <i className='iconfont icon-error block h-5 w-5 text-[1.25rem] leading-5 text-black-600 transition-colors duration-100 group-hover:text-primary-50' />
           </button>
           <button
-            className='group flex h-10 w-10 items-center justify-center gap-1 rounded-xl border border-black-80 px-3 transition-colors duration-100 hover:border-primary-50'
+            className='group flex h-10 w-10 items-center justify-center gap-1 rounded-xl bg-white px-3 ring-1 ring-inset ring-black-50 transition-colors duration-100 hover:ring-primary-50'
             title='重新搜索'
             onClick={onSearchAgain}>
-            <i className='iconfont icon-search block h-5 w-5 text-[1.25rem] leading-5 text-black-250 transition-colors duration-100 group-hover:text-primary-50' />
+            <i className='iconfont icon-search block h-5 w-5 text-[1.25rem] leading-5 text-black-600 transition-colors duration-100 group-hover:text-primary-50' />
           </button>
         </div>
       </div>

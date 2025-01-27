@@ -104,12 +104,12 @@ const Editor = (props: EditorProps) => {
       {fullScreen ? (
         createPortal(
           <div
-            className='fixed inset-0 z-50 flex gap-8 overflow-auto bg-gray-200'
+            className='fixed inset-0 z-50 flex gap-8 overflow-auto'
             ref={containerRef}>
-            <div className='flex h-fit min-h-screen w-full flex-col bg-gray-100'>
+            <div className='flex h-fit min-h-screen w-full flex-col bg-white'>
               {/* 工具栏 */}
               <Toolbar
-                className='z-10 bg-gray-100'
+                className='z-10'
                 RightSlot={
                   <div className='flex gap-2'>
                     <FullScreenButton

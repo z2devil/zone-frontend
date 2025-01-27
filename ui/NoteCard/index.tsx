@@ -201,15 +201,14 @@ const NoteCard = (props: NoteCardProps) => {
         <AnimatePresence>
           {!showDetail ? (
             <motion.div
-              className='group relative flex flex-col gap-2.5 overflow-hidden rounded-xl border border-black-80 bg-gray-100 p-5 transition-colors duration-200 hover:border-primary-50'
+              className='group relative flex flex-col gap-2.5 overflow-hidden rounded-3xl bg-white p-5 ring-1 ring-inset ring-black-50 duration-100 hover:ring-primary-50'
               exit={{
                 opacity: 0,
                 top: -50,
               }}
               initial={{ opacity: 0, top: -50 }}
-              transition={{ type: 'tween' }}
-              whileInView={{ opacity: 1, top: 0 }}
-              whileTap={{ scale: 0.95 }}>
+              transition={{ type: 'tween', duration: 0.2 }}
+              whileInView={{ opacity: 1, top: 0 }}>
               <div className='flex flex-col gap-3'>
                 {note.type === NoteTypeEnum.ARTICLE && note.bannerPath ? (
                   <div className='relative mb-2 aspect-[3/1] w-full overflow-hidden rounded-lg'>
@@ -227,22 +226,11 @@ const NoteCard = (props: NoteCardProps) => {
                 ) : null}
                 {/* 顶部 */}
                 <div className='flex items-center justify-between gap-10'>
-                  {note.type === NoteTypeEnum.NOTE ? (
-                    <div className='flex items-center gap-1'>
-                      <i className='iconfont icon-calender-filled text-17 text-black-250' />
-                      <span
-                        className='text-[0.75rem] leading-[0.75rem] text-black-250'
-                        title={detailTime}>
-                        {summaryTime}
-                      </span>
-                    </div>
-                  ) : (
-                    <span
-                      className='overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-black-900 group-hover:text-primary-50'
-                      title={note.title}>
-                      {note.title}
-                    </span>
-                  )}
+                  <span
+                    className='overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-black-900 group-hover:text-primary-50'
+                    title={note.title}>
+                    {note.title || '随笔'}
+                  </span>
                   {isLogin ? (
                     <button
                       className='group/more flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[0.5rem] border border-transparent transition-all duration-100 hover:bg-primary-50'
@@ -253,21 +241,13 @@ const NoteCard = (props: NoteCardProps) => {
                 </div>
                 {/* 内容 */}
                 {note.type === NoteTypeEnum.NOTE ? (
-                  <div className='pointer-events-none relative flex max-h-[30rem] overflow-hidden'>
-                    <div className='mb-[1px] flex-1 overflow-hidden'>
+                  <div className='pointer-events-none relative flex flex-col overflow-hidden'>
+                    <div
+                      className={clsx(
+                        'mb-1 max-h-[30rem] w-full',
+                        isCollapsed && 'gradient-mask-b'
+                      )}>
                       <RichView isSummary value={JSON.parse(note.content)} />
-                    </div>
-                    <div className='absolute bottom-0 left-0 right-0'>
-                      {isCollapsed ? (
-                        <>
-                          <div className='gradient-mask-y pointer-events-none absolute bottom-0 left-0 right-0 flex h-64 translate-y-32 select-none items-center justify-center gap-1 bg-gray-100'></div>
-                          <div className='flex h-12 translate-y-2 cursor-pointer items-center justify-center gap-1'>
-                            <span className='inline-block overflow-hidden whitespace-nowrap text-15 text-black-600'>
-                              ···
-                            </span>
-                          </div>
-                        </>
-                      ) : null}
                     </div>
                   </div>
                 ) : (
@@ -276,31 +256,25 @@ const NoteCard = (props: NoteCardProps) => {
                   </div>
                 )}
                 {/* 底部 */}
-                {note.type === NoteTypeEnum.ARTICLE || note.tags.length ? (
-                  <div className='flex items-center justify-between gap-1'>
-                    {note.type === NoteTypeEnum.ARTICLE ? (
-                      <div className='flex items-center gap-1'>
-                        <i className='iconfont icon-calender-filled text-17 text-black-250' />
-                        <span
-                          className='text-[0.75rem] leading-[0.75rem] text-black-250'
-                          title={detailTime}>
-                          {summaryTime}
-                        </span>
-                      </div>
-                    ) : (
-                      <div />
-                    )}
-                    <div className='flex gap-2.5'>
-                      {note.tags.map(tag => (
-                        <div
-                          className='text-black text-xs font-normal text-primary-50'
-                          key={tag._id}>
-                          #{tag.label}
-                        </div>
-                      ))}
-                    </div>
+                <div className='flex items-center justify-between gap-1'>
+                  <div className='flex h-6 items-center gap-1 rounded-lg'>
+                    <i className='iconfont icon-calender-filled text-13 leading-3 text-black-250' />
+                    <span
+                      className='text-[0.75rem] leading-[0.75rem] text-black-400'
+                      title={detailTime}>
+                      {summaryTime}
+                    </span>
                   </div>
-                ) : null}
+                  <div className='flex gap-2.5'>
+                    {note.tags.map(tag => (
+                      <div
+                        className='text-black flex h-6 items-center rounded-lg bg-primary-50/5 px-2 text-xs font-normal text-primary-50'
+                        key={tag._id}>
+                        {tag.label}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </motion.div>
           ) : null}

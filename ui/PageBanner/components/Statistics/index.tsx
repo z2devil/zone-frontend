@@ -4,6 +4,7 @@ import { getStatisticsAPI } from '@/lib/api/statistics';
 import useRequest from '@/lib/hooks/useRequest';
 import clsx from 'clsx';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { motion } from 'motion/react';
 
 interface StatisticsProps {
   containerWidth: number;
@@ -153,22 +154,27 @@ const Statistics = (props: StatisticsProps) => {
   }, [contributionYears]);
 
   return (
-    <>
+    <motion.div
+      animate={{ opacity: 1 }}
+      className='w-full'
+      exit={{ opacity: 0 }}
+      initial={{ opacity: 0 }}
+      transition={{ type: 'tween' }}>
       <div
-        className='flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl border border-black-80 bg-gray-100'
+        className='flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl bg-white text-black-600 ring-1 ring-black-50 transition-all duration-100 hover:text-primary-50 hover:ring-primary-50'
         onClick={onClose}>
-        <span className='iconfont icon-angle-left !text-black-600'></span>
+        <span className='iconfont icon-angle-left'></span>
       </div>
       {/* 数据统计 */}
       <div className='w-full'>
         <div
           className={clsx(
-            'mt-4 flex w-full gap-2',
+            'mt-4 flex w-full gap-4',
             containerWidth < MAX_WIDTH ? 'flex-col' : ''
           )}>
           {items.map((item, index) => (
             <div
-              className='relative flex flex-1 flex-col overflow-hidden rounded-lg border border-black-80 bg-gray-100 p-4'
+              className='relative flex flex-1 flex-col overflow-hidden rounded-3xl bg-white p-4 ring-1 ring-black-50'
               key={index}>
               <div className='flex items-center gap-1'>
                 <span className='text-3xl font-bold text-primary-50'>
@@ -190,7 +196,7 @@ const Statistics = (props: StatisticsProps) => {
       <div className='w-full'>
         <div
           className={clsx(
-            'mt-4 flex w-full gap-2 overflow-hidden rounded-lg border border-black-80 bg-gray-100 p-4',
+            'mt-4 flex w-full gap-2 overflow-hidden rounded-3xl bg-white p-4 ring-1 ring-black-50',
             containerWidth < MAX_WIDTH ? 'flex-col' : ''
           )}>
           {/* 年份 */}
@@ -269,7 +275,7 @@ const Statistics = (props: StatisticsProps) => {
           </div>
         </div>
       </div>
-    </>
+    </motion.div>
   );
 };
 

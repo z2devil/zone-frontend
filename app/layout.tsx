@@ -1,7 +1,6 @@
 import '@/styles/globals.css';
 import RootProvider from '@/ui/RootProvider';
 import clsx from 'clsx';
-import jetBrainsMono from 'config/font/jetBrainsMono';
 
 export const metadata = {
   title: '黑山羊日志',
@@ -17,7 +16,7 @@ const RootLayout = (props: RootLayoutProps) => {
   const { children, layer } = props;
 
   return (
-    <html className={jetBrainsMono.className} lang='zh-CN'>
+    <html lang='zh-CN'>
       <head>
         <link
           href='/icon?<generated>'
@@ -26,7 +25,7 @@ const RootLayout = (props: RootLayoutProps) => {
           type='image/<generated>'
         />
       </head>
-      <body className={clsx('bg-gray-50')}>
+      <body className={clsx('bg-gray-100')}>
         <RootProvider>
           {children}
           {layer}

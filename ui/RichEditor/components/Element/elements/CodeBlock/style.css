@@ -8,6 +8,7 @@ pre {
 code p {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
+  line-height: 1.5 !important;
 }
 
 .token.comment,

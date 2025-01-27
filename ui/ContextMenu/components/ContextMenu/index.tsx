@@ -94,7 +94,7 @@ const ContextMenu = (props: ContextMenuProps) => {
 
   return (
     <div className='absolute z-30' ref={contextMenuRef} style={style}>
-      <div className='flex flex-col gap-2 divide-y divide-gray-300 rounded-xl bg-gray-100 p-4 shadow-main'>
+      <div className='flex flex-col gap-2 divide-y divide-gray-300 rounded-xl bg-white p-4 shadow-main'>
         {stickyMenus.length ? (
           <div
             className={clsx('flex justify-between gap-2', {
@@ -118,7 +118,7 @@ const ContextMenu = (props: ContextMenuProps) => {
             })}>
             {defaultMenus.map(menuItem => (
               <div
-                className='flex min-w-[9rem] cursor-pointer items-center justify-between rounded-lg border border-transparent py-1 pl-2 pr-1 text-black-600 transition-colors duration-100 hover:border hover:border-primary-50 hover:bg-black-50 hover:text-black-900'
+                className='flex min-w-[9rem] cursor-pointer items-center justify-between rounded-lg py-1 pl-2 pr-1 text-black-600 transition-colors duration-100 hover:bg-black-50 hover:text-black-900'
                 key={menuItem.key}
                 title={menuItem.label}
                 onClick={() => handleClick(menuItem)}>

@@ -23,7 +23,6 @@ import MusicBlock from './elements/MusicBlock';
 import WhiteBoardBlock from './elements/WhiteBoardBlock';
 import VideoBlock from './elements/VideoBlock';
 import LinkInline from './elements/LinkInline';
-// import CubeBlock from './elements/CubeBlock';
 import BlockElementController from './components/BlockElementController';
 import { BlockElementType, InlineElementType } from '@/lib/constants';
 import LayoutBlock from './elements/LayoutBlock';
@@ -36,10 +35,6 @@ const Element = (props: RenderElementProps) => {
   const editor = useSlate();
 
   const readOnly = useReadOnly();
-
-  // const key = useMemo(() => {
-  //   return ReactEditor.findPath(editor, element).join('-');
-  // }, [editor, element]);
 
   const key = ReactEditor.findPath(editor, element).join('-');
 
@@ -166,13 +161,6 @@ const Element = (props: RenderElementProps) => {
           {children}
         </WhiteBoardBlock>
       ),
-      // [BlockElementType.CUBE]: (
-      //   <CubeBlock
-      //     attributes={attributes}
-      //     element={element as CubeBlockElement}>
-      //     {children}
-      //   </CubeBlock>
-      // ),
     };
   }, [attributes, children, element, key, props.element]);
 

@@ -14,7 +14,7 @@ import { useLoading } from '@/lib/hooks/useLoading';
 import { useMount } from 'react-use';
 import { useSlate } from 'slate-react';
 import { twMerge } from 'tailwind-merge';
-import { generateSummary } from '@/lib/ai';
+import { generateSummary, generateTitle } from '@/lib/ai';
 
 export interface NoteOptions {
   type: NoteTypeEnum;
@@ -90,9 +90,7 @@ const NotePublish = (props: NotePublishProps) => {
    * ✨ 标题
    ************************************************/
 
-  const [title, setTitle] = useState(
-    options.title || (type === NoteTypeEnum.ARTICLE ? '' : '无标题')
-  );
+  const [title, setTitle] = useState(options.title || '');
 
   const handleTitleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,6 +98,21 @@ const NotePublish = (props: NotePublishProps) => {
     },
     []
   );
+
+  const [isGeneratingTitle, setIsGeneratingTitle] = useState(false);
+
+  const handleGenerateTitle = useCallback(async () => {
+    if (isGeneratingTitle) return;
+    setIsGeneratingTitle(true);
+    try {
+      const text = await generateTitle(editor.string([]));
+      setTitle(text);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsGeneratingTitle(false);
+    }
+  }, [editor, isGeneratingTitle]);
 
   /************************************************
    * ✨ 摘要
@@ -267,104 +280,120 @@ const NotePublish = (props: NotePublishProps) => {
           </Button>
         </div>
       </div>
+      {/* 封图 */}
       {type === NoteTypeEnum.ARTICLE ? (
-        <>
-          {/* 封图 */}
-          <div className='flex flex-col gap-1'>
-            <span className='text-17 font-semibold text-black-600'>封图</span>
-            <div className='group relative aspect-[3/1] w-full overflow-hidden rounded-xl border-black-300'>
-              <div className='relative h-full w-full bg-gray-50'>
-                {bannerPath ? (
-                  <Image
-                    fill
-                    alt='封图'
-                    blurDataURL={blurDataURL}
-                    className='block object-cover group-hover:blur-lg'
-                    loader={imageLoader}
-                    placeholder='blur'
-                    sizes='100vw'
-                    src={bannerPath}
-                  />
-                ) : null}
-                {isLoading ? (
-                  <div className='absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col items-center justify-center gap-1'>
-                    <span className='text-17 font-bold text-black-600'>
-                      上传中...
-                    </span>
-                  </div>
-                ) : (
-                  <div
-                    className={clsx(
-                      'absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col items-center justify-center gap-1 transition-all duration-100 group-hover:opacity-100',
-                      !bannerPath
-                        ? 'opacity-1'
-                        : 'bg-white bg-opacity-50 opacity-0'
-                    )}
-                    onClick={handleUpload}>
-                    <i className='iconfont icon-image-plus text-xl text-black-600'></i>
-                    <span className='text-17 font-bold text-black-600'>
-                      {!bannerPath ? '点击上传图片' : '点击更换图片'}
-                    </span>
-                    <span className='text-xs font-bold text-black-250'>
-                      最大支持 25MB
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-          {/* 标题 */}
-          <div className='flex flex-col gap-1'>
-            <div className='flex items-end justify-between'>
-              <span className='text-17 font-semibold text-black-600'>标题</span>
-              <span className='text-xs font-medium text-black-250'>
-                {title.length}/50
-              </span>
-            </div>
-            <div className='flex h-10 w-full gap-5 rounded-xl bg-gray-50 px-4'>
-              <input
-                className='h-full w-full flex-grow bg-transparent text-17 font-medium text-black-600 outline-none'
-                maxLength={50}
-                value={title}
-                onInput={handleTitleChange}
-              />
-            </div>
-          </div>
-          {/* 摘要 */}
-          <div className='flex flex-col gap-1'>
-            <div className='flex items-end justify-between'>
-              <span className='text-17 font-semibold text-black-600'>摘要</span>
-              <span className='text-xs font-medium text-black-250'>
-                {summary.length}/300
-              </span>
-            </div>
-            <div className='relative flex w-full gap-5 rounded-xl bg-gray-50 p-4'>
-              <textarea
-                className='min-h-10 w-full flex-grow resize-none bg-transparent text-justify text-17 font-medium text-black-600 outline-none'
-                maxLength={300}
-                rows={4}
-                value={summary}
-                onInput={handleSummaryChange}
-              />
-              {/* 内容为空时显示自动生成的按钮 */}
-              {!summary.length ? (
-                <button
-                  className={clsx(
-                    twMerge(
-                      'absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 gap-2 rounded-full bg-purple-50 px-4 py-2 text-15 font-medium text-purple-700 ring-1 ring-inset ring-purple-700/10 hover:bg-purple-100',
-                      isGeneratingSummary
-                        ? 'pointer-events-none cursor-not-allowed bg-black-50 text-black-250 ring-black-80'
-                        : 'cursor-pointer'
-                    )
-                  )}
-                  onClick={handleGenerateSummary}>
-                  <span className='iconfont icon-magic text-17'></span>
-                  <span>自动生成</span>
-                </button>
+        <div className='flex flex-col gap-1'>
+          <span className='text-17 font-semibold text-black-600'>封图</span>
+          <div className='group relative aspect-[3/1] w-full overflow-hidden rounded-xl border-black-300'>
+            <div className='relative h-full w-full bg-gray-50'>
+              {bannerPath ? (
+                <Image
+                  fill
+                  alt='封图'
+                  blurDataURL={blurDataURL}
+                  className='block object-cover group-hover:blur-lg'
+                  loader={imageLoader}
+                  placeholder='blur'
+                  sizes='100vw'
+                  src={bannerPath}
+                />
               ) : null}
+              {isLoading ? (
+                <div className='absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col items-center justify-center gap-1'>
+                  <span className='text-17 font-bold text-black-600'>
+                    上传中...
+                  </span>
+                </div>
+              ) : (
+                <div
+                  className={clsx(
+                    'absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col items-center justify-center gap-1 transition-all duration-100 group-hover:opacity-100',
+                    !bannerPath
+                      ? 'opacity-1'
+                      : 'bg-white bg-opacity-50 opacity-0'
+                  )}
+                  onClick={handleUpload}>
+                  <i className='iconfont icon-image-plus text-xl text-black-600'></i>
+                  <span className='text-17 font-bold text-black-600'>
+                    {!bannerPath ? '点击上传图片' : '点击更换图片'}
+                  </span>
+                  <span className='text-xs font-bold text-black-250'>
+                    最大支持 25MB
+                  </span>
+                </div>
+              )}
             </div>
           </div>
-        </>
+        </div>
+      ) : null}
+      {/* 标题 */}
+      <div className='flex flex-col gap-1'>
+        <div className='flex items-end justify-between'>
+          <span className='text-17 font-semibold text-black-600'>标题</span>
+          <span className='text-xs font-medium text-black-250'>
+            {title.length}/50
+          </span>
+        </div>
+        <div className='relative flex h-10 w-full gap-5 rounded-xl bg-gray-50 px-4'>
+          <input
+            className='h-full w-full flex-grow bg-transparent text-17 font-medium text-black-600 outline-none'
+            maxLength={50}
+            value={title}
+            onInput={handleTitleChange}
+          />
+          {/* 内容为空时显示自动生成的按钮 */}
+          {!title.length ? (
+            <button
+              className={clsx(
+                twMerge(
+                  'absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full bg-purple-50 px-3 py-1 font-medium text-purple-700 ring-1 ring-inset ring-purple-700/10 hover:bg-purple-100',
+                  isGeneratingTitle
+                    ? 'pointer-events-none cursor-not-allowed bg-black-50 text-black-250 ring-black-80'
+                    : 'cursor-pointer'
+                )
+              )}
+              onClick={handleGenerateTitle}>
+              <span className='iconfont icon-magic text-15 leading-3'></span>
+              <span className='text-13'>自动生成</span>
+            </button>
+          ) : null}
+        </div>
+      </div>
+      {/* 摘要 */}
+      {type === NoteTypeEnum.ARTICLE ? (
+        <div className='flex flex-col gap-1'>
+          <div className='flex items-end justify-between'>
+            <span className='text-17 font-semibold text-black-600'>摘要</span>
+            <span className='text-xs font-medium text-black-250'>
+              {summary.length}/300
+            </span>
+          </div>
+          <div className='relative flex w-full gap-5 rounded-xl bg-gray-50 p-4'>
+            <textarea
+              className='min-h-10 w-full flex-grow resize-none bg-transparent text-justify text-17 font-medium text-black-600 outline-none'
+              maxLength={300}
+              rows={4}
+              value={summary}
+              onInput={handleSummaryChange}
+            />
+            {/* 内容为空时显示自动生成的按钮 */}
+            {!summary.length ? (
+              <button
+                className={clsx(
+                  twMerge(
+                    'absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full bg-purple-50 px-3 py-1 font-medium text-purple-700 ring-1 ring-inset ring-purple-700/10 hover:bg-purple-100',
+                    isGeneratingSummary
+                      ? 'pointer-events-none cursor-not-allowed bg-black-50 text-black-250 ring-black-80'
+                      : 'cursor-pointer'
+                  )
+                )}
+                onClick={handleGenerateSummary}>
+                <span className='iconfont icon-magic text-15 leading-3'></span>
+                <span className='text-13'>自动生成</span>
+              </button>
+            ) : null}
+          </div>
+        </div>
       ) : null}
       {/* 标签 */}
       <div className='flex flex-col gap-1'>

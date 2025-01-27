@@ -44,11 +44,7 @@ const RichView = (props: EditorProps) => {
   }, [value, editor]);
 
   return (
-    <div
-      className={clsx(
-        'relative flex flex-1 flex-col overflow-hidden',
-        className
-      )}>
+    <div className={clsx('relative flex flex-col', className)}>
       <SlateProvider editor={editor} initialValue={value}>
         <RichEditor readonly />
       </SlateProvider>
