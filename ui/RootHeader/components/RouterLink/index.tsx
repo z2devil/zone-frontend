@@ -14,7 +14,7 @@ const RouterLink = (props: RouterLinkProps) => {
   return (
     <Link
       className={clsx(
-        'group flex h-12 items-center justify-between gap-[0.62rem] rounded-full px-3 transition-colors duration-100 hover:bg-gray-200',
+        'group flex h-12 items-center justify-between gap-[0.62rem] rounded-full px-3 transition-colors duration-100',
         active ? 'text-primary-50' : 'text-black-600 hover:text-black-900'
       )}
       href={path}>

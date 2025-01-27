@@ -167,14 +167,21 @@ const NotePage = () => {
           onSearchClick={handleSearchClick}
         />
       )}
-      <div
-        className='mx-auto mb-5 flex w-full snap-x gap-5 overflow-auto'
+      <motion.div
+        className='relative mx-auto mb-5 flex w-full snap-x gap-5 overflow-x-auto'
+        exit={{ opacity: 0, top: -50 }}
+        initial={{ opacity: 0, top: -50 }}
         style={{
           width: contentWidth + 'px',
           scrollbarWidth: 'none',
+        }}
+        transition={{ type: 'tween' }}
+        whileInView={{
+          opacity: 1,
+          top: 0,
         }}>
         <div
-          className='w-30 group flex shrink-0 cursor-pointer snap-start items-center justify-between gap-2 rounded-xl border border-black-80 bg-gray-100 px-5 py-4 transition-colors duration-100 hover:border-primary-50'
+          className='w-30 group flex shrink-0 cursor-pointer snap-start items-center justify-between gap-2 rounded-3xl bg-white px-5 py-4 ring-1 ring-inset ring-black-50 duration-100 hover:ring-primary-50'
           onClick={() => handleCategoryClick()}>
           <div className='flex flex-1 flex-col overflow-hidden'>
             <div className='flex gap-[6px] text-17 font-semibold text-black-250'>
@@ -190,9 +197,9 @@ const NotePage = () => {
         {categories.map(category => (
           <div
             className={clsx(
-              'group flex w-60 shrink-0 cursor-pointer snap-start items-center justify-between gap-2 rounded-xl border border-black-80 bg-gray-100 px-5 py-4 transition-colors duration-100 hover:border-primary-50',
+              'group flex w-60 shrink-0 cursor-pointer snap-start items-center justify-between gap-2 rounded-3xl bg-white px-5 py-4 ring-1 ring-inset ring-black-50 duration-100 hover:ring-primary-50',
               {
-                'border-primary-50': filter.tags.includes(category._id),
+                'ring-primary-50': filter.tags.includes(category._id),
               }
             )}
             key={category._id}
@@ -216,7 +223,7 @@ const NotePage = () => {
             </div>
           </div>
         ))}
-      </div>
+      </motion.div>
       <Masonry
         columnWidth={CARD_WIDTH}
         contentWidthChange={handleContentWidthChange}

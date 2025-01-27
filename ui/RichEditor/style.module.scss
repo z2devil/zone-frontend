@@ -12,7 +12,7 @@
   }
 
   p {
-    @apply my-5 leading-7;
+    @apply my-3 leading-7;
   }
 
   h1,
@@ -98,7 +98,7 @@
 
   ol,
   ul {
-    @apply my-5 list-none;
+    @apply my-2 list-none;
   }
 
   ol {
@@ -124,11 +124,11 @@
   }
 
   blockquote {
-    @apply my-5 rounded-lg p-4 text-13 leading-6 ring-1 ring-inset ring-black-50;
+    @apply border-l-4 border-black-100 pl-4 text-13 leading-6 text-black-600;
   }
 
   code-span {
-    @apply mx-1 break-all rounded-md bg-black-50 px-1.5 py-0.5 ring-1 ring-inset ring-black-100;
+    @apply mx-1 break-all rounded-md bg-black-50 px-1.5 py-0.5;
   }
 
   link {

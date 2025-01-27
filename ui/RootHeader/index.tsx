@@ -40,7 +40,7 @@ const RootHeader = () => {
 
   return (
     <>
-      <div className='sticky top-0 z-20 flex h-[3.625rem] w-full items-center justify-between border-b border-black-80 bg-gray-50 bg-opacity-90 px-5 backdrop-blur-xl'>
+      <div className='sticky top-0 z-20 flex h-[3.625rem] w-full items-center justify-between border-b border-black-80 bg-gray-50 bg-opacity-50 px-5 backdrop-blur-xl'>
         {/* logo */}
         <div>
           <i className='iconfont icon-logo text-[2rem] text-black-900'></i>

@@ -129,15 +129,6 @@ const About = () => {
                     {dayjs(note.createdAt).format('YYYY-MM-DD')}
                   </span>
                 </div>
-                <div className='flex gap-2.5'>
-                  {[].map((tag, i) => (
-                    <div
-                      className='text-black text-xs font-normal text-opacity-40'
-                      key={i}>
-                      #{tag}
-                    </div>
-                  ))}
-                </div>
               </div>
             )}
           </div>

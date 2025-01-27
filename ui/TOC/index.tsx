@@ -120,7 +120,7 @@ const TOC = (props: TOCProps) => {
     <div
       className={clsx(
         twMerge(
-          'flex w-52 shrink-0 flex-col divide-y divide-black-50 rounded-xl bg-gray-100 shadow-main',
+          'flex w-52 shrink-0 flex-col divide-y divide-black-50 rounded-xl bg-white shadow-main',
           className
         )
       )}>

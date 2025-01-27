@@ -6,6 +6,8 @@ import {
   createRoleAPI,
   putRoleInfoAPI,
   removeRoleAPI,
+  getRolePermissionListAPI,
+  putRolePermissionAPI,
 } from '@/lib/api/role';
 import useRequest from '@/lib/hooks/useRequest';
 import { useModalUtilsStore, useNotificationUtilsStore } from '@/lib/stores';
@@ -38,6 +40,14 @@ import {
   CollapsibleTrigger,
 } from '@/ui/components/ui/collapsible';
 import { ChevronsUpDownIcon } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/ui/components/ui/select';
+import { getPermissionListAPI, PermissionInfo } from '@/lib/api/permission';
 
 const RolePage = () => {
   const [request] = useRequest();
@@ -47,6 +57,36 @@ const RolePage = () => {
   const { utils: notificationUtils } = useNotificationUtilsStore();
 
   const [roleList, setRoleList] = useState<RoleInfo[]>([]);
+
+  const [permissions, setPermissions] = useState<PermissionInfo[]>([]);
+
+  const [currentRolePermissions, setCurrentRolePermissions] = useState<
+    string[]
+  >([]);
+
+  const fetchRolePermissions = useCallback(
+    async (roleId: string) => {
+      try {
+        const res = await getRolePermissionListAPI(request)(roleId);
+        setCurrentRolePermissions(res || []);
+      } catch {
+        // handle error
+      }
+    },
+    [request]
+  );
+
+  const updateRolePermissions = useCallback(
+    async (roleId: string, permissionIds: string[]) => {
+      try {
+        await putRolePermissionAPI(request)({ roleId, permissionIds });
+        // handle success
+      } catch {
+        // handle error
+      }
+    },
+    [request]
+  );
 
   /************************************************
    * ✨ 初始化
@@ -60,6 +100,12 @@ const RolePage = () => {
       });
       console.log('[ res ]', res);
       setRoleList(res.list);
+      // 获取所有权限列表
+      const permissionsRes = await getPermissionListAPI(request)({
+        current: 1,
+        size: 20,
+      });
+      setPermissions(permissionsRes.list);
     } catch (error) {
       return notFound();
     }
@@ -91,6 +137,26 @@ const RolePage = () => {
               onChange={e => (addFormData.current.name = e.target.value)}
             />
           </div>
+          <div className='flex w-full flex-col gap-2'>
+            <Label className='pl-1'>权限</Label>
+            <Select>
+              <SelectTrigger className='w-full'>
+                <SelectValue placeholder='选择权限' />
+              </SelectTrigger>
+              <SelectContent>
+                {permissions.map(permission => (
+                  <SelectItem key={permission._id} value={permission.name}>
+                    <div className='flex flex-col gap-1'>
+                      <span>{permission.name}</span>
+                      <span className='text-xs text-black-400'>
+                        {permission.description}
+                      </span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       ),
       okText: '保存',
@@ -104,9 +170,10 @@ const RolePage = () => {
           return;
         }
         try {
-          await createRoleAPI(request)({
+          const newRole = await createRoleAPI(request)({
             name: addFormData.current.name.trim(),
           });
+          await updateRolePermissions(newRole._id, currentRolePermissions);
           notificationUtils?.open({
             type: NotificationType.SUCCESS,
             content: '添加成功',
@@ -122,15 +189,25 @@ const RolePage = () => {
         } finally {
           modalUtils.close(uuid);
           addFormData.current = { name: '' };
+          setCurrentRolePermissions([]);
         }
       },
       cancelText: '取消',
       onCancel: () => {
         modalUtils.close(uuid);
         addFormData.current = { name: '' };
+        setCurrentRolePermissions([]);
       },
     });
-  }, [init, modalUtils, notificationUtils, request]);
+  }, [
+    modalUtils,
+    permissions,
+    notificationUtils,
+    request,
+    updateRolePermissions,
+    currentRolePermissions,
+    init,
+  ]);
 
   /************************************************
    * ✨ 编辑
@@ -147,6 +224,7 @@ const RolePage = () => {
         _id: roleInfo._id,
         name: roleInfo.name,
       };
+      fetchRolePermissions(roleInfo._id); // 初始化权限
       const uuid = modalUtils?.open({
         title: '编辑角色',
         children: () => (
@@ -157,6 +235,24 @@ const RolePage = () => {
                 defaultValue={roleInfo.name}
                 onChange={e => (editFormData.current.name = e.target.value)}
               />
+            </div>
+            <div className='flex w-full flex-col gap-2'>
+              <Label className='pl-1'>权限</Label>
+              <Select
+                multiple
+                value={currentRolePermissions}
+                onChange={setCurrentRolePermissions}>
+                <SelectTrigger className='w-full'>
+                  <SelectValue placeholder='选择权限' />
+                </SelectTrigger>
+                <SelectContent>
+                  {permissions.map(permission => (
+                    <SelectItem key={permission} value={permission}>
+                      {permission}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
         ),
@@ -175,6 +271,10 @@ const RolePage = () => {
               _id: editFormData.current._id,
               name: editFormData.current.name.trim(),
             });
+            await updateRolePermissions(
+              editFormData.current._id,
+              currentRolePermissions
+            );
             notificationUtils?.open({
               type: NotificationType.SUCCESS,
               content: '更新成功',
@@ -197,7 +297,16 @@ const RolePage = () => {
         },
       });
     },
-    [init, modalUtils, notificationUtils, request]
+    [
+      fetchRolePermissions,
+      updateRolePermissions,
+      init,
+      modalUtils,
+      notificationUtils,
+      request,
+      currentRolePermissions,
+      permissions,
+    ]
   );
 
   /************************************************

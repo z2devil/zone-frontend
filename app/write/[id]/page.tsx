@@ -327,11 +327,11 @@ export default function WriteNote(props: NoteDetailPageProps) {
         initialValue={contentRef.current}
         onChange={handleContentChange}>
         {/* 主要内容 */}
-        <div className='flex gap-8 bg-gray-200' ref={containerRef}>
-          <div className='min-h-screen w-full flex-col bg-gray-100'>
+        <div className='flex gap-8' ref={containerRef}>
+          <div className='min-h-screen w-full flex-col bg-white'>
             {/* 工具栏 */}
             <Toolbar
-              className='z-10 bg-gray-100'
+              className='z-10'
               RightSlot={
                 <div className='flex h-full flex-shrink-0 items-center gap-2 border-l border-gray-50 pl-2'>
                   <Button

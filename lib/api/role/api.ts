@@ -56,7 +56,7 @@ export const getRolePermissionListAPI =
 /**
  * 批量更新角色权限
  */
-export const setRolePermissionAPI =
+export const putRolePermissionAPI =
   (request: IRequest) =>
   (params: { roleId: string; permissionIds: string[] }) => {
     return request.put(`/role/${params.roleId}/permission`, {
