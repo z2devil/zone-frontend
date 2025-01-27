@@ -75,8 +75,7 @@ const formatSummary = (text: string): string => {
   return text
     .replace(/\s+/g, ' ') // 合并多余空格
     .replace(/\.(\S)/g, '. $1') // 确保句末空格
-    .replace(/^"|"$/g, '') // 去除头尾引号
-    .slice(0, 100); // 强制长度限制
+    .replace(/^"|"$/g, ''); // 去除头尾引号
 };
 
 const GENERATE_TITLE_SYSTEM_PROMPT = `
