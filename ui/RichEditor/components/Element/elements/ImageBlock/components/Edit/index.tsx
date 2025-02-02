@@ -18,7 +18,6 @@ import { HistoryEditor } from 'slate-history';
 import { getRandomRgbDataURL } from '@/lib/utils/rgbDataURL';
 import Resizable, { ResizeDirection } from '@/ui/Resizable';
 import clsx from 'clsx';
-import { twMerge } from 'tailwind-merge';
 import imageLoader from 'config/image/loader';
 
 interface ImageEditProps {
@@ -247,10 +246,8 @@ const ImageEdit = (props: ImageEditProps) => {
   return (
     <Resizable
       className={clsx(
-        twMerge(
-          'group flex h-full min-h-48 w-full min-w-16 max-w-full select-none rounded-lg',
-          selected ? 'border border-primary-50' : 'border border-black-200'
-        )
+        'group flex h-full min-h-48 w-full min-w-16 max-w-full select-none rounded-lg border',
+        selected ? 'border-primary-50' : 'border-gray-50 hover:border-gray-300'
       )}
       directions={[ResizeDirection.RIGHT, ResizeDirection.LEFT]}
       style={styles}
@@ -261,7 +258,7 @@ const ImageEdit = (props: ImageEditProps) => {
           fill
           alt='图片'
           blurDataURL={blurDataURL}
-          className='block rounded-lg object-cover'
+          className='block rounded-lg object-contain'
           loader={imageLoader}
           placeholder='blur'
           sizes='100vw'

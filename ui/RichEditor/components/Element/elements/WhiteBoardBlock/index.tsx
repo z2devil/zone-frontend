@@ -22,12 +22,13 @@ const WhiteBoardBlock = ({
     <div className='relative mb-2' {...attributes} contentEditable={false}>
       <div
         className={clsx(
-          'border-1 mb-2 flex aspect-[4/3] overflow-hidden rounded-lg border bg-gray-50',
-          !readOnly
-            ? selected
-              ? 'border-primary-50'
-              : 'border-transparent'
-            : ''
+          'mb-2 flex min-h-6 gap-2 overflow-hidden rounded-lg bg-gray-50 p-2',
+          {
+            border: !readOnly,
+            'border-primary-50': !readOnly && selected,
+            'border-transparent': readOnly || (!readOnly && !selected),
+            'hover:border-gray-300': !readOnly && !selected,
+          }
         )}>
         <WhiteBoard element={element} readOnly={readOnly} />
       </div>

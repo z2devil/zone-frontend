@@ -14,6 +14,7 @@ import {
   LayoutItemBlockElement,
   LinkInlineElement,
   MusicBlockElement,
+  TipBlockElement,
   VideoBlockElement,
   WhiteBoardBlockElement,
 } from 'types/slate';
@@ -28,6 +29,7 @@ import { BlockElementType, InlineElementType } from '@/lib/constants';
 import LayoutBlock from './elements/LayoutBlock';
 import LayoutItemBlock from './elements/LayoutItemBlock';
 import CodeLineBlock from './elements/CodeLineBlock';
+import TipBlock from './elements/TipBlock';
 
 const Element = (props: RenderElementProps) => {
   const { attributes, children, element } = props;
@@ -160,6 +162,11 @@ const Element = (props: RenderElementProps) => {
           element={element as WhiteBoardBlockElement}>
           {children}
         </WhiteBoardBlock>
+      ),
+      [BlockElementType.TIP]: (
+        <TipBlock attributes={attributes} element={element as TipBlockElement}>
+          {children}
+        </TipBlock>
       ),
     };
   }, [attributes, children, element, key, props.element]);

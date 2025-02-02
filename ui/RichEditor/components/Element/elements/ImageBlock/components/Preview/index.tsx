@@ -69,7 +69,7 @@ const ImagePreview = (props: ImagePreviewProps) => {
           fill
           alt='图片'
           blurDataURL={blurDataURL}
-          className='block object-cover'
+          className='block object-contain'
           loader={imageLoader}
           placeholder='blur'
           sizes='100vw'

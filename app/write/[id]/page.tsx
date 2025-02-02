@@ -36,6 +36,7 @@ import {
   withShortcuts,
   withVoids,
   withNormalizeCodeBlock,
+  withNormalizeTipBlock,
 } from '@/ui/RichEditor/utils';
 import Button from '@/ui/Button';
 import { withColumn } from '@/ui/RichEditor/components/Element/elements/LayoutBlock/lib';
@@ -70,6 +71,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
       withShortcuts,
       withPasteMarkdown,
       withNormalizeCodeBlock,
+      withNormalizeTipBlock,
       withColumn,
     ];
     return enhancers.reduce(
