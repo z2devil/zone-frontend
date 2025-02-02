@@ -182,6 +182,32 @@ const options: ToolbarOption[] = [
       ]);
     },
   },
+
+  {
+    title: '提示',
+    icon: 'icon-label-alt',
+    active: editor => {
+      return editorUtils.isElementActive(editor, BlockElementType.TIP);
+    },
+    disabled: editor => {
+      return editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK);
+    },
+    onClick: (e, editor) => {
+      e.preventDefault();
+      if (editorUtils.isElementActive(editor, BlockElementType.TIP)) {
+        return;
+      }
+      Transforms.wrapNodes(
+        editor,
+        { type: BlockElementType.TIP, icon: '💡', children: [] },
+        {
+          match: n =>
+            Element.isElement(n) && n.type === BlockElementType.PARAGRAPH,
+          split: true,
+        }
+      );
+    },
+  },
   'separator',
   {
     title: '加粗',

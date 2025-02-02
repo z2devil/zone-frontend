@@ -68,7 +68,11 @@ const handleShiftEnter = (editor: RichEditor, e: KeyboardEvent) => {
   if (nodeEntry) {
     const [, path] = nodeEntry;
     const [parentNode, parentPath] = Editor.node(editor, Path.parent(path));
-    if (parentNode.type === BlockElementType.CODE_BLOCK) {
+    if (
+      [BlockElementType.CODE_BLOCK, BlockElementType.TIP].includes(
+        parentNode.type as any
+      )
+    ) {
       const nextPath = Path.next(parentPath);
       Transforms.insertNodes(
         editor,

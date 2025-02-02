@@ -1,15 +1,16 @@
 import { BlockElementType } from '@/lib/constants';
-import { Editor, Element, Transforms } from 'slate';
+import { Editor, Element, NodeEntry, Transforms } from 'slate';
+import { TipBlockElement } from 'types/slate';
 
-export const withNormalizeCodeBlock = (editor: Editor) => {
+export const withNormalizeTipBlock = (editor: Editor) => {
   const { normalizeNode } = editor;
 
   editor.normalizeNode = entry => {
     normalizeNode(entry);
 
-    const [node, path] = entry;
+    const [node, path] = entry as NodeEntry<TipBlockElement>;
 
-    if (!Element.isElement(node) || node.type !== BlockElementType.CODE_BLOCK) {
+    if (!Element.isElement(node) || node.type !== BlockElementType.TIP) {
       return;
     }
 
@@ -17,7 +18,7 @@ export const withNormalizeCodeBlock = (editor: Editor) => {
     let nonCodeLinePath;
     let nonCodeLineNode;
     node.children.some((child, index) => {
-      if (child.type !== BlockElementType.CODE_LINE_BLOCK) {
+      if (child.type !== BlockElementType.PARAGRAPH) {
         nonCodeLinePath = [...path, index];
         nonCodeLineNode = child;
         return true;
@@ -27,7 +28,7 @@ export const withNormalizeCodeBlock = (editor: Editor) => {
     if (nonCodeLineNode) {
       Transforms.setNodes(
         editor,
-        { type: BlockElementType.CODE_LINE_BLOCK },
+        { type: BlockElementType.PARAGRAPH },
         { at: nonCodeLinePath }
       );
     }

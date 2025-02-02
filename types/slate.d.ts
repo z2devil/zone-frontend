@@ -135,6 +135,12 @@ export type LayoutItemBlockElement = {
   children: ParagraphElement[];
 };
 
+export type TipBlockElement = {
+  type: BlockElementType.TIP;
+  icon: string;
+  children: ParagraphElement[];
+};
+
 export type InlineElement = CodeSpanElement | LinkInlineElement;
 
 export type BlockElement =
@@ -152,9 +158,8 @@ export type BlockElement =
   | MusicBlockElement
   | WhiteBoardBlockElement
   | LayoutBlockElement
-  | LayoutItemBlockElement;
-
-// | CubeBlockElement;
+  | LayoutItemBlockElement
+  | TipBlockElement;
 
 export type CustomElement = InlineElement | BlockElement;
 
