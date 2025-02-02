@@ -17,7 +17,7 @@ const Toolbar = (props: ToolbarProps) => {
     <div
       className={clsx(
         twMerge(
-          'sticky top-0 flex h-12 flex-shrink-0 bg-gray-200 px-5 text-black-600 shadow-main',
+          'sticky top-0 flex h-12 flex-shrink-0 bg-white px-5 text-black-600 shadow-main',
           className
         )
       )}>
