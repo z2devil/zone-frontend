@@ -42,17 +42,20 @@ const ImagePreview = (props: ImagePreviewProps) => {
     const images: ImageBlockElement[] = [];
     const currentPath = ReactEditor.findPath(editor, element);
     let index = 0;
-    const enties = Editor.nodes(editor, {
-      at: [],
-      match: n => n.type === BlockElementType.IMAGE,
-    });
-    Array.from(enties).forEach(([node, path], i) => {
+    const entries = Array.from(
+      Editor.nodes(editor, {
+        at: [],
+        match: n => n.type === BlockElementType.IMAGE,
+      })
+    );
+    entries.forEach(([node, path], i) => {
       const image = node as ImageBlockElement;
       images.push(image);
       if (Path.equals(path, currentPath)) {
         index = i;
       }
     });
+    console.log('[ entries ]', entries, index);
     imagePreviewUtils?.open({
       images,
       index,

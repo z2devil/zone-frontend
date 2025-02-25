@@ -25,6 +25,7 @@ const useImagePreview = () => {
     const actions = {
       [ImagePreviewTaskType.OPEN]: (config: ImagePreviewConfig) => {
         const { images, index } = config;
+        console.log('[ ImagePreviewTaskType.OPEN ]', images, index);
         setImages(images);
         setIndex(index);
         setVisible(true);

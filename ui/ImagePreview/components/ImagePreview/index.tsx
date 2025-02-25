@@ -6,7 +6,6 @@ import {
   enableScrollbar,
   isDisabledScrollbar,
 } from '@/lib/utils/scrollbarTrigger';
-import clsx from 'clsx';
 import imageLoader from 'config/image/loader';
 import Image from 'next/image';
 import {
@@ -19,6 +18,12 @@ import {
 } from 'react';
 import { ImageBlockElement } from 'types/slate';
 import { AnimatePresence, motion } from 'motion/react';
+import {
+  Carousel,
+  CarouselApi,
+  CarouselContent,
+  CarouselItem,
+} from '@/ui/components/ui/carousel';
 
 export interface ImagePreviewProps {
   visible: boolean;
@@ -27,39 +32,31 @@ export interface ImagePreviewProps {
   onClose: () => void;
 }
 
-const CACHE_SIZE = 3;
-
 const ImagePreview = (props: ImagePreviewProps) => {
   const { visible, images, index, onClose } = props;
 
-  const [current, setCurrent] = useState(index);
-
-  const [loadedImages, setLoadedImages] = useState<string[]>([]);
+  const [api, setApi] = useState<CarouselApi>();
 
   useEffect(() => {
-    setLoadedImages(() => {
-      const res: string[] = [];
-      for (let i = 0; i < images.length; i++) {
-        if (i >= current - CACHE_SIZE && i <= current + CACHE_SIZE) {
-          res.push(images[i].url || '');
-        }
-      }
-      return res;
+    if (!api) {
+      return;
+    }
+
+    setCurrent(api.selectedScrollSnap() + 1);
+
+    api.on('select', () => {
+      setCurrent(api.selectedScrollSnap() + 1);
     });
-  }, [current, images]);
+  }, [api]);
 
-  const blurDataURL = useMemo(() => getRandomRgbDataURL(), []);
+  const [current, setCurrent] = useState(0);
 
-  const handlePageChange = useCallback(
-    (event: MouseEvent, type: 'pre' | 'next') => {
-      event.stopPropagation();
-      setCurrent(prev => {
-        const newIndex = type === 'pre' ? prev - 1 : prev + 1;
-        return Math.max(0, Math.min(newIndex, images.length - 1));
-      });
-    },
+  const loadedImages = useMemo(
+    () => images.map(img => img.url || ''),
     [images]
   );
+
+  const blurDataURL = useMemo(() => getRandomRgbDataURL(), []);
 
   const latestDisabledScrollbar = useRef(false);
 
@@ -73,6 +70,21 @@ const ImagePreview = (props: ImagePreviewProps) => {
       }
     }
   }, [visible]);
+
+  const handlePageChange = useCallback(
+    (event: MouseEvent, type: 'pre' | 'next') => {
+      event.stopPropagation();
+      if (!api) {
+        return;
+      }
+      if (type === 'pre') {
+        api.scrollPrev();
+      } else {
+        api.scrollNext();
+      }
+    },
+    [api]
+  );
 
   return (
     <AnimatePresence>
@@ -90,41 +102,47 @@ const ImagePreview = (props: ImagePreviewProps) => {
           }}
           transition={{ type: 'tween' }}
           onClick={onClose}>
-          <div className='relative h-full w-full'>
-            <div className='absolute inset-0 flex items-center justify-center'>
+          <Carousel
+            className='relative h-full w-full'
+            opts={{
+              startIndex: index,
+            }}
+            setApi={setApi}>
+            <CarouselContent className='relative ml-0 flex h-svh w-full'>
               {loadedImages.map((img, i) => (
-                <Image
-                  fill
-                  priority
-                  alt='preview'
-                  blurDataURL={blurDataURL}
-                  className={clsx('max-h-full max-w-full object-scale-down', {
-                    hidden: img !== images[current].url,
-                  })}
-                  key={i}
-                  loader={imageLoader}
-                  placeholder='blur'
-                  sizes='100vw'
-                  src={img}
-                />
+                <CarouselItem
+                  className='relative h-full w-full overflow-hidden'
+                  key={i}>
+                  <Image
+                    fill
+                    priority
+                    alt='preview'
+                    blurDataURL={blurDataURL}
+                    className='max-h-full max-w-full object-scale-down'
+                    loader={imageLoader}
+                    placeholder='blur'
+                    sizes='100vw'
+                    src={img}
+                  />
+                </CarouselItem>
               ))}
-            </div>
+            </CarouselContent>
             <div
-              className='duration-400 fixed top-0 flex h-full cursor-pointer items-center justify-center px-8 opacity-0 transition-opacity hover:opacity-100'
+              className='duration-400 fixed top-0 flex h-full w-1/6 cursor-pointer items-center justify-center opacity-0 transition-opacity hover:opacity-100'
               onClick={e => handlePageChange(e, 'pre')}>
               <span className='iconfont icon-angle-left !text-5xl text-white drop-shadow-md' />
             </div>
             <div
-              className='duration-400 fixed right-0 top-0 flex h-full cursor-pointer items-center justify-center px-8 opacity-0 transition-opacity hover:opacity-100'
+              className='duration-400 fixed right-0 top-0 flex h-full w-1/6 cursor-pointer items-center justify-center opacity-0 transition-opacity hover:opacity-100'
               onClick={e => handlePageChange(e, 'next')}>
               <span className='iconfont icon-angle-right !text-5xl text-white drop-shadow-md' />
             </div>
             <div className='absolute bottom-0 left-0 right-0 flex items-center justify-center py-6'>
               <span className='text-xl text-white drop-shadow-md'>
-                {current + 1} / {images.length}
+                {current} / {loadedImages.length}
               </span>
             </div>
-          </div>
+          </Carousel>
         </motion.div>
       ) : null}
     </AnimatePresence>
