@@ -1,4 +1,3 @@
-import { NoteTypeEnum } from '@/lib/api/notes';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import Button from '../Button';
 import clsx from 'clsx';
@@ -14,13 +13,11 @@ import { useLoading } from '@/lib/hooks/useLoading';
 import { useMount } from 'react-use';
 import { useSlate } from 'slate-react';
 import { twMerge } from 'tailwind-merge';
-import { generateSummary, generateTitle } from '@/lib/ai';
+import { generateTitle } from '@/lib/ai';
 
 export interface NoteOptions {
-  type: NoteTypeEnum;
   bannerPath?: string;
   title?: string;
-  summary?: string;
   tags: string[];
 }
 
@@ -35,14 +32,6 @@ const NotePublish = (props: NotePublishProps) => {
   const [request, fetcher] = useRequest();
 
   const editor = useSlate();
-
-  /************************************************
-   * ✨ 类型
-   ************************************************/
-
-  const [type, setType] = useState<NoteTypeEnum>(
-    options.type || NoteTypeEnum.NOTE
-  );
 
   /************************************************
    * ✨ 封图
@@ -113,34 +102,6 @@ const NotePublish = (props: NotePublishProps) => {
       setIsGeneratingTitle(false);
     }
   }, [editor, isGeneratingTitle]);
-
-  /************************************************
-   * ✨ 摘要
-   ************************************************/
-
-  const [summary, setSummary] = useState(options.summary || '');
-
-  const handleSummaryChange = useCallback(
-    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setSummary(e.target.value);
-    },
-    []
-  );
-
-  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
-
-  const handleGenerateSummary = useCallback(async () => {
-    if (isGeneratingSummary) return;
-    setIsGeneratingSummary(true);
-    try {
-      const text = await generateSummary(editor.string([]));
-      setSummary(text);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsGeneratingSummary(false);
-    }
-  }, [editor, isGeneratingSummary]);
 
   /************************************************
    * ✨ 标签
@@ -244,88 +205,56 @@ const NotePublish = (props: NotePublishProps) => {
 
   const handlePublish = useCallback(() => {
     onPublish({
-      type,
       bannerPath,
       title,
-      summary,
       tags: selectedTagIds,
     });
-  }, [bannerPath, onPublish, selectedTagIds, summary, title, type]);
+  }, [bannerPath, onPublish, selectedTagIds, title]);
 
   return (
     <div className='flex flex-col gap-5 p-6'>
-      {/* 类型 */}
-      <div className='flex flex-col gap-1'>
-        <span className='text-17 font-semibold text-black-600'>类型</span>
-        <div className='flex gap-5'>
-          <Button
-            className={clsx(
-              'relative h-12 flex-grow rounded-xl border text-17',
-              type === NoteTypeEnum.NOTE
-                ? 'border-primary-50 font-medium text-primary-50'
-                : 'border-black-80 text-black-600'
-            )}
-            onClick={() => setType(NoteTypeEnum.NOTE)}>
-            笔记
-          </Button>
-          <Button
-            className={clsx(
-              'relative h-12 flex-grow rounded-xl border text-17',
-              type === NoteTypeEnum.ARTICLE
-                ? 'border-primary-50 font-medium text-primary-50'
-                : 'border-black-80 text-black-600'
-            )}
-            onClick={() => setType(NoteTypeEnum.ARTICLE)}>
-            文章
-          </Button>
-        </div>
-      </div>
       {/* 封图 */}
-      {type === NoteTypeEnum.ARTICLE ? (
-        <div className='flex flex-col gap-1'>
-          <span className='text-17 font-semibold text-black-600'>封图</span>
-          <div className='group relative aspect-[3/1] w-full overflow-hidden rounded-xl border-black-300'>
-            <div className='relative h-full w-full bg-gray-50'>
-              {bannerPath ? (
-                <Image
-                  fill
-                  alt='封图'
-                  blurDataURL={blurDataURL}
-                  className='block object-cover group-hover:blur-lg'
-                  loader={imageLoader}
-                  placeholder='blur'
-                  sizes='100vw'
-                  src={bannerPath}
-                />
-              ) : null}
-              {isLoading ? (
-                <div className='absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col items-center justify-center gap-1'>
-                  <span className='text-17 font-bold text-black-600'>
-                    上传中...
-                  </span>
-                </div>
-              ) : (
-                <div
-                  className={clsx(
-                    'absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col items-center justify-center gap-1 transition-all duration-100 group-hover:opacity-100',
-                    !bannerPath
-                      ? 'opacity-1'
-                      : 'bg-white bg-opacity-50 opacity-0'
-                  )}
-                  onClick={handleUpload}>
-                  <i className='iconfont icon-image-plus text-xl text-black-600'></i>
-                  <span className='text-17 font-bold text-black-600'>
-                    {!bannerPath ? '点击上传图片' : '点击更换图片'}
-                  </span>
-                  <span className='text-xs font-bold text-black-250'>
-                    最大支持 25MB
-                  </span>
-                </div>
-              )}
-            </div>
+      <div className='flex flex-col gap-1'>
+        <span className='text-17 font-semibold text-black-600'>封图</span>
+        <div className='group relative aspect-[3/1] w-full overflow-hidden rounded-xl border-black-300'>
+          <div className='relative h-full w-full bg-gray-50'>
+            {bannerPath ? (
+              <Image
+                fill
+                alt='封图'
+                blurDataURL={blurDataURL}
+                className='block object-cover group-hover:blur-lg'
+                loader={imageLoader}
+                placeholder='blur'
+                sizes='100vw'
+                src={bannerPath}
+              />
+            ) : null}
+            {isLoading ? (
+              <div className='absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col items-center justify-center gap-1'>
+                <span className='text-17 font-bold text-black-600'>
+                  上传中...
+                </span>
+              </div>
+            ) : (
+              <div
+                className={clsx(
+                  'absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col items-center justify-center gap-1 transition-all duration-100 group-hover:opacity-100',
+                  !bannerPath ? 'opacity-1' : 'bg-white bg-opacity-50 opacity-0'
+                )}
+                onClick={handleUpload}>
+                <i className='iconfont icon-image-plus text-xl text-black-600'></i>
+                <span className='text-17 font-bold text-black-600'>
+                  {!bannerPath ? '点击上传图片' : '点击更换图片'}
+                </span>
+                <span className='text-xs font-bold text-black-250'>
+                  最大支持 25MB
+                </span>
+              </div>
+            )}
           </div>
         </div>
-      ) : null}
+      </div>
       {/* 标题 */}
       <div className='flex flex-col gap-1'>
         <div className='flex items-end justify-between'>
@@ -359,42 +288,6 @@ const NotePublish = (props: NotePublishProps) => {
           ) : null}
         </div>
       </div>
-      {/* 摘要 */}
-      {type === NoteTypeEnum.ARTICLE ? (
-        <div className='flex flex-col gap-1'>
-          <div className='flex items-end justify-between'>
-            <span className='text-17 font-semibold text-black-600'>摘要</span>
-            <span className='text-xs font-medium text-black-250'>
-              {summary.length}/300
-            </span>
-          </div>
-          <div className='relative flex w-full gap-5 rounded-xl bg-gray-50 p-4'>
-            <textarea
-              className='min-h-10 w-full flex-grow resize-none bg-transparent text-justify text-17 font-medium text-black-600 outline-none'
-              maxLength={300}
-              rows={4}
-              value={summary}
-              onInput={handleSummaryChange}
-            />
-            {/* 内容为空时显示自动生成的按钮 */}
-            {!summary.length ? (
-              <button
-                className={clsx(
-                  twMerge(
-                    'absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full bg-purple-50 px-3 py-1 font-medium text-purple-700 ring-1 ring-inset ring-purple-700/10 hover:bg-purple-100',
-                    isGeneratingSummary
-                      ? 'pointer-events-none cursor-not-allowed bg-black-50 text-black-250 ring-black-80'
-                      : 'cursor-pointer'
-                  )
-                )}
-                onClick={handleGenerateSummary}>
-                <span className='iconfont icon-magic text-15 leading-3'></span>
-                <span className='text-13'>自动生成</span>
-              </button>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
       {/* 标签 */}
       <div className='flex flex-col gap-1'>
         <div className='flex w-full items-end justify-between'>

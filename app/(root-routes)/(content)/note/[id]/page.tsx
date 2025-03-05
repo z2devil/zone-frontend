@@ -3,7 +3,6 @@
 import {
   AdjacentNotes,
   NoteInfo,
-  NoteTypeEnum,
   deleteNoteAPI,
   getAdjacentNotesAPI,
   getNoteAPI,
@@ -17,20 +16,15 @@ import {
   useNotificationUtilsStore,
 } from '@/lib/stores';
 import { getContentSummary } from '@/lib/utils/editor';
-import { getRandomRgbDataURL } from '@/lib/utils/rgbDataURL';
 import EmptyInfo from '@/ui/EmptyInfo';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import TOC from '@/ui/TOC';
 import clsx from 'clsx';
-import imageLoader from 'config/image/loader';
-import dayjs from 'dayjs';
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createEditor } from 'slate';
 import { withReact, Slate as SlateProvider } from 'slate-react';
-import RichEditor from '@/ui/RichEditor';
 import { NoteDetail } from '@/ui/NoteDetail';
 
 interface NoteDetailPageProps {
@@ -60,16 +54,6 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
 
   const [note, setNote] = useState<NoteInfo | null>(null);
 
-  const detailTime = useMemo(
-    () => dayjs(note?.createdAt).format('YYYY-MM-DD HH:mm:ss'),
-    [note]
-  );
-
-  const summaryTime = useMemo(
-    () => dayjs(note?.createdAt).format('YYYY-MM-DD'),
-    [note]
-  );
-
   const [adjacentNotes, setAdjacentNotes] = useState<AdjacentNotes>({
     prev: null,
     next: null,
@@ -90,10 +74,6 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
       title: getContentSummary(adjacentNotes.next.content),
     };
   }, [adjacentNotes]);
-
-  const blurDataURL = useMemo(() => {
-    return getRandomRgbDataURL();
-  }, []);
 
   /************************************************
    * ✨ 初始化

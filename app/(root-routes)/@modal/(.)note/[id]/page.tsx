@@ -239,14 +239,14 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
               {/* mask */}
               <motion.div
                 animate={{ opacity: 1 }}
-                className='pointer-events-none fixed z-0 h-full w-full bg-black-80'
+                className='pointer-events-none sticky top-0 z-0 h-full w-full bg-black-80 backdrop-blur'
                 exit={{ opacity: 0 }}
                 initial={{ opacity: 0 }}
               />
               {/* note */}
               <motion.div
                 animate={{ opacity: 1, top: 0 }}
-                className='relative z-10 mx-auto flex gap-8 md:w-fit'
+                className='absolute left-1/2 z-10 mx-auto flex -translate-x-1/2 gap-8 md:w-fit'
                 exit={{
                   opacity: 0,
                   top: -50,
@@ -306,23 +306,23 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
                     <EmptyInfo tip='暂无评论' />
                   </div>
                 </div>
-                <motion.div
-                  animate={{
-                    opacity: 1,
-                    x: 0,
-                  }}
-                  className='fixed top-24 ml-[47rem] hidden h-fit lg:flex'
-                  exit={{
-                    opacity: 0,
-                    x: 50,
-                  }}
-                  initial={{
-                    opacity: 0,
-                    x: 50,
-                  }}
-                  transition={{ type: 'tween' }}>
-                  <TOC />
-                </motion.div>
+              </motion.div>
+              <motion.div
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                }}
+                className='fixed right-16 top-24 ml-[47rem] hidden h-fit lg:flex'
+                exit={{
+                  opacity: 0,
+                  x: 50,
+                }}
+                initial={{
+                  opacity: 0,
+                  x: 50,
+                }}
+                transition={{ type: 'tween' }}>
+                <TOC />
               </motion.div>
             </>
           ) : null}

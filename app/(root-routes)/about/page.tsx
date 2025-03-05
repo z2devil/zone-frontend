@@ -1,6 +1,6 @@
 'use client';
 
-import { NoteInfo, NoteTypeEnum, getNoteAPI } from '@/lib/api/notes';
+import { NoteInfo, getNoteAPI } from '@/lib/api/notes';
 import { UserRole } from '@/lib/api/user';
 import usePermission from '@/lib/hooks/usePermission';
 import useRequest from '@/lib/hooks/useRequest';
@@ -89,24 +89,14 @@ const About = () => {
             {/* 顶部 */}
             {isAdmin ? (
               <div className='flex items-center justify-between gap-10'>
-                {note.type === NoteTypeEnum.NOTE ? (
-                  <div className='flex items-center gap-1'>
-                    <i className='iconfont icon-calender-filled text-17 text-black-250' />
-                    <span
-                      className='text-[0.75rem] leading-[0.75rem] text-black-250'
-                      title={dayjs(note.createdAt).format(
-                        'YYYY-MM-DD HH:mm:ss'
-                      )}>
-                      {dayjs(note.createdAt).format('YYYY-MM-DD')}
-                    </span>
-                  </div>
-                ) : (
+                <div className='flex items-center gap-1'>
+                  <i className='iconfont icon-calender-filled text-17 text-black-250' />
                   <span
-                    className='overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-black-900 group-hover:text-primary-50'
-                    title={note.title}>
-                    {note.title}
+                    className='text-[0.75rem] leading-[0.75rem] text-black-250'
+                    title={dayjs(note.createdAt).format('YYYY-MM-DD HH:mm:ss')}>
+                    {dayjs(note.createdAt).format('YYYY-MM-DD')}
                   </span>
-                )}
+                </div>
                 {isLogin ? (
                   <button
                     className='group/more flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[0.5rem] border border-transparent transition-all duration-100 hover:bg-primary-50'
@@ -121,16 +111,14 @@ const About = () => {
               <RichView value={JSON.parse(note.content)} />
             </div>
             {/* 底部 */}
-            {note.type === NoteTypeEnum.ARTICLE && (
-              <div className='flex items-center justify-between gap-1'>
-                <div className='flex items-center gap-1'>
-                  <i className='iconfont icon-calender-filled text-17 text-black-250' />
-                  <span className='text-[0.75rem] leading-[0.75rem] text-black-250'>
-                    {dayjs(note.createdAt).format('YYYY-MM-DD')}
-                  </span>
-                </div>
+            <div className='flex items-center justify-between gap-1'>
+              <div className='flex items-center gap-1'>
+                <i className='iconfont icon-calender-filled text-17 text-black-250' />
+                <span className='text-[0.75rem] leading-[0.75rem] text-black-250'>
+                  {dayjs(note.createdAt).format('YYYY-MM-DD')}
+                </span>
               </div>
-            )}
+            </div>
           </div>
         </div>
       </div>

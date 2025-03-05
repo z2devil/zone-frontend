@@ -11,11 +11,6 @@ export const ROUTER: RouterConfig[] = [
     icon: 'icon-note',
   },
   {
-    name: '作品',
-    path: '/works',
-    icon: 'icon-works',
-  },
-  {
     name: '关于',
     path: '/about',
     icon: 'icon-about',

@@ -1,4 +1,4 @@
-import { NoteInfo, NoteTypeEnum } from '@/lib/api/notes';
+import { NoteInfo } from '@/lib/api/notes';
 import { getRandomRgbDataURL } from '@/lib/utils/rgbDataURL';
 import imageLoader from 'config/image/loader';
 import dayjs from 'dayjs';
@@ -31,7 +31,7 @@ export const NoteDetail = (props: NoteDetailProps) => {
 
   return (
     <div className='flex flex-col gap-4 p-8'>
-      {note.type === NoteTypeEnum.ARTICLE && note.bannerPath ? (
+      {note.bannerPath ? (
         <div className='relative mb-2 aspect-[3/1] w-full overflow-hidden rounded-lg'>
           <Image
             alt='封图'

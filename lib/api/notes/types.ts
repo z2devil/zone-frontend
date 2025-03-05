@@ -7,23 +7,13 @@ import { IPageParams } from '../types';
  ************************************************/
 
 /**
- * 笔记类型枚举
- */
-export enum NoteTypeEnum {
-  NOTE = 0,
-  ARTICLE,
-}
-
-/**
  * 笔记实体
  */
 export interface NoteEntity extends CommonInfo {
   content: string;
   viewsNum: number;
-  type: NoteTypeEnum;
   bannerPath?: string;
   title?: string;
-  summary?: string;
 }
 
 /**
@@ -31,7 +21,7 @@ export interface NoteEntity extends CommonInfo {
  */
 export type NoteInfo = Pick<
   NoteEntity,
-  '_id' | 'type' | 'content' | 'title' | 'summary' | 'bannerPath' | 'createdAt'
+  '_id' | 'content' | 'title' | 'bannerPath' | 'createdAt'
 > & {
   author: string;
   tags: TagInfo[];
@@ -46,7 +36,6 @@ export type NoteInfo = Pick<
  */
 export interface GetNotesParams extends IPageParams {
   search?: string;
-  type?: NoteTypeEnum;
   tags?: string[];
 }
 
@@ -63,7 +52,6 @@ export interface AdjacentNotes {
  */
 export interface PostNoteParams {
   content: string;
-  type: NoteTypeEnum;
   bannerPath?: string;
   title?: string;
   tags?: string[];

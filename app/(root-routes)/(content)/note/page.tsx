@@ -1,6 +1,6 @@
 'use client';
 
-import { NoteTypeEnum, getNotesAPI } from '@/lib/api/notes';
+import { getNotesAPI } from '@/lib/api/notes';
 import Masonry from '@/ui/Masonry';
 import NoteCard from '@/ui/NoteCard';
 import PageBanner from '@/ui/PageBanner';
@@ -213,9 +213,7 @@ const NotePage = () => {
                 <span className='shrink-0'>{category.count}篇</span>
               </div>
               <span className='truncate text-xs text-black-250'>
-                {category.latestNote.type === NoteTypeEnum.ARTICLE
-                  ? category.latestNote.summary?.replaceAll(' ', '')
-                  : getContentSummary(category.latestNote.content)}
+                {category.latestNote.title || '随笔'}
               </span>
             </div>
             <div className='flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-md text-black-250 transition-colors duration-100 group-hover:text-primary-50'>

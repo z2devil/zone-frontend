@@ -1,5 +1,3 @@
-import { NoteTypeEnum } from '../notes';
-
 /************************************************
  * ✨ 实体
  ************************************************/
@@ -16,9 +14,7 @@ export interface CategoryEntity {
   count: number;
   latestNote: {
     _id: string;
-    type: NoteTypeEnum;
     content: string;
     title?: string;
-    summary?: string;
   };
 }

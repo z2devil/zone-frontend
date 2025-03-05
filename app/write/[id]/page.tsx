@@ -16,12 +16,7 @@ import { ModalInfo } from '@/ui/Modal/hooks/useModal';
 import NotePublish, { NoteOptions } from '@/ui/NotePublish';
 import { useModalUtilsStore, useNotificationUtilsStore } from '@/lib/stores';
 import { NotificationType } from '@/ui/Notification/components/Notification';
-import {
-  NoteTypeEnum,
-  getNoteAPI,
-  postNoteAPI,
-  putNoteAPI,
-} from '@/lib/api/notes';
+import { getNoteAPI, postNoteAPI, putNoteAPI } from '@/lib/api/notes';
 import useRequest from '@/lib/hooks/useRequest';
 import { useNotesStore } from '@/lib/stores/notes';
 import { createEditor, Descendant, Element, Node, Transforms } from 'slate';
@@ -187,7 +182,6 @@ export default function WriteNote(props: NoteDetailPageProps) {
       contentRef.current = JSON.parse(res.content);
       optionsRef.current = {
         title: res.title,
-        type: res.type,
         bannerPath: res.bannerPath,
         tags: res.tags.map(tag => tag._id),
       };
@@ -248,7 +242,6 @@ export default function WriteNote(props: NoteDetailPageProps) {
 
   const optionsRef = useRef<NoteOptions>({
     title: '',
-    type: NoteTypeEnum.NOTE,
     bannerPath: '',
     tags: [],
   });
@@ -258,11 +251,9 @@ export default function WriteNote(props: NoteDetailPageProps) {
       console.log('[ handlePublish ]', res);
       try {
         const data = {
-          type: res.type,
           title: res.title,
           content: JSON.stringify(contentRef.current),
           bannerPath: res.bannerPath,
-          summary: res.summary || getContentSummary(contentRef.current),
           tags: res.tags,
         };
         if (isCreate) {
