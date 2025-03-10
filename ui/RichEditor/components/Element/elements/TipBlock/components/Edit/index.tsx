@@ -2,14 +2,14 @@ import { useCallback, useMemo } from 'react';
 import { ReactEditor, useSlate } from 'slate-react';
 import { TipBlockElement } from 'types/slate';
 import { Transforms } from 'slate';
-import data from '@emoji-mart/data';
-import EmojiPicker from '@emoji-mart/react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuPortal,
   DropdownMenuTrigger,
 } from '@/ui/components/ui/dropdown-menu';
+import EmojiPicker from '@/ui/EmojiPicker';
+import { ScrollArea } from '@/ui/components/ui/scroll-area';
 
 interface TipEditProps {
   element: TipBlockElement;
@@ -24,10 +24,10 @@ const TipEdit = (props: TipEditProps) => {
   const icon = useMemo(() => element.icon, [element.icon]);
 
   const handleEmojiSelect = useCallback(
-    (emoji: any) => {
+    (emoji: string) => {
       Transforms.setNodes(
         editor,
-        { icon: emoji.native },
+        { icon: emoji },
         { at: ReactEditor.findPath(editor, element) }
       );
     },
@@ -45,12 +45,10 @@ const TipEdit = (props: TipEditProps) => {
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuPortal>
-          <DropdownMenuContent className='border-none shadow-none'>
-            <EmojiPicker
-              data={data}
-              locale='zh'
-              onEmojiSelect={handleEmojiSelect}
-            />
+          <DropdownMenuContent className='py-4'>
+            <ScrollArea className='h-[400px] w-96'>
+              <EmojiPicker className='w-96 px-3' onClick={handleEmojiSelect} />
+            </ScrollArea>
           </DropdownMenuContent>
         </DropdownMenuPortal>
       </DropdownMenu>

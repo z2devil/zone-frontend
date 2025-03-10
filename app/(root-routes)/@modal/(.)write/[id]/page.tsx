@@ -128,11 +128,11 @@ export default function WriteNote(props: NoteDetailPageProps) {
     };
   }, [editor, handleBeforeUnload]);
 
-  useEffect(() => {
-    if (isDisabledScrollbar()) return;
-    disableScrollbar();
-    return enableScrollbar;
-  }, []);
+  // useEffect(() => {
+  //   if (isDisabledScrollbar()) return;
+  //   disableScrollbar();
+  //   return enableScrollbar;
+  // }, []);
 
   /************************************************
    * ✨ 初始化
