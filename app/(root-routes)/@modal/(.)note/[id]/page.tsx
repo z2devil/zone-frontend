@@ -232,21 +232,25 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
     <SlateProvider
       editor={editor}
       initialValue={JSON.parse(note.content || '')}>
+      <AnimatePresence>
+        {!isExit ? (
+          <motion.div
+            animate={{ opacity: 1 }}
+            className='pointer-events-none fixed z-[5] h-full w-full bg-black-80 backdrop-blur'
+            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }}
+            onClick={handleBack}
+          />
+        ) : null}
+      </AnimatePresence>
       <div className='fixed inset-0 z-10 overflow-y-auto' onClick={handleBack}>
         <AnimatePresence>
           {!isExit ? (
             <>
-              {/* mask */}
-              <motion.div
-                animate={{ opacity: 1 }}
-                className='pointer-events-none sticky top-0 z-0 h-full w-full bg-black-80 backdrop-blur'
-                exit={{ opacity: 0 }}
-                initial={{ opacity: 0 }}
-              />
               {/* note */}
               <motion.div
                 animate={{ opacity: 1, top: 0 }}
-                className='absolute left-1/2 z-10 mx-auto flex -translate-x-1/2 gap-8 md:w-fit'
+                className='relative z-10 mx-auto flex gap-8 md:w-fit'
                 exit={{
                   opacity: 0,
                   top: -50,
