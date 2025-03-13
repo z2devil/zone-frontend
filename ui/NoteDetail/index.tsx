@@ -1,4 +1,4 @@
-import { NoteInfo, NoteTypeEnum } from '@/lib/api/notes';
+import { NoteInfo } from '@/lib/api/notes';
 import { getRandomRgbDataURL } from '@/lib/utils/rgbDataURL';
 import imageLoader from 'config/image/loader';
 import dayjs from 'dayjs';
@@ -31,7 +31,7 @@ export const NoteDetail = (props: NoteDetailProps) => {
 
   return (
     <div className='flex flex-col gap-4 p-8'>
-      {note.type === NoteTypeEnum.ARTICLE && note.bannerPath ? (
+      {note.bannerPath ? (
         <div className='relative mb-2 aspect-[3/1] w-full overflow-hidden rounded-lg'>
           <Image
             alt='封图'
@@ -46,12 +46,15 @@ export const NoteDetail = (props: NoteDetailProps) => {
         </div>
       ) : null}
       {/* 顶部 */}
-      <div className='mb-4 flex items-center justify-between gap-10'>
-        <span
-          className='overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-black-900 group-hover:text-primary-50'
-          title={note.title}>
-          {note.title || '随笔'}
-        </span>
+      <div className='mb-4 flex items-center justify-between gap-2'>
+        <div className='flex items-center gap-2 overflow-hidden'>
+          <div className='h-5 w-1 flex-shrink-0 rounded-full bg-primary-50'></div>
+          <span
+            className='overflow-hidden text-ellipsis whitespace-nowrap text-19 font-semibold text-black-900'
+            title={note.title}>
+            {note.title || '随笔'}
+          </span>
+        </div>
         {isLogin ? (
           <button
             className='group/more flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[0.5rem] border border-transparent transition-all duration-100 hover:bg-primary-50'

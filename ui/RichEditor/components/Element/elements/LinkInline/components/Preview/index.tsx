@@ -19,12 +19,12 @@ const LinkPreview = (props: LinkPreviewProps) => {
   const url = useMemo(() => element.url, [element.url]);
 
   if (isSummary) {
-    return <span className='text-primary-50 underline'>{children}</span>;
+    return <span className='text-black-600 underline'>{children}</span>;
   }
 
   return (
     <a
-      className='text-primary-50 underline'
+      className='text-black-600 underline'
       href={url}
       rel='noreferrer'
       target='_blank'>
