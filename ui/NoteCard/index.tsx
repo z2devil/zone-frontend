@@ -225,12 +225,15 @@ const NoteCard = (props: NoteCardProps) => {
                   </div>
                 ) : null}
                 {/* 顶部 */}
-                <div className='flex items-center justify-between gap-10'>
-                  <span
-                    className='overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-black-900 group-hover:text-primary-50'
-                    title={note.title}>
-                    {note.title || '随笔'}
-                  </span>
+                <div className='flex items-center justify-between gap-2'>
+                  <div className='flex items-center gap-2 overflow-hidden'>
+                    <div className='h-5 w-1 flex-shrink-0 rounded-full bg-primary-50'></div>
+                    <span
+                      className='overflow-hidden text-ellipsis whitespace-nowrap text-19 font-semibold text-black-900'
+                      title={note.title}>
+                      {note.title || '随笔'}
+                    </span>
+                  </div>
                   {isLogin ? (
                     <button
                       className='group/more flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[0.5rem] border border-transparent transition-all duration-100 hover:bg-primary-50'
