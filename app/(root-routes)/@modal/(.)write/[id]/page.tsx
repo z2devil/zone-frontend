@@ -27,6 +27,7 @@ import {
   withVoids,
   withNormalizeCodeBlock,
   withNormalizeTipBlock,
+  withList,
 } from '@/ui/RichEditor/utils';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import {
@@ -54,6 +55,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
       withNormalizeCodeBlock,
       withNormalizeTipBlock,
       withColumn,
+      withList,
     ];
     return enhancers.reduce(
       (editor, enhancer) => enhancer(editor),
