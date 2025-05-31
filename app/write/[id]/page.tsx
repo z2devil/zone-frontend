@@ -78,8 +78,6 @@ export default function WriteNote(props: NoteDetailPageProps) {
     );
   }, []);
 
-  window.editor = editor;
-
   const [step, setStep] = useState(0);
 
   const handleBack = useCallback(() => {
