@@ -70,6 +70,9 @@ export const SHORTCUTS_MAP: Record<string, ShortcustType> = (() => {
   return map;
 })();
 
+/**
+ * 非包裹元素
+ */
 export const NON_WRAPPING_ELEMENTS: ElementType[] = [
   BlockElementType.HEADING_1,
   BlockElementType.HEADING_2,
@@ -79,9 +82,10 @@ export const NON_WRAPPING_ELEMENTS: ElementType[] = [
   BlockElementType.HEADING_6,
 ];
 
+/**
+ * 非空元素
+ */
 export const NON_EMPTY_ELEMENTS: ElementType[] = [
-  BlockElementType.OL_LIST,
-  BlockElementType.UL_LIST,
   BlockElementType.LIST_ITEM,
   BlockElementType.BLOCK_QUOTE,
 ];

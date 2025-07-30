@@ -3,7 +3,6 @@ import { RichEditor } from 'types/slate';
 import { editorUtils } from './editorUtils';
 import {
   BlockElementType,
-  NON_EMPTY_ELEMENTS,
   NON_WRAPPING_ELEMENTS,
   SHORTCUTS_MAP,
 } from '@/lib/constants';
@@ -14,53 +13,53 @@ export const withShortcuts = (editor: RichEditor) => {
   editor.insertBreak = () => {
     console.log('[ insertBreak ]');
 
-    // 获取上一行的节点
+    // 获取当前节点（未产生 break 时）
     const block = Editor.above(editor, {
       match: n => Element.isElement(n) && Editor.isBlock(editor, n),
     });
 
     if (!block) return;
 
-    // 获取上一行的节点的父节点
+    // 获取当前的节点的父节点
     const parent = Editor.parent(editor, block[1]);
+    // 获取当前节点的类型
+    const elementType = block[0].type;
+    // 获取当前节点的文本
+    const text = Editor.string(editor, block[1]);
 
-    const prevElementType = block[0].type;
-
-    const prevText = Editor.string(editor, block[1]);
-
-    if (
-      [BlockElementType.OL_LIST, BlockElementType.UL_LIST].includes(
-        parent[0].type as BlockElementType
-      ) &&
-      block[0].type === BlockElementType.PARAGRAPH
-    ) {
-      Transforms.unwrapNodes(editor, {
-        match: n =>
-          !Editor.isEditor(n) &&
-          Element.isElement(n) &&
-          n.type === parent[0].type,
-        split: true,
+    // 如果当前节点的类型是 list-item，且无内容，则拆分
+    if (elementType === BlockElementType.LIST_ITEM && text === '') {
+      console.log('[ 拆分 ]', parent, block);
+      Editor.withoutNormalizing(editor, () => {
+        Transforms.splitNodes(editor, {
+          at: block[1],
+          mode: 'highest',
+        });
+        Transforms.unwrapNodes(editor, {
+          mode: 'highest',
+        });
+        Transforms.setNodes(
+          editor,
+          {
+            type: BlockElementType.PARAGRAPH,
+          },
+          {
+            mode: 'highest',
+          }
+        );
       });
       return;
     }
 
-    if (NON_WRAPPING_ELEMENTS.includes(prevElementType)) {
+    // 如果当前节点的类型是非包裹元素，则插入段落
+    if (NON_WRAPPING_ELEMENTS.includes(elementType)) {
       editorUtils.insertBlockNode(editor, BlockElementType.PARAGRAPH);
       return;
     }
 
-    if (NON_EMPTY_ELEMENTS.includes(prevElementType)) {
-      if (prevText === '') {
-        Transforms.setNodes(editor, {
-          type: BlockElementType.PARAGRAPH,
-        });
-        return;
-      }
-    }
-
     // 代码块
     if (
-      prevText.endsWith('```') &&
+      text.endsWith('```') &&
       !editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK)
     ) {
       Transforms.removeNodes(editor, {

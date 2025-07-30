@@ -32,6 +32,7 @@ import {
   withVoids,
   withNormalizeCodeBlock,
   withNormalizeTipBlock,
+  withList,
 } from '@/ui/RichEditor/utils';
 import Button from '@/ui/Button';
 import { withColumn } from '@/ui/RichEditor/components/Element/elements/LayoutBlock/lib';
@@ -68,6 +69,8 @@ export default function WriteNote(props: NoteDetailPageProps) {
       withNormalizeCodeBlock,
       withNormalizeTipBlock,
       withColumn,
+      withList,
+      // withNoneEmptyElement,
     ];
     return enhancers.reduce(
       (editor, enhancer) => enhancer(editor),

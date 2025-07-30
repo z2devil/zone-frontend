@@ -1,4 +1,8 @@
+'use client';
+
 import RootHeader from '@/ui/RootHeader';
+import { usePathname } from 'next/navigation';
+import { useMemo } from 'react';
 
 interface ContentLayoutProps {
   modal: React.ReactNode;
@@ -8,10 +12,16 @@ interface ContentLayoutProps {
 const RootRoutesLayout = (props: ContentLayoutProps) => {
   const { modal, children } = props;
 
+  const pathname = usePathname();
+
+  const showModal = useMemo(() => {
+    return pathname.startsWith('/note/') || pathname.startsWith('/write/');
+  }, [pathname]);
+
   return (
     <>
       <RootHeader />
-      {modal}
+      {showModal && modal}
       {children}
     </>
   );
