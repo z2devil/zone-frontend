@@ -4,7 +4,7 @@ import {
   useReadOnly,
   useSlate,
 } from 'slate-react';
-import CodeBlock from './elements/CodeBlock';
+import CodeBlock from './elements/CodeBlock/element';
 import InlineChromiumBugfix from './elements/InlineChromiumBugfix';
 import {
   CodeBlockElement,

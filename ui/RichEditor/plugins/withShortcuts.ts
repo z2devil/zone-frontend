@@ -164,7 +164,7 @@ export const withShortcuts = (editor: RichEditor) => {
     const match = Editor.above(editor, {
       match: n => Element.isElement(n) && Editor.isBlock(editor, n),
     });
-    if (!match) {
+    if (!match || !Editor.isStart(editor, selection.anchor, match[1])) {
       return deleteBackward(unit);
     }
 
@@ -188,9 +188,10 @@ export const withShortcuts = (editor: RichEditor) => {
       if (Path.hasPrevious(path)) {
         deleteBackward(unit);
       } else if (Node.getIf(editor, Path.next(path))) {
-        // feat: 上一行无内容，下一行有内容时，删除当前行
-        Transforms.delete(editor, {
-          unit,
+        // 上一行无内容，下一行有内容时，删除当前行
+        Transforms.removeNodes(editor, {
+          at: path,
+          hanging: true,
           voids: true,
         });
       }

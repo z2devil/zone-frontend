@@ -36,6 +36,7 @@ import {
 } from '@/ui/RichEditor/plugins';
 import Button from '@/ui/Button';
 import { withColumn } from '@/ui/RichEditor/components/Element/elements/LayoutBlock/lib';
+import { autoImportPlugins } from '@/ui/RichEditor/utils';
 
 interface NoteDetailPageProps {
   params: { id: string };
@@ -59,6 +60,9 @@ export default function WriteNote(props: NoteDetailPageProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const editor = useMemo(() => {
+    // 自动导入
+    const elementPlugins = autoImportPlugins();
+    console.log('[ elementPlugins ]', elementPlugins);
     const enhancers = [
       withReact,
       withHistory,
