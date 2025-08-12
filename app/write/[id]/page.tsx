@@ -33,7 +33,7 @@ import {
   withNormalizeCodeBlock,
   withNormalizeTipBlock,
   withList,
-} from '@/ui/RichEditor/utils';
+} from '@/ui/RichEditor/plugins';
 import Button from '@/ui/Button';
 import { withColumn } from '@/ui/RichEditor/components/Element/elements/LayoutBlock/lib';
 

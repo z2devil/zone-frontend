@@ -1,6 +1,6 @@
 import { Editor, Element, Point, Range, Transforms } from 'slate';
 import { RichEditor } from 'types/slate';
-import { editorUtils } from './editorUtils';
+import { editorUtils } from '../utils/editorUtils';
 import {
   BlockElementType,
   NON_WRAPPING_ELEMENTS,
@@ -153,6 +153,7 @@ export const withShortcuts = (editor: RichEditor) => {
       const match = Editor.above(editor, {
         match: n => Element.isElement(n) && Editor.isBlock(editor, n),
       });
+      console.log('[ match ]', match);
 
       if (match) {
         const [block, path] = match;

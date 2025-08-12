@@ -1,9 +1,9 @@
 import { RichEditor } from 'types/slate';
-import { unified } from 'unified';
-import { Node } from 'slate';
-import remarkParse from 'remark-parse';
-import slateParse from './slateParse';
-import deserializeHTML from './deserializeHTML';
+// import { unified } from 'unified';
+// import { Node } from 'slate';
+// import remarkParse from 'remark-parse';
+// import slateParse from './slateParse';
+// import deserializeHTML from './deserializeHTML';
 
 export const withPasteMarkdown = (editor: RichEditor) => {
   // const { insertData } = editor;

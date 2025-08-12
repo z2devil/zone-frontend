@@ -10,10 +10,7 @@ import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import Leaf from '@/ui/RichEditor/components/Leaf';
 import Element from './components/Element';
-import useKeyDown from './hooks/useKeyDown';
-import useCopy from './hooks/useCopy';
-import useCut from './hooks/useCut';
-import useDecorate from './hooks/useDecorate';
+import { useDecorate, useKeyDown, useCopy, useCut } from './hooks';
 
 interface EditorProps {
   className?: string;

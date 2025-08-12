@@ -28,7 +28,7 @@ import {
   withNormalizeCodeBlock,
   withNormalizeTipBlock,
   withList,
-} from '@/ui/RichEditor/utils';
+} from '@/ui/RichEditor/plugins';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import {
   disableScrollbar,

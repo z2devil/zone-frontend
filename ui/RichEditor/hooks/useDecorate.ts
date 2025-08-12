@@ -1,11 +1,11 @@
-import Prism from 'prismjs';
+import { tokenize, languages } from 'prismjs';
 import { useCallback } from 'react';
 import { BaseRange, Editor, Element, Node, NodeEntry } from 'slate';
 import { CodeBlockElement } from 'types/slate';
 import { normalizeTokens } from '../utils/normalizeTokens';
 import { BlockElementType } from '@/lib/constants';
 
-const useDecorate = (editor: Editor) => {
+export const useDecorate = (editor: Editor) => {
   const blockEntries: NodeEntry<CodeBlockElement>[] = Array.from(
     Editor.nodes(editor, {
       at: [],
@@ -36,8 +36,6 @@ const useDecorate = (editor: Editor) => {
   );
 };
 
-export default useDecorate;
-
 const mergeMaps = <K, V>(...maps: Map<K, V>[]) => {
   const map = new Map<K, V>();
 
@@ -63,7 +61,7 @@ const getChildNodeToDecorations = ([
 
   const text = block.children.map(line => Node.string(line)).join('\n');
   const language = block.language || 'plaintext';
-  const tokens = Prism.tokenize(text, Prism.languages[language]);
+  const tokens = tokenize(text, languages[language]);
   const normalizedTokens = normalizeTokens(tokens);
   const blockChildren = block.children as Element[];
 

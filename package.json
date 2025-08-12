@@ -8,7 +8,8 @@
     "build": "next build",
     "build-debug": "next build --debug",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "clean": "rm -rf .next node_modules"
   },
   "dependencies": {
     "@changesets/cli": "^2.26.1",
@@ -82,10 +83,11 @@
     "remark-parse": "^11.0.0",
     "sanitize-html": "^2.11.0",
     "sass": "^1.81.0",
-    "slate": "^0.112.0",
-    "slate-history": "^0.110.3",
+    "slate": "^0.118.0",
+    "slate-dom": "^0.117.4",
+    "slate-history": "^0.113.1",
     "slate-hyperscript": "^0.100.0",
-    "slate-react": "^0.112.0",
+    "slate-react": "^0.117.4",
     "swr": "^2.2.4",
     "tailwind-merge": "^2.5.4",
     "tailwindcss": "3.4.15",
@@ -94,7 +96,6 @@
     "unified": "^11.0.4",
     "z2-cz-customizable": "0.0.0-development",
     "zod": "^3.24.1",
-    "zone-frontend": "link:",
     "zustand": "^4.4.6"
   },
   "config": {

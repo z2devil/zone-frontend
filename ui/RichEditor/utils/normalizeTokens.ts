@@ -3,7 +3,8 @@
  * https://github.com/FormidableLabs/prism-react-renderer/blob/master/src/utils/normalizeTokens.js
  * */
 
-import Prism from 'prismjs';
+import { Token as PrismToken } from 'prismjs';
+import 'prismjs';
 import 'prismjs/components/prism-javascript';
 import 'prismjs/components/prism-jsx';
 import 'prismjs/components/prism-typescript';
@@ -30,7 +31,6 @@ import 'prismjs/components/prism-toml';
 import 'prismjs/components/prism-less';
 import 'prismjs/components/prism-scss';
 
-type PrismToken = Prism.Token;
 type Token = {
   types: string[];
   content: string;

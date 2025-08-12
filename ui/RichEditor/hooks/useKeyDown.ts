@@ -22,7 +22,7 @@ const ACTIONS: Record<string, (editor: RichEditor) => void> = {
   },
 };
 
-const useKeyDown = (editor: RichEditor, readOnly = false) => {
+export const useKeyDown = (editor: RichEditor, readOnly = false) => {
   // 用于记录上一次按下的键盘按键是否是内联元素
   const isInlneAbove = useRef(false);
 
@@ -255,5 +255,3 @@ const handleSingleKey = (
     }
   }
 };
-
-export default useKeyDown;
