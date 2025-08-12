@@ -91,6 +91,9 @@ const handleShiftEnter = (editor: RichEditor, e: KeyboardEvent) => {
   }
 };
 
+/**
+ * 处理单个键盘按键
+ */
 const handleSingleKey = (
   editor: Editor,
   e: KeyboardEvent,

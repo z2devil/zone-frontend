@@ -1,4 +1,13 @@
-import { Editor, Element, Point, Range, Transforms } from 'slate';
+import {
+  Editor,
+  Element,
+  Node,
+  Path,
+  Point,
+  Range,
+  TextUnit,
+  Transforms,
+} from 'slate';
 import { RichEditor } from 'types/slate';
 import { editorUtils } from '../utils/editorUtils';
 import {
@@ -146,45 +155,45 @@ export const withShortcuts = (editor: RichEditor) => {
     insertText(text);
   };
 
-  editor.deleteBackward = (...args) => {
+  editor.deleteBackward = unit => {
     const { selection } = editor;
+    if (!selection || !Range.isCollapsed(selection)) {
+      return deleteBackward(unit);
+    }
 
-    if (selection && Range.isCollapsed(selection)) {
-      const match = Editor.above(editor, {
-        match: n => Element.isElement(n) && Editor.isBlock(editor, n),
-      });
-      console.log('[ match ]', match);
+    const match = Editor.above(editor, {
+      match: n => Element.isElement(n) && Editor.isBlock(editor, n),
+    });
+    if (!match) {
+      return deleteBackward(unit);
+    }
 
-      if (match) {
-        const [block, path] = match;
-        const start = Editor.start(editor, path);
+    const [block, path] = match;
+    if (block.type !== BlockElementType.PARAGRAPH) {
+      const newProperties: Partial<Element> = {
+        type: BlockElementType.PARAGRAPH,
+      };
+      Transforms.setNodes(editor, newProperties);
 
-        if (
-          !Editor.isEditor(block) &&
-          Element.isElement(block) &&
-          block.type !== BlockElementType.PARAGRAPH &&
-          Point.equals(selection.anchor, start)
-        ) {
-          const newProperties: Partial<Element> = {
-            type: BlockElementType.PARAGRAPH,
-          };
-          Transforms.setNodes(editor, newProperties);
-
-          if (block.type === BlockElementType.UL_LIST) {
-            Transforms.unwrapNodes(editor, {
-              match: n =>
-                !Editor.isEditor(n) &&
-                Element.isElement(n) &&
-                n.type === BlockElementType.UL_LIST,
-              split: true,
-            });
-          }
-
-          return;
-        }
+      if (block.type === BlockElementType.UL_LIST) {
+        Transforms.unwrapNodes(editor, {
+          match: n =>
+            !Editor.isEditor(n) &&
+            Element.isElement(n) &&
+            n.type === BlockElementType.UL_LIST,
+          split: true,
+        });
       }
-
-      deleteBackward(...args);
+    } else {
+      if (Path.hasPrevious(path)) {
+        deleteBackward(unit);
+      } else if (Node.getIf(editor, Path.next(path))) {
+        // feat: 上一行无内容，下一行有内容时，删除当前行
+        Transforms.delete(editor, {
+          unit,
+          voids: true,
+        });
+      }
     }
   };
 
