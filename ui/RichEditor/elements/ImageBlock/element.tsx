@@ -4,13 +4,13 @@ import ImageEdit from './components/Edit';
 import ImagePreview from './components/Preview';
 import { useMemo, useRef } from 'react';
 
-interface CodeBlockProps {
+interface ImageBlockProps {
   attributes: any;
   children: any;
   element: ImageBlockElement;
 }
 
-const ImageBlock = ({ attributes, children, element }: CodeBlockProps) => {
+const ImageBlock = ({ attributes, children, element }: ImageBlockProps) => {
   const readOnly = useReadOnly();
 
   const ref = useRef<HTMLDivElement>(null);

@@ -9,20 +9,21 @@ type ElementPluginResults = { [key: string]: ElementPlugin };
  */
 export function autoImportPlugins(): ElementPluginResults {
   const context = require.context(
-    '@/ui/RichEditor/components/Element/elements',
+    '@/ui/RichEditor/elements',
     true,
-    /\/index\.ts$/
+    /^\.\/[^/]+\/index\.ts$/
   );
 
   const keys = context.keys();
   const result: ElementPluginResults = {};
 
   keys.forEach((key: string) => {
-    // 从路径中提取目录名作为 key
     const dirName = key.split('/')[1];
     const mod = context(key);
     result[dirName] = mod.default || mod;
   });
+
+  console.log('[ auto import plugins ]', result);
 
   return result;
 }

@@ -1,8 +1,8 @@
 import { useCallback, useMemo, useRef } from 'react';
-import { LayoutBlockElement } from 'types/slate';
 import style from './style.module.scss';
 import { useOverride } from '../OverrideProvider';
 import { Transforms } from 'slate';
+import { LayoutBlockElement } from 'types/slate';
 import { ReactEditor, useSlate } from 'slate-react';
 import { BlockElementType } from '@/lib/constants';
 

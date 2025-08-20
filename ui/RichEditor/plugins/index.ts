@@ -5,3 +5,4 @@ export * from './withList';
 export * from './withInlines';
 export * from './withVoids';
 export * from './withShortcuts';
+export * from './withPluginSetup';

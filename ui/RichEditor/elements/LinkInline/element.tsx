@@ -2,6 +2,7 @@ import { useReadOnly, useSelected } from 'slate-react';
 import { LinkInlineElement } from 'types/slate';
 import LinkEdit from './components/Edit';
 import LinkPreview from './components/Preview';
+import InlineChromiumBugfix from '../../components/Element/components/InlineChromiumBugfix';
 
 interface LinkInlineProps {
   attributes: any;
@@ -18,10 +19,16 @@ const LinkInline = ({ attributes, children, element }: LinkInlineProps) => {
     <span {...attributes} className='relative'>
       {!readOnly ? (
         <LinkEdit element={element} selected={selected}>
+          <InlineChromiumBugfix />
           {children}
+          <InlineChromiumBugfix />
         </LinkEdit>
       ) : (
-        <LinkPreview element={element}>{children}</LinkPreview>
+        <LinkPreview element={element}>
+          <InlineChromiumBugfix />
+          {children}
+          <InlineChromiumBugfix />
+        </LinkPreview>
       )}
     </span>
   );

@@ -22,13 +22,12 @@ const RichEditor = (props: EditorProps) => {
 
   const editor = useSlate();
 
-  const isSummary = useMemo(() => {
-    return editor.isSummary;
-  }, [editor.isSummary]);
+  const isSummary = useMemo(() => editor.isSummary, [editor.isSummary]);
 
-  const renderLeaf = useCallback((props: RenderLeafProps) => {
-    return <Leaf {...props} />;
-  }, []);
+  const renderLeaf = useCallback(
+    (props: RenderLeafProps) => <Leaf {...props} />,
+    []
+  );
 
   const renderElement = useCallback(
     (props: RenderElementProps) => <Element {...props} />,

@@ -33,9 +33,10 @@ import {
   withNormalizeCodeBlock,
   withNormalizeTipBlock,
   withList,
+  withPluginSetup,
 } from '@/ui/RichEditor/plugins';
 import Button from '@/ui/Button';
-import { withColumn } from '@/ui/RichEditor/components/Element/elements/LayoutBlock/lib';
+import { withColumn } from '@/ui/RichEditor/elements/LayoutBlock/lib';
 import { autoImportPlugins } from '@/ui/RichEditor/utils';
 
 interface NoteDetailPageProps {
@@ -66,6 +67,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
     const enhancers = [
       withReact,
       withHistory,
+      withPluginSetup,
       withInlines,
       withVoids,
       withShortcuts,

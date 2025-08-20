@@ -35,7 +35,8 @@ import {
   enableScrollbar,
   isDisabledScrollbar,
 } from '@/lib/utils/scrollbarTrigger';
-import { withColumn } from '@/ui/RichEditor/components/Element/elements/LayoutBlock/lib';
+import { withColumn } from '@/ui/RichEditor/elements/LayoutBlock/lib';
+import { withPluginSetup } from '@/ui/RichEditor/plugins';
 
 interface NoteDetailPageProps {
   params: { id: string };
@@ -48,6 +49,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
     const enhancers = [
       withReact,
       withHistory,
+      withPluginSetup,
       withInlines,
       withVoids,
       withShortcuts,

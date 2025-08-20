@@ -5,13 +5,13 @@ import style from './style.module.scss';
 import { OverrideProvider } from './components/OverrideProvider';
 import { useMemo, useRef } from 'react';
 
-interface MusicBlockProps {
+interface LayoutBlockProps {
   attributes: any;
   children: any;
   element: LayoutBlockElement;
 }
 
-const LayoutBlock = ({ attributes, children, element }: MusicBlockProps) => {
+const LayoutBlock = ({ attributes, children, element }: LayoutBlockProps) => {
   const readOnly = useReadOnly();
 
   const containerRef = useRef<HTMLDivElement>(null);

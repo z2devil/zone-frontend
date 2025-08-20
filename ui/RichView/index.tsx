@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { isEqual } from 'lodash';
 import { BlockElementType } from '@/lib/constants';
 import RichEditor from '../RichEditor';
-import { autoImport } from '../RichEditor/utils';
+import { autoImport, autoImportPlugins } from '../RichEditor/utils';
 
 interface EditorProps {
   className?: string;
@@ -30,19 +30,12 @@ const RichView = (props: EditorProps) => {
   } = props;
 
   const editor = useMemo(() => {
+    const elementPlugins = autoImportPlugins();
     const enhancers = [withReact];
     const res = enhancers.reduce((e, enhancer) => enhancer(e), createEditor());
     if (isSummary) {
       res.isSummary = true;
     }
-    const modulesContext = require.context(
-      '@/features/', // 目录路径
-      true, // 递归子目录
-      /\/index\.ts$/ // 匹配 index.ts 文件
-    );
-    // 自动导入
-    const features = autoImport<any>(modulesContext);
-    console.log(features);
     return res;
   }, [isSummary]);
 
