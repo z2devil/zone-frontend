@@ -22,21 +22,15 @@ import { useNotesStore } from '@/lib/stores/notes';
 import { createEditor, Descendant, Element, Node, Transforms } from 'slate';
 import { Slate as SlateProvider, withReact } from 'slate-react';
 import { useMount } from 'react-use';
-import { getContentSummary } from '@/lib/utils/editor';
 import { BlockElementType } from '@/lib/constants';
 import { withHistory } from 'slate-history';
 import {
-  withInlines,
   withPasteMarkdown,
   withShortcuts,
-  withVoids,
-  withNormalizeCodeBlock,
-  withNormalizeTipBlock,
   withList,
   withPluginSetup,
 } from '@/ui/RichEditor/plugins';
 import Button from '@/ui/Button';
-import { withColumn } from '@/ui/RichEditor/elements/LayoutBlock/lib';
 import { autoImportPlugins } from '@/ui/RichEditor/utils';
 
 interface NoteDetailPageProps {
@@ -68,15 +62,9 @@ export default function WriteNote(props: NoteDetailPageProps) {
       withReact,
       withHistory,
       withPluginSetup,
-      withInlines,
-      withVoids,
       withShortcuts,
       withPasteMarkdown,
-      withNormalizeCodeBlock,
-      withNormalizeTipBlock,
-      withColumn,
       withList,
-      // withNoneEmptyElement,
     ];
     return enhancers.reduce(
       (editor, enhancer) => enhancer(editor),

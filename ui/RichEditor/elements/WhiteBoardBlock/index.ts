@@ -5,6 +5,7 @@ import WhiteBoardBlockElement from './element';
 const whiteBoardBlockPlugin = createElementPlugin({
   type: BlockElementType.WHITE_BOARD,
   element: WhiteBoardBlockElement,
+  isBlock: true,
 });
 
 export default whiteBoardBlockPlugin;

@@ -5,6 +5,7 @@ import MusicBlockElement from './element';
 const musicBlockPlugin = createElementPlugin({
   type: BlockElementType.MUSIC,
   element: MusicBlockElement,
+  isBlock: true,
 });
 
 export default musicBlockPlugin;

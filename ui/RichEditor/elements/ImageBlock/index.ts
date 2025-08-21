@@ -5,6 +5,7 @@ import ImageBlockElement from './element';
 const imageBlockPlugin = createElementPlugin({
   type: BlockElementType.IMAGE,
   element: ImageBlockElement,
+  isBlock: true,
 });
 
 export default imageBlockPlugin;

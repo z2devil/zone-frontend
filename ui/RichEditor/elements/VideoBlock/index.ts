@@ -5,6 +5,7 @@ import VideoBlockElement from './element';
 const videoBlockPlugin = createElementPlugin({
   type: BlockElementType.VIDEO,
   element: VideoBlockElement,
+  isBlock: true,
 });
 
 export default videoBlockPlugin;
