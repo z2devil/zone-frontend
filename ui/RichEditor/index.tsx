@@ -10,10 +10,7 @@ import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import Leaf from '@/ui/RichEditor/components/Leaf';
 import Element from './components/Element';
-import useKeyDown from './hooks/useKeyDown';
-import useCopy from './hooks/useCopy';
-import useCut from './hooks/useCut';
-import useDecorate from './hooks/useDecorate';
+import { useDecorate, useKeyDown, useCopy, useCut } from './hooks';
 
 interface EditorProps {
   className?: string;
@@ -25,13 +22,12 @@ const RichEditor = (props: EditorProps) => {
 
   const editor = useSlate();
 
-  const isSummary = useMemo(() => {
-    return editor.isSummary;
-  }, [editor.isSummary]);
+  const isSummary = useMemo(() => editor.isSummary, [editor.isSummary]);
 
-  const renderLeaf = useCallback((props: RenderLeafProps) => {
-    return <Leaf {...props} />;
-  }, []);
+  const renderLeaf = useCallback(
+    (props: RenderLeafProps) => <Leaf {...props} />,
+    []
+  );
 
   const renderElement = useCallback(
     (props: RenderElementProps) => <Element {...props} />,

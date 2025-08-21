@@ -1,6 +1,6 @@
 import { RefObject, useCallback, useEffect } from 'react';
 
-const useCopyIntercept = (editorRef: RefObject<HTMLDivElement>) => {
+export const useCopyIntercept = (editorRef: RefObject<HTMLDivElement>) => {
   const handleCopy = useCallback((e: ClipboardEvent) => {
     e.preventDefault();
 
@@ -28,5 +28,3 @@ const useCopyIntercept = (editorRef: RefObject<HTMLDivElement>) => {
     };
   }, [editorRef, handleCopy]);
 };
-
-export default useCopyIntercept;

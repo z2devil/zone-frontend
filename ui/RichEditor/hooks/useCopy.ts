@@ -3,7 +3,7 @@ import { Editor, Element } from 'slate';
 import { useSelected } from 'slate-react';
 import { RichEditor } from 'types/slate';
 
-const useCopy = (editor: RichEditor, readOnly = false) => {
+export const useCopy = (editor: RichEditor, readOnly = false) => {
   const { selection } = editor;
 
   const selected = useSelected();
@@ -26,5 +26,3 @@ const useCopy = (editor: RichEditor, readOnly = false) => {
 
   return handleCopy;
 };
-
-export default useCopy;

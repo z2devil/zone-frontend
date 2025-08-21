@@ -10,6 +10,7 @@ export enum MarkType {
 export enum InlineElementType {
   CODE_SPAN = 'code-span',
   LINK = 'link',
+  INLINE_CHROMIUM_BUGFIX = 'inline-chromium-bugfix',
 }
 
 export enum BlockElementType {

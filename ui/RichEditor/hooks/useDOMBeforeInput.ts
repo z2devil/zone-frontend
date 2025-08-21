@@ -4,7 +4,7 @@ import { RichEditor } from 'types/slate';
 import { useCallback } from 'react';
 import { SHORTCUTS } from '@/lib/constants';
 
-const useDOMBeforeInput = (editor: RichEditor) => {
+export const useDOMBeforeInput = (editor: RichEditor) => {
   const handleDOMBeforeInput = useCallback(
     (e: InputEvent) => {
       queueMicrotask(() => {
@@ -44,5 +44,3 @@ const useDOMBeforeInput = (editor: RichEditor) => {
 
   return handleDOMBeforeInput;
 };
-
-export default useDOMBeforeInput;

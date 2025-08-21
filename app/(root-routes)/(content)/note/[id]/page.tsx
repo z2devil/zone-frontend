@@ -26,6 +26,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createEditor } from 'slate';
 import { withReact, Slate as SlateProvider } from 'slate-react';
 import { NoteDetail } from '@/ui/NoteDetail';
+import { withPluginSetup } from '@/ui/RichEditor/plugins';
 
 interface NoteDetailPageProps {
   params: { id: string };
@@ -193,7 +194,11 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
   );
 
   const editor = useMemo(() => {
-    return withReact(createEditor());
+    const enhancers = [withReact, withPluginSetup];
+    return enhancers.reduce(
+      (editor, enhancer) => enhancer(editor),
+      createEditor()
+    );
   }, []);
 
   if (!note) return null;

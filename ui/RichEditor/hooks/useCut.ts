@@ -3,7 +3,7 @@ import { Editor, Element } from 'slate';
 import { useSelected } from 'slate-react';
 import { RichEditor } from 'types/slate';
 
-const useCut = (editor: RichEditor, readOnly = false) => {
+export const useCut = (editor: RichEditor, readOnly = false) => {
   const { selection } = editor;
 
   const selected = useSelected();
@@ -26,5 +26,3 @@ const useCut = (editor: RichEditor, readOnly = false) => {
 
   return handleCut;
 };
-
-export default useCut;

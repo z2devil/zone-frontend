@@ -7,9 +7,13 @@ import useRequest from '@/lib/hooks/useRequest';
 import { useContextMenuUtilsStore } from '@/lib/stores';
 import dayjs from 'dayjs';
 import { notFound, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import SiteRecord from '@/ui/SiteRecord/SiteRecord';
-import RichView from '@/ui/RichView';
+import { withReact } from 'slate-react';
+import { createEditor } from 'slate';
+import { Slate as SlateProvider } from 'slate-react';
+import RichEditor from '@/ui/RichEditor';
+import { withPluginSetup } from '@/ui/RichEditor/plugins';
 
 const ABOUT_ID = '65ebc4f8f3cdb3499f7c32bb';
 
@@ -29,6 +33,14 @@ const About = () => {
   const isAdmin = usePermission([UserRole.ADMIN, UserRole.MANAGER]);
 
   const [note, setNote] = useState<NoteInfo | null>(null);
+
+  const editor = useMemo(() => {
+    const enhancers = [withReact, withPluginSetup];
+    return enhancers.reduce(
+      (editor, enhancer) => enhancer(editor),
+      createEditor()
+    );
+  }, []);
 
   /************************************************
    * ✨ 初始化
@@ -108,7 +120,11 @@ const About = () => {
             ) : null}
             {/* 内容 */}
             <div className='relative flex flex-1 flex-col overflow-hidden'>
-              <RichView value={JSON.parse(note.content)} />
+              <SlateProvider
+                editor={editor}
+                initialValue={JSON.parse(note.content)}>
+                <RichEditor readonly />
+              </SlateProvider>
             </div>
             {/* 底部 */}
             <div className='flex items-center justify-between gap-1'>
