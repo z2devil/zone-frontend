@@ -2,7 +2,6 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { Identifier, XYCoord } from 'dnd-core';
 import clsx from 'clsx';
-import { CustomElement } from 'types/slate';
 import { Transforms } from 'slate';
 import { useSlate } from 'slate-react';
 import { useEditorStore } from '@/lib/stores';
@@ -11,7 +10,6 @@ import { DropType } from '@/lib/constants';
 interface BlockElementControllerProps {
   id: string;
   children: any;
-  element: CustomElement;
 }
 
 interface DragItem {
@@ -27,6 +25,8 @@ const enum ItemTypes {
 const BlockElementController = (props: BlockElementControllerProps) => {
   const { id, children } = props;
 
+  const ref = useRef<HTMLDivElement>(null);
+
   const [hovered, setHovered] = useState(false);
 
   const hover = useCallback(() => {
@@ -36,8 +36,6 @@ const BlockElementController = (props: BlockElementControllerProps) => {
   const unhover = useCallback(() => {
     setHovered(false);
   }, []);
-
-  const ref = useRef<HTMLDivElement>(null);
 
   const editorStore = useEditorStore();
 

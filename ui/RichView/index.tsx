@@ -5,7 +5,6 @@ import clsx from 'clsx';
 import { isEqual } from 'lodash';
 import { BlockElementType } from '@/lib/constants';
 import RichEditor from '../RichEditor';
-import { autoImport, autoImportPlugins } from '../RichEditor/utils';
 
 interface EditorProps {
   className?: string;
@@ -30,7 +29,6 @@ const RichView = (props: EditorProps) => {
   } = props;
 
   const editor = useMemo(() => {
-    const elementPlugins = autoImportPlugins();
     const enhancers = [withReact];
     const res = enhancers.reduce((e, enhancer) => enhancer(e), createEditor());
     if (isSummary) {

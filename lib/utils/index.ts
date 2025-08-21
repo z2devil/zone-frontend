@@ -7,5 +7,3 @@ export * from './px2number';
 export * from './rem2px';
 export * from './rgbDataURL';
 export * from './scrollbarTrigger';
-export * from './withRef';
-export * from './withHOC';
