@@ -1,6 +1,5 @@
 import { CodeSpanElement } from 'types/slate';
 import InlineChromiumBugfix from '../../components/Element/components/InlineChromiumBugfix';
-import './style.css';
 
 interface CodeSpanProps {
   attributes: any;

@@ -88,39 +88,38 @@ const CodeBlock = ({ attributes, children, element }: CodeBlockProps) => {
   );
 
   return (
-    <div className='relative mb-2' {...attributes}>
+    <div
+      {...attributes}
+      className={clsx(
+        'relative my-2 flex flex-col overflow-hidden rounded-md bg-black-50 text-black-600 ring-1 ring-inset',
+        !readOnly && selected ? 'ring-primary' : 'ring-transparent'
+      )}>
       <div
-        className={clsx(
-          'flex flex-col overflow-hidden rounded-md bg-black-50 text-black-600 ring-1 ring-inset',
-          !readOnly && selected ? 'ring-primary' : 'ring-transparent'
-        )}>
-        <div
-          className='relative flex select-none items-center justify-between rounded-sm border-b border-black-50 px-4 py-1'
-          contentEditable={false}
-          ref={toolbarRef}>
-          <div>
-            {isLanguageEditing ? (
-              <select
-                autoFocus
-                className='bg-transparent text-black-600'
-                value={language}
-                onBlur={() => handleLanguageEdit(false)}
-                onChange={handleLanguageChange}>
-                {SUPPORTED_LANGUAGES.map(language => (
-                  <option key={language} value={language}>
-                    {language}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <span onClick={() => handleLanguageEdit(true)}>{language}</span>
-            )}
-          </div>
+        className='relative flex select-none items-center justify-between rounded-sm border-b border-black-50 px-4 py-2'
+        contentEditable={false}
+        ref={toolbarRef}>
+        <div>
+          {isLanguageEditing ? (
+            <select
+              autoFocus
+              className='bg-transparent text-black-600'
+              value={language}
+              onBlur={() => handleLanguageEdit(false)}
+              onChange={handleLanguageChange}>
+              {SUPPORTED_LANGUAGES.map(language => (
+                <option key={language} value={language}>
+                  {language}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <span onClick={() => handleLanguageEdit(true)}>{language}</span>
+          )}
         </div>
-        <pre className='scrollbar overflow-x-auto px-4 py-2 font-mono text-13'>
-          <code>{children}</code>
-        </pre>
       </div>
+      <pre className='scrollbar overflow-x-auto p-4 font-mono'>
+        <code>{children}</code>
+      </pre>
     </div>
   );
 };

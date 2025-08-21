@@ -1,5 +1,4 @@
 import { ParagraphElement } from 'types/slate';
-import './style.css';
 
 interface ParagraphProps {
   attributes: any;

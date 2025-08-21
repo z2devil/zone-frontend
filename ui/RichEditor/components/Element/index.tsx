@@ -9,7 +9,7 @@ import BlockElementController from './components/BlockElementController';
 import { BlockElementType, EDITOR_TO_TYPE_TO_COMPONENT } from '@/lib/constants';
 
 const Element = (props: RenderElementProps) => {
-  const { attributes, element } = props;
+  const { attributes, element, children } = props;
 
   const editor = useSlate();
 
@@ -53,14 +53,17 @@ const Element = (props: RenderElementProps) => {
       if (!Component) return;
       result[key] = Component;
     });
-    console.log('[ result ]', result);
     return result;
   }, [typeToComponentMap]);
 
   const Tag = elementMap[element.type] || 'p';
 
   if (isInline || readOnly || path.length > 1) {
-    return <Tag {...props} id={key} />;
+    return (
+      <Tag {...attributes} element={element} id={key}>
+        {children}
+      </Tag>
+    );
   }
 
   return (

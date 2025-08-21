@@ -3,6 +3,7 @@ pre {
   padding: 1em;
   overflow: auto;
   caret-color: #000;
+  font-size: 85%;
 }
 
 code p {

@@ -21,13 +21,9 @@ import { DndProvider } from 'react-dnd';
 import { Slate as SlateProvider, withReact } from 'slate-react';
 import { withHistory } from 'slate-history';
 import {
-  withInlines,
+  withList,
   withPasteMarkdown,
   withShortcuts,
-  withVoids,
-  withNormalizeCodeBlock,
-  withNormalizeTipBlock,
-  withList,
 } from '@/ui/RichEditor/plugins';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import {
@@ -35,7 +31,6 @@ import {
   enableScrollbar,
   isDisabledScrollbar,
 } from '@/lib/utils/scrollbarTrigger';
-import { withColumn } from '@/ui/RichEditor/elements/LayoutBlock/lib';
 import { withPluginSetup } from '@/ui/RichEditor/plugins';
 
 interface NoteDetailPageProps {
@@ -50,13 +45,8 @@ export default function WriteNote(props: NoteDetailPageProps) {
       withReact,
       withHistory,
       withPluginSetup,
-      withInlines,
-      withVoids,
       withShortcuts,
       withPasteMarkdown,
-      withNormalizeCodeBlock,
-      withNormalizeTipBlock,
-      withColumn,
       withList,
     ];
     return enhancers.reduce(

@@ -1,6 +1,5 @@
 import { NoteInfo, deleteNoteAPI } from '@/lib/api/notes';
 import dayjs from '@/lib/utils/dayjs';
-import RichView from '../RichView';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NotificationType } from '../Notification/components/Notification';
 import usePermission from '@/lib/hooks/usePermission';
@@ -22,6 +21,10 @@ import imageLoader from 'config/image/loader';
 import { getRandomRgbDataURL } from '@/lib/utils/rgbDataURL';
 import { isEqual } from 'lodash';
 import { AnimatePresence, motion, MotionStyle } from 'motion/react';
+import { Slate as SlateProvider, withReact } from 'slate-react';
+import RichEditor from '../RichEditor';
+import { createEditor } from 'slate';
+import { withPluginSetup } from '../RichEditor/plugins';
 
 interface NoteCardProps {
   note: NoteInfo;
@@ -192,6 +195,16 @@ const NoteCard = (props: NoteCardProps) => {
     }
   }, [note._id, pathname]);
 
+  const editor = useMemo(() => {
+    const enhancers = [withReact, withPluginSetup];
+    const res = enhancers.reduce(
+      (editor, enhancer) => enhancer(editor),
+      createEditor()
+    );
+    res.isSummary = true;
+    return res;
+  }, []);
+
   return (
     <motion.div
       className={clsx(twMerge('relative', className))}
@@ -249,7 +262,11 @@ const NoteCard = (props: NoteCardProps) => {
                       'mb-1 max-h-[30rem] w-full',
                       isCollapsed && 'gradient-mask-b'
                     )}>
-                    <RichView isSummary value={JSON.parse(note.content)} />
+                    <SlateProvider
+                      editor={editor}
+                      initialValue={JSON.parse(note.content)}>
+                      <RichEditor readonly />
+                    </SlateProvider>
                   </div>
                 </div>
                 {/* 底部 */}

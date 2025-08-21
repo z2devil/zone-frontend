@@ -22,7 +22,7 @@ const ImageBlock = ({ attributes, children, element }: ImageBlockProps) => {
   }, [element.align]);
 
   return (
-    <div {...attributes} contentEditable={false}>
+    <div {...attributes} className='my-2' contentEditable={false}>
       <div className='flex' ref={ref} style={styles}>
         {readOnly ? (
           <ImagePreview element={element} />

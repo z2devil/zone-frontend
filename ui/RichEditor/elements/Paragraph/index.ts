@@ -3,7 +3,7 @@ import { createElementPlugin } from 'ui/RichEditor/utils/elementPlugin';
 import CodeBlockElement from './element';
 
 const codeBlockPlugin = createElementPlugin({
-  type: BlockElementType.CODE_BLOCK,
+  type: BlockElementType.PARAGRAPH,
   element: CodeBlockElement,
 });
 

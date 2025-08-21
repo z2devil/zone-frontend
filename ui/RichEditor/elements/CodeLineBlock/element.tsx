@@ -8,9 +8,9 @@ interface CodeLineBlockProps {
 
 const CodeLineBlock = ({ attributes, children }: CodeLineBlockProps) => {
   return (
-    <div className='relative' {...attributes}>
+    <p className='relative' {...attributes}>
       {children}
-    </div>
+    </p>
   );
 };
 
