@@ -9,7 +9,7 @@
     "build-debug": "next build --debug",
     "start": "next start",
     "lint": "next lint",
-    "clean": "rm -rf .next node_modules"
+    "clean": "rimraf .next node_modules"
   },
   "dependencies": {
     "@changesets/cli": "^2.26.1",
@@ -66,8 +66,8 @@
     "lodash-es": "^4.17.21",
     "lucide-react": "^0.469.0",
     "marked": "^9.1.0",
-    "motion": "^11.11.17",
-    "next": "14.1.1",
+    "motion": "^12.23.12",
+    "next": "14.2.32",
     "openai": "^4.73.0",
     "postcss": "8.4.49",
     "prettier": "^3.3.2",
