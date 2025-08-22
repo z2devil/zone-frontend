@@ -23,7 +23,5 @@ export function autoImportPlugins(): ElementPluginResults {
     result[dirName] = mod.default || mod;
   });
 
-  console.log('[ auto import plugins ]', result);
-
   return result;
 }

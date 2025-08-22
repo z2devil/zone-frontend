@@ -8,7 +8,7 @@ export interface ElementPlugin {
   /**
    * 元素类型
    */
-  type: string;
+  type: string | string[];
 
   /**
    * 元素

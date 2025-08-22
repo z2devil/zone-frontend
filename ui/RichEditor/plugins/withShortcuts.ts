@@ -125,7 +125,7 @@ export const withShortcuts = (editor: RichEditor) => {
             type,
             children: [],
           };
-          Transforms.setNodes<Element>(
+          Transforms.setNodes(
             editor,
             {
               type: BlockElementType.LIST_ITEM,
@@ -144,7 +144,7 @@ export const withShortcuts = (editor: RichEditor) => {
           type,
         };
 
-        Transforms.setNodes<Element>(editor, nextProperties, {
+        Transforms.setNodes(editor, nextProperties, {
           match: n => Element.isElement(n) && Editor.isBlock(editor, n),
         });
 

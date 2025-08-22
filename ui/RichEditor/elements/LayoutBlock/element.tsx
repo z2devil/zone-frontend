@@ -4,6 +4,7 @@ import LayoutEdit from './components/Edit';
 import style from './style.module.scss';
 import { OverrideProvider } from './components/OverrideProvider';
 import { useMemo, useRef } from 'react';
+import clsx from 'clsx';
 
 interface LayoutBlockProps {
   attributes: any;
@@ -21,7 +22,7 @@ const LayoutBlock = ({ attributes, children, element }: LayoutBlockProps) => {
   }, [element.children]);
 
   return (
-    <div {...attributes} className={style.layout}>
+    <div {...attributes} className={clsx(style.layout, 'my-2')}>
       <OverrideProvider containerRef={containerRef} widths={widths}>
         <div className={style.container}>{children}</div>
         <div className={style.edit} ref={containerRef}>

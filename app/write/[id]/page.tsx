@@ -55,9 +55,6 @@ export default function WriteNote(props: NoteDetailPageProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const editor = useMemo(() => {
-    // 自动导入
-    const elementPlugins = autoImportPlugins();
-    console.log('[ elementPlugins ]', elementPlugins);
     const enhancers = [
       withReact,
       withHistory,

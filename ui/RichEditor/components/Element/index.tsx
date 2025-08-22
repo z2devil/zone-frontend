@@ -6,16 +6,19 @@ import {
 } from 'slate-react';
 import { useMemo } from 'react';
 import BlockElementController from './components/BlockElementController';
-import { BlockElementType, EDITOR_TO_TYPE_TO_COMPONENT } from '@/lib/constants';
+import { EDITOR_TO_TYPE_TO_COMPONENT } from '@/lib/constants';
 
 const Element = (props: RenderElementProps) => {
-  const { attributes, element, children } = props;
+  const { attributes, element } = props;
 
   const editor = useSlate();
 
   const readOnly = useReadOnly();
 
-  const key = ReactEditor.findPath(editor, element).join('-');
+  const elementKey = useMemo(
+    () => ReactEditor.findPath(editor, element).join('-'),
+    [editor, element]
+  );
 
   const isInline = useMemo(
     () => !!attributes['data-slate-inline'],
@@ -27,50 +30,28 @@ const Element = (props: RenderElementProps) => {
     [editor, element]
   );
 
-  const typeToComponentMap = useMemo(
-    () => EDITOR_TO_TYPE_TO_COMPONENT.get(editor),
-    [editor]
-  );
-
   // 所有元素
   const elementMap = useMemo(() => {
-    const result: Record<string, any> = {
-      [BlockElementType.HEADING_1]: 'h1',
-      [BlockElementType.HEADING_2]: 'h2',
-      [BlockElementType.HEADING_3]: 'h3',
-      [BlockElementType.HEADING_4]: 'h4',
-      [BlockElementType.HEADING_5]: 'h5',
-      [BlockElementType.HEADING_6]: 'h6',
-      [BlockElementType.OL_LIST]: 'ol',
-      [BlockElementType.UL_LIST]: 'ul',
-      [BlockElementType.LIST_ITEM]: 'li',
-      [BlockElementType.BLOCK_QUOTE]: 'blockquote',
-      [BlockElementType.BUTTON]: 'button',
-    };
+    const typeToComponentMap = EDITOR_TO_TYPE_TO_COMPONENT.get(editor);
+    const result: Record<string, any> = {};
     const keys = Object.keys(typeToComponentMap || {});
     keys.forEach(key => {
-      const Component = typeToComponentMap?.[key];
-      if (!Component) return;
-      result[key] = Component;
+      const Tag = typeToComponentMap?.[key];
+      if (!Tag) return;
+      if (isInline || readOnly || path.length > 1) {
+        result[key] = <Tag {...props} />;
+        return;
+      }
+      result[key] = (
+        <BlockElementController id={elementKey}>
+          <Tag {...props} />
+        </BlockElementController>
+      );
     });
     return result;
-  }, [typeToComponentMap]);
+  }, [editor, elementKey, isInline, path.length, props, readOnly]);
 
-  const Tag = elementMap[element.type] || 'p';
-
-  if (isInline || readOnly || path.length > 1) {
-    return (
-      <Tag {...attributes} element={element} id={key}>
-        {children}
-      </Tag>
-    );
-  }
-
-  return (
-    <BlockElementController id={key}>
-      <Tag {...props} />
-    </BlockElementController>
-  );
+  return elementMap[element.type] || null;
 };
 
 export default Element;
