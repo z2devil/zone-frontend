@@ -212,6 +212,7 @@ const ImageEdit = (props: ImageEditProps) => {
 
   const handleResized = useCallback(
     (size: { width: number }) => {
+      if (size.width === 0) return;
       const width = Math.round((size.width / containerWidth.current) * 100);
       Transforms.setNodes(
         editor,
@@ -271,43 +272,41 @@ const ImageEdit = (props: ImageEditProps) => {
           <span className='text-17 font-bold text-black-600'>上传中...</span>
         </div>
       ) : (
-        <div className=''>
+        <div
+          className={clsx(
+            'absolute inset-0 flex cursor-pointer flex-col items-center justify-center gap-2',
+            hasUrl &&
+              'bg-white bg-opacity-50 opacity-0 transition-all duration-100 group-hover:opacity-100'
+          )}>
           <div
-            className={clsx(
-              'absolute inset-0 flex cursor-pointer flex-col items-center justify-center gap-2',
-              hasUrl &&
-                'bg-white bg-opacity-50 opacity-0 transition-all duration-100 group-hover:opacity-100'
-            )}>
+            className='flex flex-col items-center justify-center rounded-lg bg-white px-4 py-2 ring-1 ring-black-50'
+            onClick={handleUpload}>
+            <i className='iconfont icon-image-plus text-xl text-black-600'></i>
+            <span className='text-17 font-bold text-black-600'>
+              {!hasUrl ? '上传图片' : '更换图片'}
+            </span>
+            <span className='border-t border-black-50 pt-2 text-xs font-bold text-black-250'>
+              最大支持 25MB
+            </span>
+          </div>
+          <div className='flex items-center justify-center gap-1 rounded-md bg-white p-1 ring-1 ring-black-50'>
             <div
-              className='flex flex-col items-center justify-center rounded-lg bg-white px-4 py-2 ring-1 ring-black-50'
-              onClick={handleUpload}>
-              <i className='iconfont icon-image-plus text-xl text-black-600'></i>
-              <span className='text-17 font-bold text-black-600'>
-                {!hasUrl ? '上传图片' : '更换图片'}
-              </span>
-              <span className='border-t border-black-50 pt-2 text-xs font-bold text-black-250'>
-                最大支持 25MB
-              </span>
+              className='flex h-6 w-6 cursor-pointer items-center justify-center rounded p-1 text-black-600 hover:bg-black-50 hover:text-black-900'
+              title='居左'
+              onClick={() => handleAlign('left')}>
+              <i className='iconfont icon-align-left-bold text-xl'></i>
             </div>
-            <div className='flex items-center justify-center gap-1 rounded-md bg-white p-1 ring-1 ring-black-50'>
-              <div
-                className='flex h-6 w-6 cursor-pointer items-center justify-center rounded p-1 text-black-600 hover:bg-black-50 hover:text-black-900'
-                title='居左'
-                onClick={() => handleAlign('left')}>
-                <i className='iconfont icon-align-left-bold text-xl'></i>
-              </div>
-              <div
-                className='flex h-6 w-6 cursor-pointer items-center justify-center rounded p-1 text-black-600 hover:bg-black-50 hover:text-black-900'
-                title='居中'
-                onClick={() => handleAlign('center')}>
-                <i className='iconfont icon-align-horizontal-center-bold text-xl'></i>
-              </div>
-              <div
-                className='flex h-6 w-6 cursor-pointer items-center justify-center rounded p-1 text-black-600 hover:bg-black-50 hover:text-black-900'
-                title='居右'
-                onClick={() => handleAlign('right')}>
-                <i className='iconfont icon-align-right-bold text-xl'></i>
-              </div>
+            <div
+              className='flex h-6 w-6 cursor-pointer items-center justify-center rounded p-1 text-black-600 hover:bg-black-50 hover:text-black-900'
+              title='居中'
+              onClick={() => handleAlign('center')}>
+              <i className='iconfont icon-align-horizontal-center-bold text-xl'></i>
+            </div>
+            <div
+              className='flex h-6 w-6 cursor-pointer items-center justify-center rounded p-1 text-black-600 hover:bg-black-50 hover:text-black-900'
+              title='居右'
+              onClick={() => handleAlign('right')}>
+              <i className='iconfont icon-align-right-bold text-xl'></i>
             </div>
           </div>
         </div>

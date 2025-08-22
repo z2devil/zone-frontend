@@ -3,6 +3,7 @@ import { MusicBlockElement } from 'types/slate';
 import MusicPreview from './components/Preview';
 import MusicEdit from './components/Edit';
 import clsx from 'clsx';
+import HiddenPlaceholder from '@/ui/RichEditor/components/HiddenPlaceholder';
 
 interface MusicBlockProps {
   attributes: any;
@@ -16,10 +17,10 @@ const MusicBlock = ({ attributes, children, element }: MusicBlockProps) => {
   const selected = useSelected();
 
   return (
-    <div {...attributes} contentEditable={false}>
+    <div {...attributes} className='my-2' contentEditable={false}>
       <div
         className={clsx(
-          'mb-2 flex min-h-6 gap-2 overflow-hidden rounded-lg bg-gray-50 p-2',
+          'flex min-h-6 gap-2 overflow-hidden rounded-lg bg-gray-50 p-2',
           {
             border: !readOnly,
             'border-primary-50': !readOnly && selected,
@@ -33,7 +34,7 @@ const MusicBlock = ({ attributes, children, element }: MusicBlockProps) => {
           <MusicEdit element={element} />
         )}
       </div>
-      {children}
+      <HiddenPlaceholder>{children}</HiddenPlaceholder>
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { VideoBlockElement } from 'types/slate';
 import VideoPreview from './components/Preview';
 import VideoEdit from './components/Edit';
 import clsx from 'clsx';
+import HiddenPlaceholder from '@/ui/RichEditor/components/HiddenPlaceholder';
 
 interface VideoBlockProps {
   attributes: any;
@@ -16,10 +17,10 @@ const VideoBlock = ({ attributes, children, element }: VideoBlockProps) => {
   const selected = useSelected();
 
   return (
-    <div {...attributes} contentEditable={false}>
+    <div {...attributes} className='my-2' contentEditable={false}>
       <div
         className={clsx(
-          'mb-2 flex min-h-6 gap-2 overflow-hidden rounded-lg bg-gray-50 p-2',
+          'flex min-h-6 gap-2 overflow-hidden rounded-lg bg-gray-50',
           {
             border: !readOnly,
             'border-primary-50': !readOnly && selected,
@@ -33,7 +34,7 @@ const VideoBlock = ({ attributes, children, element }: VideoBlockProps) => {
           <VideoEdit element={element} />
         )}
       </div>
-      {children}
+      <HiddenPlaceholder>{children}</HiddenPlaceholder>
     </div>
   );
 };

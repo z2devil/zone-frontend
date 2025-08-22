@@ -3,6 +3,7 @@ import { ImageBlockElement } from 'types/slate';
 import ImageEdit from './components/Edit';
 import ImagePreview from './components/Preview';
 import { useMemo, useRef } from 'react';
+import HiddenPlaceholder from '@/ui/RichEditor/components/HiddenPlaceholder';
 
 interface ImageBlockProps {
   attributes: any;
@@ -16,8 +17,9 @@ const ImageBlock = ({ attributes, children, element }: ImageBlockProps) => {
   const ref = useRef<HTMLDivElement>(null);
 
   const styles = useMemo(() => {
-    const res: React.CSSProperties = {};
-    res.justifyContent = element.align || 'center';
+    const res: React.CSSProperties = {
+      justifyContent: element.align || 'center',
+    };
     return res;
   }, [element.align]);
 
@@ -30,13 +32,7 @@ const ImageBlock = ({ attributes, children, element }: ImageBlockProps) => {
           <ImageEdit containerRef={ref} element={element} />
         )}
       </div>
-      <div
-        style={{
-          fontSize: 0,
-          height: 0,
-        }}>
-        {children}
-      </div>
+      <HiddenPlaceholder>{children}</HiddenPlaceholder>
     </div>
   );
 };

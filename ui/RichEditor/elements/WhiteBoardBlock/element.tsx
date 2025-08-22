@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import { WhiteBoardBlockElement } from 'types/slate';
 import { useReadOnly, useSelected } from 'slate-react';
 import WhiteBoard from './components/WhiteBoard/WhiteBoard';
+import HiddenPlaceholder from '@/ui/RichEditor/components/HiddenPlaceholder';
 
 interface WhiteBoardBlockProps {
   attributes: any;
@@ -32,7 +33,7 @@ const WhiteBoardBlock = ({
         )}>
         <WhiteBoard element={element} readOnly={readOnly} />
       </div>
-      {children}
+      <HiddenPlaceholder>{children}</HiddenPlaceholder>
     </div>
   );
 };
