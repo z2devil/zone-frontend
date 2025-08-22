@@ -50,23 +50,26 @@ export const withPluginSetup = (editor: Editor) => {
       plugin;
 
     if (!enable) return;
-    typeToComponent[type] = element;
+    const types = Array.isArray(type) ? type : [type];
+    types.forEach(type => {
+      typeToComponent[type] = element;
 
-    if (extendEditor) {
-      extendEditor(editor);
-    }
+      if (extendEditor) {
+        extendEditor(editor);
+      }
 
-    if (isBlock) {
-      blockElements.push(type);
-    }
+      if (isBlock) {
+        blockElements.push(type);
+      }
 
-    if (isInline) {
-      inlineElements.push(type);
-    }
+      if (isInline) {
+        inlineElements.push(type);
+      }
 
-    if (isVoid) {
-      voidElements.push(type);
-    }
+      if (isVoid) {
+        voidElements.push(type);
+      }
+    });
   });
 
   return editor;
