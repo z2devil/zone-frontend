@@ -1,4 +1,4 @@
-import { RichEditor } from 'types/slate';
+import { CodeLineBlockElement, RichEditor } from 'types/slate';
 import { editorUtils } from '../../utils';
 import { Element, Transforms } from 'slate';
 import { MouseEvent } from 'react';
@@ -59,7 +59,7 @@ const options: ToolbarOption[] = [
           split: true,
         }
       );
-      Transforms.setNodes(
+      Transforms.setNodes<CodeLineBlockElement>(
         editor,
         { type: BlockElementType.CODE_LINE_BLOCK },
         {

@@ -40,6 +40,7 @@ const Element = (props: RenderElementProps) => {
       if (!Tag) return;
       if (isInline || readOnly || path.length > 1) {
         result[key] = <Tag {...props} />;
+        return;
       }
       result[key] = (
         <BlockElementController id={elementKey}>
