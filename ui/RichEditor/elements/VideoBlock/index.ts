@@ -6,6 +6,7 @@ const videoBlockPlugin = createElementPlugin({
   type: BlockElementType.VIDEO,
   element: VideoBlockElement,
   isBlock: true,
+  isVoid: true,
 });
 
 export default videoBlockPlugin;

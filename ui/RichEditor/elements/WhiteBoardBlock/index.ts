@@ -6,6 +6,7 @@ const whiteBoardBlockPlugin = createElementPlugin({
   type: BlockElementType.WHITE_BOARD,
   element: WhiteBoardBlockElement,
   isBlock: true,
+  isVoid: true,
 });
 
 export default whiteBoardBlockPlugin;

@@ -31,7 +31,6 @@ import {
   withPluginSetup,
 } from '@/ui/RichEditor/plugins';
 import Button from '@/ui/Button';
-import { autoImportPlugins } from '@/ui/RichEditor/utils';
 
 interface NoteDetailPageProps {
   params: { id: string };

@@ -5,6 +5,8 @@ import ButtonElement from './element';
 const buttonPlugin = createElementPlugin({
   type: BlockElementType.BUTTON,
   element: ButtonElement,
+  isInline: true,
+  isVoid: true,
 });
 
 export default buttonPlugin;

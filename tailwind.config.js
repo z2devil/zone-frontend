@@ -131,6 +131,7 @@ module.exports = {
       },
       animation: {
         flash: 'highlight 1s',
+        shine: 'shine 5s linear infinite',
       },
       keyframes: ({ theme }) => ({
         highlight: {
@@ -138,6 +139,10 @@ module.exports = {
             color: theme('colors.danger.100'),
           },
           '100%': {},
+        },
+        shine: {
+          '0%': { 'background-position': '100%' },
+          '100%': { 'background-position': '-100%' },
         },
       }),
       borderRadius: {

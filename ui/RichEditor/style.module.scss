@@ -1,3 +1,5 @@
+@reference 'tailwindcss';
+
 .editor {
   /* ===== 核心变量 ===== */
   --base-size: 19px; /* 主标题基准 */
@@ -24,56 +26,6 @@
     &:empty::after {
       content: '\00a0';
     }
-  }
-  /* ===== 标题层级系统 ===== */
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply block bg-clip-text font-bold leading-snug text-transparent transition-colors duration-200;
-    background-image: linear-gradient(to bottom, #0a59f7, #20002c);
-    &[class*='summary'] {
-      > span {
-        @apply font-semibold leading-snug tracking-tight opacity-90;
-      }
-    }
-  }
-  h1 {
-    font-size: calc(var(--base-size) * 0.9);
-    margin: calc(var(--spacing-unit) * 2.5) 0;
-    &.summary {
-      margin-bottom: calc(var(--spacing-unit) * 1.25);
-    }
-  }
-  h2 {
-    font-size: calc(var(--base-size) * 0.84);
-    margin: calc(var(--spacing-unit) * 2) 0;
-    &.summary {
-      margin-bottom: var(--spacing-unit);
-    }
-  }
-  h3 {
-    font-size: calc(var(--base-size) * 0.78);
-    margin: calc(var(--spacing-unit) * 1.5) 0;
-    &.summary {
-      margin-bottom: calc(var(--spacing-unit) * 0.75);
-    }
-  }
-  h4 {
-    font-size: calc(var(--base-size) * 0.72);
-    margin: var(--spacing-unit) 0;
-  }
-  h5 {
-    font-size: calc(var(--base-size) * 0.68);
-    margin: var(--spacing-unit) 0;
-    font-weight: 600;
-  }
-  h6 {
-    font-size: calc(var(--base-size) * 0.64);
-    margin: calc(var(--spacing-unit) * 0.5) 0;
-    font-weight: 500;
   }
   /* ===== 列表系统 ===== */
   ol,

@@ -1,5 +1,6 @@
 import { BlockElementType } from '@/lib/constants';
 import { HeadingElement } from 'types/slate';
+import styles from './style.module.scss';
 
 interface HeadingProps {
   attributes: any;
@@ -18,7 +19,11 @@ const HEADING_MAP = {
 
 const Heading = ({ attributes, children, element }: HeadingProps) => {
   const Tag = HEADING_MAP[element.type];
-  return <Tag {...attributes}>{children}</Tag>;
+  return (
+    <Tag {...attributes} className={styles.heading}>
+      {children}
+    </Tag>
+  );
 };
 
 export default Heading;

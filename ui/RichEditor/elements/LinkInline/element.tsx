@@ -2,7 +2,7 @@ import { useReadOnly, useSelected } from 'slate-react';
 import { LinkInlineElement } from 'types/slate';
 import LinkEdit from './components/Edit';
 import LinkPreview from './components/Preview';
-import InlineChromiumBugfix from '../../components/Element/components/InlineChromiumBugfix';
+import InlineChromiumBugfix from '../../components/InlineChromiumBugfix';
 
 interface LinkInlineProps {
   attributes: any;

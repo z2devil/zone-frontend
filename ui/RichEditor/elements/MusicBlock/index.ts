@@ -6,6 +6,7 @@ const musicBlockPlugin = createElementPlugin({
   type: BlockElementType.MUSIC,
   element: MusicBlockElement,
   isBlock: true,
+  isVoid: true,
 });
 
 export default musicBlockPlugin;

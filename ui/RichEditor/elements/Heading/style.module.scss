@@ -1,0 +1,10 @@
+.heading {
+  @apply bg-size-[200%_100%] inline-block animate-shine bg-clip-text text-black-900;
+  background-image: linear-gradient(
+    120deg,
+    rgba(0, 0, 0, 0) 40%,
+    rgba(0, 0, 0, 0.8) 50%,
+    rgba(0, 0, 0, 0) 60%
+  );
+  animation-duration: 3s;
+}

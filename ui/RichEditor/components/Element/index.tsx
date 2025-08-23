@@ -5,8 +5,9 @@ import {
   useSlate,
 } from 'slate-react';
 import { useMemo } from 'react';
-import BlockElementController from './components/BlockElementController';
+import Draggable from '../Draggable';
 import { EDITOR_TO_TYPE_TO_COMPONENT } from '@/lib/constants';
+import Selectable from '../Selectable';
 
 const Element = (props: RenderElementProps) => {
   const { attributes, element } = props;
@@ -15,19 +16,13 @@ const Element = (props: RenderElementProps) => {
 
   const readOnly = useReadOnly();
 
-  const elementKey = useMemo(
-    () => ReactEditor.findPath(editor, element).join('-'),
-    [editor, element]
-  );
+  const path = ReactEditor.findPath(editor, element);
+
+  const elementKey = useMemo(() => path.join('-'), [path]);
 
   const isInline = useMemo(
     () => !!attributes['data-slate-inline'],
     [attributes]
-  );
-
-  const path = useMemo(
-    () => ReactEditor.findPath(editor, element),
-    [editor, element]
   );
 
   // 所有元素
@@ -38,20 +33,22 @@ const Element = (props: RenderElementProps) => {
     keys.forEach(key => {
       const Tag = typeToComponentMap?.[key];
       if (!Tag) return;
+      let component = (
+        <Selectable element={element} path={path}>
+          <Tag {...props} />
+        </Selectable>
+      );
       if (isInline || readOnly || path.length > 1) {
-        result[key] = <Tag {...props} />;
+        result[key] = component;
         return;
       }
-      result[key] = (
-        <BlockElementController id={elementKey}>
-          <Tag {...props} />
-        </BlockElementController>
-      );
+      component = <Draggable id={elementKey}>{component}</Draggable>;
+      result[key] = component;
     });
     return result;
-  }, [editor, elementKey, isInline, path.length, props, readOnly]);
+  }, [editor, elementKey, isInline, path, props, readOnly, element]);
 
-  return elementMap[element.type] || null;
+  return elementMap[element.type];
 };
 
 export default Element;
