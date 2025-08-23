@@ -1,10 +1,27 @@
 .heading {
-  @apply bg-size-[200%_100%] inline-block animate-shine bg-clip-text text-black-900;
-  background-image: linear-gradient(
-    120deg,
-    rgba(0, 0, 0, 0) 40%,
-    rgba(0, 0, 0, 0.8) 50%,
-    rgba(0, 0, 0, 0) 60%
-  );
-  animation-duration: 3s;
+  @apply font-bold;
+}
+
+.h1 {
+  @apply text-2xl;
+}
+
+.h2 {
+  @apply text-xl;
+}
+
+.h3 {
+  @apply text-lg;
+}
+
+.h4 {
+  @apply text-base;
+}
+
+.h5 {
+  @apply text-sm;
+}
+
+.h6 {
+  @apply text-xs;
 }

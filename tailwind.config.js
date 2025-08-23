@@ -132,6 +132,7 @@ module.exports = {
       animation: {
         flash: 'highlight 1s',
         shine: 'shine 5s linear infinite',
+        gradient: 'gradient 8s linear infinite',
       },
       keyframes: ({ theme }) => ({
         highlight: {
@@ -143,6 +144,11 @@ module.exports = {
         shine: {
           '0%': { 'background-position': '100%' },
           '100%': { 'background-position': '-100%' },
+        },
+        gradient: {
+          '0%': { 'background-position': '0% 50%' },
+          '50%': { 'background-position': '100% 50%' },
+          '100%': { 'background-position': '0% 50%' },
         },
       }),
       borderRadius: {

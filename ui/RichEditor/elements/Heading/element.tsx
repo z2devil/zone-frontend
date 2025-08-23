@@ -1,6 +1,7 @@
 import { BlockElementType } from '@/lib/constants';
 import { HeadingElement } from 'types/slate';
 import styles from './style.module.scss';
+import clsx from 'clsx';
 
 interface HeadingProps {
   attributes: any;
@@ -20,7 +21,7 @@ const HEADING_MAP = {
 const Heading = ({ attributes, children, element }: HeadingProps) => {
   const Tag = HEADING_MAP[element.type];
   return (
-    <Tag {...attributes} className={styles.heading}>
+    <Tag {...attributes} className={clsx(styles.heading, styles[Tag])}>
       {children}
     </Tag>
   );
