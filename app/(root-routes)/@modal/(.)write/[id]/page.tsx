@@ -23,6 +23,10 @@ import { withHistory } from 'slate-history';
 import { withPasteMarkdown, withShortcuts } from '@/ui/RichEditor/plugins';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { withPluginSetup } from '@/ui/RichEditor/plugins';
+import {
+  disableScrollbar,
+  enableScrollbar,
+} from '@/lib/utils/scrollbarTrigger';
 
 interface NoteDetailPageProps {
   params: { id: string };
@@ -112,11 +116,12 @@ export default function WriteNote(props: NoteDetailPageProps) {
     };
   }, [editor, handleBeforeUnload]);
 
-  // useEffect(() => {
-  //   if (isDisabledScrollbar()) return;
-  //   disableScrollbar();
-  //   return enableScrollbar;
-  // }, []);
+  useEffect(() => {
+    disableScrollbar();
+    return () => {
+      enableScrollbar();
+    };
+  }, []);
 
   /************************************************
    * ✨ 初始化

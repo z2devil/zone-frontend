@@ -27,7 +27,6 @@ import { AnimatePresence, motion } from 'motion/react';
 import {
   disableScrollbar,
   enableScrollbar,
-  isDisabledScrollbar,
 } from '@/lib/utils/scrollbarTrigger';
 import { useNotesStore } from '@/lib/stores/notes';
 import { NoteDetail } from '@/ui/NoteDetail';
@@ -226,9 +225,10 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
   }, [isExit, navigation]);
 
   useEffect(() => {
-    if (isDisabledScrollbar()) return;
     disableScrollbar();
-    return enableScrollbar;
+    return () => {
+      enableScrollbar();
+    };
   }, []);
 
   if (!note) return null;
