@@ -250,7 +250,7 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
             <EmptyInfo tip='暂无评论' />
           </div>
         </div>
-        <TOC className='sticky top-24 hidden h-fit shrink-0 lg:flex' />
+        <TOC className='sticky top-24 hidden h-fit shrink-0 lg:block' />
       </div>
     </SlateProvider>
   );

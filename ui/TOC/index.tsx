@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ReactEditor, useSlate } from 'slate-react';
 import { Editor } from 'slate';
 import { BlockElementType } from '@/lib/constants';
+import styles from './style.module.scss';
 
 export interface TOCTreeItem {
   label: string;
@@ -117,16 +118,12 @@ const TOC = (props: TOCProps) => {
   if (!toc || !toc.children?.length) return null;
 
   return (
-    <div
-      className={clsx(
-        twMerge(
-          'flex w-52 shrink-0 flex-col divide-y divide-black-50 rounded-xl bg-white shadow-main',
-          className
-        )
-      )}>
-      {toc.children.map((item, index) => (
-        <TOCTree activePath={activePath} data={item} key={index} />
-      ))}
+    <div className={clsx(twMerge('scrollbar', styles.toc, className))}>
+      <div className='flex flex-col divide-y divide-black-50'>
+        {toc.children.map((item, index) => (
+          <TOCTree activePath={activePath} data={item} key={index} />
+        ))}
+      </div>
     </div>
   );
 };
