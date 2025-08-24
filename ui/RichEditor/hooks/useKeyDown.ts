@@ -165,6 +165,31 @@ const handleSingleKey = (
       }
     }
   }
+  if (e.key === 'Enter') {
+    if (!selection || !Range.isCollapsed(selection)) return;
+    const above = Editor.above<Element>(editor, {
+      match: node => {
+        if (Element.isElement(node)) return true;
+        return false;
+      },
+    });
+    if (!above) return;
+    const [node, path] = above;
+    if (!Editor.isVoid(editor, node)) return;
+    const nextPath = Path.next(path);
+    Transforms.insertNodes(
+      editor,
+      {
+        type: BlockElementType.PARAGRAPH,
+        children: [{ text: '' }],
+      },
+      {
+        at: nextPath,
+      }
+    );
+    Transforms.select(editor, nextPath);
+    e.preventDefault();
+  }
   if (e.key === 'ArrowLeft') {
     if (selection && Range.isCollapsed(selection)) {
       const nextLocation = Editor.before(editor, selection, {

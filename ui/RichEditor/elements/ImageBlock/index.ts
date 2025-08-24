@@ -6,6 +6,7 @@ const imageBlockPlugin = createElementPlugin({
   type: BlockElementType.IMAGE,
   element: ImageBlockElement,
   isBlock: true,
+  isVoid: true,
 });
 
 export default imageBlockPlugin;

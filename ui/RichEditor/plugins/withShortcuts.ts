@@ -1,13 +1,4 @@
-import {
-  Editor,
-  Element,
-  Node,
-  Path,
-  Point,
-  Range,
-  TextUnit,
-  Transforms,
-} from 'slate';
+import { Editor, Element, Node, Path, Range, Transforms } from 'slate';
 import { RichEditor } from 'types/slate';
 import { editorUtils } from '../utils/editorUtils';
 import {
@@ -17,7 +8,7 @@ import {
 } from '@/lib/constants';
 
 export const withShortcuts = (editor: RichEditor) => {
-  const { insertBreak, insertSoftBreak, deleteBackward, insertText } = editor;
+  const { insertBreak, deleteBackward, insertText } = editor;
 
   editor.insertBreak = () => {
     console.log('[ insertBreak ]');
@@ -86,11 +77,6 @@ export const withShortcuts = (editor: RichEditor) => {
     }
 
     insertBreak();
-  };
-
-  editor.insertSoftBreak = () => {
-    console.log('[ insertSoftBreak ]');
-    insertSoftBreak();
   };
 
   editor.insertText = text => {
@@ -168,34 +154,36 @@ export const withShortcuts = (editor: RichEditor) => {
       return deleteBackward(unit);
     }
 
-    const [block, path] = match;
-    if (block.type !== BlockElementType.PARAGRAPH) {
-      const newProperties: Partial<Element> = {
-        type: BlockElementType.PARAGRAPH,
-      };
-      Transforms.setNodes(editor, newProperties);
+    const [, path] = match;
 
-      if (block.type === BlockElementType.UL_LIST) {
-        Transforms.unwrapNodes(editor, {
-          match: n =>
-            !Editor.isEditor(n) &&
-            Element.isElement(n) &&
-            n.type === BlockElementType.UL_LIST,
-          split: true,
-        });
-      }
-    } else {
-      if (Path.hasPrevious(path)) {
-        deleteBackward(unit);
-      } else if (Node.getIf(editor, Path.next(path))) {
-        // 上一行无内容，下一行有内容时，删除当前行
-        Transforms.removeNodes(editor, {
-          at: path,
-          hanging: true,
-          voids: true,
-        });
-      }
+    // 如果有前一个兄弟节点，直接删除
+    if (Path.hasPrevious(path)) {
+      deleteBackward(unit);
+      return;
     }
+
+    // 如果下一个节点存在，说明当前行为空且下方有内容，直接移除当前行
+    if (Node.has(editor, Path.next(path))) {
+      Transforms.removeNodes(editor, {
+        at: path,
+        hanging: true,
+        voids: true,
+      });
+      return;
+    }
+
+    // 如果父节点不是 Editor，说明当前在包裹元素内，拆包
+    const parent = Node.parent(editor, path);
+    if (!Editor.isEditor(parent)) {
+      Transforms.unwrapNodes(editor, {
+        at: Path.parent(path),
+        split: true,
+      });
+      return;
+    }
+
+    // 其他情况，默认删除
+    deleteBackward(unit);
   };
 
   return editor;

@@ -27,11 +27,9 @@ import { withHistory } from 'slate-history';
 import {
   withPasteMarkdown,
   withShortcuts,
-  withList,
   withPluginSetup,
 } from '@/ui/RichEditor/plugins';
 import Button from '@/ui/Button';
-import { autoImportPlugins } from '@/ui/RichEditor/utils';
 
 interface NoteDetailPageProps {
   params: { id: string };
@@ -58,10 +56,9 @@ export default function WriteNote(props: NoteDetailPageProps) {
     const enhancers = [
       withReact,
       withHistory,
-      withPluginSetup,
       withShortcuts,
       withPasteMarkdown,
-      withList,
+      withPluginSetup,
     ];
     return enhancers.reduce(
       (editor, enhancer) => enhancer(editor),

@@ -239,35 +239,33 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
       initialValue={JSON.parse(note.content || '')}>
       <AnimatePresence>
         {!isExit ? (
-          <motion.div
-            animate={{ opacity: 1 }}
-            className='pointer-events-none fixed z-[5] h-full w-full bg-black-80 backdrop-blur'
-            exit={{ opacity: 0 }}
-            initial={{ opacity: 0 }}
-            onClick={handleBack}
-          />
-        ) : null}
-      </AnimatePresence>
-      <div className='fixed inset-0 z-10 overflow-y-auto' onClick={handleBack}>
-        <AnimatePresence>
-          {!isExit ? (
-            <>
-              {/* note */}
-              <motion.div
-                animate={{ opacity: 1, top: 0 }}
-                className='relative z-10 mx-auto flex gap-8 md:w-fit'
-                exit={{
-                  opacity: 0,
-                  top: -50,
-                }}
-                initial={{ opacity: 0, top: -50 }}
-                style={{
-                  marginTop: '3.625rem',
-                  minHeight: 'calc(100vh - 3.625rem)',
-                }}
-                transition={{ type: 'tween' }}
-                onClick={e => e.stopPropagation()}>
-                <div className='flex w-full flex-col overflow-hidden bg-white md:w-[45rem]'>
+          <div
+            className='fixed z-10 flex w-full overflow-hidden'
+            style={{
+              height: 'calc(100vh - 3.625rem)',
+            }}>
+            {/* 背景 */}
+            <motion.div
+              animate={{ opacity: 1 }}
+              className='pointer-events-none absolute inset-0 z-10 bg-black-80 backdrop-blur'
+              exit={{ opacity: 0 }}
+              initial={{ opacity: 0 }}
+            />
+            <div
+              className='relative z-20 h-full w-full overflow-y-auto'
+              onClick={handleBack}>
+              <div className='relative mx-auto flex min-h-full gap-8 md:w-fit'>
+                {/* note */}
+                <motion.div
+                  animate={{ opacity: 1, top: 0 }}
+                  className='relative flex flex-1 flex-col bg-white md:w-[45rem]'
+                  exit={{
+                    opacity: 0,
+                    top: -50,
+                  }}
+                  initial={{ opacity: 0, top: -50 }}
+                  transition={{ type: 'tween' }}
+                  onClick={e => e.stopPropagation()}>
                   <NoteDetail
                     isLogin={isLogin}
                     note={note}
@@ -314,29 +312,30 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
                   <div className='flex px-5 pb-20 pt-5'>
                     <EmptyInfo tip='暂无评论' />
                   </div>
-                </div>
-              </motion.div>
-              <motion.div
-                animate={{
-                  opacity: 1,
-                  x: 0,
-                }}
-                className='fixed right-16 top-24 ml-[47rem] hidden h-fit lg:flex'
-                exit={{
-                  opacity: 0,
-                  x: 50,
-                }}
-                initial={{
-                  opacity: 0,
-                  x: 50,
-                }}
-                transition={{ type: 'tween' }}>
-                <TOC />
-              </motion.div>
-            </>
-          ) : null}
-        </AnimatePresence>
-      </div>
+                </motion.div>
+                <motion.div
+                  animate={{
+                    opacity: 1,
+                    x: 0,
+                  }}
+                  className='sticky top-11 hidden h-fit shrink-0 lg:block'
+                  exit={{
+                    opacity: 0,
+                    x: 50,
+                  }}
+                  initial={{
+                    opacity: 0,
+                    x: 50,
+                  }}
+                  transition={{ type: 'tween' }}
+                  onClick={e => e.stopPropagation()}>
+                  <TOC />
+                </motion.div>
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </AnimatePresence>
     </SlateProvider>
   );
 };

@@ -7,7 +7,7 @@ import { useSlate } from 'slate-react';
 import { useEditorStore } from '@/lib/stores';
 import { DropType } from '@/lib/constants';
 
-interface BlockElementControllerProps {
+interface DraggableProps {
   id: string;
   children: any;
 }
@@ -22,7 +22,7 @@ const enum ItemTypes {
   CARD = 'card',
 }
 
-const BlockElementController = (props: BlockElementControllerProps) => {
+const Draggable = (props: DraggableProps) => {
   const { id, children } = props;
 
   const ref = useRef<HTMLDivElement>(null);
@@ -172,4 +172,4 @@ const BlockElementController = (props: BlockElementControllerProps) => {
   );
 };
 
-export default BlockElementController;
+export default Draggable;
