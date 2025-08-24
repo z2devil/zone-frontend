@@ -1,5 +1,6 @@
 import { ComponentType } from 'react';
 import { Editor } from 'slate';
+import { ActionKeyConfig } from '../hooks';
 
 /**
  * 元素插件接口
@@ -19,6 +20,11 @@ export interface ElementPlugin {
    * 扩展编辑器
    */
   extendEditor?: (editor: Editor) => Editor;
+
+  /**
+   * 快捷键
+   */
+  hotkeys: ActionKeyConfig[];
 
   /**
    * 是否是块级元素
@@ -51,6 +57,7 @@ export const createElementPlugin = (options: ElementPlugin) => {
     element,
     type,
     extendEditor,
+    hotkeys,
     isBlock = true,
     isInline = false,
     isVoid = false,
@@ -61,6 +68,7 @@ export const createElementPlugin = (options: ElementPlugin) => {
     element,
     type,
     extendEditor,
+    hotkeys,
     isBlock,
     isInline,
     isVoid,

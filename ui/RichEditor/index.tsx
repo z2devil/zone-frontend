@@ -10,7 +10,7 @@ import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import Leaf from '@/ui/RichEditor/components/Leaf';
 import Element from './components/Element';
-import { useDecorate, useKeyDown, useCopy, useCut } from './hooks';
+import { useDecorate, useKeyDown, useCopy, useCut, useHotKeys } from './hooks';
 
 interface EditorProps {
   className?: string;
@@ -33,6 +33,16 @@ const RichEditor = (props: EditorProps) => {
     (props: RenderElementProps) => <Element {...props} />,
     []
   );
+
+  useHotKeys([
+    {
+      label: 'Bold',
+      hotkey: [{ key: 'b' }],
+      action: editor => {
+        console.log('[ editor Bold]', editor);
+      },
+    },
+  ]);
 
   // const handleDOMInput = useDOMBeforeInput(editor);
 

@@ -7,6 +7,7 @@ import {
   EDITOR_TO_BLOCK_ELEMENTS,
   EDITOR_TO_VOID_ELEMENTS,
 } from '@/lib/constants';
+import { setupHotkeys } from '../hooks';
 
 /**
  * 设置编辑器插件
@@ -46,8 +47,16 @@ export const withPluginSetup = (editor: Editor) => {
   const keys = Object.keys(elementPlugins);
   keys.forEach(key => {
     const plugin = elementPlugins[key];
-    const { type, element, enable, extendEditor, isBlock, isInline, isVoid } =
-      plugin;
+    const {
+      type,
+      element,
+      enable,
+      extendEditor,
+      hotkeys,
+      isBlock,
+      isInline,
+      isVoid,
+    } = plugin;
 
     if (!enable) return;
     const types = Array.isArray(type) ? type : [type];
@@ -56,6 +65,10 @@ export const withPluginSetup = (editor: Editor) => {
 
       if (extendEditor) {
         extendEditor(editor);
+      }
+
+      if (hotkeys) {
+        setupHotkeys(editor, hotkeys);
       }
 
       if (isBlock) {

@@ -1,13 +1,4 @@
-import {
-  Editor,
-  Element,
-  Node,
-  Path,
-  Point,
-  Range,
-  TextUnit,
-  Transforms,
-} from 'slate';
+import { Editor, Element, Node, Path, Range, Transforms } from 'slate';
 import { RichEditor } from 'types/slate';
 import { editorUtils } from '../utils/editorUtils';
 import {
@@ -17,7 +8,7 @@ import {
 } from '@/lib/constants';
 
 export const withShortcuts = (editor: RichEditor) => {
-  const { insertBreak, insertSoftBreak, deleteBackward, insertText } = editor;
+  const { insertBreak, deleteBackward, insertText } = editor;
 
   editor.insertBreak = () => {
     console.log('[ insertBreak ]');
@@ -86,11 +77,6 @@ export const withShortcuts = (editor: RichEditor) => {
     }
 
     insertBreak();
-  };
-
-  editor.insertSoftBreak = () => {
-    console.log('[ insertSoftBreak ]');
-    insertSoftBreak();
   };
 
   editor.insertText = text => {
