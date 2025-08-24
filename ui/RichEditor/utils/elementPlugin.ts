@@ -24,7 +24,7 @@ export interface ElementPlugin {
   /**
    * 快捷键
    */
-  hotkeys: ActionKeyConfig[];
+  hotkeys?: ActionKeyConfig[];
 
   /**
    * 是否是块级元素
