@@ -34,15 +34,7 @@ const RichEditor = (props: EditorProps) => {
     []
   );
 
-  useHotKeys([
-    {
-      label: 'Bold',
-      hotkey: [{ key: 'b' }],
-      action: editor => {
-        console.log('[ editor Bold]', editor);
-      },
-    },
-  ]);
+  useHotKeys();
 
   // const handleDOMInput = useDOMBeforeInput(editor);
 
