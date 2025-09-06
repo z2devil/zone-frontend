@@ -98,7 +98,7 @@ const Editor = (props: EditorProps) => {
             <div className='flex h-fit min-h-screen w-full flex-col bg-white'>
               {/* 工具栏 */}
               <Toolbar
-                className='z-10'
+                className='z-20'
                 RightSlot={
                   <div className='flex gap-2'>
                     <FullScreenButton
@@ -145,7 +145,7 @@ const Editor = (props: EditorProps) => {
         <div className='relative z-0 flex max-h-[70vh] flex-1 flex-col overflow-y-auto overflow-x-hidden'>
           {/* 工具栏 */}
           <Toolbar
-            className='z-10 backdrop-blur-xl'
+            className='z-20 backdrop-blur-xl'
             RightSlot={
               <FullScreenButton
                 fullScreen={fullScreen}

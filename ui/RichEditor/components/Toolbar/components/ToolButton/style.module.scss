@@ -1,0 +1,19 @@
+.tool-button {
+  @apply flex aspect-square flex-shrink-0 items-center overflow-hidden rounded p-1 transition-colors duration-100 hover:bg-gray-50;
+}
+
+.tool-button-disabled {
+  @apply cursor-not-allowed text-black-400 hover:text-black-600;
+}
+
+.tool-button-enabled {
+  @apply hover:bg-gray-50 hover:text-black-900;
+}
+
+.tool-button-active {
+  @apply text-primary-50;
+}
+
+.tool-icon {
+  @apply text-xl;
+}
