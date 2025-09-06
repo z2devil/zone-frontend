@@ -1,0 +1,11 @@
+.paragraph {
+  @apply my-1 leading-6 tracking-normal;
+
+  & + .paragraph {
+    @apply mt-2;
+  }
+
+  &:empty::after {
+    content: '\00a0';
+  }
+}

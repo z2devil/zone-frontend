@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useSlate } from 'slate-react';
 import { LinkInlineElement } from 'types/slate';
+import styles from '../../style.module.scss';
 
 interface LinkPreviewProps {
   children: any;
@@ -19,12 +20,12 @@ const LinkPreview = (props: LinkPreviewProps) => {
   const url = useMemo(() => element.url, [element.url]);
 
   if (isSummary) {
-    return <span className='text-black-600 underline'>{children}</span>;
+    return <span className={styles.linkPreview}>{children}</span>;
   }
 
   return (
     <a
-      className='text-black-600 underline'
+      className={styles.linkPreview}
       href={url}
       rel='noreferrer'
       target='_blank'>

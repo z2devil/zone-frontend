@@ -1,4 +1,5 @@
 import { ParagraphElement } from 'types/slate';
+import styles from './style.module.scss';
 
 interface ParagraphProps {
   attributes: any;
@@ -7,7 +8,11 @@ interface ParagraphProps {
 }
 
 const Paragraph = ({ attributes, children }: ParagraphProps) => {
-  return <p {...attributes}>{children}</p>;
+  return (
+    <p {...attributes} className={styles.paragraph}>
+      {children}
+    </p>
+  );
 };
 
 export default Paragraph;

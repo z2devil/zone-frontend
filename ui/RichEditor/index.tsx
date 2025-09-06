@@ -5,7 +5,7 @@ import {
   useSlate,
 } from 'slate-react';
 import style from './style.module.scss';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import Leaf from '@/ui/RichEditor/components/Leaf';
@@ -22,7 +22,8 @@ const RichEditor = (props: EditorProps) => {
 
   const editor = useSlate();
 
-  const isSummary = useMemo(() => editor.isSummary, [editor.isSummary]);
+  // TODO: 暂时不需要摘要模式
+  // const isSummary = useMemo(() => editor.isSummary, [editor.isSummary]);
 
   const renderLeaf = useCallback(
     (props: RenderLeafProps) => <Leaf {...props} />,
@@ -60,9 +61,6 @@ const RichEditor = (props: EditorProps) => {
     <Editable
       className={clsx(
         style.editor,
-        {
-          [style.summary]: isSummary,
-        },
         twMerge('h-full w-full text-black-900 outline-none', className)
       )}
       decorate={decorate}

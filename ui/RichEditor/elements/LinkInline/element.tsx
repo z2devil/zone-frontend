@@ -3,6 +3,7 @@ import { LinkInlineElement } from 'types/slate';
 import LinkEdit from './components/Edit';
 import LinkPreview from './components/Preview';
 import InlineChromiumBugfix from '../../components/InlineChromiumBugfix';
+import styles from './style.module.scss';
 
 interface LinkInlineProps {
   attributes: any;
@@ -16,7 +17,7 @@ const LinkInline = ({ attributes, children, element }: LinkInlineProps) => {
   const selected = useSelected();
 
   return (
-    <span {...attributes} className='relative'>
+    <span {...attributes} className={styles.linkContainer}>
       {!readOnly ? (
         <LinkEdit element={element} selected={selected}>
           <InlineChromiumBugfix />

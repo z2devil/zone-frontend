@@ -3,6 +3,7 @@ import { ReactEditor, useSlate } from 'slate-react';
 import { LinkInlineElement } from 'types/slate';
 import { Transforms } from 'slate';
 import { throttle } from 'lodash';
+import styles from '../../style.module.scss';
 
 interface LinkPreviewProps {
   children: any;
@@ -36,17 +37,15 @@ const LinkEdit = (props: LinkPreviewProps) => {
   return (
     <>
       {selected ? (
-        <span
-          className='absolute bottom-0 left-0 block w-40 -translate-y-full rounded border border-gray-300 bg-gray-50 px-2 py-1'
-          contentEditable={false}>
+        <span className={styles.linkInputContainer} contentEditable={false}>
           <input
-            className='w-full border-none bg-transparent outline-none'
+            className={styles.linkInput}
             defaultValue={url}
             onInput={handleInput}
           />
         </span>
       ) : null}
-      <span className='text-black-600 underline'>{children}</span>
+      <span className={styles.linkEdit}>{children}</span>
     </>
   );
 };
