@@ -1,11 +1,14 @@
 import { BlockElementType } from '@/lib/constants';
-import { createElementPlugin } from 'ui/RichEditor/utils/elementPlugin';
+import { createPlugin } from '@/ui/RichEditor/utils';
 import CodeBlockElement from './element';
 import { Element, Transforms } from 'slate';
 
-const codeBlockPlugin = createElementPlugin({
-  type: BlockElementType.CODE_BLOCK,
-  element: CodeBlockElement,
+const codeBlockPlugin = createPlugin({
+  name: 'codeBlock',
+  element: {
+    type: BlockElementType.CODE_BLOCK,
+    component: CodeBlockElement,
+  },
   extendEditor: editor => {
     const { normalizeNode } = editor;
 

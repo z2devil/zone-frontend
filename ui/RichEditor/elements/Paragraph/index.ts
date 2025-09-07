@@ -1,10 +1,13 @@
 import { BlockElementType } from '@/lib/constants';
-import { createElementPlugin } from 'ui/RichEditor/utils/elementPlugin';
+import { createPlugin } from '@/ui/RichEditor/utils';
 import CodeLineBlockElement from './element';
 
-const codeLineBlockPlugin = createElementPlugin({
-  type: BlockElementType.PARAGRAPH,
-  element: CodeLineBlockElement,
+const codeLineBlockPlugin = createPlugin({
+  name: 'paragraph',
+  element: {
+    type: BlockElementType.PARAGRAPH,
+    component: CodeLineBlockElement,
+  },
 });
 
 export default codeLineBlockPlugin;

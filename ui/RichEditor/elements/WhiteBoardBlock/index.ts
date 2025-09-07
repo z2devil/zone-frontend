@@ -1,12 +1,15 @@
 import { BlockElementType } from '@/lib/constants';
-import { createElementPlugin } from 'ui/RichEditor/utils/elementPlugin';
+import { createPlugin } from '@/ui/RichEditor/utils';
 import WhiteBoardBlockElement from './element';
 
-const whiteBoardBlockPlugin = createElementPlugin({
-  type: BlockElementType.WHITE_BOARD,
-  element: WhiteBoardBlockElement,
-  isBlock: true,
-  isVoid: true,
+const whiteBoardBlockPlugin = createPlugin({
+  name: 'whiteBoard',
+  element: {
+    type: BlockElementType.WHITE_BOARD,
+    component: WhiteBoardBlockElement,
+    isBlock: true,
+    isVoid: true,
+  },
 });
 
 export default whiteBoardBlockPlugin;

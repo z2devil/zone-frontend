@@ -10,11 +10,11 @@ interface CodeSpanProps {
 
 const CodeSpan = ({ attributes, children }: CodeSpanProps) => {
   return (
-    <code-span {...attributes} className={styles.codeSpan}>
+    <span {...attributes} className={styles.codeSpan}>
       <InlineChromiumBugfix />
       {children}
       <InlineChromiumBugfix />
-    </code-span>
+    </span>
   );
 };
 

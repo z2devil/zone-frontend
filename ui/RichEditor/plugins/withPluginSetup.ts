@@ -1,6 +1,6 @@
 import { ComponentType } from 'react';
 import { Editor, Element } from 'slate';
-import { autoImportPlugins } from '../utils';
+import { AdditionalComponentConfig, autoImportPlugins } from '../utils';
 import {
   EDITOR_TO_TYPE_TO_COMPONENT,
   EDITOR_TO_INLINE_ELEMENTS,
@@ -8,6 +8,7 @@ import {
   EDITOR_TO_VOID_ELEMENTS,
 } from '@/lib/constants';
 import { setupHotkeys } from '../hooks';
+import { useAdditionalComponentsStore } from '@/lib/stores';
 
 /**
  * 设置编辑器插件
@@ -45,45 +46,51 @@ export const withPluginSetup = (editor: Editor) => {
   // 自动导入元素插件
   const elementPlugins = autoImportPlugins();
   const keys = Object.keys(elementPlugins);
+
+  // 收集所有附加组件
+  const allAdditionalComponents: AdditionalComponentConfig[] = [];
+
   keys.forEach(key => {
     const plugin = elementPlugins[key];
-    const {
-      type,
-      element,
-      enable,
-      extendEditor,
-      hotkeys,
-      isBlock,
-      isInline,
-      isVoid,
-    } = plugin;
+    const { enable, element, extendEditor, hotkeys, additionalComponents } =
+      plugin;
 
     if (!enable) return;
-    const types = Array.isArray(type) ? type : [type];
-    types.forEach(type => {
-      typeToComponent[type] = element;
 
-      if (extendEditor) {
-        extendEditor(editor);
-      }
+    if (element) {
+      const { type, component, isBlock, isInline, isVoid } = element;
+      const types = Array.isArray(type) ? type : [type];
+      types.forEach(type => {
+        typeToComponent[type] = component;
 
-      if (hotkeys) {
-        setupHotkeys(editor, hotkeys);
-      }
+        if (extendEditor) {
+          extendEditor(editor);
+        }
 
-      if (isBlock) {
-        blockElements.push(type);
-      }
+        if (hotkeys) {
+          setupHotkeys(editor, hotkeys);
+        }
 
-      if (isInline) {
-        inlineElements.push(type);
-      }
+        if (isBlock) {
+          blockElements.push(type);
+        }
 
-      if (isVoid) {
-        voidElements.push(type);
-      }
-    });
+        if (isInline) {
+          inlineElements.push(type);
+        }
+
+        if (isVoid) {
+          voidElements.push(type);
+        }
+      });
+    }
+
+    allAdditionalComponents.push(...additionalComponents);
   });
+
+  useAdditionalComponentsStore
+    .getState()
+    .setEditorComponents(editor, allAdditionalComponents);
 
   return editor;
 };

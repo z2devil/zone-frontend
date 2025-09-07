@@ -1,11 +1,20 @@
 import { InlineElementType } from '@/lib/constants';
-import { createElementPlugin } from 'ui/RichEditor/utils/elementPlugin';
+import { createPlugin } from '@/ui/RichEditor/utils';
 import LinkInlineElement from './element';
+import LinkEditToolbar from './components/LinkEditToolbar';
 
-const linkInlinePlugin = createElementPlugin({
-  type: InlineElementType.LINK,
-  element: LinkInlineElement,
-  isInline: true,
+const linkInlinePlugin = createPlugin({
+  name: 'link',
+  element: {
+    type: InlineElementType.LINK,
+    component: LinkInlineElement,
+    isInline: true,
+  },
+  additionalComponent: {
+    key: 'linkEditToolbar',
+    component: LinkEditToolbar,
+    position: 'after',
+  },
 });
 
 export default linkInlinePlugin;

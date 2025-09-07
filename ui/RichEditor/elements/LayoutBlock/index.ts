@@ -1,11 +1,14 @@
 import { BlockElementType } from '@/lib/constants';
-import { createElementPlugin } from 'ui/RichEditor/utils/elementPlugin';
+import { createPlugin } from '@/ui/RichEditor/utils';
 import LayoutBlockElement from './element';
 import { Editor, Element, Range, Transforms } from 'slate';
 
-const layoutBlockPlugin = createElementPlugin({
-  type: BlockElementType.LAYOUT,
-  element: LayoutBlockElement,
+const layoutBlockPlugin = createPlugin({
+  name: 'layout',
+  element: {
+    type: BlockElementType.LAYOUT,
+    component: LayoutBlockElement,
+  },
   extendEditor: editor => {
     const { deleteBackward, isEmpty, normalizeNode } = editor;
 
