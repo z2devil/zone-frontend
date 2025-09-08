@@ -1,5 +1,6 @@
 import { CodeSpanElement } from 'types/slate';
 import InlineChromiumBugfix from '../../components/InlineChromiumBugfix';
+import styles from './style.module.scss';
 
 interface CodeSpanProps {
   attributes: any;
@@ -9,11 +10,11 @@ interface CodeSpanProps {
 
 const CodeSpan = ({ attributes, children }: CodeSpanProps) => {
   return (
-    <code-span {...attributes}>
+    <span {...attributes} className={styles.codeSpan}>
       <InlineChromiumBugfix />
       {children}
       <InlineChromiumBugfix />
-    </code-span>
+    </span>
   );
 };
 

@@ -1,10 +1,13 @@
 import { BlockElementType } from '@/lib/constants';
-import { createElementPlugin } from 'ui/RichEditor/utils/elementPlugin';
+import { createPlugin } from '@/ui/RichEditor/utils';
 import BlockQuoteElement from './element';
 
-const blockQuotePlugin = createElementPlugin({
-  type: BlockElementType.BLOCK_QUOTE,
-  element: BlockQuoteElement,
+const blockQuotePlugin = createPlugin({
+  name: 'blockQuote',
+  element: {
+    type: BlockElementType.BLOCK_QUOTE,
+    component: BlockQuoteElement,
+  },
 });
 
 export default blockQuotePlugin;

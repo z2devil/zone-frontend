@@ -1,12 +1,15 @@
 import { BlockElementType } from '@/lib/constants';
-import { createElementPlugin } from 'ui/RichEditor/utils/elementPlugin';
+import { createPlugin } from '@/ui/RichEditor/utils';
 import VideoBlockElement from './element';
 
-const videoBlockPlugin = createElementPlugin({
-  type: BlockElementType.VIDEO,
-  element: VideoBlockElement,
-  isBlock: true,
-  isVoid: true,
+const videoBlockPlugin = createPlugin({
+  name: 'video',
+  element: {
+    type: BlockElementType.VIDEO,
+    component: VideoBlockElement,
+    isBlock: true,
+    isVoid: true,
+  },
 });
 
 export default videoBlockPlugin;

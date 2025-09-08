@@ -1,0 +1,27 @@
+.orderedList {
+  @apply my-2 list-none;
+
+  li {
+    @apply relative my-2 pl-7;
+
+    &::before {
+      @apply absolute left-0;
+      content: counter(list-item, decimal) '.';
+      color: var(--list-count-color, #666);
+    }
+  }
+}
+
+.unorderedList {
+  @apply my-2 list-none;
+
+  li {
+    @apply relative my-2 pl-7;
+
+    &::before {
+      @apply absolute left-1 top-2.5 h-1.5 w-1.5 rounded-full;
+      content: '';
+      background-color: var(--list-count-color, #666);
+    }
+  }
+}

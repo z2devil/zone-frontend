@@ -1,8 +1,9 @@
 import clsx from 'clsx';
+import { memo } from 'react';
 import { RenderLeafProps } from 'slate-react';
 import style from './style.module.scss';
 
-const Leaf = (props: RenderLeafProps) => {
+const Leaf = memo((props: RenderLeafProps) => {
   const { attributes, children, leaf } = props;
   const { bold, italic, underline, strikethrough, ...rest } = leaf;
 
@@ -19,6 +20,8 @@ const Leaf = (props: RenderLeafProps) => {
       {children}
     </span>
   );
-};
+});
+
+Leaf.displayName = 'Leaf';
 
 export default Leaf;

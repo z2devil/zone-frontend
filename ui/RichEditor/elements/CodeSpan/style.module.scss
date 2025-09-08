@@ -1,0 +1,6 @@
+.code-span {
+  @apply mx-1 rounded-md bg-black-50 px-1.5 py-0.5;
+  font-family: theme('fontFamily.mono');
+  font-size: 0.9em;
+  color: var(--color-primary, #222);
+}

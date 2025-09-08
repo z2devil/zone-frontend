@@ -336,7 +336,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
             ) : null}
             {/* 编辑区 */}
             <div className='z-0 flex flex-1 flex-col py-10'>
-              <RichEditor className='mx-auto max-w-[45rem] border-2 border-dashed border-black-50 p-6' />
+              <RichEditor className='mx-auto max-w-[45rem]' />
               {/* 保存状态 */}
               <div className='fixed bottom-0 h-8 w-full backdrop-blur-xl'>
                 <div className='mx-auto flex h-full max-w-[45rem] items-center justify-end gap-1'>

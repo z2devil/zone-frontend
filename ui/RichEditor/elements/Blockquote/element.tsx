@@ -1,4 +1,5 @@
 import { BlockQuoteElement } from 'types/slate';
+import styles from './style.module.scss';
 
 interface BlockQuoteProps {
   attributes: any;
@@ -7,7 +8,11 @@ interface BlockQuoteProps {
 }
 
 const BlockQuote = ({ attributes, children }: BlockQuoteProps) => {
-  return <blockquote {...attributes}>{children}</blockquote>;
+  return (
+    <blockquote {...attributes} className={styles.blockquote}>
+      {children}
+    </blockquote>
+  );
 };
 
 export default BlockQuote;

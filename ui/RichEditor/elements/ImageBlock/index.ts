@@ -1,12 +1,15 @@
 import { BlockElementType } from '@/lib/constants';
-import { createElementPlugin } from 'ui/RichEditor/utils/elementPlugin';
+import { createPlugin } from '@/ui/RichEditor/utils';
 import ImageBlockElement from './element';
 
-const imageBlockPlugin = createElementPlugin({
-  type: BlockElementType.IMAGE,
-  element: ImageBlockElement,
-  isBlock: true,
-  isVoid: true,
+const imageBlockPlugin = createPlugin({
+  name: 'image',
+  element: {
+    type: BlockElementType.IMAGE,
+    component: ImageBlockElement,
+    isBlock: true,
+    isVoid: true,
+  },
 });
 
 export default imageBlockPlugin;

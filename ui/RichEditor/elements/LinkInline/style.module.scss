@@ -1,0 +1,20 @@
+.link-container {
+  @apply relative;
+}
+
+.link-preview,
+.link-edit {
+  @apply cursor-pointer text-black-600 underline transition-colors;
+
+  &:hover {
+    @apply text-primary-100;
+  }
+}
+
+.link-input-container {
+  @apply absolute block w-40 -translate-y-full rounded border border-gray-300 bg-gray-50 px-2 py-1;
+}
+
+.link-input {
+  @apply w-full border-none bg-transparent outline-none;
+}

@@ -279,7 +279,7 @@ const options: ToolbarOption[] = [
     },
     onClick: (e, editor) => {
       e.preventDefault();
-      editorUtils.insertInlineNode(editor, InlineElementType.CODE_SPAN);
+      editorUtils.wrapElement(editor, InlineElementType.CODE_SPAN);
     },
   },
   {
@@ -293,7 +293,7 @@ const options: ToolbarOption[] = [
     },
     onClick: (e, editor) => {
       e.preventDefault();
-      editorUtils.insertInlineNode(editor, InlineElementType.LINK);
+      editorUtils.wrapElement(editor, InlineElementType.LINK);
     },
   },
 ];

@@ -1,13 +1,13 @@
-import { ElementPlugin } from './elementPlugin';
+import { Plugin } from './plugin';
 
-type ElementPluginResults = { [key: string]: ElementPlugin };
+type PluginResults = { [key: string]: Plugin };
 
 /**
  * 自动导入
  * @param context 上下文
  * @returns 导入结果
  */
-export function autoImportPlugins(): ElementPluginResults {
+export function autoImportPlugins(): PluginResults {
   const context = require.context(
     '@/ui/RichEditor/elements',
     true,
@@ -15,7 +15,7 @@ export function autoImportPlugins(): ElementPluginResults {
   );
 
   const keys = context.keys();
-  const result: ElementPluginResults = {};
+  const result: PluginResults = {};
 
   keys.forEach((key: string) => {
     const dirName = key.split('/')[1];

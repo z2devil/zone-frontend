@@ -5,3 +5,4 @@ export * from './contextmenu';
 export * from './editor';
 export * from './loading';
 export * from './imagePreview';
+export * from './additionalComponents';

@@ -1,10 +1,13 @@
 import { BlockElementType } from '@/lib/constants';
-import { createElementPlugin } from 'ui/RichEditor/utils/elementPlugin';
+import { createPlugin } from '@/ui/RichEditor/utils';
 import LayoutItemBlockElement from './element';
 
-const layoutItemBlockPlugin = createElementPlugin({
-  type: BlockElementType.LAYOUT_ITEM,
-  element: LayoutItemBlockElement,
+const layoutItemBlockPlugin = createPlugin({
+  name: 'layoutItem',
+  element: {
+    type: BlockElementType.LAYOUT_ITEM,
+    component: LayoutItemBlockElement,
+  },
 });
 
 export default layoutItemBlockPlugin;
