@@ -1,13 +1,16 @@
 import { BlockElementType } from '@/lib/constants';
-import { createElementPlugin } from 'ui/RichEditor/utils/elementPlugin';
+import { createPlugin } from '@/ui/RichEditor/utils';
 import ListElement from './element';
 import { Editor, Element, NodeEntry, Path, Range, Transforms } from 'slate';
 import { OrderedListElement, UnorderedListElement } from 'types/slate';
 import { HistoryEditor } from 'slate-history';
 
-const listPlugin = createElementPlugin({
-  type: [BlockElementType.OL_LIST, BlockElementType.UL_LIST],
-  element: ListElement,
+const listPlugin = createPlugin({
+  name: 'list',
+  element: {
+    type: [BlockElementType.OL_LIST, BlockElementType.UL_LIST],
+    component: ListElement,
+  },
   extendEditor: editor => {
     const { normalizeNode, deleteBackward } = editor;
 

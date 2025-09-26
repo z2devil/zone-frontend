@@ -1,12 +1,15 @@
 import { BlockElementType } from '@/lib/constants';
-import { createElementPlugin } from 'ui/RichEditor/utils/elementPlugin';
+import { createPlugin } from '@/ui/RichEditor/utils';
 import MusicBlockElement from './element';
 
-const musicBlockPlugin = createElementPlugin({
-  type: BlockElementType.MUSIC,
-  element: MusicBlockElement,
-  isBlock: true,
-  isVoid: true,
+const musicBlockPlugin = createPlugin({
+  name: 'music',
+  element: {
+    type: BlockElementType.MUSIC,
+    component: MusicBlockElement,
+    isBlock: true,
+    isVoid: true,
+  },
 });
 
 export default musicBlockPlugin;

@@ -4,12 +4,12 @@ import {
   useReadOnly,
   useSlate,
 } from 'slate-react';
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import Draggable from '../Draggable';
 import { EDITOR_TO_TYPE_TO_COMPONENT } from '@/lib/constants';
 import Selectable from '../Selectable';
 
-const Element = (props: RenderElementProps) => {
+const Element = memo((props: RenderElementProps) => {
   const { attributes, element } = props;
 
   const editor = useSlate();
@@ -49,6 +49,8 @@ const Element = (props: RenderElementProps) => {
   }, [editor, elementKey, isInline, path, props, readOnly, element]);
 
   return elementMap[element.type];
-};
+});
+
+Element.displayName = 'Element';
 
 export default Element;

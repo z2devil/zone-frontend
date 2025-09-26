@@ -1,11 +1,14 @@
 import { BlockElementType } from '@/lib/constants';
-import { createElementPlugin } from 'ui/RichEditor/utils/elementPlugin';
+import { createPlugin } from '@/ui/RichEditor/utils';
 import TipBlockElement from './element';
 import { Element, Transforms } from 'slate';
 
-const tipBlockPlugin = createElementPlugin({
-  type: BlockElementType.TIP,
-  element: TipBlockElement,
+const tipBlockPlugin = createPlugin({
+  name: 'tip',
+  element: {
+    type: BlockElementType.TIP,
+    component: TipBlockElement,
+  },
   extendEditor: editor => {
     const { normalizeNode } = editor;
 

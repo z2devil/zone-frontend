@@ -1,12 +1,15 @@
 import { BlockElementType } from '@/lib/constants';
-import { createElementPlugin } from 'ui/RichEditor/utils/elementPlugin';
+import { createPlugin } from '@/ui/RichEditor/utils';
 import ButtonElement from './element';
 
-const buttonPlugin = createElementPlugin({
-  type: BlockElementType.BUTTON,
-  element: ButtonElement,
-  isInline: true,
-  isVoid: true,
+const buttonPlugin = createPlugin({
+  name: 'button',
+  element: {
+    type: BlockElementType.BUTTON,
+    component: ButtonElement,
+    isInline: true,
+    isVoid: true,
+  },
 });
 
 export default buttonPlugin;

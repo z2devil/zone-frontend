@@ -1,0 +1,14 @@
+.blockquote {
+  @apply my-4 border-l-4 border-black-400 pl-4 leading-6 text-black-600;
+  font-size: 90%;
+
+  &::before {
+    content: '"';
+    @apply pr-1 text-2xl opacity-50;
+  }
+
+  &::after {
+    content: ' "';
+    @apply pr-1 text-2xl opacity-50;
+  }
+}

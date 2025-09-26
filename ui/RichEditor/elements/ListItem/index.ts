@@ -1,10 +1,13 @@
 import { BlockElementType } from '@/lib/constants';
-import { createElementPlugin } from 'ui/RichEditor/utils/elementPlugin';
+import { createPlugin } from '@/ui/RichEditor/utils';
 import ListItemElement from './element';
 
-const listItemPlugin = createElementPlugin({
-  type: BlockElementType.LIST_ITEM,
-  element: ListItemElement,
+const listItemPlugin = createPlugin({
+  name: 'listItem',
+  element: {
+    type: BlockElementType.LIST_ITEM,
+    component: ListItemElement,
+  },
 });
 
 export default listItemPlugin;

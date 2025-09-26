@@ -93,12 +93,12 @@ const Editor = (props: EditorProps) => {
       {fullScreen ? (
         createPortal(
           <div
-            className='fixed inset-0 z-50 flex gap-8 overflow-auto'
+            className='fixed inset-0 z-50 flex gap-8 overflow-y-auto overflow-x-hidden'
             ref={containerRef}>
             <div className='flex h-fit min-h-screen w-full flex-col bg-white'>
               {/* 工具栏 */}
               <Toolbar
-                className='z-10'
+                className='z-20'
                 RightSlot={
                   <div className='flex gap-2'>
                     <FullScreenButton
@@ -120,10 +120,10 @@ const Editor = (props: EditorProps) => {
                 <DraftTip calssName='z-10 top-12 backdrop-blur-xl' />
               ) : null}
               {/* 编辑区 */}
-              <div className='z-0 flex flex-1 flex-col py-10'>
-                <RichEditor className='mx-auto max-w-[45rem] border-2 border-dashed border-black-50 p-6' />
+              <div className='z-0 flex flex-1 flex-col'>
+                <RichEditor className='mx-auto max-w-[45rem] py-10' />
                 {/* 保存状态 */}
-                <div className='fixed bottom-0 h-8 w-full backdrop-blur-xl'>
+                <div className='sticky bottom-0 h-8 w-full backdrop-blur-xl'>
                   <div className='mx-auto flex h-full max-w-[45rem] items-center justify-end gap-1'>
                     <div
                       className={clsx(
@@ -142,9 +142,10 @@ const Editor = (props: EditorProps) => {
           document.body
         )
       ) : (
-        <div className='relative flex max-h-[70vh] flex-1 flex-col overflow-hidden'>
+        <div className='relative z-0 flex max-h-[70vh] flex-1 flex-col overflow-y-auto overflow-x-hidden'>
           {/* 工具栏 */}
           <Toolbar
+            className='z-20 backdrop-blur-xl'
             RightSlot={
               <FullScreenButton
                 fullScreen={fullScreen}
@@ -153,19 +154,23 @@ const Editor = (props: EditorProps) => {
             }
           />
           {/* 草稿 */}
-          {hasDraft ? <DraftTip /> : null}
+          {hasDraft ? (
+            <DraftTip calssName='z-10 top-12 backdrop-blur-xl' />
+          ) : null}
           {/* 编辑器 */}
-          <RichEditor className='p-6' />
-          {/* 保存状态 */}
-          <div className='flex items-center justify-end gap-1 px-6'>
-            <div
-              className={clsx(
-                'h-1 w-1 rounded-full',
-                isSaved ? 'bg-green-500' : 'bg-black-400'
-              )}></div>
-            <span className='text-xs text-black-600'>
-              {isSaved ? '已保存' : '未保存'}
-            </span>
+          <div className='flex flex-1 flex-col'>
+            <RichEditor className='p-6' />
+            {/* 保存状态 */}
+            <div className='sticky bottom-0 flex h-8 items-center justify-end gap-1 px-6 backdrop-blur-xl'>
+              <div
+                className={clsx(
+                  'h-1 w-1 rounded-full',
+                  isSaved ? 'bg-green-500' : 'bg-black-400'
+                )}></div>
+              <span className='text-xs text-black-600'>
+                {isSaved ? '已保存' : '未保存'}
+              </span>
+            </div>
           </div>
         </div>
       )}
