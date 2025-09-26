@@ -14,6 +14,7 @@ import { useMount } from 'react-use';
 import { useSlate } from 'slate-react';
 import { twMerge } from 'tailwind-merge';
 import { generateTitle } from '@/lib/ai';
+import { configs } from '@/lib/constants';
 
 export interface NoteOptions {
   bannerPath?: string;
@@ -67,7 +68,7 @@ const NotePublish = (props: NotePublishProps) => {
           setIsLoading(false);
           return resolve(null);
         }
-        setBannerPath(`${process.env.OSS_ROOT}/image/${fileName}`);
+        setBannerPath(`${configs.oss.root}/image/${fileName}`);
         setIsLoading(false);
         resolve(null);
       };

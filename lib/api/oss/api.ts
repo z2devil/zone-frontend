@@ -1,17 +1,26 @@
 import { IFetcher } from '@/lib/hooks/useRequest';
 import { UploadParams } from './types';
+import { configs } from '@/lib/constants';
+import { asyncHandler } from '@/lib/utils';
 
 export const upload =
   (fetcher: IFetcher<any>) => async (params: UploadParams) => {
-    const { policy, signature, accessKeyId } = await fetcher('/oss/policy', {
-      method: 'GET',
-    });
+    const [policyResult, policyError] = await asyncHandler(
+      fetcher('/oss/policy', {
+        method: 'GET',
+      })
+    );
+    if (policyError || !policyResult) {
+      throw new Error(policyError?.message || '获取上传凭证失败');
+    }
+
+    const { policy, signature, accessKeyId } = policyResult;
 
     if (!policy || !signature) {
       throw new Error('获取上传凭证失败');
     }
 
-    if (!process.env.OSS_ROOT) {
+    if (!configs.oss.root) {
       throw new Error('缺少 OSS 环境变量');
     }
 
@@ -31,18 +40,10 @@ export const upload =
     formData.append('OSSAccessKeyId', accessKeyId);
     formData.append(
       'key',
-      process.env.OSS_ROOT + '/' + params.fileType + '/' + '${filename}'
+      configs.oss.root + '/' + params.fileType + '/' + '${filename}'
     );
     formData.append('success_action_status', '200');
     formData.append('file', params.file, fileName);
-
-    const host = `https://${process.env.OSS_BUCKET}.${process.env.OSS_ENDPOINT}`;
-
-    await fetch(host, {
-      method: 'POST',
-      body: formData,
-      redirect: 'follow',
-    });
 
     return fileName;
   };

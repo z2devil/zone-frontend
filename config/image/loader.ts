@@ -1,5 +1,7 @@
 'use client';
 
+import { configs } from "@/lib/constants";
+
 interface ImageLoaderProps {
   src: string;
   width: number;
@@ -7,7 +9,7 @@ interface ImageLoaderProps {
 }
 
 const imageLoader = ({ src, width }: ImageLoaderProps) => {
-  return `https://${process.env.OSS_BUCKET}.${process.env.OSS_ENDPOINT}/${src}?x-oss-process=image/resize,w_${width}`;
+  return `${configs.request.downloadUrl}${src}?x-oss-process=image/resize,w_${width}`;
 };
 
 export default imageLoader;
