@@ -16,7 +16,7 @@ import RichEditor from '@/ui/RichEditor';
 import { withPluginSetup } from '@/ui/RichEditor/plugins';
 import { configs } from '@/lib/constants';
 
-const ABOUT_ID = configs.aboutNoteId;
+const ABOUT_ID = configs.aboutNoteId || '';
 
 const About = () => {
   const navigation = useRouter();
