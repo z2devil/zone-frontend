@@ -15,7 +15,6 @@ import {
   useModalUtilsStore,
   useNotificationUtilsStore,
 } from '@/lib/stores';
-import { getContentSummary } from '@/lib/utils/editor';
 import EmptyInfo from '@/ui/EmptyInfo';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import TOC from '@/ui/TOC';
@@ -64,7 +63,7 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
     if (!adjacentNotes.prev) return null;
     return {
       id: adjacentNotes.prev._id,
-      title: getContentSummary(adjacentNotes.prev.content),
+      title: adjacentNotes.prev.title || '无标题',
     };
   }, [adjacentNotes]);
 
@@ -72,7 +71,7 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
     if (!adjacentNotes.next) return null;
     return {
       id: adjacentNotes.next._id,
-      title: getContentSummary(adjacentNotes.next.content),
+      title: adjacentNotes.next.title || '无标题',
     };
   }, [adjacentNotes]);
 

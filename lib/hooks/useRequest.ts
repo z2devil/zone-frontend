@@ -46,6 +46,32 @@ const useRequest = () => {
     'Content-Type': configs.request.contentType,
   });
 
+  /**
+   * 统一异常处理函数
+   * @param error 错误信息
+   * @param status HTTP状态码或业务状态码
+   */
+  const handleError = useCallback(
+    (error: string, status: number) => {
+      // 需要重新登录的情况
+      if (status === 401 || status === 403) {
+        clear();
+        router.push('/login');
+        throw new Error('您的登录状态已过期，请重新登录');
+      }
+
+      // 请求过于频繁的情况
+      if (status === 429 && pathname !== '/too-many-requests') {
+        router.push('/too-many-requests');
+        throw new Error('您的请求过于频繁，请稍后再试');
+      }
+
+      // 其他错误情况，直接抛出错误
+      throw new Error(error);
+    },
+    [clear, router, pathname]
+  );
+
   const fetcher = useCallback(
     async <T = any>(
       url: string,
@@ -80,16 +106,12 @@ const useRequest = () => {
           requestConfig
         );
 
-        // 检查响应状态
+        // 检查 http 响应状态
         if (!response.ok) {
-          if (response.status === 401 || response.status === 403) {
-            clear();
-            router.push('/login');
-          }
-          if (response.status === 429 && pathname !== '/too-many-requests') {
-            router.push('/too-many-requests');
-          }
-          throw new Error(`Request failed with status ${response.status}`);
+          handleError(
+            `Request failed with status ${response.status}`,
+            response.status
+          );
         }
 
         // 根据 Content-Type 处理响应
@@ -100,12 +122,11 @@ const useRequest = () => {
             (await response.json()) as IResponse<T>;
 
           if (code !== 200) {
-            if (isArray(message)) {
-              const { message: msg } = message[0];
-              throw new Error(msg);
-            } else {
-              throw new Error((message as any) || 'Unknown error');
-            }
+            const errorMessage = isArray(message)
+              ? message[0]?.message || 'Unknown error'
+              : (message as any) || 'Unknown error';
+
+            handleError(errorMessage, code);
           }
 
           return data;
@@ -125,7 +146,7 @@ const useRequest = () => {
         throw error;
       }
     },
-    [clear, pathname, router, token]
+    [handleError, token]
   );
 
   const request: IRequest = useMemo(

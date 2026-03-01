@@ -5,7 +5,7 @@ import { getRandomRgbDataURL } from '@/lib/utils/rgbDataURL';
 import imageLoader from 'config/image/loader';
 import { ReactEditor, useSlateStatic } from 'slate-react';
 import { Editor, Path } from 'slate';
-import { BlockElementType } from '@/lib/constants';
+import { BlockElementType, configs } from '@/lib/constants';
 import { useImagePreviewUtilsStore } from '@/lib/stores';
 
 interface ImagePreviewProps {
@@ -31,7 +31,7 @@ const ImagePreview = (props: ImagePreviewProps) => {
   const isLegalImageUrl = useMemo(() => {
     return (
       element.url &&
-      (element.url.startsWith(`https://${process.env.OSS_BUCKET}`) ||
+      (element.url.startsWith(`https://${configs.oss.bucket}`) ||
         element.url.startsWith('zone/image/'))
     );
   }, [element.url]);

@@ -14,8 +14,9 @@ import { createEditor } from 'slate';
 import { Slate as SlateProvider } from 'slate-react';
 import RichEditor from '@/ui/RichEditor';
 import { withPluginSetup } from '@/ui/RichEditor/plugins';
+import { configs } from '@/lib/constants';
 
-const ABOUT_ID = '65ebc4f8f3cdb3499f7c32bb';
+const ABOUT_ID = configs.aboutNoteId || '';
 
 const About = () => {
   const navigation = useRouter();

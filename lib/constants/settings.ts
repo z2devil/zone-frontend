@@ -2,12 +2,23 @@ export const configs = {
   /**
    * 标题
    */
-  title: '中二Devil的个人博客',
+  title: process.env.TITLE,
+
+  /**
+   * 描述
+   */
+  description: process.env.DESCRIPTION,
 
   /**
    * 作者
    */
-  author: '中二Devil',
+  author: process.env.AUTHOR,
+
+  /**
+   * 基础 URL
+   */
+  baseURL: process.env.BASE_URL,
+
   /**
    * 请求相关
    */
@@ -16,7 +27,7 @@ export const configs = {
     baseURL: `${process.env.BASE_URL}/api`,
 
     // oss 地址
-    downloadUrl: 'https://z2devil-bucket.oss-cn-beijing.aliyuncs.com/',
+    downloadUrl: `https://${process.env.OSS_BUCKET}.${process.env.OSS_ENDPOINT}/`,
 
     // 请求超时时间: 30000,
     timeout: 30000,
@@ -35,11 +46,23 @@ export const configs = {
    * oss 相关
    */
   oss: {
-    accessid: '***REMOVED***',
-    endpoint: 'oss-cn-beijing.aliyuncs.com',
-    bucket: 'z2devil-bucket',
-    root: 'blog/',
-    //上传图片最大大小（15MB）
-    maxImageSize: 15 * 1024 * 1024,
+    accessid: process.env.OSS_ACCESSID,
+    endpoint: process.env.OSS_ENDPOINT,
+    bucket: process.env.OSS_BUCKET,
+    root: process.env.OSS_ROOT,
+    maxImageSize: process.env.OSS_MAX_IMAGE_SIZE,
   },
+
+  /**
+   * ai 相关
+   */
+  ai: {
+    baseURL: process.env.AI_BASE_URL,
+    apiKey: process.env.AI_API_KEY,
+  },
+
+  /**
+   * 关于页面
+   */
+  aboutNoteId: process.env.ABOUT_NOTE_ID,
 };

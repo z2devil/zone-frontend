@@ -27,7 +27,7 @@ const GENERATE_SUMMARY_SYSTEM_PROMPT = `
 
 export const generateSummary = async (note: string): Promise<string> => {
   const res = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
+    model: 'deepseek-chat',
     messages: [
       {
         role: 'system',
@@ -83,7 +83,7 @@ const GENERATE_TITLE_SYSTEM_PROMPT = `
 1. 核心聚焦：准确反映文章核心主题或独特观点
 2. 关键词前置：优先使用文章中的关键术语/核心概念
 3. 吸引力强：使用数字、对比、悬念等技巧增强点击欲
-4. 风格适配：
+4. 风格适配：no
    - 技术类：突出技术方案/创新点（如"基于XXX的YYY系统实现"）
    - 教程类：明确结果导向（如"三步实现ZZZ效果"）
    - 观点类：使用引发思考的句式（如"为什么说AAA是BBB的未来？"）
@@ -92,7 +92,7 @@ const GENERATE_TITLE_SYSTEM_PROMPT = `
 
 export const generateTitle = async (note: string): Promise<string> => {
   const res = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
+    model: 'deepseek-chat',
     messages: [
       {
         role: 'system',

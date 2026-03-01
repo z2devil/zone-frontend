@@ -1,8 +1,9 @@
 import OpenAI from 'openai';
+import { configs } from '../constants';
 
 export const openai = new OpenAI({
-  baseURL: 'https://api.chatanywhere.tech',
-  apiKey: '***REMOVED***',
+  baseURL: configs.ai.baseURL,
+  apiKey: configs.ai.apiKey,
   dangerouslyAllowBrowser: true,
 });
 

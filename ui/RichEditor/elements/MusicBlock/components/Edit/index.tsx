@@ -73,7 +73,7 @@ const MusicEdit = (props: MusicPreviewProps) => {
         Transforms.setNodes(
           editor,
           {
-            url: `${configs.request.downloadUrl}${process.env.OSS_ROOT}/audio/${fileName}`,
+            url: `${configs.request.downloadUrl}${configs.oss.root}/audio/${fileName}`,
             title: file.name,
           },
           { at: ReactEditor.findPath(editor, element) }

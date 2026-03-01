@@ -14,7 +14,6 @@ import { CARD_WIDTH, GAP } from '@/ui/Masonry/constants';
 import clsx from 'clsx';
 import { CategoryEntity, getCategoriesAPI } from '@/lib/api/aggregate';
 import { useMount } from 'react-use';
-import { getContentSummary } from '@/lib/utils/editor';
 import SearchBanner from '@/ui/SearchBanner';
 import { isEqual, sortBy } from 'lodash';
 import SearchLayer from '@/ui/SearchLayer';

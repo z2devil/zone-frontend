@@ -1,10 +1,11 @@
 import '@/styles/globals.css';
 import RootProvider from '@/ui/RootProvider';
 import clsx from 'clsx';
+import { configs } from '@/lib/constants';
 
 export const metadata = {
-  title: '黑山羊日志',
-  description: '黑山羊日志',
+  title: configs.title,
+  description: configs.description,
 };
 
 interface RootLayoutProps {

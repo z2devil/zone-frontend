@@ -19,6 +19,9 @@ import { getRandomRgbDataURL } from '@/lib/utils/rgbDataURL';
 import Resizable, { ResizeDirection } from '@/ui/Resizable';
 import clsx from 'clsx';
 import imageLoader from 'config/image/loader';
+import { configs } from '@/lib/constants';
+import { useNotificationUtilsStore } from '@/lib/stores';
+import { NotificationType } from '@/ui/Notification/components/Notification';
 
 interface ImageEditProps {
   element: ImageBlockElement;
@@ -33,6 +36,8 @@ const ImageEdit = (props: ImageEditProps) => {
   const selected = useSelected();
 
   const [request, fetcher] = useRequest();
+
+  const { utils: notificationUtils } = useNotificationUtilsStore();
 
   const [overrideWidth, setOverrideWidth] = useState<number | null>(null);
 
@@ -55,7 +60,7 @@ const ImageEdit = (props: ImageEditProps) => {
   const isLegalImageUrl = useMemo(() => {
     return (
       element.url &&
-      (element.url.startsWith(`https://${process.env.OSS_BUCKET}`) ||
+      (element.url.startsWith(`https://${configs.oss.bucket}`) ||
         element.url.startsWith('zone/image/'))
     );
   }, [element.url]);
@@ -76,7 +81,7 @@ const ImageEdit = (props: ImageEditProps) => {
 
         // 上传文件并获取文件名
         const fileName = await upload(fetcher)({ file, fileType: 'image' });
-        return `${process.env.OSS_ROOT}/image/${fileName}`;
+        return `${configs.oss.root}/image/${fileName}`;
       } catch (error) {
         console.error('Failed to download or upload external image:', error);
         return null;
@@ -130,15 +135,19 @@ const ImageEdit = (props: ImageEditProps) => {
             file,
             fileType: 'image',
           });
-        } catch (error) {
+        } catch (error: any) {
           setIsLoading(false);
+          notificationUtils?.open({
+            type: NotificationType.ERROR,
+            content: error?.message || '上传图片失败',
+          });
           return resolve(null);
         }
         HistoryEditor.withoutSaving(editor, () => {
           Transforms.setNodes(
             editor,
             {
-              url: `${process.env.OSS_ROOT}/image/${fileName}`,
+              url: `${configs.oss.root}/image/${fileName}`,
             },
             { at: ReactEditor.findPath(editor, element) }
           );
@@ -149,7 +158,7 @@ const ImageEdit = (props: ImageEditProps) => {
       input.click();
     });
     await promise;
-  }, [editor, element, fetcher]);
+  }, [editor, element, fetcher, notificationUtils]);
 
   const handleLoad: ReactEventHandler<HTMLImageElement> = useCallback(
     e => {
