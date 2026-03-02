@@ -69,7 +69,6 @@
     "marked": "^9.1.0",
     "motion": "^12.23.12",
     "next": "14.2.32",
-    "openai": "^4.73.0",
     "postcss": "8.4.49",
     "prettier": "^3.3.2",
     "prettier-eslint": "^16.3.0",

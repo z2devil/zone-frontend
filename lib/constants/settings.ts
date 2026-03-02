@@ -54,14 +54,6 @@ export const configs = {
   },
 
   /**
-   * ai 相关
-   */
-  ai: {
-    baseURL: process.env.AI_BASE_URL,
-    apiKey: process.env.AI_API_KEY,
-  },
-
-  /**
    * 关于页面
    */
   aboutNoteId: process.env.ABOUT_NOTE_ID,
