@@ -23,7 +23,11 @@ export type NoteInfo = Pick<
   NoteEntity,
   '_id' | 'content' | 'title' | 'bannerPath' | 'createdAt'
 > & {
-  author: string;
+  author: {
+    _id: string;
+    nickname: string;
+    avatarPath: string;
+  };
   tags: TagInfo[];
 };
 
