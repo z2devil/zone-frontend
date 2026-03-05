@@ -7,6 +7,7 @@ import { useNotificationUtilsStore } from '@/lib/stores';
 import { ROUTER } from '@/lib/constants/router';
 import { usePathname } from 'next/navigation';
 import RouterLink from './components/RouterLink';
+import Link from 'next/link';
 
 const enum MenuKey {
   MORE,
@@ -42,9 +43,9 @@ const RootHeader = () => {
     <>
       <div className='sticky top-0 z-20 flex h-[3.625rem] w-full items-center justify-between border-b border-black-80 bg-gray-50 bg-opacity-50 px-5 backdrop-blur-xl'>
         {/* logo */}
-        <div>
+        <Link href='/note'>
           <i className='iconfont icon-logo text-[2rem] text-black-900'></i>
-        </div>
+        </Link>
         {/* 导航 */}
         <div className='pointer-events-none absolute left-0 top-0 flex h-full w-full justify-center px-28 max-sm:hidden'>
           <div className='pointer-events-auto flex h-full max-w-xs flex-1 items-center justify-between'>
