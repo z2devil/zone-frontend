@@ -30,7 +30,7 @@ export const NoteDetail = (props: NoteDetailProps) => {
   );
 
   return (
-    <div className='flex flex-col gap-4 p-8'>
+    <div className='flex flex-col gap-4 p-4 md:p-8'>
       {note.bannerPath ? (
         <div className='relative mb-2 aspect-[3/1] w-full overflow-hidden rounded-lg'>
           <Image
