@@ -2,26 +2,28 @@
   @apply my-2 font-bold;
 }
 
+/* 卡片标题 text-19 = 1.1875rem (19px)，所有 heading 尺寸不超过它 */
+
 .h1 {
-  @apply text-2xl;
+  @apply text-lg; /* 18px, 原 text-2xl (24px) */
 }
 
 .h2 {
-  @apply text-xl;
+  @apply text-base; /* 16px, 原 text-xl (20px) */
 }
 
 .h3 {
-  @apply text-lg;
+  @apply text-sm; /* 14px, 原 text-lg (18px) */
 }
 
 .h4 {
-  @apply text-base;
+  @apply text-sm; /* 14px, 原 text-base (16px) */
 }
 
 .h5 {
-  @apply text-sm;
+  @apply text-xs; /* 12px */
 }
 
 .h6 {
-  @apply text-xs;
+  @apply text-xs; /* 12px */
 }
