@@ -141,6 +141,21 @@ export type TipBlockElement = {
   children: ParagraphElement[];
 };
 
+export type SteamVideoBlockElement = {
+  type: BlockElementType.STEAM_VIDEO;
+  appId?: string;
+  hlsUrl?: string;
+  thumbnailUrl?: string;
+  title?: string;
+  children: CustomText[];
+};
+
+export type SteamWidgetBlockElement = {
+  type: BlockElementType.STEAM_WIDGET;
+  appId?: string;
+  children: CustomText[];
+};
+
 export type InlineElement = CodeSpanElement | LinkInlineElement;
 
 export type BlockElement =
@@ -159,7 +174,9 @@ export type BlockElement =
   | WhiteBoardBlockElement
   | LayoutBlockElement
   | LayoutItemBlockElement
-  | TipBlockElement;
+  | TipBlockElement
+  | SteamVideoBlockElement
+  | SteamWidgetBlockElement;
 
 export type CustomElement = InlineElement | BlockElement;
 

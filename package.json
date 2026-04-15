@@ -60,6 +60,7 @@
     "eslint-plugin-prettier": "^5.1.3",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "hls.js": "1.6.15",
     "husky": "^8.0.3",
     "immer": "^10.0.2",
     "input-otp": "^1.4.1",
@@ -106,5 +107,8 @@
     "cz-customizable": {
       "config": ".cz-config.json"
     }
+  },
+  "devDependencies": {
+    "@types/hls.js": "1.0.0"
   }
 }
