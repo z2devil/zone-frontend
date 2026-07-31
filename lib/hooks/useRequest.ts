@@ -3,6 +3,7 @@ import { useAuthStore } from '../stores';
 import { configs } from '../constants';
 import { isArray } from 'lodash';
 import { usePathname, useRouter } from 'next/navigation';
+import { useNotesStore } from '../stores/notes';
 
 type RequestConfig = Omit<RequestInit, 'method'>;
 
@@ -56,6 +57,7 @@ const useRequest = () => {
       // 需要重新登录的情况
       if (status === 401 || status === 403) {
         clear();
+        useNotesStore.getState().clear();
         router.push('/login');
         throw new Error('您的登录状态已过期，请重新登录');
       }

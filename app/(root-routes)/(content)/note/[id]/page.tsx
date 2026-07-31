@@ -3,15 +3,18 @@
 import {
   AdjacentNotes,
   NoteInfo,
+  canShareNote,
   deleteNoteAPI,
   getAdjacentNotesAPI,
   getNoteAPI,
+  isNoteOwner,
 } from '@/lib/api/notes';
 import { UserRole } from '@/lib/api/user';
 import usePermission from '@/lib/hooks/usePermission';
 import useRequest from '@/lib/hooks/useRequest';
 import {
   useContextMenuUtilsStore,
+  useAuthStore,
   useModalUtilsStore,
   useNotificationUtilsStore,
 } from '@/lib/stores';
@@ -52,7 +55,11 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
 
   const isAdmin = usePermission([UserRole.ADMIN, UserRole.MANAGER]);
 
+  const userId = useAuthStore(state => state.userInfo?._id);
+
   const [note, setNote] = useState<NoteInfo | null>(null);
+
+  const canManage = Boolean(note && isAdmin && isNoteOwner(note, userId));
 
   const [adjacentNotes, setAdjacentNotes] = useState<AdjacentNotes>({
     prev: null,
@@ -85,7 +92,6 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
       setNote(res);
       const adjacentNotes = await getAdjacentNotesAPI(request)(params.id);
       setAdjacentNotes(adjacentNotes);
-      console.log('[ adjacentNotes ]', adjacentNotes);
     } catch (error) {
       return notFound();
     }
@@ -114,7 +120,7 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
             },
             sticky: true,
           },
-          {
+          canShareNote(note) && {
             key: 'share',
             label: '分享',
             icon: <i className='iconfont icon-share-filled text-17' />,
@@ -123,16 +129,7 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
             },
             sticky: true,
           },
-          isAdmin && {
-            key: 'lock',
-            label: '上锁',
-            icon: <i className='iconfont icon-lock-filled text-17' />,
-            onClick: () => {
-              console.log('lock');
-            },
-            sticky: true,
-          },
-          isAdmin && {
+          canManage && {
             key: 'edit',
             label: '编辑',
             icon: <i className='iconfont icon-edit text-19' />,
@@ -142,7 +139,7 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
               });
             },
           },
-          isAdmin && {
+          canManage && {
             key: 'delete',
             label: '删除',
             icon: <i className='iconfont icon-trash text-19' />,
@@ -183,7 +180,7 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
     },
     [
       contextMenuUtils,
-      isAdmin,
+      canManage,
       modalUtils,
       navigation,
       note,

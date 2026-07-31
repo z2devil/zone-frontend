@@ -9,11 +9,25 @@ import {
 } from './types';
 import { cache } from 'react';
 
+const normalizeNote = (note: NoteInfo | null | undefined): NoteInfo => {
+  if (!note) throw new Error('笔记不存在');
+  return {
+    ...note,
+    // 历史数据缺少该字段时按公开处理；未知值则保守地按私密处理。
+    visibility:
+      note.visibility === undefined
+        ? 'public'
+        : note.visibility === 'public'
+          ? 'public'
+          : 'private',
+  };
+};
+
 /**
  * 获取 note
  */
 export const getNoteAPI = (request: IRequest) => async (id: string) => {
-  return await request.get<NoteInfo>(`/note/${id}`);
+  return normalizeNote(await request.get<NoteInfo>(`/note/${id}`));
 };
 
 /**
@@ -21,7 +35,8 @@ export const getNoteAPI = (request: IRequest) => async (id: string) => {
  */
 export const getNotesAPI = (request: IRequest) =>
   cache(async (params: GetNotesParams) => {
-    return await request.get<IPageData<NoteInfo>>('/note', params);
+    const data = await request.get<IPageData<NoteInfo>>('/note', params);
+    return { ...data, list: data.list.map(normalizeNote) };
   });
 
 /**
@@ -29,7 +44,11 @@ export const getNotesAPI = (request: IRequest) =>
  */
 export const getAdjacentNotesAPI = (request: IRequest) =>
   cache(async (id: string) => {
-    return await request.get<AdjacentNotes>(`/note/adjacent/${id}`);
+    const data = await request.get<AdjacentNotes>(`/note/adjacent/${id}`);
+    return {
+      prev: data.prev ? normalizeNote(data.prev) : null,
+      next: data.next ? normalizeNote(data.next) : null,
+    };
   });
 
 /**
@@ -37,9 +56,10 @@ export const getAdjacentNotesAPI = (request: IRequest) =>
  */
 export const postNoteAPI =
   (request: IRequest) => async (params: PostNoteParams) => {
-    return await request.post<NoteInfo>('/note', {
+    const note = await request.post<NoteInfo>('/note', {
       body: JSON.stringify(params),
     });
+    return normalizeNote(note);
   };
 
 /**
@@ -58,7 +78,8 @@ export const deleteNoteAPI = (request: IRequest) => async (id: string) => {
  */
 export const putNoteAPI =
   (request: IRequest) => async (params: PutNoteParams) => {
-    return await request.put<NoteInfo>('/note', {
+    const note = await request.put<NoteInfo>('/note', {
       body: JSON.stringify(params),
     });
+    return normalizeNote(note);
   };

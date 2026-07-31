@@ -12,6 +12,7 @@ import usePermission from '@/lib/hooks/usePermission';
 import {
   useAuthStore,
   useModalUtilsStore,
+  useNotesStore,
   useNotificationUtilsStore,
   userRoleNameSelector,
 } from '@/lib/stores';
@@ -51,6 +52,8 @@ const NavLayer = (props: NavLayerProps) => {
    ************************************************/
 
   const { userInfo, setUserInfo, setToken } = useAuthStore();
+
+  const clearNotes = useNotesStore(state => state.clear);
 
   const userRoleName = userRoleNameSelector(useAuthStore);
 
@@ -116,6 +119,7 @@ const NavLayer = (props: NavLayerProps) => {
         modalUtils?.close(uuid);
         setUserInfo(null);
         setToken(null);
+        clearNotes();
         notificationUtils?.open({
           type: NotificationType.SUCCESS,
           content: '退出成功',
@@ -128,7 +132,14 @@ const NavLayer = (props: NavLayerProps) => {
         modalUtils?.close(uuid);
       },
     });
-  }, [modalUtils, setUserInfo, setToken, notificationUtils, handleBack]);
+  }, [
+    clearNotes,
+    handleBack,
+    modalUtils,
+    notificationUtils,
+    setToken,
+    setUserInfo,
+  ]);
 
   return (
     <div

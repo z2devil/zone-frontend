@@ -26,6 +26,7 @@ const note: NoteInfo = {
   createdAt: '2026-07-31T00:00:00.000Z',
   tags: [],
   title: 'Hello',
+  visibility: 'public',
 };
 
 describe('notes API contract', () => {
@@ -40,11 +41,28 @@ describe('notes API contract', () => {
     expect(getMock).toHaveBeenCalledWith('/note/note-1', undefined);
   });
 
+  it('normalizes historical notes without visibility as public', async () => {
+    getMock.mockResolvedValue({ ...note, visibility: undefined });
+
+    await expect(getNoteAPI(request)('note-1')).resolves.toMatchObject({
+      visibility: 'public',
+    });
+  });
+
+  it('turns hidden or missing note responses into a stable not-found error', async () => {
+    getMock.mockResolvedValue(null);
+
+    await expect(getNoteAPI(request)('hidden-note')).rejects.toThrow(
+      '笔记不存在'
+    );
+  });
+
   it('serializes the create payload without adding ownership fields', async () => {
     const params: PostNoteParams = {
       content: note.content,
       tags: ['tag-1'],
       title: note.title,
+      visibility: 'private',
     };
     postMock.mockResolvedValue(note);
 
@@ -59,6 +77,7 @@ describe('notes API contract', () => {
       _id: note._id,
       content: note.content,
       title: note.title,
+      visibility: 'public',
     };
     putMock.mockResolvedValue(note);
 

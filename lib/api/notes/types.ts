@@ -1,6 +1,9 @@
 import { TagInfo } from '../tags';
 import { CommonInfo } from '../types';
 import { IPageParams } from '../types';
+import { UserInfo } from '../user';
+
+export type NoteVisibility = 'public' | 'private';
 
 /************************************************
  * ✨ 实体
@@ -14,6 +17,7 @@ export interface NoteEntity extends CommonInfo {
   viewsNum: number;
   bannerPath?: string;
   title?: string;
+  visibility: NoteVisibility;
 }
 
 /**
@@ -21,9 +25,9 @@ export interface NoteEntity extends CommonInfo {
  */
 export type NoteInfo = Pick<
   NoteEntity,
-  '_id' | 'content' | 'title' | 'bannerPath' | 'createdAt'
+  '_id' | 'content' | 'title' | 'bannerPath' | 'createdAt' | 'visibility'
 > & {
-  author: string;
+  author: string | UserInfo;
   tags: TagInfo[];
 };
 
@@ -55,6 +59,7 @@ export interface PostNoteParams {
   bannerPath?: string;
   title?: string;
   tags?: string[];
+  visibility: NoteVisibility;
 }
 
 /**

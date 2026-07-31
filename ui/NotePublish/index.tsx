@@ -15,11 +15,14 @@ import { useSlate } from 'slate-react';
 import { twMerge } from 'tailwind-merge';
 import { generateTitle } from '@/lib/ai';
 import { configs } from '@/lib/constants';
+import { NoteVisibility } from '@/lib/api/notes';
+import VisibilitySelector from './VisibilitySelector';
 
 export interface NoteOptions {
   bannerPath?: string;
   title?: string;
   tags: string[];
+  visibility: NoteVisibility;
 }
 
 interface NotePublishProps {
@@ -81,6 +84,10 @@ const NotePublish = (props: NotePublishProps) => {
    ************************************************/
 
   const [title, setTitle] = useState(options.title || '');
+
+  const [visibility, setVisibility] = useState<NoteVisibility>(
+    options.visibility || 'public'
+  );
 
   const handleTitleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -209,8 +216,9 @@ const NotePublish = (props: NotePublishProps) => {
       bannerPath,
       title,
       tags: selectedTagIds,
+      visibility,
     });
-  }, [bannerPath, onPublish, selectedTagIds, title]);
+  }, [bannerPath, onPublish, selectedTagIds, title, visibility]);
 
   return (
     <div className='flex flex-col gap-5 p-6'>
@@ -289,6 +297,7 @@ const NotePublish = (props: NotePublishProps) => {
           ) : null}
         </div>
       </div>
+      <VisibilitySelector value={visibility} onChange={setVisibility} />
       {/* 标签 */}
       <div className='flex flex-col gap-1'>
         <div className='flex w-full items-end justify-between'>

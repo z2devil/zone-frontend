@@ -142,6 +142,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
         bannerPath: res.bannerPath,
         title: res.title,
         tags: res.tags.map(tag => tag._id),
+        visibility: res.visibility,
       };
     } catch (error) {
       return notFound();
@@ -197,17 +198,18 @@ export default function WriteNote(props: NoteDetailPageProps) {
     title: '',
     bannerPath: '',
     tags: [],
+    visibility: 'public',
   });
 
   const handlePublish = useCallback(
     async (res: NoteOptions) => {
-      console.log('[ handlePublish ]', res);
       try {
         const data = {
           title: res.title,
           content: JSON.stringify(contentRef.current),
           bannerPath: res.bannerPath,
           tags: res.tags,
+          visibility: res.visibility,
         };
         if (isCreate) {
           const nextNote = await postNoteAPI(request)(data);

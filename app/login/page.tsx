@@ -3,6 +3,7 @@
 import { getVerificationCodeAPI, signAPI } from '@/lib/api/user';
 import useRequest from '@/lib/hooks/useRequest';
 import { useAuthStore } from '@/lib/stores';
+import { useNotesStore } from '@/lib/stores/notes';
 import { validate, FormRules } from '@/lib/utils/formRules';
 import Button from '@/ui/Button';
 import VerificationCodeInput from '@/ui/VerificationCodeInput';
@@ -25,6 +26,8 @@ const LoginPage = () => {
   const setUserInfo = useAuthStore(state => state.setUserInfo);
 
   const setToken = useAuthStore(state => state.setToken);
+
+  const clearNotes = useNotesStore(state => state.clear);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -78,6 +81,7 @@ const LoginPage = () => {
         setTip('登录成功');
         setUserInfo(info);
         setToken(token);
+        clearNotes();
         setTimeout(() => {
           router.push('/');
         }, 1000);
@@ -87,7 +91,7 @@ const LoginPage = () => {
         setIsLoading(false);
       }
     },
-    [isLoading, request, email, setUserInfo, setToken, router]
+    [clearNotes, email, isLoading, request, router, setToken, setUserInfo]
   );
 
   // 验证码输入变化
