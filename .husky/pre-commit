@@ -3,3 +3,4 @@
 
 npx lint-staged --no-stash
 npx tsc --noEmit
+pnpm test
