@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Zone 笔记开发'
+  short_description: '安全实现 Zone 笔记发布、检索、权限控制与前后端联动流程'
+  default_prompt: 'Use $zone-note-development to implement a robust note feature across the Zone frontend and backend.'

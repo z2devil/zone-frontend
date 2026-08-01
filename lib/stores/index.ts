@@ -6,3 +6,4 @@ export * from './editor';
 export * from './loading';
 export * from './imagePreview';
 export * from './additionalComponents';
+export * from './notes';

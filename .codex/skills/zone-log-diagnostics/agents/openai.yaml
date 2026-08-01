@@ -1,0 +1,4 @@
+interface:
+  display_name: "Zone 日志排查"
+  short_description: "只读查询、关联并诊断 Zone 生产后端结构化日志"
+  default_prompt: "使用 $zone-log-diagnostics 排查 Zone 后端最近的错误并给出证据。"

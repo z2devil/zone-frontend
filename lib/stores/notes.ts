@@ -11,6 +11,7 @@ interface NotesState {
 }
 
 interface NotesAction {
+  clear: () => void;
   setNotes: (notes: NoteInfo[]) => void;
   setFilterTags: (tags: string[]) => void;
   setFilterContent: (content?: string) => void;
@@ -21,6 +22,12 @@ export const useNotesStore = create(
     notes: [],
     filter: {
       tags: [],
+    },
+    clear: () => {
+      set(state => {
+        state.notes = [];
+        state.filter = { tags: [] };
+      });
     },
     setNotes: notes => {
       set(state => {

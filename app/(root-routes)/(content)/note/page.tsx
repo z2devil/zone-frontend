@@ -6,14 +6,13 @@ import NoteCard from '@/ui/NoteCard';
 import PageBanner from '@/ui/PageBanner';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NotificationType } from '@/ui/Notification/components/Notification';
-import { useNotificationUtilsStore } from '@/lib/stores';
+import { useAuthStore, useNotificationUtilsStore } from '@/lib/stores';
 import useRequest from '@/lib/hooks/useRequest';
 import { useNotesStore } from '@/lib/stores/notes';
 import EmptyInfo from '@/ui/EmptyInfo';
 import { CARD_WIDTH, GAP } from '@/ui/Masonry/constants';
 import clsx from 'clsx';
 import { CategoryEntity, getCategoriesAPI } from '@/lib/api/aggregate';
-import { useMount } from 'react-use';
 import SearchBanner from '@/ui/SearchBanner';
 import { isEqual, sortBy } from 'lodash';
 import SearchLayer from '@/ui/SearchLayer';
@@ -39,6 +38,10 @@ const NotePage = () => {
 
   const [request] = useRequest();
 
+  const token = useAuthStore(state => state.token);
+
+  const latestActor = useRef<string | null>();
+
   const { utils: notificationUtils } = useNotificationUtilsStore();
 
   const [noteTotal, setNoteTotal] = useState(Infinity);
@@ -53,6 +56,8 @@ const NotePage = () => {
 
   const isLoadingRef = useRef(isLoading);
 
+  const requestIdRef = useRef(0);
+
   // 最后更新时间
   const lastUpdated = useMemo(() => {
     if (!notes.length) return;
@@ -61,33 +66,41 @@ const NotePage = () => {
 
   const handleLoadData = useCallback(
     async (force = false) => {
-      console.log('[ handleLoadData ]');
       if (notes.length >= noteTotal && !force) {
         return;
       }
-      if (isLoadingRef.current) return;
+      if (isLoadingRef.current && !force) return;
+      const requestId = ++requestIdRef.current;
       isLoadingRef.current = true;
       setIsLoading(true);
       const current = currentRef.current;
       const nextCurrent = current + 1;
       currentRef.current = nextCurrent;
-      const res = await getNotesAPI(request)({
-        current: nextCurrent,
-        size: FETCH_SIZE,
-        tags: filter.tags.length ? filter.tags : void 0,
-        search: filter.content,
-      });
-      isLoadingRef.current = false;
-      setIsLoading(false);
-      setNotes(current === 0 ? res.list : notes.concat(res.list));
-      setNoteTotal(res.total);
-      return res.list;
+      try {
+        const res = await getNotesAPI(request)({
+          current: nextCurrent,
+          size: FETCH_SIZE,
+          tags: filter.tags.length ? filter.tags : void 0,
+          search: filter.content,
+        });
+        if (requestId !== requestIdRef.current) return;
+        setNotes(current === 0 ? res.list : notes.concat(res.list));
+        setNoteTotal(res.total);
+        return res.list;
+      } finally {
+        if (requestId === requestIdRef.current) {
+          isLoadingRef.current = false;
+          setIsLoading(false);
+        }
+      }
     },
     [notes, noteTotal, request, filter.tags, filter.content, setNotes]
   );
 
   useEffect(() => {
+    const actorChanged = latestActor.current !== token;
     if (
+      !actorChanged &&
       filter.content === latestSearchContent.current &&
       arraysEqualUnordered(filter.tags, latestSearchTag.current)
     ) {
@@ -95,10 +108,12 @@ const NotePage = () => {
     }
     latestSearchContent.current = filter.content;
     latestSearchTag.current = filter.tags;
+    latestActor.current = token;
     currentRef.current = 0;
     setNoteTotal(Infinity);
+    if (actorChanged) setNotes([]);
     handleLoadData(true);
-  }, [handleLoadData, setNotes, filter.content, filter.tags]);
+  }, [handleLoadData, setNotes, filter.content, filter.tags, token]);
 
   const [showSearchLayer, setShowSearchLayer] = useState(false);
 
@@ -125,10 +140,16 @@ const NotePage = () => {
 
   const [categories, setCategories] = useState<CategoryEntity[]>([]);
 
-  useMount(async () => {
-    const res = await getCategoriesAPI(request)();
-    setCategories(res);
-  });
+  useEffect(() => {
+    let active = true;
+    setCategories([]);
+    getCategoriesAPI(request)().then(res => {
+      if (active) setCategories(res);
+    });
+    return () => {
+      active = false;
+    };
+  }, [request, token]);
 
   const handleCategoryClick = useCallback(
     (id?: string) => {

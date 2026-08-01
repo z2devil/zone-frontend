@@ -1,4 +1,9 @@
-import { NoteInfo, deleteNoteAPI } from '@/lib/api/notes';
+import {
+  NoteInfo,
+  canShareNote,
+  deleteNoteAPI,
+  isNoteOwner,
+} from '@/lib/api/notes';
 import dayjs from '@/lib/utils/dayjs';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NotificationType } from '../Notification/components/Notification';
@@ -6,6 +11,7 @@ import usePermission from '@/lib/hooks/usePermission';
 import { UserRole } from '@/lib/api/user';
 import {
   useContextMenuUtilsStore,
+  useAuthStore,
   useModalUtilsStore,
   useNotificationUtilsStore,
 } from '@/lib/stores';
@@ -25,6 +31,7 @@ import { Slate as SlateProvider, withReact } from 'slate-react';
 import RichEditor from '../RichEditor';
 import { createEditor } from 'slate';
 import { withPluginSetup } from '../RichEditor/plugins';
+import NoteVisibilityBadge from '../NoteVisibilityBadge';
 
 interface NoteCardProps {
   note: NoteInfo;
@@ -57,6 +64,10 @@ const NoteCard = (props: NoteCardProps) => {
 
   const isAdmin = usePermission([UserRole.ADMIN, UserRole.MANAGER]);
 
+  const userId = useAuthStore(state => state.userInfo?._id);
+
+  const canManage = isAdmin && isNoteOwner(note, userId);
+
   const detailTime = useMemo(
     () => dayjs(note.createdAt).format('YYYY-MM-DD HH:mm:ss'),
     [note.createdAt]
@@ -86,7 +97,7 @@ const NoteCard = (props: NoteCardProps) => {
             },
             sticky: true,
           },
-          {
+          canShareNote(note) && {
             key: 'share',
             label: '分享',
             icon: <i className='iconfont icon-share-filled text-17' />,
@@ -95,16 +106,7 @@ const NoteCard = (props: NoteCardProps) => {
             },
             sticky: true,
           },
-          isAdmin && {
-            key: 'lock',
-            label: '上锁',
-            icon: <i className='iconfont icon-lock-filled text-17' />,
-            onClick: () => {
-              console.log('lock');
-            },
-            sticky: true,
-          },
-          isAdmin && {
+          canManage && {
             key: 'edit',
             label: '编辑',
             icon: <i className='iconfont icon-edit text-19' />,
@@ -114,7 +116,7 @@ const NoteCard = (props: NoteCardProps) => {
               });
             },
           },
-          isAdmin && {
+          canManage && {
             key: 'delete',
             label: '删除',
             icon: <i className='iconfont icon-trash text-19' />,
@@ -156,7 +158,7 @@ const NoteCard = (props: NoteCardProps) => {
     },
     [
       contextMenuUtils,
-      isAdmin,
+      canManage,
       modalUtils,
       navigation,
       note._id,
@@ -246,6 +248,7 @@ const NoteCard = (props: NoteCardProps) => {
                       title={note.title}>
                       {note.title || '随笔'}
                     </span>
+                    <NoteVisibilityBadge visibility={note.visibility} />
                   </div>
                   {isLogin ? (
                     <button

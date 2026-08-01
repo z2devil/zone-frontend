@@ -155,9 +155,11 @@ export default function WriteNote(props: NoteDetailPageProps) {
    * ✨ 草稿
    ************************************************/
 
-  const hasDraft = useMemo(() => {
+  const [hasDraft, setHasDraft] = useState(false);
+
+  useEffect(() => {
     const draft = localStorage.getItem('note-draft');
-    return draft && JSON.parse(draft).length > 0;
+    setHasDraft(Boolean(draft && JSON.parse(draft).length > 0));
   }, []);
 
   /************************************************
@@ -175,6 +177,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
         title: res.title,
         bannerPath: res.bannerPath,
         tags: res.tags.map(tag => tag._id),
+        visibility: res.visibility,
       };
       Transforms.removeNodes(editor, {
         at: [],
@@ -235,17 +238,18 @@ export default function WriteNote(props: NoteDetailPageProps) {
     title: '',
     bannerPath: '',
     tags: [],
+    visibility: 'public',
   });
 
   const handlePublish = useCallback(
     async (res: NoteOptions) => {
-      console.log('[ handlePublish ]', res);
       try {
         const data = {
           title: res.title,
           content: JSON.stringify(contentRef.current),
           bannerPath: res.bannerPath,
           tags: res.tags,
+          visibility: res.visibility,
         };
         if (isCreate) {
           const nextNote = await postNoteAPI(request)(data);

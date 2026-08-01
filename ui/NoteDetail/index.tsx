@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import Image from 'next/image';
 import { useMemo } from 'react';
 import RichEditor from '../RichEditor';
+import NoteVisibilityBadge from '../NoteVisibilityBadge';
 
 interface NoteDetailProps {
   note: NoteInfo;
@@ -54,6 +55,7 @@ export const NoteDetail = (props: NoteDetailProps) => {
             title={note.title}>
             {note.title || '随笔'}
           </span>
+          <NoteVisibilityBadge visibility={note.visibility} />
         </div>
         {isLogin ? (
           <button
