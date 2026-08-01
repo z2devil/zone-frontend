@@ -75,7 +75,11 @@ const ImagePreview = (props: ImagePreviewProps) => {
           className='block object-contain'
           loader={imageLoader}
           placeholder='blur'
-          sizes='100vw'
+          sizes={
+            editor.isSummary
+              ? '(max-width: 430px) calc(100vw - 80px), 390px'
+              : '(max-width: 768px) calc(100vw - 80px), 720px'
+          }
           src={element.url || ''}
         />
       ) : null}

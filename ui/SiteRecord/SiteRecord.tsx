@@ -9,7 +9,13 @@ const SiteRecord = () => {
         href='http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010502054444'
         rel='noopener noreferrer'
         target='_blank'>
-        <Image alt='' height={20} src={GonganLogoImg} width={20} />
+        <Image
+          alt=''
+          className='h-5 w-auto'
+          height={67}
+          src={GonganLogoImg}
+          width={62}
+        />
         京公网安备11010502054444号
       </a>
       <a

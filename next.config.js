@@ -28,6 +28,12 @@ const nextConfig = {
         port: '',
         pathname: '/*/*/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'shared.akamai.steamstatic.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
   async redirects() {
