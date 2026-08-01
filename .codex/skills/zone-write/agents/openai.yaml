@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Zone 写作'
+  short_description: '整理 Markdown 与图片并安全发布到 Zone 个人博客'
+  default_prompt: '使用 $zone-write 把这段内容连同本地图片整理并发布为私密文章。'
