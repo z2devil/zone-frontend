@@ -80,9 +80,13 @@ export const remarkElementRules: Record<
   },
   code: {
     transform: node => {
+      const isMermaid = node.lang?.trim().toLowerCase() === 'mermaid';
+
       return {
-        type: BlockElementType.CODE_BLOCK,
-        language: node.lang,
+        type: isMermaid
+          ? BlockElementType.MERMAID
+          : BlockElementType.CODE_BLOCK,
+        ...(isMermaid ? {} : { language: node.lang }),
         children: CodeTransfromToElementChildren(node.value),
       } as CustomElement;
     },

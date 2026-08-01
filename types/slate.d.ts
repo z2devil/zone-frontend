@@ -78,6 +78,11 @@ export type CodeBlockElement = {
   children: CodeLineBlockElement[];
 };
 
+export type MermaidBlockElement = {
+  type: BlockElementType.MERMAID;
+  children: CodeLineBlockElement[];
+};
+
 export type CodeLineBlockElement = {
   type: BlockElementType.CODE_LINE_BLOCK;
   children: CustomText[];
@@ -166,6 +171,7 @@ export type BlockElement =
   | ListItemElement
   | BlockQuoteElement
   | CodeBlockElement
+  | MermaidBlockElement
   | CodeLineBlockElement
   | ImageBlockElement
   | VideoBlockElement

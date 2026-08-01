@@ -26,6 +26,7 @@ export enum BlockElementType {
   LIST_ITEM = 'list-item',
   BLOCK_QUOTE = 'block-quote',
   CODE_BLOCK = 'code-block',
+  MERMAID = 'mermaid',
   CODE_LINE_BLOCK = 'code-line-block',
   IMAGE = 'image',
   VIDEO = 'video',

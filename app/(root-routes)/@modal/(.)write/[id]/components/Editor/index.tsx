@@ -12,6 +12,7 @@ import DraftTip from '@/ui/RichEditor/components/DraftTip';
 import FullScreenButton from '@/ui/FullScreenButton';
 import Button from '@/ui/Button';
 import { useSlate } from 'slate-react';
+import { parseNoteContent } from '@/lib/note-content/parse';
 
 interface EditorProps {
   onPublish: () => void;
@@ -76,7 +77,7 @@ const Editor = (props: EditorProps) => {
 
   const hasDraft = useMemo(() => {
     const draft = localStorage.getItem('note-draft');
-    return draft && JSON.parse(draft).length > 0;
+    return Boolean(draft && parseNoteContent(draft));
   }, []);
 
   /************************************************

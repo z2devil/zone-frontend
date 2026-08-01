@@ -14,6 +14,29 @@ export type ToolbarOption =
     }
   | 'separator';
 
+const wrapParagraphsAsCodeLikeBlock = (
+  editor: RichEditor,
+  type: BlockElementType.CODE_BLOCK | BlockElementType.MERMAID
+) => {
+  if (editorUtils.isCodeLikeBlockActive(editor)) return;
+
+  Transforms.wrapNodes(
+    editor,
+    { type, children: [] },
+    {
+      match: n => Element.isElement(n) && n.type === BlockElementType.PARAGRAPH,
+      split: true,
+    }
+  );
+  Transforms.setNodes<CodeLineBlockElement>(
+    editor,
+    { type: BlockElementType.CODE_LINE_BLOCK },
+    {
+      match: n => Element.isElement(n) && n.type === BlockElementType.PARAGRAPH,
+    }
+  );
+};
+
 const options: ToolbarOption[] = [
   {
     title: '标题',
@@ -29,7 +52,7 @@ const options: ToolbarOption[] = [
       );
     },
     disabled: editor => {
-      return editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK);
+      return editorUtils.isCodeLikeBlockActive(editor);
     },
     onClick: (e, editor) => {
       e.preventDefault();
@@ -43,30 +66,25 @@ const options: ToolbarOption[] = [
       return editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK);
     },
     disabled: editor => {
-      return editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK);
+      return editorUtils.isCodeLikeBlockActive(editor);
     },
     onClick: (e, editor) => {
       e.preventDefault();
-      if (editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK)) {
-        return;
-      }
-      Transforms.wrapNodes(
-        editor,
-        { type: BlockElementType.CODE_BLOCK, children: [] },
-        {
-          match: n =>
-            Element.isElement(n) && n.type === BlockElementType.PARAGRAPH,
-          split: true,
-        }
-      );
-      Transforms.setNodes<CodeLineBlockElement>(
-        editor,
-        { type: BlockElementType.CODE_LINE_BLOCK },
-        {
-          match: n =>
-            Element.isElement(n) && n.type === BlockElementType.PARAGRAPH,
-        }
-      );
+      wrapParagraphsAsCodeLikeBlock(editor, BlockElementType.CODE_BLOCK);
+    },
+  },
+  {
+    title: 'Mermaid 图表',
+    icon: 'icon-chart',
+    active: editor => {
+      return editorUtils.isElementActive(editor, BlockElementType.MERMAID);
+    },
+    disabled: editor => {
+      return editorUtils.isCodeLikeBlockActive(editor);
+    },
+    onClick: (e, editor) => {
+      e.preventDefault();
+      wrapParagraphsAsCodeLikeBlock(editor, BlockElementType.MERMAID);
     },
   },
   {
@@ -76,7 +94,7 @@ const options: ToolbarOption[] = [
       return editorUtils.isElementActive(editor, BlockElementType.IMAGE);
     },
     disabled: editor => {
-      return editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK);
+      return editorUtils.isCodeLikeBlockActive(editor);
     },
     onClick: (e, editor) => {
       e.preventDefault();
@@ -90,7 +108,7 @@ const options: ToolbarOption[] = [
       return editorUtils.isElementActive(editor, BlockElementType.VIDEO);
     },
     disabled: editor => {
-      return editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK);
+      return editorUtils.isCodeLikeBlockActive(editor);
     },
     onClick: (e, editor) => {
       e.preventDefault();
@@ -104,7 +122,7 @@ const options: ToolbarOption[] = [
       return editorUtils.isElementActive(editor, BlockElementType.MUSIC);
     },
     disabled: editor => {
-      return editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK);
+      return editorUtils.isCodeLikeBlockActive(editor);
     },
     onClick: (e, editor) => {
       e.preventDefault();
@@ -146,7 +164,7 @@ const options: ToolbarOption[] = [
       return editorUtils.isElementActive(editor, BlockElementType.LAYOUT);
     },
     disabled: editor => {
-      return editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK);
+      return editorUtils.isCodeLikeBlockActive(editor);
     },
     onClick: (e, editor) => {
       e.preventDefault();
@@ -190,7 +208,7 @@ const options: ToolbarOption[] = [
       return editorUtils.isElementActive(editor, BlockElementType.TIP);
     },
     disabled: editor => {
-      return editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK);
+      return editorUtils.isCodeLikeBlockActive(editor);
     },
     onClick: (e, editor) => {
       e.preventDefault();
@@ -216,7 +234,7 @@ const options: ToolbarOption[] = [
       return editorUtils.isMarkActive(editor, MarkType.BOLD);
     },
     disabled: editor => {
-      return editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK);
+      return editorUtils.isCodeLikeBlockActive(editor);
     },
     onClick: (e, editor) => {
       e.preventDefault();
@@ -230,7 +248,7 @@ const options: ToolbarOption[] = [
       return editorUtils.isMarkActive(editor, MarkType.ITALIC);
     },
     disabled: editor => {
-      return editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK);
+      return editorUtils.isCodeLikeBlockActive(editor);
     },
     onClick: (e, editor) => {
       e.preventDefault();
@@ -244,7 +262,7 @@ const options: ToolbarOption[] = [
       return editorUtils.isMarkActive(editor, MarkType.UNDERLINE);
     },
     disabled: editor => {
-      return editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK);
+      return editorUtils.isCodeLikeBlockActive(editor);
     },
     onClick: (e, editor) => {
       e.preventDefault();
@@ -258,7 +276,7 @@ const options: ToolbarOption[] = [
       return editorUtils.isMarkActive(editor, MarkType.STRIKETHROUGH);
     },
     disabled: editor => {
-      return editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK);
+      return editorUtils.isCodeLikeBlockActive(editor);
     },
     onClick: (e, editor) => {
       e.preventDefault();
@@ -273,7 +291,7 @@ const options: ToolbarOption[] = [
     },
     disabled: editor => {
       return (
-        editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK) ||
+        editorUtils.isCodeLikeBlockActive(editor) ||
         editorUtils.isElementActive(editor, InlineElementType.CODE_SPAN)
       );
     },
@@ -289,7 +307,7 @@ const options: ToolbarOption[] = [
       return editorUtils.isElementActive(editor, InlineElementType.LINK);
     },
     disabled: editor => {
-      return editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK);
+      return editorUtils.isCodeLikeBlockActive(editor);
     },
     onClick: (e, editor) => {
       e.preventDefault();
