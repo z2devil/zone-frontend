@@ -72,6 +72,7 @@ const SteamVideoPreview = (props: SteamVideoPreviewProps) => {
           alt={title || 'Steam video'}
           className='aspect-video w-full rounded object-cover'
           height={360}
+          sizes='(max-width: 430px) calc(100vw - 80px), 390px'
           src={thumbnailUrl}
           width={640}
         />

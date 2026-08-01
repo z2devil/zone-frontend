@@ -18,6 +18,7 @@ import { isEqual, sortBy } from 'lodash';
 import SearchLayer from '@/ui/SearchLayer';
 import SiteRecord from '@/ui/SiteRecord/SiteRecord';
 import { motion } from 'motion/react';
+import { NoteCardHeightEstimator } from '@/lib/note-card-estimator';
 
 const FETCH_SIZE = 20;
 
@@ -57,6 +58,40 @@ const NotePage = () => {
   const isLoadingRef = useRef(isLoading);
 
   const requestIdRef = useRef(0);
+
+  const [heightEstimator] = useState(() => new NoteCardHeightEstimator());
+
+  const [measurementVersion, setMeasurementVersion] = useState(0);
+
+  const estimateNoteSize = useCallback(
+    (note: (typeof notes)[number], width: number) =>
+      heightEstimator.estimate(note, width),
+    [heightEstimator]
+  );
+
+  const getNoteKey = useCallback(
+    (note: (typeof notes)[number]) => note._id,
+    []
+  );
+
+  useEffect(() => {
+    heightEstimator.retain(new Set(notes.map(note => note._id)));
+  }, [heightEstimator, notes]);
+
+  useEffect(() => {
+    if (!document.fonts) return;
+    let active = true;
+
+    document.fonts.ready.then(() => {
+      if (!active) return;
+      heightEstimator.clear();
+      setMeasurementVersion(version => version + 1);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [heightEstimator]);
 
   // 最后更新时间
   const lastUpdated = useMemo(() => {
@@ -246,20 +281,18 @@ const NotePage = () => {
         columnWidth={CARD_WIDTH}
         contentWidthChange={handleContentWidthChange}
         data={notes}
+        estimateSize={estimateNoteSize}
         gap={GAP}
+        getItemKey={getNoteKey}
+        measurementVersion={measurementVersion}
         touchBottom={handleLoadData}>
         {record => {
           if (!record.meta) return null;
           return (
             <NoteCard
-              className='absolute'
               key={record.meta._id}
               note={record.meta}
-              style={{
-                width: record.width,
-                x: record.x,
-                y: record.y,
-              }}
+              reservedHeight={record.height}
             />
           );
         }}

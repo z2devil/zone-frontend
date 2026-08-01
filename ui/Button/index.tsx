@@ -2,6 +2,7 @@
 
 import clsx from 'clsx';
 import {
+  ButtonHTMLAttributes,
   CSSProperties,
   MouseEvent,
   ReactNode,
@@ -10,16 +11,28 @@ import {
   useState,
 } from 'react';
 
-interface ButtonProps {
+interface ButtonProps
+  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> {
   className?: string;
   children?: ReactNode;
-  onClick?: (e: MouseEvent<HTMLButtonElement>) => Promise<any> | void;
+  loading?: boolean;
+  onClick?: (e: MouseEvent<HTMLButtonElement>) => Promise<unknown> | void;
 }
 
 const Button = (props: ButtonProps) => {
-  const { className, children, onClick } = props;
+  const {
+    className,
+    children,
+    disabled,
+    loading = false,
+    onClick,
+    type = 'button',
+    ...buttonProps
+  } = props;
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isInternalLoading, setIsInternalLoading] = useState(false);
+
+  const isLoading = loading || isInternalLoading;
 
   const clacStyle: CSSProperties = useMemo(() => {
     return {
@@ -31,18 +44,25 @@ const Button = (props: ButtonProps) => {
     async (e: MouseEvent<HTMLButtonElement>) => {
       if (isLoading) return;
       if (!onClick) return;
-      setIsLoading(true);
-      await onClick(e);
-      setIsLoading(false);
+      setIsInternalLoading(true);
+      try {
+        await onClick(e);
+      } finally {
+        setIsInternalLoading(false);
+      }
     },
     [isLoading, onClick]
   );
 
   return (
     <button
+      {...buttonProps}
+      aria-busy={isLoading || undefined}
       className={clsx(className, 'overflow-hidden transition-all duration-100')}
+      disabled={disabled || isLoading}
       style={clacStyle}
-      onClick={handleClick}>
+      type={type}
+      onClick={onClick ? handleClick : undefined}>
       <div
         className={clsx(
           'absolute inset-0 flex items-center justify-center transition-all duration-100',

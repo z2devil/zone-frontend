@@ -5,7 +5,14 @@ import {
   isNoteOwner,
 } from '@/lib/api/notes';
 import dayjs from '@/lib/utils/dayjs';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  memo,
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { NotificationType } from '../Notification/components/Notification';
 import usePermission from '@/lib/hooks/usePermission';
 import { UserRole } from '@/lib/api/user';
@@ -18,7 +25,6 @@ import {
 import useRequest from '@/lib/hooks/useRequest';
 import { useNotesStore } from '@/lib/stores/notes';
 import clsx from 'clsx';
-import rem2px from '@/lib/utils/rem2px';
 import { twMerge } from 'tailwind-merge';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -29,15 +35,17 @@ import { isEqual } from 'lodash';
 import { AnimatePresence, motion, MotionStyle } from 'motion/react';
 import NoteVisibilityBadge from '../NoteVisibilityBadge';
 import NoteContent from '../NoteContent';
+import { isContentOverflowing } from '@/ui/NoteCard/overflow';
 
 interface NoteCardProps {
   note: NoteInfo;
   className?: string;
+  reservedHeight?: number;
   style?: MotionStyle;
 }
 
 const NoteCard = (props: NoteCardProps) => {
-  const { note, className, style } = props;
+  const { note, className, reservedHeight, style } = props;
 
   const pathname = usePathname();
 
@@ -170,35 +178,41 @@ const NoteCard = (props: NoteCardProps) => {
    * ✨ 内容收缩
    ************************************************/
 
-  const cardRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
 
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  useEffect(() => {
-    const cardDOM = cardRef.current;
-    if (cardDOM) {
-      const maxHeight = rem2px(30);
-      setIsCollapsed(cardDOM.scrollHeight > maxHeight);
-    } else {
+  const showDetail = pathname === '/note/' + note._id;
+
+  useLayoutEffect(() => {
+    const body = bodyRef.current;
+    if (!body || showDetail) {
       setIsCollapsed(false);
+      return;
     }
-  }, []);
 
-  const [showDetail, setShowDetail] = useState(false);
+    const updateOverflow = () => {
+      setIsCollapsed(isContentOverflowing(body));
+    };
+    updateOverflow();
 
-  useEffect(() => {
-    if (pathname === '/note/' + note._id) {
-      setShowDetail(true);
-    } else {
-      setShowDetail(false);
-    }
-  }, [note._id, pathname]);
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(updateOverflow);
+    observer.observe(body);
+    if (body.firstElementChild) observer.observe(body.firstElementChild);
+
+    return () => observer.disconnect();
+  }, [note.content, showDetail]);
 
   return (
     <motion.div
       className={clsx(twMerge('relative', className))}
-      ref={cardRef}
-      style={style}>
+      style={{
+        ...style,
+        minHeight: showDetail
+          ? `var(--masonry-measured-height, ${reservedHeight || 0}px)`
+          : undefined,
+      }}>
       <Link href={`/note/${props.note._id}`} scroll={false}>
         <AnimatePresence>
           {!showDetail ? (
@@ -251,7 +265,8 @@ const NoteCard = (props: NoteCardProps) => {
                     className={clsx(
                       'mb-1 max-h-[30rem] w-full',
                       isCollapsed && 'gradient-mask-b'
-                    )}>
+                    )}
+                    ref={bodyRef}>
                     <NoteContent content={note.content} summary />
                   </div>
                 </div>
