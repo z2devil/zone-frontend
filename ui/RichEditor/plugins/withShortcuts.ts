@@ -58,10 +58,7 @@ export const withShortcuts = (editor: RichEditor) => {
     }
 
     // 代码块
-    if (
-      text.endsWith('```') &&
-      !editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK)
-    ) {
+    if (text.endsWith('```') && !editorUtils.isCodeLikeBlockActive(editor)) {
       Transforms.removeNodes(editor, {
         match: n => Element.isElement(n) && Editor.isBlock(editor, n),
       });
@@ -93,10 +90,7 @@ export const withShortcuts = (editor: RichEditor) => {
       const beforeText = Editor.string(editor, range) + text.slice(0, -1);
       const type = SHORTCUTS_MAP[beforeText];
 
-      if (
-        type &&
-        !editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK)
-      ) {
+      if (type && !editorUtils.isCodeLikeBlockActive(editor)) {
         Transforms.select(editor, range);
 
         if (!Range.isCollapsed(range)) {

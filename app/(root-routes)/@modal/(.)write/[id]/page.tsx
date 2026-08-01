@@ -27,6 +27,7 @@ import {
   disableScrollbar,
   enableScrollbar,
 } from '@/lib/utils/scrollbarTrigger';
+import { parseNoteContent } from '@/lib/note-content/parse';
 
 interface NoteDetailPageProps {
   params: { id: string };
@@ -133,11 +134,13 @@ export default function WriteNote(props: NoteDetailPageProps) {
     if (isCreate) return setInited(true);
     try {
       const res = await getNoteAPI(request)(params.id);
+      const content = parseNoteContent(res.content);
+      if (!content) throw new Error('Invalid note content');
       Transforms.removeNodes(editor, {
         at: [],
         match: node => Element.isElement(node),
       });
-      Transforms.insertNodes(editor, JSON.parse(res.content));
+      Transforms.insertNodes(editor, content);
       optionsRef.current = {
         bannerPath: res.bannerPath,
         title: res.title,

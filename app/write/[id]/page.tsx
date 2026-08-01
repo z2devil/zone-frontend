@@ -30,6 +30,7 @@ import {
   withPluginSetup,
 } from '@/ui/RichEditor/plugins';
 import Button from '@/ui/Button';
+import { parseNoteContent } from '@/lib/note-content/parse';
 
 interface NoteDetailPageProps {
   params: { id: string };
@@ -159,7 +160,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
 
   useEffect(() => {
     const draft = localStorage.getItem('note-draft');
-    setHasDraft(Boolean(draft && JSON.parse(draft).length > 0));
+    setHasDraft(Boolean(draft && parseNoteContent(draft)));
   }, []);
 
   /************************************************
@@ -172,7 +173,9 @@ export default function WriteNote(props: NoteDetailPageProps) {
     if (isCreate) return setInited(true);
     try {
       const res = await getNoteAPI(request)(params.id);
-      contentRef.current = JSON.parse(res.content);
+      const content = parseNoteContent(res.content);
+      if (!content) throw new Error('Invalid note content');
+      contentRef.current = content;
       optionsRef.current = {
         title: res.title,
         bannerPath: res.bannerPath,

@@ -78,6 +78,12 @@ export const editorUtils = {
     return !!match;
   },
 
+  isCodeLikeBlockActive(editor: RichEditor) {
+    return [BlockElementType.CODE_BLOCK, BlockElementType.MERMAID].some(type =>
+      editorUtils.isElementActive(editor, type)
+    );
+  },
+
   /**
    * 解包节点
    * @param editor 编辑器

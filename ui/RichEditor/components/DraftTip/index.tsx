@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import { Element, Transforms } from 'slate';
 import { useSlate } from 'slate-react';
 import { twMerge } from 'tailwind-merge';
+import { parseNoteContent } from '@/lib/note-content/parse';
 
 interface DraftTipProps {
   calssName?: string;
@@ -17,13 +18,14 @@ const DraftTip = (props: DraftTipProps) => {
 
   const handleApplyDraft = useCallback(() => {
     const draft = localStorage.getItem('note-draft');
-    if (draft) {
+    const content = draft ? parseNoteContent(draft) : null;
+    if (content) {
       if (editor) {
         Transforms.removeNodes(editor, {
           at: [],
           match: node => Element.isElement(node),
         });
-        Transforms.insertNodes(editor, JSON.parse(draft));
+        Transforms.insertNodes(editor, content);
       }
     }
     setHideDraftTip(true);

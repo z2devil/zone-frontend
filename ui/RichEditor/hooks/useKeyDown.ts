@@ -38,10 +38,7 @@ export const useKeyDown = (editor: RichEditor, readOnly = false) => {
 
       if (metaKey || ctrlKey) {
         const action = ACTIONS[key];
-        if (
-          action &&
-          !editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK)
-        ) {
+        if (action && !editorUtils.isCodeLikeBlockActive(editor)) {
           e.preventDefault();
           action(editor);
         }
@@ -69,9 +66,11 @@ const handleShiftEnter = (editor: RichEditor, e: KeyboardEvent) => {
     const [, path] = nodeEntry;
     const [parentNode, parentPath] = Editor.node(editor, Path.parent(path));
     if (
-      [BlockElementType.CODE_BLOCK, BlockElementType.TIP].includes(
-        parentNode.type as any
-      )
+      [
+        BlockElementType.CODE_BLOCK,
+        BlockElementType.MERMAID,
+        BlockElementType.TIP,
+      ].includes(parentNode.type as any)
     ) {
       const nextPath = Path.next(parentPath);
       Transforms.insertNodes(
@@ -152,7 +151,7 @@ const handleSingleKey = (
     const parentEntry = Editor.node(editor, parentPath);
     const [parentNode] = parentEntry;
     if (
-      [BlockElementType.CODE_BLOCK].includes(
+      [BlockElementType.CODE_BLOCK, BlockElementType.MERMAID].includes(
         parentNode.type as BlockElementType
       )
     ) {
