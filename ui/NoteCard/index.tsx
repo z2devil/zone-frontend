@@ -273,23 +273,48 @@ const NoteCard = (props: NoteCardProps) => {
                   </div>
                 </div>
                 {/* 底部 */}
-                <div className='flex items-center justify-between gap-1'>
-                  <div className='flex h-6 items-center gap-1 rounded-lg'>
-                    <i className='iconfont icon-calender-filled text-13 leading-3 text-black-250' />
-                    <span
-                      className='text-[0.75rem] leading-[0.75rem] text-black-400'
-                      title={detailTime}>
-                      {summaryTime}
+                <div className='flex items-center justify-between gap-2'>
+                  {/* Left: Author */}
+                  <div className='flex items-center gap-2 overflow-hidden'>
+                    {note.author?.avatarPath ? (
+                      <Image
+                        alt={note.author.nickname || 'author'}
+                        className='h-6 w-6 flex-shrink-0 rounded-full object-cover'
+                        height={24}
+                        loader={imageLoader}
+                        src={note.author.avatarPath}
+                        width={24}
+                      />
+                    ) : (
+                      <div className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary-50/10'>
+                        <span className='text-[0.625rem] text-primary-50'>
+                          {(note.author?.nickname || '?')[0]}
+                        </span>
+                      </div>
+                    )}
+                    <span className='truncate text-[0.8125rem] font-medium text-black-500'>
+                      {note.author?.nickname || 'Anonymous'}
                     </span>
                   </div>
-                  <div className='flex gap-2.5'>
-                    {note.tags.map(tag => (
-                      <div
-                        className='text-black flex h-6 items-center rounded-lg bg-primary-50/5 px-2 text-xs font-normal text-primary-50'
-                        key={tag._id}>
-                        {tag.label}
-                      </div>
-                    ))}
+                  {/* Right: Date + Tags */}
+                  <div className='flex flex-shrink-0 items-center gap-2'>
+                    <div className='flex h-6 items-center gap-1 rounded-lg'>
+                      <i className='iconfont icon-calender-filled text-13 leading-3 text-black-250' />
+                      <span
+                        className='text-[0.75rem] leading-[0.75rem] text-black-400'
+                        title={detailTime}>
+                        {summaryTime}
+                      </span>
+                    </div>
+                    <div className='flex gap-2.5'>
+                      {note.tags.map(tag => (
+                        <div
+                          className='text-black flex h-6 items-center rounded-lg bg-primary-50/5 px-2 text-xs font-normal text-primary-50'
+                          key={tag._id}>
+                          {tag.label}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>

@@ -5,6 +5,8 @@ import { UserInfo } from '../user';
 
 export type NoteVisibility = 'public' | 'private';
 
+export type NoteAuthor = Pick<UserInfo, '_id' | 'nickname' | 'avatarPath'>;
+
 /************************************************
  * ✨ 实体
  ************************************************/
@@ -27,7 +29,7 @@ export type NoteInfo = Pick<
   NoteEntity,
   '_id' | 'content' | 'title' | 'bannerPath' | 'createdAt' | 'visibility'
 > & {
-  author: string | UserInfo;
+  author: NoteAuthor;
   tags: TagInfo[];
 };
 

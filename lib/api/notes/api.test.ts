@@ -21,7 +21,11 @@ const request: IRequest = {
 
 const note: NoteInfo = {
   _id: 'note-1',
-  author: 'user-1',
+  author: {
+    _id: 'user-1',
+    nickname: 'Zone Owner',
+    avatarPath: '',
+  },
   content: '[{"type":"paragraph","children":[{"text":"hello"}]}]',
   createdAt: '2026-07-31T00:00:00.000Z',
   tags: [],

@@ -254,11 +254,11 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
             <div
               className='relative z-20 h-full w-full overflow-y-auto'
               onClick={handleBack}>
-              <div className='relative mx-auto flex min-h-full gap-8 md:w-fit'>
+              <div className='relative mx-auto flex min-h-full gap-8 overflow-hidden md:w-fit'>
                 {/* note */}
                 <motion.div
                   animate={{ opacity: 1, top: 0 }}
-                  className='relative flex flex-1 flex-col bg-white md:w-[45rem]'
+                  className='relative flex min-w-0 max-w-full flex-1 flex-col bg-white md:w-[45rem]'
                   exit={{
                     opacity: 0,
                     top: -50,

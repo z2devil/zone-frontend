@@ -35,6 +35,8 @@ export enum BlockElementType {
   LAYOUT = 'layout',
   LAYOUT_ITEM = 'layout-item',
   TIP = 'tip',
+  STEAM_VIDEO = 'steam-video',
+  STEAM_WIDGET = 'steam-widget',
 }
 
 export const SHORTCUTS = {

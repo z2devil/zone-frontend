@@ -13,7 +13,7 @@ import { useLoading } from '@/lib/hooks/useLoading';
 import { useMount } from 'react-use';
 import { useSlate } from 'slate-react';
 import { twMerge } from 'tailwind-merge';
-import { generateTitle } from '@/lib/ai';
+import { generateTitleAPI } from '@/lib/api/ai';
 import { configs } from '@/lib/constants';
 import { NoteVisibility } from '@/lib/api/notes';
 import VisibilitySelector from './VisibilitySelector';
@@ -102,14 +102,15 @@ const NotePublish = (props: NotePublishProps) => {
     if (isGeneratingTitle) return;
     setIsGeneratingTitle(true);
     try {
-      const text = await generateTitle(editor.string([]));
+      const res = await generateTitleAPI(request)(editor.string([]));
+      const text = res.title;
       setTitle(text);
     } catch (error) {
       console.error(error);
     } finally {
       setIsGeneratingTitle(false);
     }
-  }, [editor, isGeneratingTitle]);
+  }, [editor, isGeneratingTitle, request]);
 
   /************************************************
    * ✨ 标签

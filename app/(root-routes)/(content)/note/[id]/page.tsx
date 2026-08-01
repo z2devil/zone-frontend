@@ -202,11 +202,11 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
   return (
     <SlateProvider editor={editor} initialValue={JSON.parse(note.content)}>
       <div
-        className='mx-auto flex gap-8 md:w-fit'
+        className='mx-auto flex gap-8 overflow-hidden md:w-fit'
         style={{
           minHeight: 'calc(100vh - 3.625rem)',
         }}>
-        <div className='flex w-full flex-col overflow-hidden bg-white md:w-[45rem]'>
+        <div className='flex w-full min-w-0 flex-col overflow-hidden bg-white md:w-[45rem]'>
           <NoteDetail isLogin={isLogin} note={note} onSetting={handleSetting} />
           {/* 上下页 */}
           <div className='flex flex-col gap-4 p-5 md:flex-row'>

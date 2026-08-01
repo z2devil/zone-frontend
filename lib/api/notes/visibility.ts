@@ -4,7 +4,7 @@ export const canShareNote = (note: Pick<NoteInfo, 'visibility'>) =>
   note.visibility === 'public';
 
 export const isNoteOwner = (
-  note: Pick<NoteInfo, 'author'>,
+  note: { author: NoteInfo['author'] | string },
   userId?: string
 ) => {
   if (!userId) return false;
