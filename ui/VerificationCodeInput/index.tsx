@@ -1,8 +1,9 @@
 'use client';
 
 import {
+  ChangeEvent,
   ClipboardEvent,
-  FormEvent,
+  CompositionEvent,
   KeyboardEvent,
   useCallback,
   useRef,
@@ -10,24 +11,28 @@ import {
 } from 'react';
 
 interface VerificationCodeInputProps {
+  disabled?: boolean;
   length: number;
   onChange: (code: string) => void;
 }
 
 const VerificationCodeInput = (props: VerificationCodeInputProps) => {
-  const { length, onChange } = props;
+  const { disabled = false, length, onChange } = props;
 
   const [code, setCode] = useState<string[]>(Array(length).fill(''));
 
-  const [isPreventCompositing, setIsPreventCompositing] = useState(false);
+  const codeRef = useRef(code);
+
+  const isComposingRef = useRef(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleChange = useCallback(
     (index: number, value: string) => {
-      const updatedCode = [...code];
+      const updatedCode = [...codeRef.current];
       updatedCode[index] = value;
 
+      codeRef.current = updatedCode;
       setCode(updatedCode);
       onChange(updatedCode.join(''));
 
@@ -42,7 +47,7 @@ const VerificationCodeInput = (props: VerificationCodeInputProps) => {
         }
       }
     },
-    [code, length, onChange]
+    [length, onChange]
   );
 
   const handlePaste = useCallback(
@@ -51,19 +56,21 @@ const VerificationCodeInput = (props: VerificationCodeInputProps) => {
       const pastedData = e.clipboardData
         .getData('text/plain')
         .trim()
+        .replace(/\D/g, '')
         .slice(0, length);
 
-      const updatedCode = [...code];
+      const updatedCode = Array<string>(length).fill('');
       [...pastedData].forEach((value, index) => {
         if (index < length) {
           updatedCode[index] = value;
         }
       });
 
+      codeRef.current = updatedCode;
       setCode(updatedCode);
       onChange(updatedCode.join(''));
     },
-    [code, length, onChange]
+    [length, onChange]
   );
 
   const handleKeyDown = useCallback(
@@ -96,48 +103,55 @@ const VerificationCodeInput = (props: VerificationCodeInputProps) => {
     [handleChange, length]
   );
 
-  const handleInput = useCallback(
-    (e: FormEvent<HTMLInputElement>) => {
-      if (isPreventCompositing) {
-        e.preventDefault();
-        setIsPreventCompositing(false);
-        return;
-      }
-
-      const { target } = e;
-      const value = (target as HTMLInputElement).value;
-
-      // 只接受数字
-      if (value && !/^[0-9]*$/.test(value)) {
-        e.preventDefault();
-        return;
-      }
+  const updateFromInput = useCallback(
+    (target: HTMLInputElement) => {
+      const value = target.value;
+      if (value && !/^\d+$/.test(value)) return;
 
       const index = Array.from(
         containerRef.current?.children as HTMLCollectionOf<HTMLInputElement>
-      ).indexOf(target as HTMLInputElement);
-      handleChange(index, value.slice(0, 1));
+      ).indexOf(target);
+      if (index >= 0) handleChange(index, value.slice(-1));
     },
-    [handleChange, isPreventCompositing]
+    [handleChange]
   );
 
-  const handleCompositionStart = useCallback(() => {
-    setIsPreventCompositing(true);
-  }, []);
+  const handleInputChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const nativeEvent = e.nativeEvent as InputEvent;
+      if (isComposingRef.current || nativeEvent.isComposing) return;
+      updateFromInput(e.currentTarget);
+    },
+    [updateFromInput]
+  );
+
+  const handleCompositionEnd = useCallback(
+    (e: CompositionEvent<HTMLInputElement>) => {
+      isComposingRef.current = false;
+      updateFromInput(e.currentTarget);
+    },
+    [updateFromInput]
+  );
 
   return (
     <div className='flex gap-[1.25rem]' ref={containerRef}>
       {code.map((value, index) => (
         <input
           aria-label={`Verification code input ${index + 1}`}
+          autoComplete={index === 0 ? 'one-time-code' : 'off'}
           autoFocus={index === 0}
           className='flex h-[3.25rem] w-[3.25rem] rounded-xl text-center text-lg font-medium text-black-900'
+          disabled={disabled}
+          inputMode='numeric'
           key={index}
           maxLength={1}
           type='text'
           value={value}
-          onCompositionStartCapture={handleCompositionStart}
-          onInput={handleInput}
+          onChange={handleInputChange}
+          onCompositionEnd={handleCompositionEnd}
+          onCompositionStart={() => {
+            isComposingRef.current = true;
+          }}
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
         />
