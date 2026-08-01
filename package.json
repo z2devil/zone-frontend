@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@changesets/cli": "^2.26.1",
+    "@chenglou/pretext": "0.0.8",
     "@codemirror/autocomplete": "^6.10.2",
     "@codemirror/commands": "^6.3.0",
     "@codemirror/lang-javascript": "^6.2.1",
@@ -42,6 +43,7 @@
     "@radix-ui/react-switch": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.1.6",
     "@tanstack/react-table": "^8.20.6",
+    "@tanstack/react-virtual": "3.14.9",
     "@types/lodash": "^4.14.195",
     "@types/lodash-es": "^4.17.9",
     "@types/node": "18.16.0",

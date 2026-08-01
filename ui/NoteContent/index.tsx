@@ -1,10 +1,13 @@
 'use client';
 
 import { Component, ReactNode, useMemo } from 'react';
-import { createEditor, Descendant, Element, Node, Text } from 'slate';
+import { createEditor, Descendant } from 'slate';
 import { Slate as SlateProvider, withReact } from 'slate-react';
 import RichEditor from '@/ui/RichEditor';
 import { withPluginSetup } from '@/ui/RichEditor/plugins';
+import { parseNoteContent } from '@/lib/note-content/parse';
+
+export { parseNoteContent } from '@/lib/note-content/parse';
 
 const fallback = (
   <p className='rounded-lg bg-black-50 px-4 py-3 text-sm text-black-400'>
@@ -34,19 +37,6 @@ export class NoteContentErrorBoundary extends Component<
     return this.state.hasError ? fallback : this.props.children;
   }
 }
-
-export const parseNoteContent = (content: string): Descendant[] | null => {
-  try {
-    const value: unknown = JSON.parse(content);
-    if (!Node.isNodeList(value) || value.length === 0) return null;
-    if (!value.every(node => Element.isElement(node) || Text.isText(node))) {
-      return null;
-    }
-    return value;
-  } catch {
-    return null;
-  }
-};
 
 interface NoteContentProviderProps {
   children: ReactNode;

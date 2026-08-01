@@ -2,6 +2,8 @@
 
 import {
   CSSProperties,
+  Key,
+  ReactNode,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -9,308 +11,285 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useMount } from 'react-use';
-import useResize from './hooks/useResize';
-import { isEqual } from 'lodash';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
+import {
+  calculateMasonryGeometry,
+  calculateMasonryOverscan,
+  MasonryGeometry,
+} from '@/ui/Masonry/layout';
 
-type MasonryRecord = {
-  x: number;
-  y: number;
-  width: number;
+export interface MasonryRecord<T> {
   height: number;
-  meta: any;
-};
-
-interface MasonryProps {
-  children: (record: MasonryRecord) => React.ReactNode;
-  data: any[];
-  columnWidth: number;
-  gap?: number;
-  bufferOffset?: number;
-  loadDistance?: number;
-  chunkSize?: number;
-  keyField?: string;
-  touchBottom?: () => void;
-  contentWidthChange?: (width: number) => void;
+  meta: T;
+  width: number;
 }
 
-const Masonry = (props: MasonryProps) => {
-  const {
-    children,
-    data,
-    columnWidth,
-    gap = 20,
-    bufferOffset = 1200,
-    loadDistance = 600,
-    chunkSize = 10,
-    keyField = '_id',
-    touchBottom,
-    contentWidthChange,
-  } = props;
+interface MasonryProps<T> {
+  bufferOffset?: number;
+  children: (record: MasonryRecord<T>) => ReactNode;
+  columnWidth: number;
+  contentWidthChange?: (width: number) => void;
+  data: T[];
+  estimateSize: (item: T, width: number) => number;
+  gap?: number;
+  getItemKey: (item: T) => Key;
+  loadDistance?: number;
+  measurementVersion?: number;
+  touchBottom?: () => void;
+}
 
-  // 容器引用
-  const containerRef = useRef<HTMLDivElement>(null);
+interface VirtualizedMasonryProps<T> extends MasonryProps<T> {
+  geometry: MasonryGeometry;
+  scrollMargin: number;
+}
 
-  // 预渲染容器引用
-  const prerenderContainerRef = useRef<HTMLDivElement>(null);
+const getElementContentWidth = (element: HTMLElement) => {
+  const style = getComputedStyle(element);
+  return Math.max(
+    0,
+    element.clientWidth -
+      Number.parseFloat(style.paddingLeft || '0') -
+      Number.parseFloat(style.paddingRight || '0')
+  );
+};
 
-  // 监听器引用
-  const observerRef = useRef<MutationObserver>();
+const readDocumentOffset = (element: HTMLElement) =>
+  element.getBoundingClientRect().top + window.scrollY;
 
-  // 记录
-  const [recordMap, setRecordMap] = useState<Record<string, MasonryRecord>>({});
+const measureElementHeight = (
+  element: Element,
+  entry: ResizeObserverEntry | undefined
+) => {
+  const borderBoxSize = entry?.borderBoxSize;
+  let height: number;
+  if (borderBoxSize) {
+    const size = Array.isArray(borderBoxSize)
+      ? borderBoxSize[0]
+      : borderBoxSize;
+    height = size?.blockSize || element.getBoundingClientRect().height;
+  } else {
+    height = element.getBoundingClientRect().height;
+  }
 
-  // 记录的引用
-  const recordMapRef = useRef<Record<string, MasonryRecord>>({});
+  const measuredHeight = `${height}px`;
+  const htmlElement = element as HTMLElement;
+  if (
+    htmlElement.style.getPropertyValue('--masonry-measured-height') !==
+    measuredHeight
+  ) {
+    htmlElement.style.setProperty('--masonry-measured-height', measuredHeight);
+  }
+  return height;
+};
 
-  // 真实数据下标集合
-  const [renderKeys, setRenderKeys] = useState<string[]>([]);
+const VirtualizedMasonry = <T,>({
+  bufferOffset = 1200,
+  children,
+  data,
+  estimateSize,
+  gap = 20,
+  geometry,
+  getItemKey,
+  loadDistance = 600,
+  measurementVersion = 0,
+  scrollMargin,
+  touchBottom,
+}: VirtualizedMasonryProps<T>) => {
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const previousDataRef = useRef<T[]>(data);
 
-  // 预渲染数据下标集合
-  const [prerenderKeys, setPrerenderKeys] = useState<string[]>([]);
+  const estimateItemSize = useCallback(
+    (index: number) =>
+      Math.max(1, estimateSize(data[index], geometry.cardWidth)),
+    [data, estimateSize, geometry.cardWidth]
+  );
 
-  // 数据引用
-  const dataRef = useRef<any[]>(data);
+  const getVirtualItemKey = useCallback(
+    (index: number) => getItemKey(data[index]),
+    [data, getItemKey]
+  );
 
-  // 上次容器宽度引用
-  const latestContainerWidth = useRef<number>(0);
+  const averageEstimatedItemHeight = useMemo(() => {
+    if (data.length === 0) return 480;
+    const sample = data.slice(0, 20);
+    const total = sample.reduce(
+      (sum, item) => sum + Math.max(1, estimateSize(item, geometry.cardWidth)),
+      0
+    );
+    return total / sample.length;
+  }, [data, estimateSize, geometry.cardWidth]);
 
-  // 容器宽度引用
-  const containerWidthRef = useRef<number>(0);
+  const overscan = calculateMasonryOverscan(
+    bufferOffset,
+    geometry.columnCount,
+    averageEstimatedItemHeight
+  );
 
-  // 滚动距离
-  const scrollTopRef = useRef(0);
-
-  // 总高度
-  const [totalHeight, setTotalHeight] = useState(0);
-
-  // 计算填充区域高度
-  const calcFillerStyle: CSSProperties = useMemo(() => {
-    return {
-      height: totalHeight + 'px',
-    };
-  }, [totalHeight]);
-
-  // 容器尺寸 & 列数
-  const [containerWidth, column] = useResize(containerRef, {
-    delay: 400,
+  const virtualizer = useWindowVirtualizer<HTMLDivElement>({
+    count: data.length,
+    directDomUpdates: true,
+    directDomUpdatesMode: 'transform',
+    estimateSize: estimateItemSize,
+    gap,
+    getItemKey: getVirtualItemKey,
+    laneAssignmentMode: 'estimate',
+    lanes: geometry.columnCount,
+    measureElement: measureElementHeight,
+    overscan,
+    scrollMargin,
   });
 
-  // 挂载
-  const mount = useCallback(() => {
-    touchBottom?.();
-  }, [touchBottom]);
+  useLayoutEffect(() => {
+    if (measurementVersion > 0) virtualizer.measure();
+  }, [measurementVersion, virtualizer]);
 
-  useMount(() => {
-    mount();
-  });
-
-  // 预渲染（用于计算卡片大小）
-  const prerender = useCallback(async (keys: string[]) => {
-    const preRenderContainerDOM = prerenderContainerRef.current;
-    if (!preRenderContainerDOM) return;
-
-    let promiseResovle: () => void;
-    const promise = new Promise<void>(resovle => {
-      promiseResovle = resovle;
+  useLayoutEffect(() => {
+    const previousData = previousDataRef.current;
+    const previousByKey = new Map(
+      previousData.map(item => [getItemKey(item), item] as const)
+    );
+    const changedExistingItem = data.some(item => {
+      const previous = previousByKey.get(getItemKey(item));
+      return previous !== undefined && previous !== item;
     });
 
-    setPrerenderKeys(keys);
+    previousDataRef.current = data;
+    if (changedExistingItem) virtualizer.measure();
+  }, [data, getItemKey, virtualizer]);
 
-    const recordMapRefValue = recordMapRef.current;
-
-    // 定义回调函数，当观察到变化时执行
-    const callback = (mutationsList: MutationRecord[]) => {
-      for (const mutation of mutationsList) {
-        if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-          mutation.addedNodes.forEach(node => {
-            if (node.nodeType !== 1) return;
-            const key = (node as HTMLElement).getAttribute('data-id');
-            const cardDOM = (node as HTMLElement).children[0];
-            if (!key || !cardDOM) return;
-            const rect = cardDOM.getBoundingClientRect();
-            recordMapRefValue[key] = {
-              ...recordMapRefValue[key],
-              width: rect.width,
-              height: rect.height,
-            };
-          });
-        }
-      }
-      promiseResovle();
-    };
-
-    observerRef.current = new MutationObserver(callback);
-
-    observerRef.current.observe(preRenderContainerDOM, {
-      childList: true,
-    });
-
-    await promise;
-
-    observerRef.current.disconnect();
-
-    observerRef.current = undefined;
-
-    setPrerenderKeys([]);
-  }, []);
-
-  // 渲染
-  const render = useCallback(() => {
-    const visionTop = -scrollTopRef.current;
-    const containerHeight = window.innerHeight;
-
-    const visionRange = [
-      visionTop - bufferOffset,
-      visionTop + containerHeight + bufferOffset,
-    ];
-
-    const nextRenderKeys: string[] = [];
-
-    const recordMapRefValue = recordMapRef.current;
-    const columnHeights = Array(column).fill(0);
-
-    const recordMapRefValueKeys = Object.keys(recordMapRefValue);
-
-    let wrapperWidth = 0;
-
-    for (let i = 0; i < recordMapRefValueKeys.length; i++) {
-      const record = recordMapRefValue[recordMapRefValueKeys[i]];
-      if (!record) continue;
-      const minIndex = columnHeights.indexOf(Math.min(...columnHeights));
-      wrapperWidth = column * (record.width + gap) - gap;
-      record.x =
-        minIndex * (record.width + gap) +
-        (containerWidthRef.current - wrapperWidth) / 2;
-      record.y = columnHeights[minIndex];
-      columnHeights[minIndex] += record.height + gap;
-      if (
-        record.y + record.height > visionRange[0] &&
-        record.y < visionRange[1]
-      ) {
-        nextRenderKeys.push(recordMapRefValueKeys[i]);
-      }
-    }
-
-    contentWidthChange?.(wrapperWidth);
-
-    setTotalHeight(Math.max(...columnHeights) - gap);
-
-    setRecordMap(recordMapRefValue);
-    setRenderKeys(nextRenderKeys);
-  }, [bufferOffset, column, contentWidthChange, gap]);
-
-  // 更新
-  const update = useCallback(async () => {
-    const nextPrerenderIds: string[] = [];
-
-    let needCalcSize = false;
-
-    let needCalcPosition = false;
-
-    if (latestContainerWidth.current !== containerWidth) {
-      needCalcPosition = true;
-      if (containerWidth < columnWidth) {
-        latestContainerWidth.current = containerWidth;
-        needCalcSize = true;
-      } else if (latestContainerWidth.current !== columnWidth) {
-        latestContainerWidth.current = columnWidth;
-        needCalcSize = true;
-      }
-      containerWidthRef.current = containerWidth;
-    }
-
-    if (!needCalcPosition && !needCalcSize && isEqual(data, dataRef.current)) {
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (
+      !sentinel ||
+      !touchBottom ||
+      typeof IntersectionObserver === 'undefined'
+    ) {
       return;
     }
 
-    dataRef.current = data;
-
-    const recordMapRefValue = recordMapRef.current;
-    const nextRecordMap: Record<string, MasonryRecord> = {};
-    data.forEach(d => {
-      const prevRecord = recordMapRefValue[d[keyField]];
-      if (!prevRecord) {
-        nextRecordMap[d[keyField]] = {
-          x: 0,
-          y: 0,
-          width: 0,
-          height: 0,
-          meta: d,
-        };
-        nextPrerenderIds.push(d[keyField]);
-        return;
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries.some(entry => entry.isIntersecting)) touchBottom();
+      },
+      {
+        root: null,
+        rootMargin: `0px 0px ${loadDistance}px 0px`,
       }
-      if (needCalcSize) {
-        nextPrerenderIds.push(d[keyField]);
-      }
-      nextRecordMap[d[keyField]] = {
-        ...prevRecord,
-        meta: d,
-      };
-    });
-    recordMapRef.current = nextRecordMap;
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [loadDistance, touchBottom]);
 
-    if (nextPrerenderIds.length) {
-      await prerender(nextPrerenderIds);
-    }
-
-    render();
-  }, [data, containerWidth, render, columnWidth, keyField, prerender]);
-
-  // bugfix: 修复更新并发问题
-  useLayoutEffect(() => {
-    update();
-  }, [update]);
-
-  // 滚动事件
-  const handleScroll = useCallback(async () => {
-    const containerDOM = containerRef.current;
-    if (!containerDOM) return;
-
-    scrollTopRef.current = containerDOM.getBoundingClientRect().top;
-
-    // 触底
-    if (
-      -scrollTopRef.current + window.innerHeight + loadDistance >=
-        totalHeight &&
-      data.length
-    ) {
-      touchBottom?.();
-    } else {
-      render();
-    }
-  }, [data.length, loadDistance, render, totalHeight, touchBottom]);
-
-  // 维护滚动事件
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [handleScroll]);
+  const virtualItems = virtualizer.getVirtualItems();
 
   return (
-    <div className='relative w-full' ref={containerRef} style={calcFillerStyle}>
-      {renderKeys.map(key => {
-        return children(recordMap[key]);
+    <div className='relative w-full' ref={virtualizer.containerRef}>
+      {virtualItems.map(virtualItem => {
+        const left =
+          geometry.contentOffset +
+          virtualItem.lane * (geometry.cardWidth + gap);
+        const item = data[virtualItem.index];
+        const style: CSSProperties = {
+          left,
+          position: 'absolute',
+          top: 0,
+          width: geometry.cardWidth,
+        };
+
+        return (
+          <div
+            data-index={virtualItem.index}
+            key={virtualItem.key}
+            ref={virtualizer.measureElement}
+            style={style}>
+            {children({
+              height: virtualItem.size,
+              meta: item,
+              width: geometry.cardWidth,
+            })}
+          </div>
+        );
       })}
-      <div className='invisible absolute' ref={prerenderContainerRef}>
-        {prerenderKeys.map(key => {
-          const index = data.findIndex(item => item[keyField] === key);
-          return (
-            <div data-id={key} key={key}>
-              {children({
-                x: 0,
-                y: 0,
-                width: Math.min(columnWidth, containerWidth),
-                height: 0,
-                meta: data[index],
-              })}
-            </div>
-          );
-        })}
-      </div>
+      <div
+        aria-hidden
+        className='pointer-events-none absolute bottom-0 h-px w-full'
+        ref={sentinelRef}
+      />
+    </div>
+  );
+};
+
+const Masonry = <T,>({
+  children,
+  columnWidth,
+  contentWidthChange,
+  data,
+  estimateSize,
+  gap = 20,
+  getItemKey,
+  touchBottom,
+  ...props
+}: MasonryProps<T>) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const initialLoadRequestedRef = useRef(false);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const [scrollMargin, setScrollMargin] = useState(0);
+
+  const geometry = useMemo(
+    () => calculateMasonryGeometry(containerWidth, columnWidth, gap),
+    [columnWidth, containerWidth, gap]
+  );
+
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const update = () => {
+      setContainerWidth(getElementContentWidth(container));
+      setScrollMargin(readDocumentOffset(container));
+    };
+    update();
+
+    const observer = new ResizeObserver(update);
+    observer.observe(container);
+    if (container.parentElement) observer.observe(container.parentElement);
+    window.addEventListener('resize', update);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', update);
+    };
+  }, []);
+
+  useEffect(() => {
+    contentWidthChange?.(geometry.contentWidth);
+  }, [contentWidthChange, geometry.contentWidth]);
+
+  useEffect(() => {
+    if (initialLoadRequestedRef.current) return;
+    initialLoadRequestedRef.current = true;
+    touchBottom?.();
+  }, [touchBottom]);
+
+  const geometryKey = `${geometry.columnCount}:${geometry.cardWidth}`;
+
+  return (
+    <div className='relative w-full' ref={containerRef}>
+      {geometry.cardWidth > 0 ? (
+        <VirtualizedMasonry
+          {...props}
+          key={geometryKey}
+          children={children}
+          columnWidth={columnWidth}
+          data={data}
+          estimateSize={estimateSize}
+          gap={gap}
+          geometry={geometry}
+          getItemKey={getItemKey}
+          scrollMargin={scrollMargin}
+          touchBottom={touchBottom}
+        />
+      ) : null}
     </div>
   );
 };
