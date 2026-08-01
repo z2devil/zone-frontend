@@ -27,11 +27,8 @@ import imageLoader from 'config/image/loader';
 import { getRandomRgbDataURL } from '@/lib/utils/rgbDataURL';
 import { isEqual } from 'lodash';
 import { AnimatePresence, motion, MotionStyle } from 'motion/react';
-import { Slate as SlateProvider, withReact } from 'slate-react';
-import RichEditor from '../RichEditor';
-import { createEditor } from 'slate';
-import { withPluginSetup } from '../RichEditor/plugins';
 import NoteVisibilityBadge from '../NoteVisibilityBadge';
+import NoteContent from '../NoteContent';
 
 interface NoteCardProps {
   note: NoteInfo;
@@ -197,16 +194,6 @@ const NoteCard = (props: NoteCardProps) => {
     }
   }, [note._id, pathname]);
 
-  const editor = useMemo(() => {
-    const enhancers = [withReact, withPluginSetup];
-    const res = enhancers.reduce(
-      (editor, enhancer) => enhancer(editor),
-      createEditor()
-    );
-    res.isSummary = true;
-    return res;
-  }, []);
-
   return (
     <motion.div
       className={clsx(twMerge('relative', className))}
@@ -265,11 +252,7 @@ const NoteCard = (props: NoteCardProps) => {
                       'mb-1 max-h-[30rem] w-full',
                       isCollapsed && 'gradient-mask-b'
                     )}>
-                    <SlateProvider
-                      editor={editor}
-                      initialValue={JSON.parse(note.content)}>
-                      <RichEditor readonly />
-                    </SlateProvider>
+                    <NoteContent content={note.content} summary />
                   </div>
                 </div>
                 {/* 底部 */}

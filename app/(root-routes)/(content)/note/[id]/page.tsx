@@ -25,10 +25,8 @@ import clsx from 'clsx';
 import Link from 'next/link';
 import { notFound, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { createEditor } from 'slate';
-import { withReact, Slate as SlateProvider } from 'slate-react';
 import { NoteDetail } from '@/ui/NoteDetail';
-import { withPluginSetup } from '@/ui/RichEditor/plugins';
+import { NoteContentProvider } from '@/ui/NoteContent';
 
 interface NoteDetailPageProps {
   params: { id: string };
@@ -189,18 +187,10 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
     ]
   );
 
-  const editor = useMemo(() => {
-    const enhancers = [withReact, withPluginSetup];
-    return enhancers.reduce(
-      (editor, enhancer) => enhancer(editor),
-      createEditor()
-    );
-  }, []);
-
   if (!note) return null;
 
   return (
-    <SlateProvider editor={editor} initialValue={JSON.parse(note.content)}>
+    <NoteContentProvider content={note.content}>
       <div
         className='mx-auto flex gap-8 overflow-hidden md:w-fit'
         style={{
@@ -248,7 +238,7 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
         </div>
         <TOC className='sticky top-24 hidden h-fit shrink-0 lg:block' />
       </div>
-    </SlateProvider>
+    </NoteContentProvider>
   );
 };
 

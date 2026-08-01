@@ -25,8 +25,6 @@ import clsx from 'clsx';
 import Link from 'next/link';
 import { notFound, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { createEditor } from 'slate';
-import { withReact, Slate as SlateProvider } from 'slate-react';
 import { AnimatePresence, motion } from 'motion/react';
 import {
   disableScrollbar,
@@ -34,7 +32,7 @@ import {
 } from '@/lib/utils/scrollbarTrigger';
 import { useNotesStore } from '@/lib/stores/notes';
 import { NoteDetail } from '@/ui/NoteDetail';
-import { withPluginSetup } from '@/ui/RichEditor/plugins';
+import { NoteContentProvider } from '@/ui/NoteContent';
 
 interface NoteDetailPageProps {
   params: { id: string };
@@ -202,14 +200,6 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
     ]
   );
 
-  const editor = useMemo(() => {
-    const enhancers = [withReact, withPluginSetup];
-    return enhancers.reduce(
-      (editor, enhancer) => enhancer(editor),
-      createEditor()
-    );
-  }, []);
-
   const [isExit, setIsExit] = useState(false);
 
   const handleBack = useCallback(() => {
@@ -234,9 +224,7 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
   if (!note) return null;
 
   return (
-    <SlateProvider
-      editor={editor}
-      initialValue={JSON.parse(note.content || '')}>
+    <NoteContentProvider content={note.content}>
       <AnimatePresence>
         {!isExit ? (
           <div
@@ -336,7 +324,7 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
           </div>
         ) : null}
       </AnimatePresence>
-    </SlateProvider>
+    </NoteContentProvider>
   );
 };
 

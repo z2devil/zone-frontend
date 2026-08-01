@@ -4,8 +4,8 @@ import imageLoader from 'config/image/loader';
 import dayjs from 'dayjs';
 import Image from 'next/image';
 import { useMemo } from 'react';
-import RichEditor from '../RichEditor';
 import NoteVisibilityBadge from '../NoteVisibilityBadge';
+import RichEditor from '../RichEditor';
 
 interface NoteDetailProps {
   note: NoteInfo;
