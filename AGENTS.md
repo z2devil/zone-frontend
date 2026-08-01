@@ -89,6 +89,13 @@ app/(root-routes)/@modal/(.)write/[id]/page.tsx
 
 未授权访问私密资源时，不在 UI 或错误信息中泄露资源是否存在。
 
+## 后端日志排查
+
+排查生产 API、登录验证码、MongoDB、Redis、部署健康或私密笔记请求时，使用
+`.codex/skills/zone-log-diagnostics`。生产日志只通过该 Skill 的有界只读脚本查询，不临时
+拼接 SSH 命令，不读取远程环境变量或 Compose 文件。优先使用响应头 `X-Request-ID` 关联
+请求，不按邮箱、验证码、笔记标题或正文搜索日志。
+
 ## 开发流程
 
 1. 先确认当前分支、工作区状态和目标后端基线，不覆盖用户未提交的改动。
