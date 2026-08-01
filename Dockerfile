@@ -1,13 +1,15 @@
-FROM node:21.2.0
+FROM node:22.20.0-slim
 
 WORKDIR /app
 
-ADD . /app
+RUN corepack enable && corepack prepare pnpm@10.17.1 --activate
 
-RUN npm install -g pnpm \
-&& pnpm install \
-&& pnpm build
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
+
+COPY . .
+RUN pnpm build
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start"]
+CMD ["pnpm", "start"]
