@@ -8,7 +8,23 @@ import { validate, FormRules } from '@/lib/utils/formRules';
 import Button from '@/ui/Button';
 import VerificationCodeInput from '@/ui/VerificationCodeInput';
 import { useRouter } from 'next/navigation';
-import { useCallback, useMemo, useState } from 'react';
+import {
+  FormEvent,
+  KeyboardEvent as ReactKeyboardEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+
+const VERIFICATION_CODE_LENGTH = 4;
+
+const RESEND_COOLDOWN_SECONDS = 60;
+
+const getErrorMessage = (error: unknown) => {
+  return error instanceof Error ? error.message : '请求失败，请稍后重试';
+};
 
 const LoginPage = () => {
   const router = useRouter();
@@ -23,6 +39,12 @@ const LoginPage = () => {
 
   const [verificationCode, setVerificationCode] = useState('');
 
+  const [verificationInputKey, setVerificationInputKey] = useState(0);
+
+  const [resendSeconds, setResendSeconds] = useState(0);
+
+  const [isLoginComplete, setIsLoginComplete] = useState(false);
+
   const setUserInfo = useAuthStore(state => state.setUserInfo);
 
   const setToken = useAuthStore(state => state.setToken);
@@ -31,47 +53,84 @@ const LoginPage = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const isEmailComposingRef = useRef(false);
+
+  const submissionLockRef = useRef(false);
+
+  useEffect(() => {
+    if (resendSeconds <= 0) return;
+
+    const timer = window.setTimeout(() => {
+      setResendSeconds(current => Math.max(0, current - 1));
+    }, 1000);
+
+    return () => window.clearTimeout(timer);
+  }, [resendSeconds]);
+
+  const resetVerificationCode = useCallback(() => {
+    setVerificationCode('');
+    setVerificationInputKey(current => current + 1);
+  }, []);
+
   // 返回
   const handleBack = useCallback(() => {
+    if (submissionLockRef.current) return;
+    resetVerificationCode();
+    setTip('');
     setStep(0);
-  }, []);
+  }, [resetVerificationCode]);
 
   // 发送验证码
   const handleSendVerificationCode = useCallback(async () => {
-    if (isLoading) return;
-    setIsLoading(true);
+    const normalizedEmail = email.trim();
     setTip('');
-    await Promise.resolve();
-    if (email.length === 0) {
+
+    if (normalizedEmail.length === 0) {
       setTip('邮箱不能为空');
       return;
     }
-    const [pass, msg] = validate(email, FormRules.EMAIL);
+
+    const [pass, msg] = validate(normalizedEmail, FormRules.EMAIL);
     if (!pass) {
       setTip(msg);
       return;
     }
+
+    if (submissionLockRef.current) return;
+
+    submissionLockRef.current = true;
+    setIsLoading(true);
     try {
       setTip('发送中...');
       await getVerificationCodeAPI(request)({
-        email,
+        email: normalizedEmail,
       });
-      setTip('已发送到 ' + email);
+      setEmail(normalizedEmail);
+      resetVerificationCode();
+      setResendSeconds(RESEND_COOLDOWN_SECONDS);
+      setTip('已发送到 ' + normalizedEmail);
       setStep(1);
-    } catch (error: any) {
-      setTip(error.message);
+    } catch (error: unknown) {
+      setTip(getErrorMessage(error));
     } finally {
+      submissionLockRef.current = false;
       setIsLoading(false);
     }
-  }, [email, isLoading, request]);
+  }, [email, request, resetVerificationCode]);
 
   // 登录/注册
   const sign = useCallback(
     async (code: string) => {
-      if (isLoading) return;
+      if (!new RegExp(`^\\d{${VERIFICATION_CODE_LENGTH}}$`).test(code)) {
+        setTip(`请输入完整的 ${VERIFICATION_CODE_LENGTH} 位验证码`);
+        return;
+      }
+
+      if (submissionLockRef.current || isLoginComplete) return;
+
+      submissionLockRef.current = true;
       setIsLoading(true);
       setTip('');
-      await Promise.resolve();
       setTip('登录中...');
       try {
         const { token, info } = await signAPI(request)({
@@ -82,33 +141,62 @@ const LoginPage = () => {
         setUserInfo(info);
         setToken(token);
         clearNotes();
+        setIsLoginComplete(true);
         setTimeout(() => {
           router.push('/');
         }, 1000);
-      } catch (error: any) {
-        setTip(error.message);
+      } catch (error: unknown) {
+        setTip(getErrorMessage(error));
       } finally {
+        submissionLockRef.current = false;
         setIsLoading(false);
       }
     },
-    [clearNotes, email, isLoading, request, router, setToken, setUserInfo]
+    [clearNotes, email, isLoginComplete, request, router, setToken, setUserInfo]
   );
 
   // 验证码输入变化
   const handleVerificationCodeChange = useCallback(
     (code: string) => {
       setVerificationCode(code);
-      if (code.length === 4) {
+      if (code.length === VERIFICATION_CODE_LENGTH) {
         sign(code);
       }
     },
     [sign]
   );
 
-  // 登录/注册
-  const handleSign = useCallback(() => {
-    sign(verificationCode);
-  }, [sign, verificationCode]);
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+
+      if (isEmailComposingRef.current) return;
+
+      if (step === 0) {
+        void handleSendVerificationCode();
+        return;
+      }
+
+      void sign(verificationCode);
+    },
+    [handleSendVerificationCode, sign, step, verificationCode]
+  );
+
+  const handleEmailKeyDown = useCallback(
+    (event: ReactKeyboardEvent<HTMLInputElement>) => {
+      if (event.key !== 'Enter') return;
+
+      const nativeEvent = event.nativeEvent;
+      if (
+        isEmailComposingRef.current ||
+        nativeEvent.isComposing ||
+        nativeEvent.keyCode === 229
+      ) {
+        event.preventDefault();
+      }
+    },
+    []
+  );
 
   const calcTitle = useMemo(() => {
     if (step === 0) {
@@ -132,28 +220,43 @@ const LoginPage = () => {
     if (step === 0) {
       return (
         <input
+          autoComplete='email'
           className='h-[3.25rem] w-[17.5rem] rounded-full text-center text-lg font-medium text-black-900 placeholder:text-center placeholder:text-lg placeholder:text-black-250'
+          disabled={isLoading}
+          inputMode='email'
           maxLength={30}
           placeholder='邮箱'
           value={email}
           onChange={e => setEmail(e.target.value)}
-          onKeyUp={e => {
-            if (e.key === 'Enter') {
-              handleSendVerificationCode();
-            }
+          onCompositionEnd={() => {
+            isEmailComposingRef.current = false;
           }}
+          onCompositionStart={() => {
+            isEmailComposingRef.current = true;
+          }}
+          onKeyDown={handleEmailKeyDown}
         />
       );
     }
     if (step === 1) {
       return (
         <VerificationCodeInput
-          length={4}
+          disabled={isLoading || isLoginComplete}
+          key={verificationInputKey}
+          length={VERIFICATION_CODE_LENGTH}
           onChange={handleVerificationCodeChange}
         />
       );
     }
-  }, [email, handleSendVerificationCode, handleVerificationCodeChange, step]);
+  }, [
+    email,
+    handleEmailKeyDown,
+    handleVerificationCodeChange,
+    isLoading,
+    isLoginComplete,
+    step,
+    verificationInputKey,
+  ]);
 
   const calcBottomBarElement = useMemo(() => {
     return (
@@ -161,7 +264,8 @@ const LoginPage = () => {
         {step === 0 && (
           <Button
             className='relative flex h-12 items-center justify-center gap-2.5 rounded-3xl bg-primary-50 py-3.5 pl-7 pr-5'
-            onClick={handleSendVerificationCode}>
+            loading={isLoading}
+            type='submit'>
             <span className='text-lg font-medium text-white'>获取验证码</span>
             <i className='iconfont icon-arrow-right text-2xl text-white' />
           </Button>
@@ -169,13 +273,27 @@ const LoginPage = () => {
         {step === 1 && (
           <>
             <Button
+              aria-label='返回修改邮箱'
               className='relative flex h-12 w-12 items-center justify-center gap-2.5 rounded-3xl bg-black-250 py-3.5 pr-1'
+              disabled={isLoading || isLoginComplete}
               onClick={handleBack}>
               <i className='iconfont icon-angle-left text-2xl text-white' />
             </Button>
             <Button
+              className='relative flex h-12 items-center justify-center rounded-3xl bg-black-250 px-5'
+              disabled={isLoading || resendSeconds > 0 || isLoginComplete}
+              onClick={handleSendVerificationCode}>
+              <span className='text-base font-medium text-white'>
+                {resendSeconds > 0
+                  ? `重新发送（${resendSeconds}s）`
+                  : '重新发送'}
+              </span>
+            </Button>
+            <Button
               className='relative flex h-12 items-center justify-center gap-2.5 rounded-3xl bg-primary-50 py-3.5 pl-7 pr-5'
-              onClick={handleSign}>
+              disabled={isLoginComplete}
+              loading={isLoading}
+              type='submit'>
               <span className='text-lg font-medium text-white'>登录</span>
               <i className='iconfont icon-arrow-right text-2xl text-white' />
             </Button>
@@ -183,11 +301,20 @@ const LoginPage = () => {
         )}
       </div>
     );
-  }, [handleBack, handleSendVerificationCode, handleSign, step]);
+  }, [
+    handleBack,
+    handleSendVerificationCode,
+    isLoading,
+    isLoginComplete,
+    resendSeconds,
+    step,
+  ]);
 
   return (
     <div className='flex h-full items-center justify-center'>
-      <div className='flex h-full max-h-[40rem] w-96 flex-col items-center justify-between gap-32'>
+      <form
+        className='flex h-full max-h-[40rem] w-96 flex-col items-center justify-between gap-32'
+        onSubmit={handleSubmit}>
         {/* main */}
         <div className='relative top-14 flex flex-col items-center justify-center gap-16'>
           <div className='flex flex-col items-center justify-center gap-7'>
@@ -202,7 +329,7 @@ const LoginPage = () => {
           {calcInputElement}
         </div>
         {calcBottomBarElement}
-      </div>
+      </form>
     </div>
   );
 };
