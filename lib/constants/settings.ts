@@ -46,7 +46,6 @@ export const configs = {
    * oss 相关
    */
   oss: {
-    accessid: process.env.OSS_ACCESSID,
     endpoint: process.env.OSS_ENDPOINT,
     bucket: process.env.OSS_BUCKET,
     root: process.env.OSS_ROOT,
