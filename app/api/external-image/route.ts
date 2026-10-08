@@ -1,42 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { ExternalImageError, fetchExternalImage } from './guard';
+
+// 依赖 node:dns / node:http，不能运行在 Edge
+export const runtime = 'nodejs';
+
+const SECURITY_HEADERS = {
+  'X-Content-Type-Options': 'nosniff',
+  'Content-Security-Policy': "default-src 'none'; sandbox",
+};
+
+const fail = (status: number, error: string) =>
+  NextResponse.json({ error }, { status, headers: SECURITY_HEADERS });
 
 /**
- * 获取远端图片
+ * 获取远端图片，供编辑器把外链图片转存到 OSS。
+ * 只代理公网 http(s) 上的位图，见 ./guard.ts。
  */
 export async function GET(req: NextRequest) {
+  const url = req.nextUrl.searchParams.get('url');
+
+  if (!url) {
+    return fail(400, 'Missing required parameters');
+  }
+
   try {
-    // 从请求体中获取参数
-    const url = req.nextUrl.searchParams.get('url');
+    const { contentType, body } = await fetchExternalImage(url);
 
-    // 检查参数是否存在
-    if (!url) {
-      return NextResponse.json(
-        { error: 'Missing required parameters' },
-        { status: 400 }
-      );
-    }
-
-    const response = await fetch(url);
-
-    // 检查请求是否成功
-    if (!response.ok) {
-      return NextResponse.json(
-        { error: 'Failed to fetch image' },
-        { status: 500 }
-      );
-    }
-
-    // 获取图片的二进制数据
-    const buffer = await response.arrayBuffer();
-
-    return new NextResponse(buffer, {
+    return new NextResponse(body, {
       status: 200,
       headers: {
-        'Content-Type': response.headers.get('Content-Type') || 'image/jpeg', // 默认内容类型
-        'Content-Length': buffer.byteLength.toString(),
+        ...SECURITY_HEADERS,
+        'Content-Type': contentType,
+        'Content-Length': body.byteLength.toString(),
       },
     });
   } catch (error) {
-    return NextResponse.json({ error: Error }, { status: 500 });
+    if (error instanceof ExternalImageError) {
+      return fail(error.status, error.message);
+    }
+    return fail(502, 'Failed to fetch image');
   }
 }
