@@ -7,7 +7,6 @@ import {
   PostNoteParams,
   PutNoteParams,
 } from './types';
-import { cache } from 'react';
 
 const normalizeNote = (note: NoteInfo | null | undefined): NoteInfo => {
   if (!note) throw new Error('笔记不存在');
@@ -33,23 +32,23 @@ export const getNoteAPI = (request: IRequest) => async (id: string) => {
 /**
  * 获取 note 列表
  */
-export const getNotesAPI = (request: IRequest) =>
-  cache(async (params: GetNotesParams) => {
+export const getNotesAPI =
+  (request: IRequest) => async (params: GetNotesParams) => {
     const data = await request.get<IPageData<NoteInfo>>('/note', params);
     return { ...data, list: data.list.map(normalizeNote) };
-  });
+  };
 
 /**
  * 获取相邻 note
  */
-export const getAdjacentNotesAPI = (request: IRequest) =>
-  cache(async (id: string) => {
+export const getAdjacentNotesAPI =
+  (request: IRequest) => async (id: string) => {
     const data = await request.get<AdjacentNotes>(`/note/adjacent/${id}`);
     return {
       prev: data.prev ? normalizeNote(data.prev) : null,
       next: data.next ? normalizeNote(data.next) : null,
     };
-  });
+  };
 
 /**
  * 创建 note
