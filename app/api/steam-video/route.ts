@@ -8,16 +8,22 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'App ID is required' }, { status: 400 });
   }
 
+  // Steam appId 只能是纯数字，避免拼接额外查询参数
+  if (!/^\d+$/.test(appId)) {
+    return NextResponse.json({ error: 'Invalid App ID' }, { status: 400 });
+  }
+
   try {
-    const response = await fetch(
-      `https://store.steampowered.com/api/appdetails?appids=${appId}&filters=movies`,
-      {
-        headers: {
-          'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        },
-      }
-    );
+    const steamUrl = new URL('https://store.steampowered.com/api/appdetails');
+    steamUrl.searchParams.set('appids', appId);
+    steamUrl.searchParams.set('filters', 'movies');
+
+    const response = await fetch(steamUrl.toString(), {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      },
+    });
 
     if (!response.ok) {
       return NextResponse.json(
