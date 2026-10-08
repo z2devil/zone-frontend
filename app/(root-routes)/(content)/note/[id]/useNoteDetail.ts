@@ -1,11 +1,13 @@
 import {
   AdjacentNotes,
   NoteInfo,
+  deleteNoteAPI,
   getAdjacentNotesAPI,
   getNoteAPI,
 } from '@/lib/api/notes';
 import useRequest from '@/lib/hooks/useRequest';
-import { useEffect, useState } from 'react';
+import { useNotesStore } from '@/lib/stores/notes';
+import { useCallback, useEffect, useState } from 'react';
 
 /**
  * unavailable 同时覆盖不存在、无权访问和请求失败，
@@ -61,5 +63,13 @@ export const useNoteDetail = (id: string, cachedNote?: NoteInfo) => {
     };
   }, [id, request]);
 
-  return { status, note, adjacentNotes };
+  /**
+   * 删除成功后才从跨页面 store 中移除；失败时抛出，store 保持不变
+   */
+  const deleteNote = useCallback(async () => {
+    await deleteNoteAPI(request)(id);
+    useNotesStore.getState().removeNote(id);
+  }, [id, request]);
+
+  return { status, note, adjacentNotes, deleteNote };
 };

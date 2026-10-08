@@ -13,6 +13,7 @@ interface NotesState {
 interface NotesAction {
   clear: () => void;
   setNotes: (notes: NoteInfo[]) => void;
+  removeNote: (id: string) => void;
   setFilterTags: (tags: string[]) => void;
   setFilterContent: (content?: string) => void;
 }
@@ -32,6 +33,11 @@ export const useNotesStore = create(
     setNotes: notes => {
       set(state => {
         state.notes = notes;
+      });
+    },
+    removeNote: id => {
+      set(state => {
+        state.notes = state.notes.filter(note => note._id !== id);
       });
     },
     setFilterTags: tags => {

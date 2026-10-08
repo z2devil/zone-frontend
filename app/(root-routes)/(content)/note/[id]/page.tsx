@@ -1,9 +1,8 @@
 'use client';
 
-import { canShareNote, deleteNoteAPI, isNoteOwner } from '@/lib/api/notes';
+import { canShareNote, isNoteOwner } from '@/lib/api/notes';
 import { UserRole } from '@/lib/api/user';
 import usePermission from '@/lib/hooks/usePermission';
-import useRequest from '@/lib/hooks/useRequest';
 import {
   useContextMenuUtilsStore,
   useAuthStore,
@@ -30,8 +29,6 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
 
   const navigation = useRouter();
 
-  const [request] = useRequest();
-
   const contextMenuUtils = useContextMenuUtilsStore(state => state.utils);
 
   const { utils: modalUtils } = useModalUtilsStore();
@@ -48,7 +45,7 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
 
   const userId = useAuthStore(state => state.userInfo?._id);
 
-  const { status, note, adjacentNotes } = useNoteDetail(params.id);
+  const { status, note, adjacentNotes, deleteNote } = useNoteDetail(params.id);
 
   const canManage = Boolean(note && isAdmin && isNoteOwner(note, userId));
 
@@ -117,12 +114,13 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
                 okText: '删除',
                 onOk: async () => {
                   try {
-                    await deleteNoteAPI(request)(note._id);
+                    await deleteNote();
                     notificationUtils?.open({
                       type: NotificationType.SUCCESS,
                       content: '删除成功',
                       duration: 3,
                     });
+                    navigation.replace('/note');
                   } catch (error) {
                     notificationUtils?.open({
                       type: NotificationType.ERROR,
@@ -148,11 +146,11 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
     [
       contextMenuUtils,
       canManage,
+      deleteNote,
       modalUtils,
       navigation,
       note,
       notificationUtils,
-      request,
     ]
   );
 

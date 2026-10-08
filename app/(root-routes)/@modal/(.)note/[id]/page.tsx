@@ -1,9 +1,8 @@
 'use client';
 
-import { canShareNote, deleteNoteAPI, isNoteOwner } from '@/lib/api/notes';
+import { canShareNote, isNoteOwner } from '@/lib/api/notes';
 import { UserRole } from '@/lib/api/user';
 import usePermission from '@/lib/hooks/usePermission';
-import useRequest from '@/lib/hooks/useRequest';
 import {
   useContextMenuUtilsStore,
   useAuthStore,
@@ -36,8 +35,6 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
 
   const navigation = useRouter();
 
-  const [request] = useRequest();
-
   const { notes } = useNotesStore();
 
   const cachedNote = useMemo(
@@ -45,7 +42,10 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
     [notes, params.id]
   );
 
-  const { status, note, adjacentNotes } = useNoteDetail(params.id, cachedNote);
+  const { status, note, adjacentNotes, deleteNote } = useNoteDetail(
+    params.id,
+    cachedNote
+  );
 
   const contextMenuUtils = useContextMenuUtilsStore(state => state.utils);
 
@@ -80,6 +80,12 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
       title: adjacentNotes.next.title || '无标题',
     };
   }, [adjacentNotes]);
+
+  const [isExit, setIsExit] = useState(false);
+
+  const handleBack = useCallback(() => {
+    setIsExit(true);
+  }, []);
 
   /************************************************
    * ✨ 更多
@@ -130,12 +136,13 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
                 okText: '删除',
                 onOk: async () => {
                   try {
-                    await deleteNoteAPI(request)(note._id);
+                    await deleteNote();
                     notificationUtils?.open({
                       type: NotificationType.SUCCESS,
                       content: '删除成功',
                       duration: 3,
                     });
+                    handleBack();
                   } catch (error) {
                     notificationUtils?.open({
                       type: NotificationType.ERROR,
@@ -161,19 +168,14 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
     [
       contextMenuUtils,
       canManage,
+      deleteNote,
+      handleBack,
       modalUtils,
       navigation,
       note,
       notificationUtils,
-      request,
     ]
   );
-
-  const [isExit, setIsExit] = useState(false);
-
-  const handleBack = useCallback(() => {
-    setIsExit(true);
-  }, []);
 
   useEffect(() => {
     if (isExit) {

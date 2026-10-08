@@ -1,11 +1,13 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { NoteInfo } from '@/lib/api/notes';
+import { useNotesStore } from '@/lib/stores/notes';
 import { useNoteDetail } from './useNoteDetail';
 
 const mocks = vi.hoisted(() => ({
   getNote: vi.fn(),
   getAdjacentNotes: vi.fn(),
+  deleteNote: vi.fn(),
   // 与真实 useRequest 一致：request 引用在渲染间保持稳定
   requestTuple: [{}],
 }));
@@ -17,6 +19,7 @@ vi.mock('@/lib/hooks/useRequest', () => ({
 vi.mock('@/lib/api/notes', () => ({
   getNoteAPI: () => mocks.getNote,
   getAdjacentNotesAPI: () => mocks.getAdjacentNotes,
+  deleteNoteAPI: () => mocks.deleteNote,
 }));
 
 const note = { _id: 'note-1', title: 'Hello' } as NoteInfo;
@@ -70,5 +73,30 @@ describe('useNoteDetail', () => {
     await waitFor(() => expect(mocks.getAdjacentNotes).toHaveBeenCalled());
     expect(result.current.status).toBe('ready');
     expect(result.current.adjacentNotes).toEqual({ prev: null, next: null });
+  });
+
+  it('removes the note from the store after a successful delete', async () => {
+    mocks.getNote.mockResolvedValue(note);
+    mocks.getAdjacentNotes.mockResolvedValue({ prev: null, next: null });
+    mocks.deleteNote.mockResolvedValue(null);
+    useNotesStore.setState({ notes: [note, prev] });
+
+    const { result } = renderHook(() => useNoteDetail('note-1'));
+    await result.current.deleteNote();
+
+    expect(mocks.deleteNote).toHaveBeenCalledWith('note-1');
+    expect(useNotesStore.getState().notes).toEqual([prev]);
+  });
+
+  it('keeps the store unchanged when delete fails', async () => {
+    mocks.getNote.mockResolvedValue(note);
+    mocks.getAdjacentNotes.mockResolvedValue({ prev: null, next: null });
+    mocks.deleteNote.mockRejectedValue(new Error('笔记不存在'));
+    useNotesStore.setState({ notes: [note, prev] });
+
+    const { result } = renderHook(() => useNoteDetail('note-1'));
+
+    await expect(result.current.deleteNote()).rejects.toThrow('笔记不存在');
+    expect(useNotesStore.getState().notes).toEqual([note, prev]);
   });
 });

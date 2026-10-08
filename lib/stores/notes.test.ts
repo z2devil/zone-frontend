@@ -20,4 +20,16 @@ describe('notes store', () => {
     expect(useNotesStore.getState().notes).toEqual([]);
     expect(useNotesStore.getState().filter).toEqual({ tags: [] });
   });
+
+  it('removes a deleted note by id', () => {
+    useNotesStore.setState({
+      notes: [{ _id: 'note-1' } as any, { _id: 'note-2' } as any],
+    });
+
+    useNotesStore.getState().removeNote('note-1');
+
+    expect(useNotesStore.getState().notes.map(note => note._id)).toEqual([
+      'note-2',
+    ]);
+  });
 });
