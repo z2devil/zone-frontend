@@ -30,6 +30,13 @@ export const getNoteAPI = (request: IRequest) => async (id: string) => {
 };
 
 /**
+ * 记录一次笔记浏览（后端按 IP 去重计数）
+ */
+export const viewNoteAPI = (request: IRequest) => (id: string) => {
+  return request.get<null>('/note/view', { _id: id });
+};
+
+/**
  * 获取 note 列表
  */
 export const getNotesAPI =

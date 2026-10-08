@@ -1,6 +1,12 @@
 import type { IRequest } from '@/lib/hooks/useRequest';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { deleteNoteAPI, getNoteAPI, postNoteAPI, putNoteAPI } from './api';
+import {
+  deleteNoteAPI,
+  getNoteAPI,
+  postNoteAPI,
+  putNoteAPI,
+  viewNoteAPI,
+} from './api';
 import type { NoteInfo, PostNoteParams, PutNoteParams } from './types';
 
 const getMock = vi.fn();
@@ -98,5 +104,12 @@ describe('notes API contract', () => {
     expect(deleteMock).toHaveBeenCalledWith('/note', {
       body: JSON.stringify({ _id: 'note-1' }),
     });
+  });
+
+  it('records a note view with the id in the query', async () => {
+    getMock.mockResolvedValue(null);
+
+    await viewNoteAPI(request)('note-1');
+    expect(getMock).toHaveBeenCalledWith('/note/view', { _id: 'note-1' });
   });
 });

@@ -4,10 +4,11 @@ import {
   deleteNoteAPI,
   getAdjacentNotesAPI,
   getNoteAPI,
+  viewNoteAPI,
 } from '@/lib/api/notes';
 import useRequest from '@/lib/hooks/useRequest';
 import { useNotesStore } from '@/lib/stores/notes';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 /**
  * unavailable 同时覆盖不存在、无权访问和请求失败，
@@ -30,6 +31,9 @@ export const useNoteDetail = (id: string, cachedNote?: NoteInfo) => {
   const [adjacentNotes, setAdjacentNotes] =
     useState<AdjacentNotes>(EMPTY_ADJACENT);
 
+  // 已记录浏览的笔记 id，避免 request 变化或 StrictMode 重跑时重复计数
+  const viewedIdRef = useRef<string | null>(null);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -41,6 +45,11 @@ export const useNoteDetail = (id: string, cachedNote?: NoteInfo) => {
         if (cancelled) return;
         setNote(res);
         setStatus('ready');
+        if (viewedIdRef.current !== id) {
+          viewedIdRef.current = id;
+          // 浏览量记录失败静默，不影响阅读
+          viewNoteAPI(request)(id).catch(() => undefined);
+        }
       } catch (error) {
         if (cancelled) return;
         setNote(null);
