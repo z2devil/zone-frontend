@@ -9,20 +9,18 @@ import TOC from '@/ui/TOC';
 import clsx from 'clsx';
 import { Modal } from '@/ui/Modal';
 import { MotionList } from '@/ui/Motion';
-import { notFound, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import style from './style.module.scss';
 import { ModalInfo } from '@/ui/Modal/hooks/useModal';
 import NotePublish, { NoteOptions } from '@/ui/NotePublish';
 import { useModalUtilsStore, useNotificationUtilsStore } from '@/lib/stores';
 import { NotificationType } from '@/ui/Notification/components/Notification';
-import { getNoteAPI, postNoteAPI, putNoteAPI } from '@/lib/api/notes';
+import { postNoteAPI, putNoteAPI } from '@/lib/api/notes';
 import useRequest from '@/lib/hooks/useRequest';
 import { useNotesStore } from '@/lib/stores/notes';
-import { createEditor, Descendant, Element, Node, Transforms } from 'slate';
+import { createEditor, Descendant, Node } from 'slate';
 import { Slate as SlateProvider, withReact } from 'slate-react';
-import { useMount } from 'react-use';
-import { BlockElementType } from '@/lib/constants';
 import { withHistory } from 'slate-history';
 import {
   withPasteMarkdown,
@@ -31,6 +29,8 @@ import {
 } from '@/ui/RichEditor/plugins';
 import Button from '@/ui/Button';
 import { parseNoteContent } from '@/lib/note-content/parse';
+import { useNoteLoader } from '@/ui/NoteEditor/useNoteLoader';
+import NoteLoadError from '@/ui/NoteEditor/NoteLoadError';
 
 interface NoteDetailPageProps {
   params: { id: string };
@@ -39,7 +39,37 @@ interface NoteDetailPageProps {
 export default function WriteNote(props: NoteDetailPageProps) {
   const { params } = props;
 
-  const isCreate = useMemo(() => params.id === 'new', [params.id]);
+  const navigation = useRouter();
+
+  const { status, content, options, isCreate, retry } = useNoteLoader(
+    params.id
+  );
+
+  if (status === 'loading') return null;
+
+  if (status === 'error') {
+    return <NoteLoadError onBack={navigation.back} onRetry={retry} />;
+  }
+
+  return (
+    <WriteNoteEditor
+      id={params.id}
+      initialContent={content}
+      initialOptions={options}
+      isCreate={isCreate}
+    />
+  );
+}
+
+interface WriteNoteEditorProps {
+  id: string;
+  isCreate: boolean;
+  initialContent: Descendant[];
+  initialOptions: NoteOptions;
+}
+
+function WriteNoteEditor(props: WriteNoteEditorProps) {
+  const { id, isCreate, initialContent, initialOptions } = props;
 
   const navigation = useRouter();
 
@@ -164,54 +194,10 @@ export default function WriteNote(props: NoteDetailPageProps) {
   }, []);
 
   /************************************************
-   * ✨ 初始化
-   ************************************************/
-
-  const [inited, setInited] = useState(false);
-
-  const init = useCallback(async () => {
-    if (isCreate) return setInited(true);
-    try {
-      const res = await getNoteAPI(request)(params.id);
-      const content = parseNoteContent(res.content);
-      if (!content) throw new Error('Invalid note content');
-      contentRef.current = content;
-      optionsRef.current = {
-        title: res.title,
-        bannerPath: res.bannerPath,
-        tags: res.tags.map(tag => tag._id),
-        visibility: res.visibility,
-      };
-      Transforms.removeNodes(editor, {
-        at: [],
-        match: node => Element.isElement(node),
-      });
-      Transforms.insertNodes(editor, contentRef.current);
-    } catch (error) {
-      return notFound();
-    } finally {
-      setInited(true);
-    }
-  }, [editor, isCreate, params.id, request]);
-
-  useMount(() => {
-    init();
-  });
-
-  /************************************************
    * ✨ 第一步 - 编辑笔记
    ************************************************/
 
-  const contentRef = useRef<Descendant[]>([
-    {
-      type: BlockElementType.PARAGRAPH,
-      children: [
-        {
-          text: '',
-        },
-      ],
-    },
-  ]);
+  const contentRef = useRef<Descendant[]>(initialContent);
 
   const handleContentChange = useCallback((content: Descendant[]) => {
     contentRef.current = content;
@@ -237,12 +223,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
    * ✨ 第二步 - 发布笔记
    ************************************************/
 
-  const optionsRef = useRef<NoteOptions>({
-    title: '',
-    bannerPath: '',
-    tags: [],
-    visibility: 'public',
-  });
+  const optionsRef = useRef<NoteOptions>(initialOptions);
 
   const handlePublish = useCallback(
     async (res: NoteOptions) => {
@@ -260,11 +241,9 @@ export default function WriteNote(props: NoteDetailPageProps) {
         } else {
           const nextNote = await putNoteAPI(request)({
             ...data,
-            _id: params.id,
+            _id: id,
           });
-          setNotes(
-            notes.map(note => (note._id === params.id ? nextNote : note))
-          );
+          setNotes(notes.map(note => (note._id === id ? nextNote : note)));
         }
         setStep(2);
         notificationUtils?.open({
@@ -283,19 +262,10 @@ export default function WriteNote(props: NoteDetailPageProps) {
         });
       }
     },
-    [
-      isCreate,
-      navigation,
-      notes,
-      notificationUtils,
-      params.id,
-      request,
-      setNotes,
-    ]
+    [isCreate, navigation, notes, notificationUtils, id, request, setNotes]
   );
 
   const modals = useMemo<ModalInfo[]>(() => {
-    if (!inited) return [];
     return [
       step === 1 && {
         key: '1',
@@ -313,7 +283,7 @@ export default function WriteNote(props: NoteDetailPageProps) {
         },
       },
     ].filter(Boolean) as ModalInfo[];
-  }, [handlePublish, inited, step]);
+  }, [handlePublish, step]);
 
   return (
     <DndProvider backend={HTML5Backend}>
