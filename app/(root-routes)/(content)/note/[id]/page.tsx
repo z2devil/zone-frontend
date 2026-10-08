@@ -1,14 +1,6 @@
 'use client';
 
-import {
-  AdjacentNotes,
-  NoteInfo,
-  canShareNote,
-  deleteNoteAPI,
-  getAdjacentNotesAPI,
-  getNoteAPI,
-  isNoteOwner,
-} from '@/lib/api/notes';
+import { canShareNote, deleteNoteAPI, isNoteOwner } from '@/lib/api/notes';
 import { UserRole } from '@/lib/api/user';
 import usePermission from '@/lib/hooks/usePermission';
 import useRequest from '@/lib/hooks/useRequest';
@@ -23,10 +15,11 @@ import { NotificationType } from '@/ui/Notification/components/Notification';
 import TOC from '@/ui/TOC';
 import clsx from 'clsx';
 import Link from 'next/link';
-import { notFound, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useCallback, useMemo } from 'react';
 import { NoteDetail } from '@/ui/NoteDetail';
 import { NoteContentProvider } from '@/ui/NoteContent';
+import { useNoteDetail } from './useNoteDetail';
 
 interface NoteDetailPageProps {
   params: { id: string };
@@ -55,14 +48,9 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
 
   const userId = useAuthStore(state => state.userInfo?._id);
 
-  const [note, setNote] = useState<NoteInfo | null>(null);
+  const { status, note, adjacentNotes } = useNoteDetail(params.id);
 
   const canManage = Boolean(note && isAdmin && isNoteOwner(note, userId));
-
-  const [adjacentNotes, setAdjacentNotes] = useState<AdjacentNotes>({
-    prev: null,
-    next: null,
-  });
 
   const prevNoteInfo = useMemo(() => {
     if (!adjacentNotes.prev) return null;
@@ -79,25 +67,6 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
       title: adjacentNotes.next.title || '无标题',
     };
   }, [adjacentNotes]);
-
-  /************************************************
-   * ✨ 初始化
-   ************************************************/
-
-  const init = useCallback(async () => {
-    try {
-      const res = await getNoteAPI(request)(params.id);
-      setNote(res);
-      const adjacentNotes = await getAdjacentNotesAPI(request)(params.id);
-      setAdjacentNotes(adjacentNotes);
-    } catch (error) {
-      return notFound();
-    }
-  }, [params, request]);
-
-  useEffect(() => {
-    init();
-  }, [init]);
 
   /************************************************
    * ✨ 更多
@@ -186,6 +155,18 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
       request,
     ]
   );
+
+  if (status === 'unavailable') {
+    return (
+      <div className='flex w-full justify-center py-20'>
+        <EmptyInfo
+          buttonText='返回列表'
+          tip='笔记不存在或无法访问'
+          onButtonClick={() => navigation.replace('/note')}
+        />
+      </div>
+    );
+  }
 
   if (!note) return null;
 

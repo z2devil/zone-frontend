@@ -1,14 +1,6 @@
 'use client';
 
-import {
-  AdjacentNotes,
-  NoteInfo,
-  canShareNote,
-  deleteNoteAPI,
-  getAdjacentNotesAPI,
-  getNoteAPI,
-  isNoteOwner,
-} from '@/lib/api/notes';
+import { canShareNote, deleteNoteAPI, isNoteOwner } from '@/lib/api/notes';
 import { UserRole } from '@/lib/api/user';
 import usePermission from '@/lib/hooks/usePermission';
 import useRequest from '@/lib/hooks/useRequest';
@@ -23,7 +15,7 @@ import { NotificationType } from '@/ui/Notification/components/Notification';
 import TOC from '@/ui/TOC';
 import clsx from 'clsx';
 import Link from 'next/link';
-import { notFound, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import {
@@ -33,6 +25,7 @@ import {
 import { useNotesStore } from '@/lib/stores/notes';
 import { NoteDetail } from '@/ui/NoteDetail';
 import { NoteContentProvider } from '@/ui/NoteContent';
+import { useNoteDetail } from '../../../(content)/note/[id]/useNoteDetail';
 
 interface NoteDetailPageProps {
   params: { id: string };
@@ -52,7 +45,7 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
     [notes, params.id]
   );
 
-  const [note, setNote] = useState<NoteInfo | null>(cachedNote || null);
+  const { status, note, adjacentNotes } = useNoteDetail(params.id, cachedNote);
 
   const contextMenuUtils = useContextMenuUtilsStore(state => state.utils);
 
@@ -72,11 +65,6 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
 
   const canManage = Boolean(note && isAdmin && isNoteOwner(note, userId));
 
-  const [adjacentNotes, setAdjacentNotes] = useState<AdjacentNotes>({
-    prev: null,
-    next: null,
-  });
-
   const prevNoteInfo = useMemo(() => {
     if (!adjacentNotes.prev) return null;
     return {
@@ -92,25 +80,6 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
       title: adjacentNotes.next.title || '无标题',
     };
   }, [adjacentNotes]);
-
-  /************************************************
-   * ✨ 初始化
-   ************************************************/
-
-  const init = useCallback(async () => {
-    try {
-      const res = await getNoteAPI(request)(params.id);
-      setNote(res);
-      const adjacentNotes = await getAdjacentNotesAPI(request)(params.id);
-      setAdjacentNotes(adjacentNotes);
-    } catch (error) {
-      return notFound();
-    }
-  }, [params, request]);
-
-  useEffect(() => {
-    init();
-  }, [init]);
 
   /************************************************
    * ✨ 更多
@@ -220,6 +189,27 @@ const NoteDetailPage = (props: NoteDetailPageProps) => {
       enableScrollbar();
     };
   }, []);
+
+  if (status === 'unavailable') {
+    return (
+      <div
+        className='fixed z-10 flex w-full items-center justify-center bg-black-80 backdrop-blur'
+        style={{
+          height: 'calc(100vh - 3.625rem)',
+        }}
+        onClick={() => navigation.back()}>
+        <div
+          className='rounded-xl bg-white p-10'
+          onClick={e => e.stopPropagation()}>
+          <EmptyInfo
+            buttonText='关闭'
+            tip='笔记不存在或无法访问'
+            onButtonClick={() => navigation.back()}
+          />
+        </div>
+      </div>
+    );
+  }
 
   if (!note) return null;
 
