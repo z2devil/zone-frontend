@@ -11,15 +11,14 @@ import {
   SignParams,
   SignResponse,
 } from './types';
-import { cache } from 'react';
 
 /**
  * 发送邮箱验证码
  */
-export const getVerificationCodeAPI = (request: IRequest) =>
-  cache((params: GetVerificationCodeParams) => {
+export const getVerificationCodeAPI =
+  (request: IRequest) => (params: GetVerificationCodeParams) => {
     return request.get('/auth/code', params);
-  });
+  };
 
 /**
  * 登录/注册
@@ -33,10 +32,9 @@ export const signAPI = (request: IRequest) => (params: SignParams) => {
 /**
  * 获取用户信息
  */
-export const getUserInfoAPI = (request: IRequest) =>
-  cache(() => {
-    return request.get<GetInfoResponse>('/auth/info');
-  });
+export const getUserInfoAPI = (request: IRequest) => () => {
+  return request.get<GetInfoResponse>('/auth/info');
+};
 
 /**
  * 修改用户信息

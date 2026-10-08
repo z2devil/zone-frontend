@@ -1,7 +1,6 @@
 import { IRequest } from '@/lib/hooks/useRequest';
 import { IPageData } from '../types';
 import { GetTagsParams, PostTagParams, PutTagParams, TagInfo } from './types';
-import { cache } from 'react';
 
 // /**
 //  * 获取 tag
@@ -13,10 +12,10 @@ import { cache } from 'react';
 /**
  * 获取 tag 列表
  */
-export const getTagsAPI = (request: IRequest) =>
-  cache(async (params: GetTagsParams) => {
+export const getTagsAPI =
+  (request: IRequest) => async (params: GetTagsParams) => {
     return await request.get<IPageData<TagInfo>>('/tag', params);
-  });
+  };
 
 /**
  * 创建 tag
