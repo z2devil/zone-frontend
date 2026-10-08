@@ -14,7 +14,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "pnpm typecheck && pnpm test && pnpm lint",
+    "test:skills": "node --test \".codex/skills/**/*.test.mjs\"",
+    "check": "pnpm typecheck && pnpm test && pnpm test:skills && pnpm lint",
     "changeset": "changeset",
     "clean": "rimraf .next node_modules"
   },
