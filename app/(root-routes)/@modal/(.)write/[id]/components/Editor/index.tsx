@@ -1,7 +1,7 @@
 'use client';
 
 import clsx from 'clsx';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNotificationUtilsStore } from '@/lib/stores';
 import { NotificationType } from '@/ui/Notification/components/Notification';
@@ -12,14 +12,15 @@ import DraftTip from '@/ui/RichEditor/components/DraftTip';
 import FullScreenButton from '@/ui/FullScreenButton';
 import Button from '@/ui/Button';
 import { useSlate } from 'slate-react';
-import { parseNoteContent } from '@/lib/note-content/parse';
+import { saveNoteDraft } from '@/lib/note-draft';
 
 interface EditorProps {
+  noteId: string;
   onPublish: () => void;
 }
 
 const Editor = (props: EditorProps) => {
-  const { onPublish } = props;
+  const { noteId, onPublish } = props;
 
   const editor = useSlate();
 
@@ -51,8 +52,7 @@ const Editor = (props: EditorProps) => {
     (event: KeyboardEvent) => {
       if (event.key === 's' && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
-        const draft = editor.children;
-        localStorage.setItem('note-draft', JSON.stringify(draft));
+        saveNoteDraft(noteId, editor.children);
         setIsSaved(true);
         notificationUtils?.open({
           type: NotificationType.SUCCESS,
@@ -61,7 +61,7 @@ const Editor = (props: EditorProps) => {
         });
       }
     },
-    [editor.children, notificationUtils]
+    [editor, noteId, notificationUtils]
   );
 
   useEffect(() => {
@@ -70,15 +70,6 @@ const Editor = (props: EditorProps) => {
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [handleKeyDown]);
-
-  /************************************************
-   * ✨ 草稿
-   ************************************************/
-
-  const hasDraft = useMemo(() => {
-    const draft = localStorage.getItem('note-draft');
-    return Boolean(draft && parseNoteContent(draft));
-  }, []);
 
   /************************************************
    * ✨ 发布
@@ -117,9 +108,10 @@ const Editor = (props: EditorProps) => {
                 }
               />
               {/* 草稿 */}
-              {hasDraft ? (
-                <DraftTip calssName='z-10 top-12 backdrop-blur-xl' />
-              ) : null}
+              <DraftTip
+                calssName='z-10 top-12 backdrop-blur-xl'
+                noteId={noteId}
+              />
               {/* 编辑区 */}
               <div className='z-0 flex flex-1 flex-col'>
                 <RichEditor className='mx-auto max-w-[45rem] py-10' />
@@ -155,9 +147,7 @@ const Editor = (props: EditorProps) => {
             }
           />
           {/* 草稿 */}
-          {hasDraft ? (
-            <DraftTip calssName='z-10 top-12 backdrop-blur-xl' />
-          ) : null}
+          <DraftTip calssName='z-10 top-12 backdrop-blur-xl' noteId={noteId} />
           {/* 编辑器 */}
           <div className='flex flex-1 flex-col'>
             <RichEditor className='p-6' />

@@ -1,42 +1,48 @@
 import clsx from 'clsx';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Element, Transforms } from 'slate';
 import { useSlate } from 'slate-react';
 import { twMerge } from 'tailwind-merge';
-import { parseNoteContent } from '@/lib/note-content/parse';
+import { readNoteDraft, removeNoteDraft } from '@/lib/note-draft';
 
 interface DraftTipProps {
   calssName?: string;
+  /**
+   * 当前编辑的笔记 id，新建笔记为 `new`
+   */
+  noteId: string;
 }
 
 const DraftTip = (props: DraftTipProps) => {
-  const { calssName } = props;
+  const { calssName, noteId } = props;
 
   const editor = useSlate();
 
-  const [hideDraftTip, setHideDraftTip] = useState(false);
+  const [hasDraft, setHasDraft] = useState(false);
+
+  // localStorage 仅在客户端可用
+  useEffect(() => {
+    setHasDraft(Boolean(readNoteDraft(noteId)));
+  }, [noteId]);
 
   const handleApplyDraft = useCallback(() => {
-    const draft = localStorage.getItem('note-draft');
-    const content = draft ? parseNoteContent(draft) : null;
+    const content = readNoteDraft(noteId);
     if (content) {
-      if (editor) {
-        Transforms.removeNodes(editor, {
-          at: [],
-          match: node => Element.isElement(node),
-        });
-        Transforms.insertNodes(editor, content);
-      }
+      Transforms.removeNodes(editor, {
+        at: [],
+        match: node => Element.isElement(node),
+      });
+      Transforms.insertNodes(editor, content);
     }
-    setHideDraftTip(true);
-  }, [editor]);
+    setHasDraft(false);
+  }, [editor, noteId]);
 
-  const handleCloseDraftTip = useCallback(() => {
-    localStorage.removeItem('note-draft');
-    setHideDraftTip(true);
-  }, []);
+  const handleDiscardDraft = useCallback(() => {
+    removeNoteDraft(noteId);
+    setHasDraft(false);
+  }, [noteId]);
 
-  if (hideDraftTip) {
+  if (!hasDraft) {
     return null;
   }
 
@@ -61,8 +67,8 @@ const DraftTip = (props: DraftTipProps) => {
         </button>
         <button
           className='rounded-md border border-primary-50 px-2 py-1 text-xs text-primary-50 hover:bg-black-50'
-          onClick={handleCloseDraftTip}>
-          不再提醒
+          onClick={handleDiscardDraft}>
+          丢弃草稿
         </button>
       </div>
     </div>

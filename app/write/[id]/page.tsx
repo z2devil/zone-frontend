@@ -28,7 +28,7 @@ import {
   withPluginSetup,
 } from '@/ui/RichEditor/plugins';
 import Button from '@/ui/Button';
-import { parseNoteContent } from '@/lib/note-content/parse';
+import { removeNoteDraft, saveNoteDraft } from '@/lib/note-draft';
 import { useNoteLoader } from '@/ui/NoteEditor/useNoteLoader';
 import NoteLoadError from '@/ui/NoteEditor/NoteLoadError';
 
@@ -138,15 +138,6 @@ function WriteNoteEditor(props: WriteNoteEditorProps) {
 
   useEffect(() => {
     window.addEventListener('beforeunload', handleBeforeUnload);
-    // const noteDraft = localStorage.getItem('note-draft');
-    // if (noteDraft) {
-    //   const draft = JSON.parse(noteDraft);
-    //   Transforms.removeNodes(editor, {
-    //     at: [],
-    //     match: node => Element.isElement(node),
-    //   });
-    //   Transforms.insertNodes(editor, draft);
-    // }
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
@@ -162,8 +153,7 @@ function WriteNoteEditor(props: WriteNoteEditorProps) {
     (event: KeyboardEvent) => {
       if (event.key === 's' && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
-        const draft = editor.children;
-        localStorage.setItem('note-draft', JSON.stringify(draft));
+        saveNoteDraft(id, editor.children);
         setIsSaved(true);
         notificationUtils?.open({
           type: NotificationType.SUCCESS,
@@ -172,7 +162,7 @@ function WriteNoteEditor(props: WriteNoteEditorProps) {
         });
       }
     },
-    [editor.children, notificationUtils]
+    [editor, id, notificationUtils]
   );
 
   useEffect(() => {
@@ -181,17 +171,6 @@ function WriteNoteEditor(props: WriteNoteEditorProps) {
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [handleKeyDown]);
-
-  /************************************************
-   * ✨ 草稿
-   ************************************************/
-
-  const [hasDraft, setHasDraft] = useState(false);
-
-  useEffect(() => {
-    const draft = localStorage.getItem('note-draft');
-    setHasDraft(Boolean(draft && parseNoteContent(draft)));
-  }, []);
 
   /************************************************
    * ✨ 第一步 - 编辑笔记
@@ -245,6 +224,7 @@ function WriteNoteEditor(props: WriteNoteEditorProps) {
           });
           setNotes(notes.map(note => (note._id === id ? nextNote : note)));
         }
+        removeNoteDraft(id);
         setStep(2);
         notificationUtils?.open({
           type: NotificationType.SUCCESS,
@@ -308,9 +288,7 @@ function WriteNoteEditor(props: WriteNoteEditorProps) {
               }
             />
             {/* 草稿 */}
-            {hasDraft ? (
-              <DraftTip calssName='z-10 top-12 backdrop-blur-xl' />
-            ) : null}
+            <DraftTip calssName='z-10 top-12 backdrop-blur-xl' noteId={id} />
             {/* 编辑区 */}
             <div className='z-0 flex flex-1 flex-col py-10'>
               <RichEditor className='mx-auto max-w-[45rem]' />

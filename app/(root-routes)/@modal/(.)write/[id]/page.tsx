@@ -27,6 +27,7 @@ import {
 } from '@/lib/utils/scrollbarTrigger';
 import { useNoteLoader } from '@/ui/NoteEditor/useNoteLoader';
 import NoteLoadError from '@/ui/NoteEditor/NoteLoadError';
+import { removeNoteDraft } from '@/lib/note-draft';
 
 interface NoteDetailPageProps {
   params: { id: string };
@@ -132,15 +133,6 @@ function WriteNoteEditor(props: WriteNoteEditorProps) {
 
   useEffect(() => {
     window.addEventListener('beforeunload', handleBeforeUnload);
-    // const noteDraft = localStorage.getItem('note-draft');
-    // if (noteDraft) {
-    //   const draft = JSON.parse(noteDraft);
-    //   Transforms.removeNodes(editor, {
-    //     at: [],
-    //     match: node => Element.isElement(node),
-    //   });
-    //   Transforms.insertNodes(editor, draft);
-    // }
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
@@ -205,6 +197,7 @@ function WriteNoteEditor(props: WriteNoteEditorProps) {
           });
           setNotes(notes.map(note => (note._id === id ? nextNote : note)));
         }
+        removeNoteDraft(id);
         setStep(2);
         notificationUtils?.open({
           type: NotificationType.SUCCESS,
@@ -239,7 +232,7 @@ function WriteNoteEditor(props: WriteNoteEditorProps) {
           children: (
             <div className='mb-6'>
               {/* 编辑器 */}
-              <Editor onPublish={handleToConfig} />
+              <Editor noteId={id} onPublish={handleToConfig} />
             </div>
           ),
         },
@@ -260,7 +253,7 @@ function WriteNoteEditor(props: WriteNoteEditorProps) {
         },
       },
     ].filter(Boolean) as ModalInfo[];
-  }, [handlePublish, handleToConfig, isCreate, step]);
+  }, [handlePublish, handleToConfig, id, isCreate, step]);
 
   return (
     <DndProvider backend={HTML5Backend}>

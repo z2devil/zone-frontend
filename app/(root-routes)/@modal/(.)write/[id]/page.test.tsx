@@ -1,9 +1,10 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import WriteNote from './page';
 
 const mocks = vi.hoisted(() => ({
   getNote: vi.fn(),
+  putNote: vi.fn(),
   back: vi.fn(),
 }));
 
@@ -18,7 +19,7 @@ vi.mock('@/lib/hooks/useRequest', () => ({
 vi.mock('@/lib/api/notes', () => ({
   getNoteAPI: () => mocks.getNote,
   postNoteAPI: () => vi.fn(),
-  putNoteAPI: () => vi.fn(),
+  putNoteAPI: () => mocks.putNote,
 }));
 
 vi.mock('@/lib/stores', () => ({
@@ -31,10 +32,28 @@ vi.mock('@/lib/stores/notes', () => ({
 }));
 
 vi.mock('./components/Editor', () => ({
-  default: () => <div data-testid='rich-editor' />,
+  default: ({ onPublish }: { onPublish: () => void }) => (
+    <div data-testid='rich-editor'>
+      <button type='button' onClick={onPublish}>
+        发布笔记
+      </button>
+    </div>
+  ),
 }));
 
-vi.mock('@/ui/NotePublish', () => ({ default: () => null }));
+vi.mock('@/ui/NotePublish', () => ({
+  default: ({
+    options,
+    onPublish,
+  }: {
+    options: unknown;
+    onPublish: (options: unknown) => void;
+  }) => (
+    <button type='button' onClick={() => onPublish(options)}>
+      确认发布
+    </button>
+  ),
+}));
 
 // ui/Modal 依赖未声明的 lodash，测试中替换为空实现
 vi.mock('@/ui/Modal', () => ({ Modal: () => null }));
@@ -115,5 +134,21 @@ describe('write modal page', () => {
     expect(
       screen.getByRole('button', { name: '保存并发布' })
     ).toBeInTheDocument();
+  });
+
+  it('clears the current note draft after publishing', async () => {
+    mocks.getNote.mockResolvedValue(note);
+    mocks.putNote.mockResolvedValue(note);
+    localStorage.setItem('note-draft:note-1', note.content);
+    localStorage.setItem('note-draft:new', note.content);
+
+    render(<WriteNote params={{ id: 'note-1' }} />);
+    fireEvent.click(await screen.findByRole('button', { name: '发布笔记' }));
+    fireEvent.click(await screen.findByRole('button', { name: '确认发布' }));
+
+    await waitFor(() => {
+      expect(localStorage.getItem('note-draft:note-1')).toBeNull();
+    });
+    expect(localStorage.getItem('note-draft:new')).not.toBeNull();
   });
 });
