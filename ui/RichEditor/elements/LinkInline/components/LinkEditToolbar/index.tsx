@@ -11,6 +11,7 @@ import { throttle } from 'lodash';
 import styles from './style.module.scss';
 import { useClickAway } from 'react-use';
 import { InlineElementType } from '@/lib/constants';
+import { isLinkInputAllowed } from '../../safeUrl';
 
 const LinkEditToolbar = () => {
   const editor = useSlate();
@@ -84,6 +85,8 @@ const LinkEditToolbar = () => {
     () =>
       throttle((value: string) => {
         if (!elementEntry) return;
+        // 危险协议不写入文档，保留上一次的合法值
+        if (!isLinkInputAllowed(value)) return;
         Transforms.setNodes(
           editor,
           { url: value.trim() },
@@ -113,6 +116,8 @@ const LinkEditToolbar = () => {
     },
     [throttledUpdateUrl]
   );
+
+  const urlAllowed = useMemo(() => isLinkInputAllowed(url), [url]);
 
   const handleTextChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -174,6 +179,11 @@ const LinkEditToolbar = () => {
             value={url}
             onChange={handleUrlChange}
           />
+          {!urlAllowed && (
+            <span className={styles.linkEditError}>
+              仅支持 http、https、mailto 链接或站内路径
+            </span>
+          )}
         </div>
         <div className={styles.linkEditField}>
           <label className={styles.linkEditLabel}>链接文本</label>
