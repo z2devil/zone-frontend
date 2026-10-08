@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useRef } from 'react';
 import { useAuthStore } from '../stores';
 import { configs } from '../constants';
-import { isArray } from 'lodash';
 import { usePathname, useRouter } from 'next/navigation';
 import { useNotesStore } from '../stores/notes';
 
@@ -54,12 +53,17 @@ const useRequest = () => {
    */
   const handleError = useCallback(
     (error: string, status: number) => {
-      // 需要重新登录的情况
-      if (status === 401 || status === 403) {
+      // 未登录或登录态失效：清理会话并重新登录
+      if (status === 401) {
         clear();
         useNotesStore.getState().clear();
         router.push('/login');
         throw new Error('您的登录状态已过期，请重新登录');
+      }
+
+      // 已登录但权限不足：保留会话，交给调用方处理
+      if (status === 403) {
+        throw new Error('无权限');
       }
 
       // 请求过于频繁的情况
@@ -124,7 +128,7 @@ const useRequest = () => {
             (await response.json()) as IResponse<T>;
 
           if (code !== 200) {
-            const errorMessage = isArray(message)
+            const errorMessage = Array.isArray(message)
               ? message[0]?.message || 'Unknown error'
               : (message as any) || 'Unknown error';
 
