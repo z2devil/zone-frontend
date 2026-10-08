@@ -9,3 +9,9 @@ README.md
 docs
 config.json
 .next
+.codex
+.claude
+.changeset
+.husky
+.vscode
+AGENTS.md
