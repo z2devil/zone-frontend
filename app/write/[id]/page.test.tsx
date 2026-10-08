@@ -72,10 +72,6 @@ vi.mock('@/ui/Motion', () => ({
   ),
 }));
 
-// ui/Modal 依赖未声明的 lodash，测试中替换为空实现
-vi.mock('@/ui/Modal', () => ({ Modal: () => null }));
-vi.mock('@/ui/Modal/hooks/useModal', () => ({}));
-
 // 插件依赖 webpack require.context，测试中使用恒等增强
 vi.mock('@/ui/RichEditor/plugins', () => ({
   withPasteMarkdown: <T,>(editor: T) => editor,
