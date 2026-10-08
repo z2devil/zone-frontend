@@ -70,10 +70,13 @@ const ImageEdit = (props: ImageEditProps) => {
     const uploadExternalImage = async (url: string) => {
       try {
         // 通过代理请求下载外部图片
-        const response = await fetcher(`/api/external-image?url=${url}`, {
-          method: 'GET',
-          isLocal: true,
-        });
+        const response = await fetcher(
+          `/api/external-image?url=${encodeURIComponent(url)}`,
+          {
+            method: 'GET',
+            isLocal: true,
+          }
+        );
         console.log('[ response ]', response);
         const file = new File([response], 'downloaded-image', {
           type: response.type,

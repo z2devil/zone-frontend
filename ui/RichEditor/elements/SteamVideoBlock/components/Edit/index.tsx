@@ -26,8 +26,13 @@ const SteamVideoEdit = (props: SteamVideoEditProps) => {
   const title = useMemo(() => element.title, [element.title]);
 
   const handleFetchVideo = useCallback(async () => {
-    if (!appId.trim()) {
+    const id = appId.trim();
+    if (!id) {
       setError('Please enter a Steam App ID');
+      return;
+    }
+    if (!/^\d+$/.test(id)) {
+      setError('App ID must be a number');
       return;
     }
 
@@ -35,7 +40,9 @@ const SteamVideoEdit = (props: SteamVideoEditProps) => {
     setError('');
 
     try {
-      const response = await fetch(`/api/steam-video?appId=${appId}`);
+      const response = await fetch(
+        `/api/steam-video?appId=${encodeURIComponent(id)}`
+      );
       const data = await response.json();
 
       if (data.error) {
@@ -46,7 +53,7 @@ const SteamVideoEdit = (props: SteamVideoEditProps) => {
       Transforms.setNodes(
         editor,
         {
-          appId: appId,
+          appId: id,
           hlsUrl: data.hlsUrl,
           thumbnailUrl: data.thumbnailUrl,
           title: data.title,
