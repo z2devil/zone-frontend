@@ -12,7 +12,6 @@ import usePermission from '@/lib/hooks/usePermission';
 import {
   useAuthStore,
   useModalUtilsStore,
-  useNotesStore,
   useNotificationUtilsStore,
   userRoleNameSelector,
 } from '@/lib/stores';
@@ -20,6 +19,7 @@ import usePersistStoreHydration from '@/lib/hooks/usePersistStoreHydration';
 import useRequest from '@/lib/hooks/useRequest';
 import RouterLink from './components/RouterLink';
 import { ROUTER } from '@/lib/constants/router';
+import useLogout from './useLogout';
 
 interface NavLayerProps {
   show: boolean;
@@ -53,7 +53,7 @@ const NavLayer = (props: NavLayerProps) => {
 
   const { userInfo, setUserInfo, setToken } = useAuthStore();
 
-  const clearNotes = useNotesStore(state => state.clear);
+  const logout = useLogout();
 
   const userRoleName = userRoleNameSelector(useAuthStore);
 
@@ -117,9 +117,7 @@ const NavLayer = (props: NavLayerProps) => {
       okText: '确定',
       onOk: () => {
         modalUtils?.close(uuid);
-        setUserInfo(null);
-        setToken(null);
-        clearNotes();
+        logout();
         notificationUtils?.open({
           type: NotificationType.SUCCESS,
           content: '退出成功',
@@ -132,14 +130,7 @@ const NavLayer = (props: NavLayerProps) => {
         modalUtils?.close(uuid);
       },
     });
-  }, [
-    clearNotes,
-    handleBack,
-    modalUtils,
-    notificationUtils,
-    setToken,
-    setUserInfo,
-  ]);
+  }, [handleBack, logout, modalUtils, notificationUtils]);
 
   return (
     <div
