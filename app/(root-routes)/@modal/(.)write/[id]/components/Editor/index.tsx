@@ -1,30 +1,23 @@
 'use client';
 
 import clsx from 'clsx';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useNotificationUtilsStore } from '@/lib/stores';
-import { NotificationType } from '@/ui/Notification/components/Notification';
 import TOC from '@/ui/TOC';
 import Toolbar from '@/ui/RichEditor/components/Toolbar';
 import RichEditor from '@/ui/RichEditor';
 import DraftTip from '@/ui/RichEditor/components/DraftTip';
 import FullScreenButton from '@/ui/FullScreenButton';
 import Button from '@/ui/Button';
-import { useSlate } from 'slate-react';
-import { saveNoteDraft } from '@/lib/note-draft';
 
 interface EditorProps {
+  isSaved: boolean;
   noteId: string;
   onPublish: () => void;
 }
 
 const Editor = (props: EditorProps) => {
-  const { noteId, onPublish } = props;
-
-  const editor = useSlate();
-
-  const { utils: notificationUtils } = useNotificationUtilsStore();
+  const { isSaved, noteId, onPublish } = props;
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -33,43 +26,6 @@ const Editor = (props: EditorProps) => {
   const handleFullScreen = useCallback((nextFullScreen: boolean) => {
     setFullScreen(nextFullScreen);
   }, []);
-
-  /************************************************
-   * ✨ 保存
-   ************************************************/
-
-  const [isSaved, setIsSaved] = useState(false);
-
-  useEffect(() => {
-    const { onChange } = editor;
-    editor.onChange = () => {
-      onChange();
-      setIsSaved(false);
-    };
-  }, [editor]);
-
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.key === 's' && (event.metaKey || event.ctrlKey)) {
-        event.preventDefault();
-        saveNoteDraft(noteId, editor.children);
-        setIsSaved(true);
-        notificationUtils?.open({
-          type: NotificationType.SUCCESS,
-          content: '保存成功',
-          duration: 3,
-        });
-      }
-    },
-    [editor, noteId, notificationUtils]
-  );
-
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [handleKeyDown]);
 
   /************************************************
    * ✨ 发布

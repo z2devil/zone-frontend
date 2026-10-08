@@ -8,7 +8,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import style from './style.module.scss';
 import { ModalInfo } from '@/ui/Modal/hooks/useModal';
 import NotePublish, { NoteOptions } from '@/ui/NotePublish';
-import { useModalUtilsStore, useNotificationUtilsStore } from '@/lib/stores';
+import { useNotificationUtilsStore } from '@/lib/stores';
 import { NotificationType } from '@/ui/Notification/components/Notification';
 import { postNoteAPI, putNoteAPI } from '@/lib/api/notes';
 import useRequest from '@/lib/hooks/useRequest';
@@ -27,6 +27,7 @@ import {
 } from '@/lib/utils/scrollbarTrigger';
 import { useNoteLoader } from '@/ui/NoteEditor/useNoteLoader';
 import NoteLoadError from '@/ui/NoteEditor/NoteLoadError';
+import { useNoteEditState } from '@/ui/NoteEditor/useNoteEditState';
 import { removeNoteDraft } from '@/lib/note-draft';
 
 interface NoteDetailPageProps {
@@ -88,55 +89,17 @@ function WriteNoteEditor(props: WriteNoteEditorProps) {
 
   const { utils: notificationUtils } = useNotificationUtilsStore();
 
-  const { utils: modalUtils } = useModalUtilsStore();
-
   const { notes, setNotes } = useNotesStore();
 
   const [step, setStep] = useState(0);
 
-  const handleBack = useCallback(() => {
-    if (step === 0 && Node.string(editor)) {
-      const uuid = modalUtils?.open({
-        title: '退出编辑',
-        children: '确定退出编辑吗？',
-        okText: '确定',
-        onOk: () => {
-          modalUtils?.close(uuid);
-          setStep(step - 1);
-          if (step > 0) return;
-          setTimeout(() => {
-            navigation.back();
-          }, 400);
-        },
-        cancelText: '取消',
-        onCancel: () => {
-          modalUtils?.close(uuid);
-        },
-      });
-    } else {
-      setStep(step - 1);
-      if (step > 0) return;
-      setTimeout(() => {
-        navigation.back();
-      }, 400);
-    }
-  }, [editor, modalUtils, navigation, step]);
-
-  const handleBeforeUnload = useCallback(
-    (e: BeforeUnloadEvent) => {
-      if (Node.string(editor)) {
-        e.preventDefault();
-      }
-    },
-    [editor]
-  );
-
-  useEffect(() => {
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [editor, handleBeforeUnload]);
+  const { contentRef, handleChange, handleBack, isSaved } = useNoteEditState({
+    editor,
+    noteId: id,
+    initialContent,
+    step,
+    setStep,
+  });
 
   useEffect(() => {
     disableScrollbar();
@@ -148,12 +111,6 @@ function WriteNoteEditor(props: WriteNoteEditorProps) {
   /************************************************
    * ✨ 第一步 - 编辑笔记
    ************************************************/
-
-  const contentRef = useRef<Descendant[]>(initialContent);
-
-  const handleContentChange = useCallback((content: Descendant[]) => {
-    contentRef.current = content;
-  }, []);
 
   const handleToConfig = useCallback(() => {
     if (
@@ -215,7 +172,16 @@ function WriteNoteEditor(props: WriteNoteEditorProps) {
         });
       }
     },
-    [isCreate, navigation, notes, notificationUtils, id, request, setNotes]
+    [
+      contentRef,
+      id,
+      isCreate,
+      navigation,
+      notes,
+      notificationUtils,
+      request,
+      setNotes,
+    ]
   );
 
   const modals = useMemo<ModalInfo[]>(() => {
@@ -232,7 +198,11 @@ function WriteNoteEditor(props: WriteNoteEditorProps) {
           children: (
             <div className='mb-6'>
               {/* 编辑器 */}
-              <Editor noteId={id} onPublish={handleToConfig} />
+              <Editor
+                isSaved={isSaved}
+                noteId={id}
+                onPublish={handleToConfig}
+              />
             </div>
           ),
         },
@@ -253,14 +223,14 @@ function WriteNoteEditor(props: WriteNoteEditorProps) {
         },
       },
     ].filter(Boolean) as ModalInfo[];
-  }, [handlePublish, handleToConfig, id, isCreate, step]);
+  }, [handlePublish, handleToConfig, id, isCreate, isSaved, step]);
 
   return (
     <DndProvider backend={HTML5Backend}>
       <SlateProvider
         editor={editor}
-        initialValue={contentRef.current}
-        onChange={handleContentChange}>
+        initialValue={initialContent}
+        onChange={handleChange}>
         <div
           className='fixed left-0 top-0 z-20 flex h-full w-full flex-col items-center justify-center'
           style={{
