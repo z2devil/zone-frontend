@@ -18,7 +18,7 @@ import {
   useState,
 } from 'react';
 
-const VERIFICATION_CODE_LENGTH = 4;
+const VERIFICATION_CODE_LENGTH = 6;
 
 const RESEND_COOLDOWN_SECONDS = 60;
 

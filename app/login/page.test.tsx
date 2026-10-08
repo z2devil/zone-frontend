@@ -130,4 +130,16 @@ describe('LoginPage', () => {
       await screen.findByRole('button', { name: /重新发送/ })
     ).toBeInTheDocument();
   });
+
+  it('renders six verification-code inputs to match the backend code length', async () => {
+    const user = userEvent.setup();
+    render(<LoginPage />);
+
+    await user.type(screen.getByPlaceholderText('邮箱'), 'user@example.com');
+    await user.click(screen.getByRole('button', { name: '获取验证码' }));
+
+    expect(
+      await screen.findAllByLabelText(/^Verification code input \d+$/)
+    ).toHaveLength(6);
+  });
 });
