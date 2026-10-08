@@ -50,6 +50,30 @@ describe('useRequest auth error handling', () => {
     expect(mocks.push).toHaveBeenCalledWith('/login');
   });
 
+  it('clears local note drafts on 401 so private content does not remain', async () => {
+    localStorage.setItem('note-draft:note-1', '[]');
+    localStorage.setItem('other-key', 'keep');
+    mockFetch(jsonResponse({}, 401));
+    const { result } = renderHook(() => useRequest());
+
+    await expect(result.current[0].get('/note/note-1')).rejects.toThrow();
+    expect(localStorage.getItem('note-draft:note-1')).toBeNull();
+    expect(localStorage.getItem('other-key')).toBe('keep');
+  });
+
+  it('does not redirect to login on 401 when skipAuthRedirect is set', async () => {
+    mockFetch(jsonResponse({}, 401));
+    const { result } = renderHook(() => useRequest());
+
+    await expect(
+      result.current[0].post('/auth/logout', { skipAuthRedirect: true })
+    ).rejects.toThrow();
+    expect(mocks.push).not.toHaveBeenCalled();
+    expect(vi.mocked(fetch).mock.calls[0][1]).not.toHaveProperty(
+      'skipAuthRedirect'
+    );
+  });
+
   it('keeps the session on business code 403 and throws a permission error', async () => {
     mockFetch(jsonResponse({ code: 403, message: 'forbidden' }));
     const { result } = renderHook(() => useRequest());

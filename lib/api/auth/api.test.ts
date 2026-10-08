@@ -9,6 +9,9 @@ describe('auth API', () => {
 
     await logoutAPI(request)();
 
-    expect(post).toHaveBeenCalledWith('/auth/logout');
+    // token 已失效时服务端返回 401，退出流程不应再跳转登录页
+    expect(post).toHaveBeenCalledWith('/auth/logout', {
+      skipAuthRedirect: true,
+    });
   });
 });

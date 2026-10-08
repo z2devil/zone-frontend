@@ -3,8 +3,12 @@ import { useAuthStore } from '../stores';
 import { configs } from '../constants';
 import { usePathname, useRouter } from 'next/navigation';
 import { useNotesStore } from '../stores/notes';
+import { clearAllNoteDrafts } from '../note-draft';
 
-type RequestConfig = Omit<RequestInit, 'method'>;
+type RequestConfig = Omit<RequestInit, 'method'> & {
+  /** 401 时不清理会话、不跳转登录页（用于退出登录本身） */
+  skipAuthRedirect?: boolean;
+};
 
 interface IResponse<T> {
   code: number;
@@ -50,13 +54,15 @@ const useRequest = () => {
    * 统一异常处理函数
    * @param error 错误信息
    * @param status HTTP状态码或业务状态码
+   * @param skipAuthRedirect 401 时不清理会话、不跳转登录页
    */
   const handleError = useCallback(
-    (error: string, status: number) => {
-      // 未登录或登录态失效：清理会话并重新登录
-      if (status === 401) {
+    (error: string, status: number, skipAuthRedirect = false) => {
+      // 未登录或登录态失效：清理会话、笔记缓存与本地草稿并重新登录
+      if (status === 401 && !skipAuthRedirect) {
         clear();
         useNotesStore.getState().clear();
+        clearAllNoteDrafts();
         router.push('/login');
         throw new Error('您的登录状态已过期，请重新登录');
       }
@@ -81,8 +87,12 @@ const useRequest = () => {
   const fetcher = useCallback(
     async <T = any>(
       url: string,
-      config: Omit<RequestInit, 'url'> & {
+      {
+        skipAuthRedirect,
+        ...config
+      }: Omit<RequestInit, 'url'> & {
         isLocal?: boolean;
+        skipAuthRedirect?: boolean;
       } = {},
       enabledToken = true
     ) => {
@@ -116,7 +126,8 @@ const useRequest = () => {
         if (!response.ok) {
           handleError(
             `Request failed with status ${response.status}`,
-            response.status
+            response.status,
+            skipAuthRedirect
           );
         }
 
@@ -132,7 +143,7 @@ const useRequest = () => {
               ? message[0]?.message || 'Unknown error'
               : (message as any) || 'Unknown error';
 
-            handleError(errorMessage, code);
+            handleError(errorMessage, code, skipAuthRedirect);
           }
 
           return data;
