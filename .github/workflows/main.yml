@@ -72,8 +72,14 @@ jobs:
           user: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           command: |
+            set -eu
             cd /home/ubuntu
-            sudo docker-compose pull zone-frontend
-            sudo docker-compose up -d zone-frontend
+            # 服务器直连 Docker Hub 不稳定，经腾讯云镜像加速按本次 sha 拉取后重新打 latest
+            image='${{ secrets.DOCKER_IMAGE_NAME }}'
+            mirror="mirror.ccs.tencentyun.com/$image:${{ github.sha }}"
+            sudo docker pull "$mirror"
+            sudo docker tag "$mirror" "$image:latest"
+            sudo docker rmi "$mirror"
+            sudo docker-compose up -d --no-deps zone-frontend
             echo 'Cleaning up old Docker images...'
             sudo docker image prune -f
