@@ -73,7 +73,7 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           command: |
             cd /home/ubuntu
-            sudo docker-compose pull
-            sudo docker-compose up -d
+            sudo docker-compose pull zone-frontend
+            sudo docker-compose up -d zone-frontend
             echo 'Cleaning up old Docker images...'
             sudo docker image prune -f
