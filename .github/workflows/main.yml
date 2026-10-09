@@ -65,21 +65,23 @@ jobs:
             ${{ secrets.DOCKER_IMAGE_NAME }}:latest
             ${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
 
-      - name: SSH to server
-        uses: nekiro/ssh-job@e5ed62b28815f5c62940154a048e1a85a13d52ed # main (2025-12-21)
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          user: ${{ secrets.SSH_USER }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          command: |
-            set -eu
+      - name: Ship image and deploy
+        # 镜像为私有且服务器直连 Docker Hub 超时：由 CI 拉取后经 SSH 直接传给服务器加载
+        env:
+          SSHPASS: ${{ secrets.SSH_PASSWORD }}
+          DEPLOY_HOST: ${{ secrets.SSH_HOST }}
+          DEPLOY_USER: ${{ secrets.SSH_USER }}
+          IMAGE: ${{ secrets.DOCKER_IMAGE_NAME }}
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq && sudo apt-get install -y -qq sshpass
+          mkdir -p ~/.ssh && ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          docker pull "$IMAGE:$GITHUB_SHA"
+          docker save "$IMAGE:$GITHUB_SHA" | gzip -1 \
+            | sshpass -e ssh "$DEPLOY_USER@$DEPLOY_HOST" 'gunzip | sudo docker load'
+          sshpass -e ssh "$DEPLOY_USER@$DEPLOY_HOST" "set -e
+            sudo docker tag '$IMAGE:$GITHUB_SHA' '$IMAGE:latest'
             cd /home/ubuntu
-            # 服务器直连 Docker Hub 不稳定，经腾讯云镜像加速按本次 sha 拉取后重新打 latest
-            image='${{ secrets.DOCKER_IMAGE_NAME }}'
-            mirror="mirror.ccs.tencentyun.com/$image:${{ github.sha }}"
-            sudo docker pull "$mirror"
-            sudo docker tag "$mirror" "$image:latest"
-            sudo docker rmi "$mirror"
             sudo docker-compose up -d --no-deps zone-frontend
             echo 'Cleaning up old Docker images...'
-            sudo docker image prune -f
+            sudo docker image prune -f"
