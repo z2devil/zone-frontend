@@ -62,4 +62,43 @@ describe('note card height model', () => {
       )
     ).toBe(750);
   });
+
+  it.each([
+    [true, 48],
+    [false, 88],
+  ])(
+    'estimates a collapsible block by its default collapsed state (collapsed=%s)',
+    (collapsed, height) => {
+      const content = [
+        {
+          type: BlockElementType.COLLAPSIBLE_BLOCK,
+          collapsed,
+          children: [
+            {
+              type: BlockElementType.COLLAPSIBLE_BLOCK_TITLE,
+              children: [
+                {
+                  type: BlockElementType.PARAGRAPH,
+                  children: [{ text: '标题' }],
+                },
+              ],
+            },
+            {
+              type: BlockElementType.COLLAPSIBLE_BLOCK_CONTENT,
+              children: [
+                {
+                  type: BlockElementType.PARAGRAPH,
+                  children: [{ text: '正文' }],
+                },
+              ],
+            },
+          ],
+        },
+      ] as Descendant[];
+
+      expect(estimateNoteBodyHeight(content, 390, measureTextLines)).toBe(
+        height
+      );
+    }
+  );
 });

@@ -2,6 +2,7 @@ import { BlockElementType } from '@/lib/constants';
 import { Descendant, Element, Text } from 'slate';
 import {
   CodeBlockElement,
+  CollapsibleBlockElement,
   HeadingElement,
   ImageBlockElement,
   LayoutBlockElement,
@@ -258,6 +259,23 @@ const estimateBlockHeight = (
         measureTextLines
       );
       return createBox(node.type, Math.max(28, textHeight) + 16, 0, 8);
+    }
+
+    case BlockElementType.COLLAPSIBLE_BLOCK: {
+      // 与卡片渲染一致：按文档中的默认折叠状态估算
+      const [title, content] = (node as CollapsibleBlockElement).children;
+      const headerHeight =
+        8 +
+        Math.max(
+          24,
+          estimateFlow(title?.children || [], safeWidth - 28, measureTextLines)
+        );
+      const contentHeight =
+        node.collapsed || !content
+          ? 0
+          : 8 +
+            estimateFlow(content.children, safeWidth - 24, measureTextLines);
+      return createBox(node.type, headerHeight + contentHeight, 8);
     }
 
     case BlockElementType.BUTTON:
