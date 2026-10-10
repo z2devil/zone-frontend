@@ -4,6 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import {
+  apiRequest,
   authUserFromResponse,
   buildVisibleLoginAppleScript,
   createKeychainCredentialStore,
@@ -485,4 +486,44 @@ test('redacts content when a private creation cannot be verified', async () => {
   assert.equal(captured.options.body.bannerPath, '');
   assert.deepEqual(captured.options.body.tags, []);
   assert.doesNotMatch(captured.options.body.content, /原始正文/);
+});
+
+const mockFetchResponse = (t, response) =>
+  t.mock.method(globalThis, 'fetch', async () => response);
+
+test('apiRequest returns envelope data on success', async t => {
+  mockFetchResponse(
+    t,
+    new Response(JSON.stringify({ code: 200, data: { ok: 1 }, message: '' }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  );
+  assert.deepEqual(await apiRequest('/tag'), { ok: 1 });
+});
+
+test('apiRequest reads the envelope message on non-2xx status', async t => {
+  mockFetchResponse(
+    t,
+    new Response(
+      JSON.stringify({
+        code: 403,
+        data: null,
+        message: [{ message: '没有权限修改该笔记' }],
+      }),
+      { status: 403, headers: { 'Content-Type': 'application/json' } }
+    )
+  );
+  await assert.rejects(apiRequest('/note'), /没有权限修改该笔记/);
+});
+
+test('apiRequest reports HTTP status when the body is not an envelope', async t => {
+  mockFetchResponse(
+    t,
+    new Response('<html>502 Bad Gateway</html>', {
+      status: 502,
+      headers: { 'Content-Type': 'text/html' },
+    })
+  );
+  await assert.rejects(apiRequest('/note'), /HTTP 502/);
 });

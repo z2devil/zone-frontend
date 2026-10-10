@@ -861,7 +861,7 @@ function errorMessage(message) {
   return 'Zone API 请求失败';
 }
 
-async function apiRequest(path, { method = 'GET', body, token } = {}) {
+export async function apiRequest(path, { method = 'GET', body, token } = {}) {
   const headers = { 'Content-Type': 'application/json; charset=utf-8' };
   if (token) headers.Authorization = token;
   const response = await fetch(`${apiBase()}${path}`, {
@@ -872,9 +872,12 @@ async function apiRequest(path, { method = 'GET', body, token } = {}) {
     signal: AbortSignal.timeout(30_000),
   });
   const envelope = await response.json().catch(() => null);
-  if (!response.ok) throw new Error(`Zone API HTTP ${response.status}`);
-  if (!envelope || envelope.code !== 200) {
-    throw new Error(errorMessage(envelope?.message));
+  // 后端 HTTP 状态码与 envelope code 一致；非 2xx 时优先读取 envelope 的错误信息
+  if (typeof envelope?.code !== 'number') {
+    throw new Error(`Zone API HTTP ${response.status}`);
+  }
+  if (envelope.code !== 200 || !response.ok) {
+    throw new Error(errorMessage(envelope.message));
   }
   return envelope.data;
 }
