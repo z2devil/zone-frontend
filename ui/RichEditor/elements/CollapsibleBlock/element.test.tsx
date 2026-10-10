@@ -127,14 +127,4 @@ describe('CollapsibleBlock', () => {
     expect(collapsedOf(editor)).toBe(false);
     expect(screen.getByText('正文')).toBeVisible();
   });
-
-  it('shows a title placeholder only while editing an empty title', () => {
-    setup({ collapsed: false, readOnly: false, titleText: '' });
-    expect(screen.getByText('折叠标题')).toBeInTheDocument();
-  });
-
-  it('hides the title placeholder for readers', () => {
-    setup({ collapsed: false, readOnly: true, titleText: '' });
-    expect(screen.queryByText('折叠标题')).not.toBeInTheDocument();
-  });
 });

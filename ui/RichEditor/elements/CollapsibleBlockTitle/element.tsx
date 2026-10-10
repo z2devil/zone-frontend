@@ -10,6 +10,11 @@ interface CollapsibleBlockTitleProps {
   element: CollapsibleBlockTitleElement;
 }
 
+/**
+ * 占位文字用 CSS 伪元素（data-placeholder）渲染，不在可编辑区域插入真实节点：
+ * 真实的 contentEditable=false 文本会接住点击后的 DOM 光标，Slate 判定其不可编辑而不同步选区，
+ * 导致后续输入写到旧选区所在的段落。
+ */
 const CollapsibleBlockTitle = ({
   attributes,
   children,
@@ -19,12 +24,10 @@ const CollapsibleBlockTitle = ({
   const showPlaceholder = !readOnly && Node.string(element) === '';
 
   return (
-    <div {...attributes} className={clsx(styles.collapsibleBlockTitle)}>
-      {showPlaceholder ? (
-        <span className={styles.placeholder} contentEditable={false}>
-          折叠标题
-        </span>
-      ) : null}
+    <div
+      {...attributes}
+      className={clsx(styles.collapsibleBlockTitle)}
+      data-placeholder={showPlaceholder ? '折叠标题' : undefined}>
       {children}
     </div>
   );

@@ -3,9 +3,10 @@
   flex: 1;
   min-width: 0;
   outline: none;
-}
 
-// 与段落首行对齐（段落 my-1 + leading-6）
-.placeholder {
-  @apply pointer-events-none absolute left-0 top-1 select-none leading-6 text-black-300;
+  // 与段落首行对齐（段落 my-1 + leading-6）；伪元素不进入 DOM 树，不会接住光标
+  &[data-placeholder]::before {
+    @apply pointer-events-none absolute left-0 top-1 select-none leading-6 text-black-300;
+    content: attr(data-placeholder);
+  }
 }
