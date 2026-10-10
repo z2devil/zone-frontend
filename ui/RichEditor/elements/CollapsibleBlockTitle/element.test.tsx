@@ -14,6 +14,7 @@ import collapsibleBlockPlugin from '../CollapsibleBlock';
 import CollapsibleBlock from '../CollapsibleBlock/element';
 import CollapsibleBlockContent from '../CollapsibleBlockContent/element';
 import CollapsibleBlockTitle from './element';
+import { syncSelectionFromDOM } from '@/ui/RichEditor/utils/syncSelection';
 
 // 模拟桌面 Chrome 的输入路径：slate-react 在模块加载时根据 UA 与 getTargetRanges 选择输入路径，
 // 需在导入前设置。Chrome 中 beforeinput 的目标范围即当前 DOM 选区。
@@ -85,7 +86,12 @@ const setup = ({
   collapsibleBlockPlugin.extendEditor?.(editor);
   const { container } = render(
     <Slate editor={editor} initialValue={createValue(titleText)}>
-      <Editable readOnly={readOnly} renderElement={renderElement} />
+      <Editable
+        readOnly={readOnly}
+        renderElement={renderElement}
+        onCompositionStart={() => syncSelectionFromDOM(editor)}
+        onDOMBeforeInput={() => syncSelectionFromDOM(editor)}
+      />
     </Slate>
   );
   const editable = container.querySelector(
@@ -107,14 +113,23 @@ const selectOutsideParagraph = async (editor: Editor) => {
 
 const titleText = (editor: Editor) => Node.string(Node.get(editor, [1, 0]));
 
-/** 把 DOM 光标放到指定文本节点并等待 Slate 节流后的 selectionchange 同步 */
-const placeDomCaret = async (textNode: globalThis.Node, offset: number) => {
+/**
+ * 把 DOM 光标放到指定文本节点。
+ * waitForSync=false 模拟点击后立刻输入：浏览器的 selectionchange 是异步任务，
+ * 可能晚于紧随其后的 beforeinput/compositionstart 才派发。
+ */
+const placeDomCaret = async (
+  textNode: globalThis.Node,
+  offset: number,
+  { waitForSync = true } = {}
+) => {
   const range = document.createRange();
   range.setStart(textNode, offset);
   range.collapse(true);
   const selection = window.getSelection()!;
   selection.removeAllRanges();
   selection.addRange(range);
+  if (!waitForSync) return;
   await act(async () => {
     document.dispatchEvent(new Event('selectionchange'));
     await new Promise(resolve => setTimeout(resolve, 150));
@@ -191,6 +206,50 @@ describe('CollapsibleBlockTitle', () => {
         await Promise.resolve();
       });
     }
+
+    expect(titleText(editor)).toBe('真正的标题');
+    expect(Node.string(Node.get(editor, [0]))).toBe('块外段落');
+  });
+
+  // 根因二：点击后立即输入时 selectionchange 尚未派发，editor.selection 仍是旧位置。
+  // slate-react 会按 beforeinput 的目标范围插入首字，随后恢复旧选区，后续输入落到块外。
+  it('keeps typing in the title when input arrives before selectionchange', async () => {
+    const { editor, editable, titleElement } = setup();
+    await selectOutsideParagraph(editor);
+    await placeDomCaret(textNodesOf(titleElement())[0], 0, {
+      waitForSync: false,
+    });
+
+    for (const char of '真正的标题') {
+      await act(async () => {
+        editable.dispatchEvent(
+          new InputEvent('beforeinput', {
+            bubbles: true,
+            cancelable: true,
+            data: char,
+            inputType: 'insertText',
+          })
+        );
+      });
+    }
+
+    expect(titleText(editor)).toBe('真正的标题');
+    expect(Node.string(Node.get(editor, [0]))).toBe('块外段落');
+  });
+
+  it('keeps IME text in the title when composition starts before selectionchange', async () => {
+    const { editor, editable, titleElement } = setup();
+    await selectOutsideParagraph(editor);
+    await placeDomCaret(textNodesOf(titleElement())[0], 0, {
+      waitForSync: false,
+    });
+
+    fireEvent.compositionStart(editable, { data: '' });
+    fireEvent.compositionUpdate(editable, { data: '真正的标题' });
+    fireEvent.compositionEnd(editable, { data: '真正的标题' });
+    await act(async () => {
+      await Promise.resolve();
+    });
 
     expect(titleText(editor)).toBe('真正的标题');
     expect(Node.string(Node.get(editor, [0]))).toBe('块外段落');

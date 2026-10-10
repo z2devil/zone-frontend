@@ -18,6 +18,7 @@ import {
   useHotKeys,
   useAdditionalComponents,
 } from './hooks';
+import { syncSelectionFromDOM } from './utils/syncSelection';
 
 interface EditorProps {
   className?: string;
@@ -66,6 +67,11 @@ const RichEditor = memo((props: EditorProps) => {
     return true;
   }, []);
 
+  // 点击后立即输入时 selectionchange 可能尚未派发，输入前先同步选区
+  const syncSelection = useCallback(() => {
+    syncSelectionFromDOM(editor);
+  }, [editor]);
+
   const editable = useMemo(
     () => (
       <Editable
@@ -80,8 +86,10 @@ const RichEditor = memo((props: EditorProps) => {
         renderLeaf={renderLeaf}
         spellCheck={false}
         tabIndex={0}
+        onCompositionStart={syncSelection}
         onCopy={handleCopy}
         onCut={handleCut}
+        onDOMBeforeInput={syncSelection}
         onDragStart={onDragStart}
         onDrop={onDrop}
         onKeyDown={handleKeyDown}
@@ -98,6 +106,7 @@ const RichEditor = memo((props: EditorProps) => {
       onDragStart,
       onDrop,
       handleKeyDown,
+      syncSelection,
     ]
   );
 
