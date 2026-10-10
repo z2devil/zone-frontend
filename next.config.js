@@ -24,8 +24,8 @@ const contentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline'",
   // 笔记中可能保留历史外链图片，只限制为 https
   "img-src 'self' data: blob: https:",
-  // Excalidraw 0.17 默认从 unpkg 加载手写字体
-  "font-src 'self' data: https://unpkg.com",
+  // Excalidraw 0.18 默认从 esm.sh 加载手写字体
+  "font-src 'self' data: https://esm.sh",
   `media-src 'self' blob: ${steamCdn}`,
   `connect-src 'self' ${apiOrigin} ${ossOrigin} ${steamCdn}${isDev ? ' ws:' : ''}`,
   // hls.js 使用 blob Worker

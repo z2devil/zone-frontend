@@ -1,7 +1,7 @@
 import { BaseEditor, BaseRange, Element } from 'slate';
 import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
-import { ExcalidrawElement } from '@excalidraw/excalidraw/types/element/types';
+import { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import { BlockElementType, InlineElementType, MarkType } from '@/lib/constants';
 
 export type ElementType = BlockElementType | InlineElementType;

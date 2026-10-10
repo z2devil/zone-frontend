@@ -22,7 +22,7 @@
   "dependencies": {
     "@chenglou/pretext": "0.0.8",
     "@emoji-mart/data": "1.2.1",
-    "@excalidraw/excalidraw": "^0.17.2",
+    "@excalidraw/excalidraw": "^0.18.1",
     "@radix-ui/react-collapsible": "^1.1.2",
     "@radix-ui/react-dialog": "^1.1.4",
     "@radix-ui/react-dropdown-menu": "2.1.5",

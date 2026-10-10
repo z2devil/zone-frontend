@@ -1,13 +1,14 @@
 import dynamic from 'next/dynamic';
+import '@excalidraw/excalidraw/index.css';
 import { WhiteBoardBlockElement } from 'types/slate';
 import style from './style.module.scss';
 import clsx from 'clsx';
 import {
   ExcalidrawImperativeAPI,
   ExcalidrawInitialDataState,
-} from '@excalidraw/excalidraw/types/types';
+} from '@excalidraw/excalidraw/types';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ExcalidrawElement } from '@excalidraw/excalidraw/types/element/types';
+import { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import { Transforms } from 'slate';
 import { ReactEditor, useSelected, useSlateStatic } from 'slate-react';
 
