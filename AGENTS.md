@@ -4,14 +4,14 @@
 
 ## 项目概览
 
-Zone 是个人内容站点的前端，使用 Next.js 14 App Router、React 18、
+Zone 是个人内容站点的前端，使用 Next.js 15 App Router、React 19、
 TypeScript、Tailwind CSS、Slate、Zustand 与 Immer。
 
 配套后端位于相邻仓库：
 
 ```text
-~/projects/zone-frontend-private  # 页面、交互、客户端状态、API client
-~/projects/zone-backend           # 身份认证、权限、数据查询与持久化
+~/projects/zone-frontend          # 页面、交互、客户端状态、API client
+~/projects/zone-backend-private   # 身份认证、权限、数据查询与持久化（仓库 z2devil/zone-backend）
 ```
 
 前端只通过 `lib/api` 和 `lib/hooks/useRequest.ts` 访问后端。不要在客户端实现可被

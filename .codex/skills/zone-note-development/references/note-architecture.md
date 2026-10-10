@@ -30,7 +30,7 @@
 
 ## 后端文件地图
 
-后端仓库：`~/projects/zone-backend`
+后端仓库：`~/projects/zone-backend-private`（远端 z2devil/zone-backend）
 
 | 职责 | 路径 |
 |---|---|

@@ -1,6 +1,6 @@
 ---
 name: zone-note-development
-description: 安全实现 Zone 笔记领域的前后端功能。用于新增或修改笔记发布、编辑、列表、详情、搜索、标签、上一篇下一篇、可见性、作者权限、浏览量与统计，尤其适用于需要同时改动 zone-frontend-private 和 zone-backend 的任务。
+description: 安全实现 Zone 笔记领域的前后端功能。用于新增或修改笔记发布、编辑、列表、详情、搜索、标签、上一篇下一篇、可见性、作者权限、浏览量与统计，尤其适用于需要同时改动 zone-frontend 和 zone-backend 的任务。
 ---
 
 # Zone 笔记开发
@@ -10,7 +10,7 @@ description: 安全实现 Zone 笔记领域的前后端功能。用于新增或�
 将前端作为交互与状态层，将后端作为权限和数据真实性边界。
 
 ```text
-zone-frontend-private  ->  zone-backend  ->  MongoDB
+zone-frontend  ->  zone-backend  ->  MongoDB
 ```
 
 不要只通过隐藏 UI 保护数据。不要让请求参数决定资源所有者；从后端认证上下文获取当前用户。
