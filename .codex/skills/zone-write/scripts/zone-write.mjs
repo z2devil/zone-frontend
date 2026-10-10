@@ -216,9 +216,7 @@ function blockToSlate(node, options = {}) {
       return [
         {
           type: 'block-quote',
-          children: (node.children || []).flatMap(child =>
-            blockToSlate(child, options)
-          ),
+          children: blocksToSlate(node.children || [], options),
         },
       ];
     case 'code': {
@@ -279,9 +277,114 @@ function blockToSlate(node, options = {}) {
     }
     default:
       if (Array.isArray(node.children))
-        return node.children.flatMap(child => blockToSlate(child, options));
+        return blocksToSlate(node.children, options);
       return [];
   }
+}
+
+const DETAILS_OPEN_PATTERN =
+  /^<details(\s[^>]*)?>\s*(?:<summary(?:\s[^>]*)?>([\s\S]*?)<\/summary>)?([\s\S]*)$/i;
+const DETAILS_CLOSE_PATTERN = /^<\/details>\s*$/i;
+const DETAILS_CLOSE_SUFFIX = /<\/details>\s*$/i;
+
+function parseMarkdownTree(source) {
+  return unified().use(remarkParse).use(remarkGfm).parse(source);
+}
+
+function summaryInline(summary) {
+  const source = String(summary || '').trim();
+  if (!source) return [{ text: '' }];
+  const children = parseMarkdownTree(source).children.flatMap(node =>
+    node.type === 'paragraph' || node.type === 'heading'
+      ? inlineChildren(node)
+      : [{ text: nodeText(node) || node.value || '' }]
+  );
+  return children.length > 0 ? children : [{ text: '' }];
+}
+
+function collapsibleBlock({ open, summary, content }) {
+  return {
+    type: 'collapsible-block',
+    collapsed: !open,
+    children: [
+      {
+        type: 'collapsible-block-title',
+        children: [{ type: 'paragraph', children: summaryInline(summary) }],
+      },
+      {
+        type: 'collapsible-block-content',
+        children:
+          content.length > 0
+            ? content
+            : [{ type: 'paragraph', children: [{ text: '' }] }],
+      },
+    ],
+  };
+}
+
+/**
+ * 转换同级 mdast 节点，并把 `<details><summary>…</summary> … </details>`
+ * 合并为折叠块：`<details open>` 为展开（collapsed=false），否则收起。
+ */
+function blocksToSlate(nodes, options = {}) {
+  const blocks = [];
+  for (let index = 0; index < nodes.length; index += 1) {
+    const node = nodes[index];
+    const match =
+      node.type === 'html'
+        ? String(node.value || '')
+            .trim()
+            .match(DETAILS_OPEN_PATTERN)
+        : null;
+    if (!match) {
+      blocks.push(...blockToSlate(node, options));
+      continue;
+    }
+
+    const [, attributes = '', summary, rest = ''] = match;
+    const open = /(?:^|\s)open(?:\s|=|$)/i.test(attributes);
+
+    // 整个 details 写在同一个 HTML 块里
+    if (DETAILS_CLOSE_SUFFIX.test(rest)) {
+      const inner = rest.replace(DETAILS_CLOSE_SUFFIX, '').trim();
+      const content = inner
+        ? blocksToSlate(parseMarkdownTree(inner).children, options)
+        : [];
+      blocks.push(collapsibleBlock({ open, summary, content }));
+      continue;
+    }
+
+    // 收集到匹配的 </details> 为止，嵌套的 details 交给递归处理
+    const inner = [];
+    let depth = 1;
+    for (index += 1; index < nodes.length; index += 1) {
+      const sibling = nodes[index];
+      const value =
+        sibling.type === 'html' ? String(sibling.value || '').trim() : '';
+      if (DETAILS_CLOSE_PATTERN.test(value)) {
+        depth -= 1;
+        if (depth === 0) break;
+      } else if (
+        DETAILS_OPEN_PATTERN.test(value) &&
+        !DETAILS_CLOSE_SUFFIX.test(value)
+      ) {
+        depth += 1;
+      }
+      inner.push(sibling);
+    }
+
+    const leading = rest.trim()
+      ? blocksToSlate(parseMarkdownTree(rest.trim()).children, options)
+      : [];
+    blocks.push(
+      collapsibleBlock({
+        open,
+        summary,
+        content: [...leading, ...blocksToSlate(inner, options)],
+      })
+    );
+  }
+  return blocks;
 }
 
 function nodeText(node) {
@@ -303,10 +406,8 @@ export function markdownToSlate(
 ) {
   const source = normalizeMarkdownSource(markdown);
   if (!source) throw new Error('正文不能为空');
-  const tree = unified().use(remarkParse).use(remarkGfm).parse(source);
-  const blocks = tree.children.flatMap(node =>
-    blockToSlate(node, { onUnsupportedCodeLanguage })
-  );
+  const tree = parseMarkdownTree(source);
+  const blocks = blocksToSlate(tree.children, { onUnsupportedCodeLanguage });
   if (
     title &&
     blocks[0]?.type === 'heading-1' &&

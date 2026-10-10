@@ -57,3 +57,5 @@ bannerPath  可选
 Zone 没有独立的 Article 或 Draft 数据类型。CLI 的 `kind=note|article` 只影响内容检查和整理方式，不发送到后端。私密草稿通过 `visibility=private` 实现，但它仍是已持久化的 Note。
 
 代码块语言必须规范化为前端支持的名称。常见别名如 `js`、`ts`、`sh`、`yml` 分别转换为 `javascript`、`typescript`、`bash`、`yaml`；`mermaid` 保留原语言供后续图表渲染，当前按源码安全显示；其他未知语言使用 `plaintext`。非 Prism 高亮语言同时给出 warning。
+
+折叠块由三层节点组成：`collapsible-block`（`collapsed` 表示作者设置的默认折叠状态）> `collapsible-block-title`（一个段落）+ `collapsible-block-content`（至少一个块）。CLI 将 Markdown 中的 `<details><summary>标题</summary> … </details>` 转为该结构，`<details open>` 对应 `collapsed: false`，否则为 `true`。CLI 目前只支持 Markdown → Slate 单向转换，没有反向导出。

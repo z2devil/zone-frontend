@@ -5,7 +5,7 @@ description: 管理 Zone 个人博客内容，通过可见的邮箱验证码登�
 
 # Zone 写作
 
-通过固定 CLI 把 Markdown 和本地图片转换成 Zone 兼容内容。CLI 自动去除 YAML frontmatter、与标题重复的首个 H1，将 GFM 表格降级为可读段落，规范化代码语言并上传本地图片；写入后回查标题、可见性和 Slate 正文结构。
+通过固定 CLI 把 Markdown 和本地图片转换成 Zone 兼容内容。CLI 自动去除 YAML frontmatter、与标题重复的首个 H1，将 GFM 表格降级为可读段落，把 `<details><summary>` 转为折叠块，规范化代码语言并上传本地图片；写入后回查标题、可见性和 Slate 正文结构。
 
 ## 决定动作
 
@@ -41,6 +41,18 @@ node .codex/skills/zone-write/scripts/zone-write.mjs prepare \
 ```
 
 也可以从 stdin 读取。检查标题、可见性、标签、区块数、本地图片数和 warnings。本地图片只在 `publish` 或 `update` 时上传；使用本地图片时必须通过 `--input` 提供文件，以便解析相对路径。
+
+需要可展开收起的内容时，使用 HTML `<details>`（`<summary>`、正文与 `</details>` 之间留空行，正文可写任意 Markdown，可嵌套）：
+
+```markdown
+<details><summary>排查记录</summary>
+
+正文内容
+
+</details>
+```
+
+默认收起；写成 `<details open>` 时默认展开。读者在详情页可自由展开收起。
 
 ## 登录
 

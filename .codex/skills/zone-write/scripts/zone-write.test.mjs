@@ -92,6 +92,85 @@ draft: true
   );
 });
 
+const paragraph = text => ({ type: 'paragraph', children: [{ text }] });
+
+const collapsible = (title, content, collapsed) => ({
+  type: 'collapsible-block',
+  collapsed,
+  children: [
+    {
+      type: 'collapsible-block-title',
+      children: [{ type: 'paragraph', children: title }],
+    },
+    { type: 'collapsible-block-content', children: content },
+  ],
+});
+
+test('converts details/summary into a collapsed collapsible block', () => {
+  const slate = markdownToSlate(
+    '<details><summary>标题</summary>\n\n内容\n\n</details>'
+  );
+
+  assert.deepEqual(slate, [
+    collapsible([{ text: '标题' }], [paragraph('内容')], true),
+  ]);
+});
+
+test('maps details open to an expanded block and supports nesting', () => {
+  const slate = markdownToSlate(`<details open>
+<summary>外层 **重点**</summary>
+
+- 一
+- 二
+
+<details><summary>内层</summary>
+
+内层内容
+
+</details>
+
+</details>
+
+后文`);
+
+  assert.equal(slate.length, 2);
+  const [outer, after] = slate;
+  assert.equal(outer.type, 'collapsible-block');
+  assert.equal(outer.collapsed, false);
+  assert.deepEqual(outer.children[0].children[0].children, [
+    { text: '外层 ' },
+    { text: '重点', bold: true },
+  ]);
+  const [list, inner] = outer.children[1].children;
+  assert.equal(list.type, 'ul-list');
+  assert.deepEqual(
+    inner,
+    collapsible([{ text: '内层' }], [paragraph('内层内容')], true)
+  );
+  assert.deepEqual(after, paragraph('后文'));
+});
+
+test('converts single-line details and details inside quotes', () => {
+  assert.deepEqual(
+    markdownToSlate('<details><summary>T</summary>行内内容</details>'),
+    [collapsible([{ text: 'T' }], [paragraph('行内内容')], true)]
+  );
+
+  const [quote] = markdownToSlate(
+    '> <details><summary>T</summary>\n>\n> 引用内容\n>\n> </details>'
+  );
+  assert.equal(quote.type, 'block-quote');
+  assert.deepEqual(quote.children, [
+    collapsible([{ text: 'T' }], [paragraph('引用内容')], true),
+  ]);
+});
+
+test('keeps an empty paragraph for details without summary or content', () => {
+  assert.deepEqual(markdownToSlate('<details>\n</details>'), [
+    collapsible([{ text: '' }], [paragraph('')], true),
+  ]);
+});
+
 test('defaults prepared ideas to private and preserves API limits', () => {
   const prepared = prepareContent({
     markdown: '一个值得继续验证的想法。',
