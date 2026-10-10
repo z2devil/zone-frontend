@@ -1,10 +1,13 @@
 import { BlockElementType } from '@/lib/constants';
 import { createPlugin } from '@/ui/RichEditor/utils';
 import CollapsibleBlockElement from './element';
-import { Editor, Element, Range } from 'slate';
 import { ReactEditor } from 'slate-react';
 import { normalizeCollapsibleEntry } from './normalize';
 import { moveSelectionOutOfCollapsedContent } from './selection';
+import {
+  handleCollapsibleBreak,
+  handleCollapsibleDeleteBackward,
+} from './keyboard';
 
 const collapsibleBlockPlugin = createPlugin({
   name: 'collapsibleBlock',
@@ -13,7 +16,8 @@ const collapsibleBlockPlugin = createPlugin({
     component: CollapsibleBlockElement,
   },
   extendEditor: editor => {
-    const { deleteBackward, isEmpty, normalizeNode, onChange } = editor;
+    const { deleteBackward, insertBreak, isEmpty, normalizeNode, onChange } =
+      editor;
 
     editor.onChange = options => {
       // 只读模式的展开状态在组件本地，文档中的 collapsed 仅为默认值
@@ -29,26 +33,13 @@ const collapsibleBlockPlugin = createPlugin({
       normalizeNode(entry, options);
     };
 
+    editor.insertBreak = () => {
+      if (handleCollapsibleBreak(editor)) return;
+      insertBreak();
+    };
+
     editor.deleteBackward = unit => {
-      if (editor.selection && Range.isCollapsed(editor.selection)) {
-        const entry = Editor.above(editor, {
-          match: n =>
-            Element.isElement(n) &&
-            n.type === BlockElementType.COLLAPSIBLE_BLOCK,
-        });
-
-        if (entry) {
-          const [node, path] = entry;
-          const isStart = Editor.isStart(
-            editor,
-            editor.selection?.anchor,
-            path
-          );
-
-          if (isStart) return;
-        }
-      }
-
+      if (handleCollapsibleDeleteBackward(editor)) return;
       deleteBackward(unit);
     };
 

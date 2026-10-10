@@ -3,7 +3,9 @@ import { withReact } from 'slate-react';
 import { describe, expect, it } from 'vitest';
 import { BlockElementType } from '@/lib/constants';
 import { editorUtils } from '@/ui/RichEditor/utils/editorUtils';
+import { withShortcuts } from '@/ui/RichEditor/plugins/withShortcuts';
 import collapsibleBlockPlugin from '.';
+import { exitCollapsibleBlock } from './keyboard';
 
 const p = (text: string): Descendant => ({
   type: BlockElementType.PARAGRAPH,
@@ -31,7 +33,8 @@ const collapsible = (
   }) as unknown as Descendant;
 
 const createTestEditor = (value: Descendant[]) => {
-  const editor = withReact(createEditor());
+  // 与线上一致：withShortcuts 在插件之前应用
+  const editor = withShortcuts(withReact(createEditor()));
   collapsibleBlockPlugin.extendEditor?.(editor);
   editor.children = value;
   return editor;
@@ -76,5 +79,127 @@ describe('collapsible block selection', () => {
       path: [0, 1, 0, 0],
       offset: 1,
     });
+  });
+});
+
+const point = (path: number[], offset = 0) => ({ path, offset });
+const caret = (path: number[], offset = 0) => ({
+  anchor: point(path, offset),
+  focus: point(path, offset),
+});
+
+describe('collapsible block keyboard', () => {
+  it('moves the caret to the first content line on Enter in the title', () => {
+    const editor = createTestEditor([collapsible('标题', [p('正文')])]);
+    Transforms.select(editor, point([0, 0, 0, 0], 1));
+
+    Editor.insertBreak(editor);
+
+    expect(editor.children).toEqual([collapsible('标题', [p('正文')])]);
+    expect(editor.selection).toEqual(caret([0, 1, 0, 0]));
+  });
+
+  it('expands a collapsed block before moving into its content', () => {
+    const editor = createTestEditor([collapsible('标题', [p('正文')], true)]);
+    Transforms.select(editor, point([0, 0, 0, 0], 2));
+
+    Editor.insertBreak(editor);
+
+    expect(editor.children).toEqual([collapsible('标题', [p('正文')], false)]);
+    expect(editor.selection).toEqual(caret([0, 1, 0, 0]));
+  });
+
+  it('turns an empty block into a paragraph on Backspace at its start', () => {
+    const editor = createTestEditor([p('上一段'), collapsible('', [p('')])]);
+    Transforms.select(editor, point([1, 0, 0, 0]));
+
+    Editor.deleteBackward(editor);
+
+    expect(editor.children).toEqual([p('上一段'), p('')]);
+    expect(editor.selection).toEqual(caret([1, 0]));
+  });
+
+  it.each([
+    ['title has text', collapsible('标题', [p('')])],
+    ['content has text', collapsible('', [p('正文')])],
+  ])('keeps the block on Backspace at its start when %s', (_, block) => {
+    const editor = createTestEditor([p('上一段'), block]);
+    Transforms.select(editor, point([1, 0, 0, 0]));
+
+    Editor.deleteBackward(editor);
+
+    expect(editor.children).toEqual([p('上一段'), block]);
+  });
+
+  it('does not delete content text on Backspace at the content start', () => {
+    const editor = createTestEditor([
+      collapsible('标题', [p('第一行'), p('第二行')]),
+    ]);
+    Transforms.select(editor, point([0, 1, 0, 0]));
+
+    Editor.deleteBackward(editor);
+
+    expect(editor.children).toEqual([
+      collapsible('标题', [p('第一行'), p('第二行')]),
+    ]);
+    expect(editor.selection).toEqual(caret([0, 0, 0, 0], 2));
+  });
+
+  it('removes an empty first content line on Backspace', () => {
+    const editor = createTestEditor([
+      collapsible('标题', [p(''), p('第二行')]),
+    ]);
+    Transforms.select(editor, point([0, 1, 0, 0]));
+
+    Editor.deleteBackward(editor);
+
+    expect(editor.children).toEqual([collapsible('标题', [p('第二行')])]);
+    expect(editor.selection).toEqual(caret([0, 1, 0, 0]));
+  });
+
+  it('leaves the block on Enter in an empty last content line', () => {
+    const editor = createTestEditor([collapsible('标题', [p('正文'), p('')])]);
+    Transforms.select(editor, point([0, 1, 1, 0]));
+
+    Editor.insertBreak(editor);
+
+    expect(editor.children).toEqual([collapsible('标题', [p('正文')]), p('')]);
+    expect(editor.selection).toEqual(caret([1, 0]));
+  });
+
+  it('keeps the only content line when leaving from it', () => {
+    const editor = createTestEditor([collapsible('标题', [p('')])]);
+    Transforms.select(editor, point([0, 1, 0, 0]));
+
+    Editor.insertBreak(editor);
+
+    expect(editor.children).toEqual([collapsible('标题', [p('')]), p('')]);
+    expect(editor.selection).toEqual(caret([1, 0]));
+  });
+
+  it('splits lines normally elsewhere in the content', () => {
+    const editor = createTestEditor([collapsible('标题', [p('正文')])]);
+    Transforms.select(editor, point([0, 1, 0, 0], 2));
+
+    Editor.insertBreak(editor);
+
+    expect(editor.children).toEqual([collapsible('标题', [p('正文'), p('')])]);
+  });
+
+  it('inserts a paragraph after the block when leaving with Shift+Enter', () => {
+    const editor = createTestEditor([
+      collapsible('标题', [p('正文')]),
+      p('后'),
+    ]);
+    Transforms.select(editor, point([0, 1, 0, 0], 1));
+
+    expect(exitCollapsibleBlock(editor)).toBe(true);
+
+    expect(editor.children).toEqual([
+      collapsible('标题', [p('正文')]),
+      p(''),
+      p('后'),
+    ]);
+    expect(editor.selection).toEqual(caret([1, 0]));
   });
 });

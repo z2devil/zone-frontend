@@ -2,6 +2,7 @@ import { KeyboardEvent, MutableRefObject, useCallback, useRef } from 'react';
 import { Editor, Element, Path, Range, Transforms } from 'slate';
 import { RichEditor, CustomElement } from 'types/slate';
 import { editorUtils } from '../utils';
+import { exitCollapsibleBlock } from '../elements/CollapsibleBlock/keyboard';
 import { BlockElementType, InlineElementType, MarkType } from '@/lib/constants';
 
 const ACTIONS: Record<string, (editor: RichEditor) => void> = {
@@ -88,6 +89,8 @@ const handleShiftEnter = (editor: RichEditor, e: KeyboardEvent) => {
       return;
     }
   }
+  // 折叠块内：跳出到折叠块下方
+  exitCollapsibleBlock(editor);
 };
 
 /**
