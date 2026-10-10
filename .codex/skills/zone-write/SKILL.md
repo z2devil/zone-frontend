@@ -5,7 +5,7 @@ description: 管理 Zone 个人博客内容，通过可见的邮箱验证码登�
 
 # Zone 写作
 
-通过固定 CLI 把 Markdown 和本地图片转换成 Zone 兼容内容。CLI 自动去除 YAML frontmatter、与标题重复的首个 H1，将 GFM 表格降级为可读段落，上传本地图片，并在写入后回查标题和可见性。
+通过固定 CLI 把 Markdown 和本地图片转换成 Zone 兼容内容。CLI 自动去除 YAML frontmatter、与标题重复的首个 H1，将 GFM 表格降级为可读段落，规范化代码语言并上传本地图片；写入后回查标题、可见性和 Slate 正文结构。
 
 ## 决定动作
 
@@ -89,7 +89,7 @@ node .codex/skills/zone-write/scripts/zone-write.mjs update \
   --confirm
 ```
 
-写入成功后 CLI 自动通过详情接口回查；只有 `verified=true` 才算完成。私密创建若被线上错误保存为公开，CLI 会立即清除正文、封面和标签，保留无内容占位并报告 ID。对用户只报告 `_id`、标题、可见性和访问链接，不输出 Token、验证码、OSS 凭证、Slate JSON或完整正文。
+写入成功后 CLI 自动通过详情接口回查；只有标题、可见性和正文结构全部一致并得到 `verified=true` 才算完成。Markdown 代码语言别名会转换为前端支持的规范名称；`mermaid` 保留原语言并暂按源码安全显示，其他未知语言按纯文本保存，二者都会在 `warnings` 中提示。私密创建若回查失败，CLI 会立即清除正文、封面和标签，保留无内容占位并报告 ID。对用户只报告 `_id`、标题、可见性和访问链接，不输出 Token、验证码、OSS 凭证、Slate JSON或完整正文。
 
 ## 查询内容
 

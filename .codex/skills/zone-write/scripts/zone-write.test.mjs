@@ -12,6 +12,7 @@ import {
   loginWithEmail,
   markdownToSlate,
   materializeLocalAssets,
+  normalizeCodeLanguage,
   normalizeLoginEmail,
   normalizeMarkdownSource,
   prepareContent,
@@ -42,8 +43,23 @@ const ok = true;
   assert.equal(slate[2].type, 'ul-list');
   assert.equal(slate[2].children.length, 2);
   assert.equal(slate[3].type, 'code-block');
-  assert.equal(slate[3].language, 'ts');
+  assert.equal(slate[3].language, 'typescript');
   assert.equal(slate[3].children[0].type, 'code-line-block');
+});
+
+test('normalizes code aliases and preserves Mermaid for future rendering', () => {
+  assert.equal(normalizeCodeLanguage('TS'), 'typescript');
+  assert.equal(normalizeCodeLanguage('shell'), 'bash');
+  assert.equal(normalizeCodeLanguage('mermaid'), 'mermaid');
+
+  const prepared = prepareContent({
+    markdown: '```mermaid\ngraph TD; A --> B\n```',
+    title: '流程图',
+  });
+  const slate = JSON.parse(prepared.payload.content);
+
+  assert.equal(slate[0].language, 'mermaid');
+  assert.match(prepared.warnings.join('\n'), /mermaid/);
 });
 
 test('normalizes frontmatter, duplicate title, and GFM tables', () => {
@@ -412,21 +428,45 @@ test('does not store a token when server-side verification fails', async () => {
 });
 
 test('verifies title and visibility after a write', () => {
+  const content = JSON.stringify([
+    { type: 'paragraph', children: [{ text: '正文' }] },
+  ]);
   const note = {
     _id: 'note-1',
     title: '安全历史设计',
     visibility: 'private',
+    content,
   };
   assert.equal(
     verifySavedNote(note, {
       title: '安全历史设计',
       visibility: 'private',
+      content,
     }),
     note
   );
   assert.throws(
     () => verifySavedNote(note, { visibility: 'public' }),
     /可见性/
+  );
+  assert.throws(
+    () =>
+      verifySavedNote(
+        {
+          ...note,
+          content: JSON.stringify([
+            {
+              type: 'code-block',
+              language: 'plantuml',
+              children: [
+                { type: 'code-line-block', children: [{ text: 'graph TD' }] },
+              ],
+            },
+          ]),
+        },
+        { content }
+      ),
+    /代码语言|正文/
   );
 });
 

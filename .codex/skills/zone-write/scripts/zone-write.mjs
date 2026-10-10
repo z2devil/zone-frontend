@@ -7,7 +7,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { createInterface } from 'node:readline/promises';
 import { Writable } from 'node:stream';
-import { parseArgs } from 'node:util';
+import { isDeepStrictEqual, parseArgs } from 'node:util';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parse as parseDotenv } from 'dotenv';
 import { unified } from 'unified';
@@ -19,6 +19,56 @@ const DEFAULT_SITE_BASE = 'https://z2devil.cn';
 const KEYCHAIN_SERVICE = 'zone-write';
 const VALID_KINDS = new Set(['note', 'article']);
 const VALID_VISIBILITIES = new Set(['public', 'private']);
+const SUPPORTED_CODE_LANGUAGES = new Set([
+  'plaintext',
+  'javascript',
+  'jsx',
+  'typescript',
+  'tsx',
+  'markup',
+  'markdown',
+  'css',
+  'json',
+  'python',
+  'java',
+  'php',
+  'ruby',
+  'c',
+  'cpp',
+  'csharp',
+  'go',
+  'rust',
+  'sql',
+  'bash',
+  'docker',
+  'nginx',
+  'yaml',
+  'toml',
+  'less',
+  'scss',
+]);
+const VALID_CODE_LANGUAGES = new Set([...SUPPORTED_CODE_LANGUAGES, 'mermaid']);
+const CODE_LANGUAGE_ALIASES = new Map([
+  ['text', 'plaintext'],
+  ['txt', 'plaintext'],
+  ['plain', 'plaintext'],
+  ['js', 'javascript'],
+  ['ts', 'typescript'],
+  ['html', 'markup'],
+  ['xml', 'markup'],
+  ['svg', 'markup'],
+  ['md', 'markdown'],
+  ['py', 'python'],
+  ['rb', 'ruby'],
+  ['sh', 'bash'],
+  ['shell', 'bash'],
+  ['zsh', 'bash'],
+  ['yml', 'yaml'],
+  ['c++', 'cpp'],
+  ['c#', 'csharp'],
+  ['cs', 'csharp'],
+  ['dockerfile', 'docker'],
+]);
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const KEYCHAIN_HELPER_PATH = path.join(
   path.dirname(SCRIPT_PATH),
@@ -119,10 +169,22 @@ function paragraphBlocks(node) {
     : [{ type: 'paragraph', children: [{ text: '' }] }];
 }
 
-function listItem(node) {
+function canonicalCodeLanguage(value) {
+  const language = String(value || '')
+    .trim()
+    .toLowerCase();
+  return CODE_LANGUAGE_ALIASES.get(language) || language || 'plaintext';
+}
+
+export function normalizeCodeLanguage(value) {
+  const language = canonicalCodeLanguage(value);
+  return VALID_CODE_LANGUAGES.has(language) ? language : 'plaintext';
+}
+
+function listItem(node, options) {
   const children = (node.children || []).flatMap(child => {
     if (child.type === 'paragraph') return inlineChildren(child);
-    return blockToSlate(child);
+    return blockToSlate(child, options);
   });
   return {
     type: 'list-item',
@@ -130,7 +192,7 @@ function listItem(node) {
   };
 }
 
-function blockToSlate(node) {
+function blockToSlate(node, options = {}) {
   switch (node.type) {
     case 'paragraph':
       return paragraphBlocks(node);
@@ -145,22 +207,32 @@ function blockToSlate(node) {
       return [
         {
           type: node.ordered ? 'ol-list' : 'ul-list',
-          children: (node.children || []).map(listItem),
+          children: (node.children || []).map(child =>
+            listItem(child, options)
+          ),
         },
       ];
     case 'blockquote':
       return [
         {
           type: 'block-quote',
-          children: (node.children || []).flatMap(blockToSlate),
+          children: (node.children || []).flatMap(child =>
+            blockToSlate(child, options)
+          ),
         },
       ];
     case 'code': {
       const lines = String(node.value || '').split(/\r?\n/);
+      const rawLanguage = String(node.lang || '').trim();
+      const canonicalLanguage = canonicalCodeLanguage(rawLanguage);
+      const language = normalizeCodeLanguage(rawLanguage);
+      if (rawLanguage && !SUPPORTED_CODE_LANGUAGES.has(canonicalLanguage)) {
+        options.onUnsupportedCodeLanguage?.(rawLanguage);
+      }
       return [
         {
           type: 'code-block',
-          language: node.lang || 'plaintext',
+          language,
           children: lines.map(line => ({
             type: 'code-line-block',
             children: [{ text: line }],
@@ -207,7 +279,7 @@ function blockToSlate(node) {
     }
     default:
       if (Array.isArray(node.children))
-        return node.children.flatMap(blockToSlate);
+        return node.children.flatMap(child => blockToSlate(child, options));
       return [];
   }
 }
@@ -225,11 +297,16 @@ function normalizeComparableTitle(value) {
     .trim();
 }
 
-export function markdownToSlate(markdown, { title } = {}) {
+export function markdownToSlate(
+  markdown,
+  { title, onUnsupportedCodeLanguage } = {}
+) {
   const source = normalizeMarkdownSource(markdown);
   if (!source) throw new Error('正文不能为空');
   const tree = unified().use(remarkParse).use(remarkGfm).parse(source);
-  const blocks = tree.children.flatMap(blockToSlate);
+  const blocks = tree.children.flatMap(node =>
+    blockToSlate(node, { onUnsupportedCodeLanguage })
+  );
   if (
     title &&
     blocks[0]?.type === 'heading-1' &&
@@ -268,7 +345,12 @@ export function prepareContent({
   }
 
   const normalizedMarkdown = normalizeMarkdownSource(markdown);
-  const slate = markdownToSlate(normalizedMarkdown, { title: normalizedTitle });
+  const unsupportedCodeLanguages = new Set();
+  const slate = markdownToSlate(normalizedMarkdown, {
+    title: normalizedTitle,
+    onUnsupportedCodeLanguage: language =>
+      unsupportedCodeLanguages.add(language),
+  });
   const tagLabels = normalizeTags(tags);
   const payload = {
     title: normalizedTitle,
@@ -292,6 +374,13 @@ export function prepareContent({
   }
   if (localAssets > 0) {
     warnings.push(`发布时将自动上传 ${localAssets} 个本地图片资源`);
+  }
+  if (unsupportedCodeLanguages.size > 0) {
+    warnings.push(
+      `以下代码语言暂不支持高亮，已按纯文本处理：${[
+        ...unsupportedCodeLanguages,
+      ].join('、')}`
+    );
   }
 
   return {
@@ -826,6 +915,40 @@ function safeNote(note, includeContent = false) {
   return result;
 }
 
+function validateSlateNode(node) {
+  if (!node || typeof node !== 'object') {
+    throw new Error('发布回查失败：线上正文包含无效节点');
+  }
+  if (typeof node.text === 'string') return;
+  if (typeof node.type !== 'string' || !Array.isArray(node.children)) {
+    throw new Error('发布回查失败：线上正文节点结构无效');
+  }
+  if (
+    node.type === 'code-block' &&
+    !VALID_CODE_LANGUAGES.has(node.language || 'plaintext')
+  ) {
+    throw new Error(`发布回查失败：不支持代码语言 ${node.language}`);
+  }
+  if (node.children.length === 0) {
+    throw new Error('发布回查失败：线上正文节点缺少子节点');
+  }
+  node.children.forEach(validateSlateNode);
+}
+
+function validateSlateContent(content) {
+  let nodes;
+  try {
+    nodes = JSON.parse(content);
+  } catch {
+    throw new Error('发布回查失败：线上正文不是有效 JSON');
+  }
+  if (!Array.isArray(nodes) || nodes.length === 0) {
+    throw new Error('发布回查失败：线上正文不是有效 Slate 内容');
+  }
+  nodes.forEach(validateSlateNode);
+  return nodes;
+}
+
 export function verifySavedNote(note, expected) {
   if (!note?._id) throw new Error('发布回查缺少笔记 ID');
   if (expected.title !== undefined && note.title !== expected.title) {
@@ -836,6 +959,13 @@ export function verifySavedNote(note, expected) {
     note.visibility !== expected.visibility
   ) {
     throw new Error('发布回查失败：线上可见性与本次提交不一致');
+  }
+  if (expected.content !== undefined) {
+    const actualContent = validateSlateContent(note.content);
+    const expectedContent = validateSlateContent(expected.content);
+    if (!isDeepStrictEqual(actualContent, expectedContent)) {
+      throw new Error('发布回查失败：线上正文与本次提交不一致');
+    }
   }
   return note;
 }
@@ -936,6 +1066,7 @@ async function run(values, command) {
         {
           title: prepared.payload.title,
           visibility: prepared.payload.visibility,
+          content: prepared.payload.content,
         }
       );
     } catch (error) {
@@ -992,6 +1123,7 @@ async function run(values, command) {
       {
         title: prepared.payload.title,
         visibility: prepared.payload.visibility,
+        content: prepared.payload.content,
       }
     );
     print({

@@ -37,6 +37,7 @@ HTTP 200 不代表业务成功；CLI 必须同时检查响应体 `code === 200`�
 - 正文和封图只保存站内相对路径，例如 `zone/image/example.png`。
 - 允许 PNG、JPEG、GIF、WebP、AVIF、SVG，单个文件最大 25MB。
 - 图片上传后再写笔记；笔记写入成功后必须用 `GET /note/:id` 回查。
+- 回查必须验证标题、可见性、正文 JSON、Slate 节点结构和代码语言兼容性；不能只以写接口成功作为完成条件。
 
 创建字段：
 
@@ -53,3 +54,5 @@ bannerPath  可选
 ## 内容模型
 
 Zone 没有独立的 Article 或 Draft 数据类型。CLI 的 `kind=note|article` 只影响内容检查和整理方式，不发送到后端。私密草稿通过 `visibility=private` 实现，但它仍是已持久化的 Note。
+
+代码块语言必须规范化为前端支持的名称。常见别名如 `js`、`ts`、`sh`、`yml` 分别转换为 `javascript`、`typescript`、`bash`、`yaml`；`mermaid` 保留原语言供后续图表渲染，当前按源码安全显示；其他未知语言使用 `plaintext`。非 Prism 高亮语言同时给出 warning。
