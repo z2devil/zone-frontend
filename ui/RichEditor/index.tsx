@@ -47,7 +47,7 @@ const RichEditor = memo((props: EditorProps) => {
 
   // const handleDOMInput = useDOMBeforeInput(editor);
 
-  const handleKeyDown = useKeyDown(editor, readonly);
+  const handleEditorKeyDown = useKeyDown(editor, readonly);
 
   const handleCopy = useCopy(editor);
 
@@ -67,10 +67,19 @@ const RichEditor = memo((props: EditorProps) => {
     return true;
   }, []);
 
-  // 点击后立即输入时 selectionchange 可能尚未派发，输入前先同步选区
+  // 点击后立即输入时 selectionchange 可能尚未派发，输入前先同步选区。
+  // keydown 也需同步：按键会触发重渲染，slate-react 渲染后按 editor.selection 回写 DOM 选区
   const syncSelection = useCallback(() => {
     syncSelectionFromDOM(editor);
   }, [editor]);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      syncSelectionFromDOM(editor);
+      handleEditorKeyDown(e);
+    },
+    [editor, handleEditorKeyDown]
+  );
 
   const editable = useMemo(
     () => (

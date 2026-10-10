@@ -91,6 +91,7 @@ const setup = ({
         renderElement={renderElement}
         onCompositionStart={() => syncSelectionFromDOM(editor)}
         onDOMBeforeInput={() => syncSelectionFromDOM(editor)}
+        onKeyDown={() => syncSelectionFromDOM(editor)}
       />
     </Slate>
   );
@@ -253,5 +254,19 @@ describe('CollapsibleBlockTitle', () => {
 
     expect(titleText(editor)).toBe('真正的标题');
     expect(Node.string(Node.get(editor, [0]))).toBe('块外段落');
+  });
+
+  // 编辑器的 keydown 会触发重渲染（useHotKeys），slate-react 渲染后按 editor.selection
+  // 回写 DOM 选区：若此时尚未同步，DOM 光标会被拉回旧位置
+  it('syncs the selection on keydown before selectionchange arrives', async () => {
+    const { editor, editable, titleElement } = setup();
+    await selectOutsideParagraph(editor);
+    await placeDomCaret(textNodesOf(titleElement())[0], 0, {
+      waitForSync: false,
+    });
+
+    fireEvent.keyDown(editable, { key: 'Process' });
+
+    expect(editor.selection?.anchor.path.slice(0, 2)).toEqual([1, 0]);
   });
 });
