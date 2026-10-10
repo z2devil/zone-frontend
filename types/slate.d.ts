@@ -159,7 +159,10 @@ export type BlockElement =
   | WhiteBoardBlockElement
   | LayoutBlockElement
   | LayoutItemBlockElement
-  | TipBlockElement;
+  | TipBlockElement
+  | CollapsibleBlockElement
+  | CollapsibleBlockTitleElement
+  | CollapsibleBlockContentElement;
 
 export type CustomElement = InlineElement | BlockElement;
 
@@ -202,3 +205,19 @@ export interface MdastNode {
   checked?: any;
   indent?: any;
 }
+
+export type CollapsibleBlockElement = {
+  type: BlockElementType.COLLAPSIBLE_BLOCK;
+  collapsed?: boolean;
+  children: [CollapsibleBlockTitleElement, CollapsibleBlockContentElement];
+};
+
+export type CollapsibleBlockTitleElement = {
+  type: BlockElementType.COLLAPSIBLE_BLOCK_TITLE;
+  children: ParagraphElement[];
+};
+
+export type CollapsibleBlockContentElement = {
+  type: BlockElementType.COLLAPSIBLE_BLOCK_CONTENT;
+  children: BlockElement[];
+};

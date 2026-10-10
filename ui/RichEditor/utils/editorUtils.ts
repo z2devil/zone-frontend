@@ -1,5 +1,5 @@
 import { BlockElementType, InlineElementType, MarkType } from '@/lib/constants';
-import { Editor, Element, Node, Range, Text, Transforms } from 'slate';
+import { Editor, Element, Node, Path, Range, Text, Transforms } from 'slate';
 import { RichEditor, ElementType } from 'types/slate';
 
 export const editorUtils = {
@@ -116,5 +116,54 @@ export const editorUtils = {
         Transforms.collapse(editor, { edge: 'end' });
       }
     }
+  },
+
+  /**
+   * 插入折叠块
+   * @param editor 编辑器
+   */
+  insertCollapsibleBlock(editor: RichEditor) {
+    Transforms.insertNodes(editor, {
+      type: BlockElementType.COLLAPSIBLE_BLOCK,
+      collapsed: false,
+      children: [
+        {
+          type: BlockElementType.COLLAPSIBLE_BLOCK_TITLE,
+          children: [
+            {
+              type: BlockElementType.PARAGRAPH,
+              children: [{ text: '' }],
+            },
+          ],
+        },
+        {
+          type: BlockElementType.COLLAPSIBLE_BLOCK_CONTENT,
+          children: [
+            {
+              type: BlockElementType.PARAGRAPH,
+              children: [{ text: '' }],
+            },
+          ],
+        },
+      ],
+    } as Node);
+  },
+
+  /**
+   * 切换折叠块的折叠状态
+   * @param editor 编辑器
+   * @param path 折叠块元素的路径
+   */
+  toggleCollapsibleBlock(editor: RichEditor, path: Path) {
+    const [node] = Editor.node(editor, path);
+    if (
+      !Element.isElement(node) ||
+      node.type !== BlockElementType.COLLAPSIBLE_BLOCK
+    ) {
+      return;
+    }
+
+    const collapsed = (node as any).collapsed ?? false;
+    Transforms.setNodes(editor, { collapsed: !collapsed }, { at: path });
   },
 };

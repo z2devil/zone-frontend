@@ -208,6 +208,20 @@ const options: ToolbarOption[] = [
       );
     },
   },
+  {
+    title: '折叠块',
+    icon: 'icon-arrow-right',
+    active: editor => {
+      return editorUtils.isElementActive(editor, BlockElementType.COLLAPSIBLE_BLOCK);
+    },
+    disabled: editor => {
+      return editorUtils.isElementActive(editor, BlockElementType.CODE_BLOCK);
+    },
+    onClick: (e, editor) => {
+      e.preventDefault();
+      editorUtils.insertCollapsibleBlock(editor);
+    },
+  },
   'separator',
   {
     title: '加粗',
