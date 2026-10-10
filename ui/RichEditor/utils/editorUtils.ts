@@ -125,11 +125,11 @@ export const editorUtils = {
   },
 
   /**
-   * 插入折叠块
+   * 插入折叠块：光标所在行是空段落时替换该段落，插入后光标置于标题开头
    * @param editor 编辑器
    */
   insertCollapsibleBlock(editor: RichEditor) {
-    Transforms.insertNodes(editor, {
+    const block = {
       type: BlockElementType.COLLAPSIBLE_BLOCK,
       collapsed: false,
       children: [
@@ -152,7 +152,37 @@ export const editorUtils = {
           ],
         },
       ],
-    } as Node);
+    } as Node;
+
+    Editor.withoutNormalizing(editor, () => {
+      const line =
+        editor.selection && Range.isCollapsed(editor.selection)
+          ? Editor.above(editor, {
+              match: n => Element.isElement(n) && Editor.isBlock(editor, n),
+            })
+          : undefined;
+      const isEmptyParagraph =
+        !!line &&
+        line[0].type === BlockElementType.PARAGRAPH &&
+        Node.string(line[0]) === '';
+
+      let blockPath: Path;
+      if (line && isEmptyParagraph) {
+        blockPath = line[1];
+        Transforms.removeNodes(editor, { at: blockPath });
+        Transforms.insertNodes(editor, block, { at: blockPath });
+      } else {
+        Transforms.insertNodes(editor, block, { select: true });
+        const inserted = Editor.above(editor, {
+          match: n =>
+            Element.isElement(n) &&
+            n.type === BlockElementType.COLLAPSIBLE_BLOCK,
+        });
+        if (!inserted) return;
+        blockPath = inserted[1];
+      }
+      Transforms.select(editor, Editor.start(editor, [...blockPath, 0]));
+    });
   },
 
   /**

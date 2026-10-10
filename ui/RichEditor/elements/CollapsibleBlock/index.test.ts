@@ -222,3 +222,36 @@ describe('collapsible block keyboard', () => {
     expect(editor.selection).toEqual(caret([1, 0]));
   });
 });
+
+describe('insert collapsible block', () => {
+  const emptyBlock = () => collapsible('', [p('')]);
+
+  it('replaces the empty paragraph it is inserted into and focuses the title', () => {
+    const editor = createTestEditor([p('上一段'), p('')]);
+    Transforms.select(editor, point([1, 0]));
+
+    editorUtils.insertCollapsibleBlock(editor);
+
+    expect(editor.children).toEqual([p('上一段'), emptyBlock()]);
+    expect(editor.selection).toEqual(caret([1, 0, 0, 0]));
+  });
+
+  it('inserts after a non-empty paragraph and focuses the title', () => {
+    const editor = createTestEditor([p('上一段')]);
+    Transforms.select(editor, point([0, 0], 3));
+
+    editorUtils.insertCollapsibleBlock(editor);
+
+    expect(editor.children).toEqual([p('上一段'), emptyBlock()]);
+    expect(editor.selection).toEqual(caret([1, 0, 0, 0]));
+  });
+
+  it('inserts at the document end and focuses the title without a selection', () => {
+    const editor = createTestEditor([p('上一段')]);
+
+    editorUtils.insertCollapsibleBlock(editor);
+
+    expect(editor.children).toEqual([p('上一段'), emptyBlock()]);
+    expect(editor.selection).toEqual(caret([1, 0, 0, 0]));
+  });
+});
