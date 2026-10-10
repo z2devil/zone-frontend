@@ -90,11 +90,36 @@ export const handleCollapsibleBreak = (editor: Editor) => {
  * - 块开头（标题开头）：标题与内容都为空时整个块转为段落，否则不做任何事
  * - 内容开头：首行为空且还有其他行时删除首行，否则光标移到标题末尾，
  *   避免默认规则把内容首行整行删除或拆出折叠块
+ * - 收起的折叠块之后的行开头：不并入不可见的内容，空行删除，光标移到标题末尾
  * @returns 是否处理
  */
 export const handleCollapsibleDeleteBackward = (editor: Editor) => {
   const { selection } = editor;
   if (!selection || !Range.isCollapsed(selection)) return false;
+
+  // 紧跟在收起的折叠块之后的行：不并入不可见的内容，空行删除，光标移到标题末尾
+  const lineEntry = Editor.above(editor, {
+    match: n => Element.isElement(n) && Editor.isBlock(editor, n),
+  });
+  if (
+    lineEntry &&
+    Path.hasPrevious(lineEntry[1]) &&
+    Editor.isStart(editor, selection.anchor, lineEntry[1])
+  ) {
+    const previousPath = Path.previous(lineEntry[1]);
+    const previous = Node.get(editor, previousPath);
+    if (
+      isType(previous, BlockElementType.COLLAPSIBLE_BLOCK) &&
+      'collapsed' in previous &&
+      previous.collapsed
+    ) {
+      if (isEmptyParagraph(lineEntry[0])) {
+        Transforms.removeNodes(editor, { at: lineEntry[1] });
+      }
+      Transforms.select(editor, Editor.end(editor, [...previousPath, 0]));
+      return true;
+    }
+  }
 
   const blockEntry = Editor.above(editor, {
     match: n => isType(n, BlockElementType.COLLAPSIBLE_BLOCK),

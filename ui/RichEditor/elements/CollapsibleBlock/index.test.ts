@@ -157,6 +157,25 @@ describe('collapsible block keyboard', () => {
     expect(editor.selection).toEqual(caret([0, 1, 0, 0]));
   });
 
+  it.each([
+    ['non-empty', '后文', [collapsible('标题', [p('正文')], true), p('后文')]],
+    ['empty', '', [collapsible('标题', [p('正文')], true)]],
+  ])(
+    'does not merge a %s next line into hidden content on Backspace',
+    (_, text, expected) => {
+      const editor = createTestEditor([
+        collapsible('标题', [p('正文')], true),
+        p(text),
+      ]);
+      Transforms.select(editor, point([1, 0]));
+
+      Editor.deleteBackward(editor);
+
+      expect(editor.children).toEqual(expected);
+      expect(editor.selection).toEqual(caret([0, 0, 0, 0], 2));
+    }
+  );
+
   it('leaves the block on Enter in an empty last content line', () => {
     const editor = createTestEditor([collapsible('标题', [p('正文'), p('')])]);
     Transforms.select(editor, point([0, 1, 1, 0]));

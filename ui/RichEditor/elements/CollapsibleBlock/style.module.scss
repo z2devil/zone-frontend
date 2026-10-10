@@ -42,21 +42,15 @@
     color: rgba(0, 0, 0, 0.8);
   }
 
-  .iconfont {
+  // iconfont 是全局类名，需 :global 才能命中；行内元素需 inline-block 才能旋转
+  :global(.iconfont) {
+    display: inline-block;
     font-size: 12px;
     transition: transform 0.2s ease;
   }
 
-  &.collapsed {
-    .iconfont {
-      transform: rotate(0deg);
-    }
-  }
-
-  &:not(.collapsed) {
-    .iconfont {
-      transform: rotate(90deg);
-    }
+  &:not(.collapsed) :global(.iconfont) {
+    transform: rotate(90deg);
   }
 }
 
