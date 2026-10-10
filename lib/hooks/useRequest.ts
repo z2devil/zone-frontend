@@ -13,11 +13,13 @@ type RequestConfig = Omit<RequestInit, 'method'> & {
 interface IResponse<T> {
   code: number;
   data: T;
-  message: {
-    code: string;
-    message: string;
-    path: string[];
-  }[];
+  message:
+    | string
+    | {
+        code: string;
+        message: string;
+        path: string[];
+      }[];
 }
 
 export interface IFetcher<T = any> {
@@ -39,6 +41,18 @@ export interface IRequest {
   delete: <T = any>(url: string, config?: RequestConfig) => Promise<T>;
 }
 
+const isEnvelope = <T>(body: unknown): body is IResponse<T> =>
+  typeof body === 'object' &&
+  body !== null &&
+  typeof (body as { code?: unknown }).code === 'number';
+
+const envelopeMessage = (message: unknown) => {
+  if (Array.isArray(message)) {
+    return message[0]?.message || 'Unknown error';
+  }
+  return typeof message === 'string' && message ? message : 'Unknown error';
+};
+
 const useRequest = () => {
   const router = useRouter();
 
@@ -57,7 +71,7 @@ const useRequest = () => {
    * @param skipAuthRedirect 401 时不清理会话、不跳转登录页
    */
   const handleError = useCallback(
-    (error: string, status: number, skipAuthRedirect = false) => {
+    (error: string, status: number, skipAuthRedirect = false): never => {
       // 未登录或登录态失效：清理会话、笔记缓存与本地草稿并重新登录
       if (status === 401 && !skipAuthRedirect) {
         clear();
@@ -89,6 +103,7 @@ const useRequest = () => {
       url: string,
       {
         skipAuthRedirect,
+        isLocal,
         ...config
       }: Omit<RequestInit, 'url'> & {
         isLocal?: boolean;
@@ -116,38 +131,49 @@ const useRequest = () => {
         // 发送请求
         const response = await fetch(
           ['https://', 'http://'].some(prefix => url.startsWith(prefix)) ||
-            config.isLocal
+            isLocal
             ? url
             : configs.request.baseURL + url,
           requestConfig
         );
 
-        // 检查 http 响应状态
-        if (!response.ok) {
-          handleError(
-            `Request failed with status ${response.status}`,
-            response.status,
+        const contentType = response.headers.get('Content-Type') || '';
+        // 任意状态码都先尝试读取 JSON body：后端的 HTTP 状态码与 envelope code 一致，
+        // 旧后端则恒为 HTTP 200，两者都以 body 的 code 为准
+        const body: unknown = contentType.includes('application/json')
+          ? await response.json().catch(() => undefined)
+          : undefined;
+        const genericError = `请求失败（HTTP ${response.status}）`;
+
+        // 本地 Next API（如 /api/external-image）不是后端 envelope，不走登录/权限语义
+        if (isLocal && !response.ok) {
+          const localError = (body as { error?: unknown } | undefined)?.error;
+          throw new Error(
+            typeof localError === 'string' ? localError : genericError
+          );
+        }
+
+        if (isEnvelope<T>(body)) {
+          if (body.code === 200 && response.ok) {
+            return body.data;
+          }
+          return handleError(
+            envelopeMessage(body.message),
+            body.code === 200 ? response.status : body.code,
             skipAuthRedirect
           );
         }
 
-        // 根据 Content-Type 处理响应
-        const contentType = response.headers.get('Content-Type') || '';
+        // 非 envelope 的错误响应（如网关返回的 HTML）：按 HTTP 状态处理
+        if (!response.ok) {
+          return handleError(genericError, response.status, skipAuthRedirect);
+        }
 
-        if (contentType.includes('application/json')) {
-          const { code, data, message } =
-            (await response.json()) as IResponse<T>;
+        if (body !== undefined) {
+          throw new Error('Unknown error');
+        }
 
-          if (code !== 200) {
-            const errorMessage = Array.isArray(message)
-              ? message[0]?.message || 'Unknown error'
-              : (message as any) || 'Unknown error';
-
-            handleError(errorMessage, code, skipAuthRedirect);
-          }
-
-          return data;
-        } else if (
+        if (
           contentType.includes('image') ||
           contentType.includes('octet-stream')
         ) {
@@ -155,9 +181,9 @@ const useRequest = () => {
           const blob = await response.blob();
           console.log('[ Blob Response ]', blob);
           return blob as T;
-        } else {
-          throw new Error('Unsupported Content-Type');
         }
+
+        throw new Error('Unsupported Content-Type');
       } catch (error) {
         console.error(error);
         throw error;

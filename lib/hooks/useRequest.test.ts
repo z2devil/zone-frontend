@@ -92,4 +92,83 @@ describe('useRequest auth error handling', () => {
     expect(useAuthStore.getState().token).toBe('token-1');
     expect(mocks.push).not.toHaveBeenCalled();
   });
+
+  it('reads the envelope message from a non-2xx business error', async () => {
+    mockFetch(
+      jsonResponse(
+        { code: 404, data: null, message: [{ message: '笔记不存在' }] },
+        404
+      )
+    );
+    const { result } = renderHook(() => useRequest());
+
+    await expect(result.current[0].get('/note/x')).rejects.toThrow(
+      '笔记不存在'
+    );
+    expect(mocks.push).not.toHaveBeenCalled();
+  });
+
+  it('logs out on HTTP 401 with a 401 envelope', async () => {
+    mockFetch(jsonResponse({ code: 401, data: null, message: 'x' }, 401));
+    const { result } = renderHook(() => useRequest());
+
+    await expect(result.current[0].get('/user/info')).rejects.toThrow(
+      '您的登录状态已过期，请重新登录'
+    );
+    expect(useAuthStore.getState().token).toBeNull();
+    expect(mocks.push).toHaveBeenCalledWith('/login');
+  });
+
+  it('redirects on HTTP 429 with a 429 envelope', async () => {
+    mockFetch(jsonResponse({ code: 429, data: null, message: 'slow' }, 429));
+    const { result } = renderHook(() => useRequest());
+
+    await expect(result.current[0].get('/note')).rejects.toThrow(
+      '您的请求过于频繁，请稍后再试'
+    );
+    expect(mocks.push).toHaveBeenCalledWith('/too-many-requests');
+  });
+
+  it('throws a generic error when a gateway returns non-JSON', async () => {
+    mockFetch(
+      new Response('<html>502 Bad Gateway</html>', {
+        status: 502,
+        headers: { 'Content-Type': 'text/html' },
+      })
+    );
+    const { result } = renderHook(() => useRequest());
+
+    await expect(result.current[0].get('/note')).rejects.toThrow(
+      '请求失败（HTTP 502）'
+    );
+    expect(useAuthStore.getState().token).toBe('token-1');
+    expect(mocks.push).not.toHaveBeenCalled();
+  });
+
+  it('surfaces local Next API errors without auth handling', async () => {
+    mockFetch(jsonResponse({ error: 'Address not allowed' }, 400));
+    const { result } = renderHook(() => useRequest());
+
+    await expect(
+      result.current[1]('/api/external-image?url=x', { isLocal: true })
+    ).rejects.toThrow('Address not allowed');
+    expect(vi.mocked(fetch).mock.calls[0][0]).toBe('/api/external-image?url=x');
+    expect(useAuthStore.getState().token).toBe('token-1');
+    expect(mocks.push).not.toHaveBeenCalled();
+  });
+
+  it('returns blobs from local Next API on success', async () => {
+    mockFetch(
+      new Response(new Uint8Array([1, 2]), {
+        status: 200,
+        headers: { 'Content-Type': 'image/png' },
+      })
+    );
+    const { result } = renderHook(() => useRequest());
+
+    const blob = await result.current[1]<Blob>('/api/external-image?url=x', {
+      isLocal: true,
+    });
+    expect(blob.size).toBe(2);
+  });
 });
