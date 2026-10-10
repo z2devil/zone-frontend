@@ -2,7 +2,9 @@ import { BlockElementType } from '@/lib/constants';
 import { createPlugin } from '@/ui/RichEditor/utils';
 import CollapsibleBlockElement from './element';
 import { Editor, Element, Range } from 'slate';
+import { ReactEditor } from 'slate-react';
 import { normalizeCollapsibleEntry } from './normalize';
+import { moveSelectionOutOfCollapsedContent } from './selection';
 
 const collapsibleBlockPlugin = createPlugin({
   name: 'collapsibleBlock',
@@ -11,7 +13,15 @@ const collapsibleBlockPlugin = createPlugin({
     component: CollapsibleBlockElement,
   },
   extendEditor: editor => {
-    const { deleteBackward, isEmpty, normalizeNode } = editor;
+    const { deleteBackward, isEmpty, normalizeNode, onChange } = editor;
+
+    editor.onChange = options => {
+      // 只读模式的展开状态在组件本地，文档中的 collapsed 仅为默认值
+      if (!ReactEditor.isReadOnly(editor)) {
+        moveSelectionOutOfCollapsedContent(editor);
+      }
+      onChange(options);
+    };
 
     editor.normalizeNode = (entry, options) => {
       // 必须先于核心规则执行，避免核心规则删除结构异常的子节点

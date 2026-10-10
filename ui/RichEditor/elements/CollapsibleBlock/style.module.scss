@@ -6,10 +6,13 @@
   display: flex;
   align-items: flex-start;
   padding: 4px 0;
-  cursor: pointer;
-  user-select: none;
   min-height: 32px;
   // Notion 风格：移除 hover 背景色
+
+  // 只读模式下整行可点击切换
+  &.clickable {
+    cursor: pointer;
+  }
 }
 
 .toggleButton {
@@ -19,7 +22,7 @@
   width: 20px;
   height: 20px;
   margin-right: 8px;
-  margin-top: 2px;
+  margin-top: 6px;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -28,6 +31,12 @@
     transform 0.2s ease,
     color 0.2s ease;
   flex-shrink: 0;
+  border-radius: 4px;
+  user-select: none;
+
+  &:focus-visible {
+    @apply outline-none ring-2 ring-black-200;
+  }
 
   &:hover {
     color: rgba(0, 0, 0, 0.8);
@@ -60,6 +69,11 @@
   padding: 4px 0 4px 24px;
   // Notion 风格：移除上边框，保持左侧缩进
   animation: slideDown 0.2s ease;
+
+  // 收起时仅隐藏，内容节点仍保留在 DOM 中
+  &[hidden] {
+    display: none;
+  }
 }
 
 @keyframes slideDown {

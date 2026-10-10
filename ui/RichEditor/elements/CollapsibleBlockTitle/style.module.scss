@@ -1,5 +1,11 @@
 .collapsibleBlockTitle {
+  @apply relative;
   flex: 1;
   min-width: 0;
   outline: none;
+}
+
+// 与段落首行对齐（段落 my-1 + leading-6）
+.placeholder {
+  @apply pointer-events-none absolute left-0 top-1 select-none leading-6 text-black-300;
 }

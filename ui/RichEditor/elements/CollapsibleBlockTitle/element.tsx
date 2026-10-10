@@ -1,4 +1,6 @@
 import { CollapsibleBlockTitleElement } from 'types/slate';
+import { Node } from 'slate';
+import { useReadOnly } from 'slate-react';
 import styles from './style.module.scss';
 import clsx from 'clsx';
 
@@ -13,8 +15,16 @@ const CollapsibleBlockTitle = ({
   children,
   element,
 }: CollapsibleBlockTitleProps) => {
+  const readOnly = useReadOnly();
+  const showPlaceholder = !readOnly && Node.string(element) === '';
+
   return (
     <div {...attributes} className={clsx(styles.collapsibleBlockTitle)}>
+      {showPlaceholder ? (
+        <span className={styles.placeholder} contentEditable={false}>
+          折叠标题
+        </span>
+      ) : null}
       {children}
     </div>
   );
