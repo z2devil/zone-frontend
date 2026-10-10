@@ -1,7 +1,8 @@
 import { BlockElementType } from '@/lib/constants';
 import { createPlugin } from '@/ui/RichEditor/utils';
 import CollapsibleBlockElement from './element';
-import { Editor, Element, Path, Range, Transforms } from 'slate';
+import { Editor, Element, Range } from 'slate';
+import { normalizeCollapsibleEntry } from './normalize';
 
 const collapsibleBlockPlugin = createPlugin({
   name: 'collapsibleBlock',
@@ -12,104 +13,10 @@ const collapsibleBlockPlugin = createPlugin({
   extendEditor: editor => {
     const { deleteBackward, isEmpty, normalizeNode } = editor;
 
-    editor.normalizeNode = entry => {
-      normalizeNode(entry);
-
-      const [node, path] = entry;
-
-      if (
-        !Element.isElement(node) ||
-        node.type !== BlockElementType.COLLAPSIBLE_BLOCK
-      )
-        return;
-
-      const currentPath = path;
-      const titleIndex = node.children.findIndex(
-        child =>
-          Element.isElement(child) &&
-          child.type === BlockElementType.COLLAPSIBLE_BLOCK_TITLE
-      );
-      const contentIndex = node.children.findIndex(
-        child =>
-          Element.isElement(child) &&
-          child.type === BlockElementType.COLLAPSIBLE_BLOCK_CONTENT
-      );
-
-      // 如果没有标题，插入一个
-      if (titleIndex === -1) {
-        Transforms.insertNodes(
-          editor,
-          {
-            type: BlockElementType.COLLAPSIBLE_BLOCK_TITLE,
-            children: [
-              {
-                type: BlockElementType.PARAGRAPH,
-                children: [{ text: '' }],
-              },
-            ],
-          } as any,
-          { at: [...currentPath, 0] }
-        );
-        return;
-      }
-
-      // 如果没有内容，插入一个
-      if (contentIndex === -1) {
-        Transforms.insertNodes(
-          editor,
-          {
-            type: BlockElementType.COLLAPSIBLE_BLOCK_CONTENT,
-            children: [
-              {
-                type: BlockElementType.PARAGRAPH,
-                children: [{ text: '' }],
-              },
-            ],
-          } as any,
-          { at: [...currentPath, titleIndex + 1] }
-        );
-        return;
-      }
-
-      // 确保标题在内容之前
-      if (titleIndex > contentIndex) {
-        const titlePath = [...currentPath, titleIndex];
-        const titleNode = node.children[titleIndex];
-        Transforms.removeNodes(editor, { at: titlePath });
-        Transforms.insertNodes(editor, titleNode as any, {
-          at: [...currentPath, contentIndex],
-        });
-        return;
-      }
-
-      // 确保第一个子元素是标题
-      if (titleIndex !== 0) {
-        const titlePath = [...currentPath, titleIndex];
-        const titleNode = node.children[titleIndex];
-        Transforms.removeNodes(editor, { at: titlePath });
-        Transforms.insertNodes(editor, titleNode as any, {
-          at: [...currentPath, 0],
-        });
-        return;
-      }
-
-      // 确保第二个子元素是内容
-      if (contentIndex !== 1) {
-        const contentPath = [...currentPath, contentIndex];
-        const contentNode = node.children[contentIndex];
-        Transforms.removeNodes(editor, { at: contentPath });
-        Transforms.insertNodes(editor, contentNode as any, {
-          at: [...currentPath, 1],
-        });
-        return;
-      }
-
-      // 移除多余的子元素（保留前两个）
-      if (node.children.length > 2) {
-        for (let i = node.children.length - 1; i >= 2; i--) {
-          Transforms.removeNodes(editor, { at: [...currentPath, i] });
-        }
-      }
+    editor.normalizeNode = (entry, options) => {
+      // 必须先于核心规则执行，避免核心规则删除结构异常的子节点
+      if (normalizeCollapsibleEntry(editor, entry)) return;
+      normalizeNode(entry, options);
     };
 
     editor.deleteBackward = unit => {
