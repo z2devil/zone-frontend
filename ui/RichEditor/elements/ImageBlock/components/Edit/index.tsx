@@ -71,7 +71,7 @@ const ImageEdit = (props: ImageEditProps) => {
       try {
         // 通过代理请求下载外部图片
         const response = await fetcher(
-          `/api/external-image?url=${encodeURIComponent(url)}`,
+          `/local-api/external-image?url=${encodeURIComponent(url)}`,
           {
             method: 'GET',
             isLocal: true,

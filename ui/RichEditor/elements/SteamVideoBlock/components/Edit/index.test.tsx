@@ -42,6 +42,8 @@ describe('SteamVideoEdit', () => {
 
   it('数字 App ID 正常请求', () => {
     submit(' 2239770 ');
-    expect(fetchMock).toHaveBeenCalledWith('/api/steam-video?appId=2239770');
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/local-api/steam-video?appId=2239770'
+    );
   });
 });

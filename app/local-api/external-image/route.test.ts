@@ -4,12 +4,12 @@ import { describe, expect, it } from 'vitest';
 import { GET } from './route';
 
 const call = (url?: string) => {
-  const target = new URL('http://localhost/api/external-image');
+  const target = new URL('http://localhost/local-api/external-image');
   if (url !== undefined) target.searchParams.set('url', url);
   return GET(new NextRequest(target));
 };
 
-describe('GET /api/external-image', () => {
+describe('GET /local-api/external-image', () => {
   it('拒绝回环地址', async () => {
     const res = await call('http://127.0.0.1/secret');
     expect(res.status).toBe(400);

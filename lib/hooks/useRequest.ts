@@ -145,7 +145,8 @@ const useRequest = () => {
           : undefined;
         const genericError = `请求失败（HTTP ${response.status}）`;
 
-        // 本地 Next API（如 /api/external-image）不是后端 envelope，不走登录/权限语义
+        // 本地 Next API（如 /local-api/external-image）不是后端 envelope，不走登录/权限语义。
+        // 注意：线上 nginx 把 /api 整体转发给后端，Next 路由不能放在 /api 下
         if (isLocal && !response.ok) {
           const localError = (body as { error?: unknown } | undefined)?.error;
           throw new Error(

@@ -41,7 +41,7 @@ const SteamVideoEdit = (props: SteamVideoEditProps) => {
 
     try {
       const response = await fetch(
-        `/api/steam-video?appId=${encodeURIComponent(id)}`
+        `/local-api/steam-video?appId=${encodeURIComponent(id)}`
       );
       const data = await response.json();
 

@@ -4,12 +4,12 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { GET } from './route';
 
 const call = (appId?: string) => {
-  const target = new URL('http://localhost/api/steam-video');
+  const target = new URL('http://localhost/local-api/steam-video');
   if (appId !== undefined) target.searchParams.set('appId', appId);
   return GET(new NextRequest(target));
 };
 
-describe('GET /api/steam-video', () => {
+describe('GET /local-api/steam-video', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
   });

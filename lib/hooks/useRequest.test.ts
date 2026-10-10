@@ -150,9 +150,11 @@ describe('useRequest auth error handling', () => {
     const { result } = renderHook(() => useRequest());
 
     await expect(
-      result.current[1]('/api/external-image?url=x', { isLocal: true })
+      result.current[1]('/local-api/external-image?url=x', { isLocal: true })
     ).rejects.toThrow('Address not allowed');
-    expect(vi.mocked(fetch).mock.calls[0][0]).toBe('/api/external-image?url=x');
+    expect(vi.mocked(fetch).mock.calls[0][0]).toBe(
+      '/local-api/external-image?url=x'
+    );
     expect(useAuthStore.getState().token).toBe('token-1');
     expect(mocks.push).not.toHaveBeenCalled();
   });
@@ -166,9 +168,12 @@ describe('useRequest auth error handling', () => {
     );
     const { result } = renderHook(() => useRequest());
 
-    const blob = await result.current[1]<Blob>('/api/external-image?url=x', {
-      isLocal: true,
-    });
+    const blob = await result.current[1]<Blob>(
+      '/local-api/external-image?url=x',
+      {
+        isLocal: true,
+      }
+    );
     expect(blob.size).toBe(2);
   });
 });
