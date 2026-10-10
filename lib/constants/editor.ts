@@ -38,6 +38,9 @@ export enum BlockElementType {
   TIP = 'tip',
   STEAM_VIDEO = 'steam-video',
   STEAM_WIDGET = 'steam-widget',
+  COLLAPSIBLE_BLOCK = 'collapsible-block',
+  COLLAPSIBLE_BLOCK_TITLE = 'collapsible-block-title',
+  COLLAPSIBLE_BLOCK_CONTENT = 'collapsible-block-content',
 }
 
 export const SHORTCUTS = {
