@@ -12,14 +12,14 @@ interface OverrideContextType {
   setWidths: (widths: number[]) => void;
   isResizing: boolean;
   setIsResizing: (isResizing: boolean) => void;
-  containerRef: RefObject<HTMLDivElement>;
+  containerRef: RefObject<HTMLDivElement | null>;
 }
 
 const OverrideContext = createContext<OverrideContextType | null>(null);
 
 interface OverrideProviderProps {
   widths: number[];
-  containerRef: RefObject<HTMLDivElement>;
+  containerRef: RefObject<HTMLDivElement | null>;
   children: ReactNode;
 }
 

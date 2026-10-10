@@ -6,7 +6,7 @@ import useClickAway from '@/lib/hooks/useClickAway';
 import clsx from 'clsx';
 
 interface ContextMenuProps {
-  rootRef: React.RefObject<HTMLElement>;
+  rootRef: React.RefObject<HTMLElement | null>;
   visible: boolean;
   menus: ContextMenuItem[];
   position: { x: number; y: number };

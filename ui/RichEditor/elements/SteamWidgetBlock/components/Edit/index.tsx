@@ -15,8 +15,8 @@ const SteamWidgetEdit = (props: SteamWidgetEditProps) => {
   const appId = useMemo(() => element.appId, [element.appId]);
 
   const handleInput = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const appId = e.target.value;
+    (e: React.InputEvent<HTMLInputElement>) => {
+      const appId = e.currentTarget.value;
       Transforms.setNodes(
         editor,
         { appId },

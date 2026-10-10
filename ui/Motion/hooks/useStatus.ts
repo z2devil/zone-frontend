@@ -10,7 +10,7 @@ const useStatus = (
   const [step, setStep] = useState<MotionStepStatus>(MotionStepStatus.NONE);
   const [isTransition, setIsTransition] = useState(false);
   const [isActive, setActive] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout>();
+  const timerRef = useRef<NodeJS.Timeout>(undefined);
   const [nextFrame] = useNextFrame();
 
   const update = useCallback(() => {

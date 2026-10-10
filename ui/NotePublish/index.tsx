@@ -90,8 +90,8 @@ const NotePublish = (props: NotePublishProps) => {
   );
 
   const handleTitleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setTitle(e.target.value);
+    (e: React.InputEvent<HTMLInputElement>) => {
+      setTitle(e.currentTarget.value);
     },
     []
   );

@@ -31,8 +31,8 @@ const Tag = (props: TagProps) => {
   }, []);
 
   const handleTagNameChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setTagName(event.target.value);
+    (event: React.InputEvent<HTMLInputElement>) => {
+      setTagName(event.currentTarget.value);
     },
     []
   );

@@ -7,7 +7,7 @@ import { twMerge } from 'tailwind-merge';
 export type ModalProps = {
   uuid: string;
   title: React.ReactNode;
-  children: React.ReactNode | (() => JSX.Element);
+  children: React.ReactNode | (() => React.JSX.Element);
   footer?: React.ReactNode;
   okText?: string;
   cancelText?: string;

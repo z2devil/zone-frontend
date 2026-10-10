@@ -15,17 +15,17 @@ import TOC from '@/ui/TOC';
 import clsx from 'clsx';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useCallback, useMemo } from 'react';
+import { use, useCallback, useMemo } from 'react';
 import { NoteDetail } from '@/ui/NoteDetail';
 import { NoteContentProvider } from '@/ui/NoteContent';
 import { useNoteDetail } from './useNoteDetail';
 
 interface NoteDetailPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 const NoteDetailPage = (props: NoteDetailPageProps) => {
-  const { params } = props;
+  const params = use(props.params);
 
   const navigation = useRouter();
 

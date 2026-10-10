@@ -2,7 +2,7 @@ import { RefObject, useCallback, useEffect } from 'react';
 
 const useClickAway = (
   callback: (event: MouseEvent) => void,
-  target: RefObject<HTMLElement>
+  target: RefObject<HTMLElement | null>
 ) => {
   const handleClickAway = useCallback(
     (event: MouseEvent) => {

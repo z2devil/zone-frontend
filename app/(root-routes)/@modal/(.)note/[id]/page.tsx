@@ -15,7 +15,7 @@ import TOC from '@/ui/TOC';
 import clsx from 'clsx';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { use, useCallback, useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import {
   disableScrollbar,
@@ -27,11 +27,11 @@ import { NoteContentProvider } from '@/ui/NoteContent';
 import { useNoteDetail } from '../../../(content)/note/[id]/useNoteDetail';
 
 interface NoteDetailPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 const NoteDetailPage = (props: NoteDetailPageProps) => {
-  const { params } = props;
+  const params = use(props.params);
 
   const navigation = useRouter();
 

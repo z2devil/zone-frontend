@@ -16,8 +16,8 @@ const VideoEdit = (props: VideoEditProps) => {
   const url = useMemo(() => element.url, [element.url]);
 
   const handleInput = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const url = e.target.value;
+    (e: React.InputEvent<HTMLInputElement>) => {
+      const url = e.currentTarget.value;
       Transforms.setNodes(
         editor,
         { url },

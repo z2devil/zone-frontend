@@ -4,7 +4,7 @@ import { Modal } from '@/ui/Modal';
 import { MotionList } from '@/ui/Motion';
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import style from './style.module.scss';
 import { ModalInfo } from '@/ui/Modal/hooks/useModal';
 import NotePublish, { NoteOptions } from '@/ui/NotePublish';
@@ -31,11 +31,11 @@ import { useNoteEditState } from '@/ui/NoteEditor/useNoteEditState';
 import { removeNoteDraft } from '@/lib/note-draft';
 
 interface NoteDetailPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default function WriteNote(props: NoteDetailPageProps) {
-  const { params } = props;
+  const params = use(props.params);
 
   const navigation = useRouter();
 

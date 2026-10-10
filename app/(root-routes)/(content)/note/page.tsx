@@ -35,13 +35,13 @@ const NotePage = () => {
 
   const latestSearchTag = useRef<string[]>([]);
 
-  const latestSearchContent = useRef<string>();
+  const latestSearchContent = useRef<string>(undefined);
 
   const [request] = useRequest();
 
   const token = useAuthStore(state => state.token);
 
-  const latestActor = useRef<string | null>();
+  const latestActor = useRef<string | null>(undefined);
 
   const { utils: notificationUtils } = useNotificationUtilsStore();
 

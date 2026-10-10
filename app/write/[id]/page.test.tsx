@@ -1,5 +1,11 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { ReactNode } from 'react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
+import { ReactNode, Suspense } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import WriteNote from './page';
 
@@ -65,7 +71,7 @@ vi.mock('@/ui/Motion', () => ({
     <>
       {keys.map(info => (
         <div key={info.options.title}>
-          {info.options.children as JSX.Element}
+          {info.options.children as React.JSX.Element}
         </div>
       ))}
     </>
@@ -88,6 +94,17 @@ const note = {
   content: '[{"type":"paragraph","children":[{"text":"hello"}]}]',
 };
 
+// Next 15 的 params 是 Promise，页面内用 use() 解包，需要 Suspense 边界
+const renderPage = async (id: string) => {
+  await act(async () => {
+    render(
+      <Suspense>
+        <WriteNote params={Promise.resolve({ id })} />
+      </Suspense>
+    );
+  });
+};
+
 describe('write page', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -97,7 +114,7 @@ describe('write page', () => {
   it('shows an error state without an editor or publish button when loading fails', async () => {
     mocks.getNote.mockRejectedValue(new Error('笔记不存在'));
 
-    render(<WriteNote params={{ id: 'note-1' }} />);
+    await renderPage('note-1');
 
     expect(await screen.findByText('笔记不存在或加载失败')).toBeInTheDocument();
     expect(screen.queryByTestId('rich-editor')).not.toBeInTheDocument();
@@ -109,7 +126,7 @@ describe('write page', () => {
   it('treats unparsable note content as a load failure', async () => {
     mocks.getNote.mockResolvedValue({ ...note, content: 'not-json' });
 
-    render(<WriteNote params={{ id: 'note-1' }} />);
+    await renderPage('note-1');
 
     expect(await screen.findByText('笔记不存在或加载失败')).toBeInTheDocument();
     expect(screen.queryByTestId('rich-editor')).not.toBeInTheDocument();
@@ -120,7 +137,7 @@ describe('write page', () => {
       .mockRejectedValueOnce(new Error('network'))
       .mockResolvedValueOnce(note);
 
-    render(<WriteNote params={{ id: 'note-1' }} />);
+    await renderPage('note-1');
 
     fireEvent.click(await screen.findByRole('button', { name: '重试' }));
 
@@ -134,7 +151,7 @@ describe('write page', () => {
   it('saves drafts under the current note id', async () => {
     mocks.getNote.mockResolvedValue(note);
 
-    render(<WriteNote params={{ id: 'note-1' }} />);
+    await renderPage('note-1');
     await screen.findByTestId('rich-editor');
 
     fireEvent.keyDown(document, { key: 's', metaKey: true });
@@ -149,7 +166,7 @@ describe('write page', () => {
     localStorage.setItem('note-draft:note-1', note.content);
     localStorage.setItem('note-draft:note-2', note.content);
 
-    render(<WriteNote params={{ id: 'note-1' }} />);
+    await renderPage('note-1');
     fireEvent.click(await screen.findByRole('button', { name: '发布笔记' }));
     fireEvent.click(await screen.findByRole('button', { name: '确认发布' }));
 
@@ -159,8 +176,8 @@ describe('write page', () => {
     expect(localStorage.getItem('note-draft:note-2')).not.toBeNull();
   });
 
-  it('opens the editor directly for a new note', () => {
-    render(<WriteNote params={{ id: 'new' }} />);
+  it('opens the editor directly for a new note', async () => {
+    await renderPage('new');
 
     expect(screen.getByTestId('rich-editor')).toBeInTheDocument();
     expect(mocks.getNote).not.toHaveBeenCalled();

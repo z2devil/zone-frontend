@@ -1,4 +1,11 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
+import { Suspense } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import WriteNote from './page';
 
@@ -71,7 +78,7 @@ vi.mock('@/ui/Motion', () => ({
     <>
       {keys.map(info => (
         <div key={info.options.title}>
-          {info.options.children as JSX.Element}
+          {info.options.children as React.JSX.Element}
           {info.options.okText ? (
             <button type='button'>{info.options.okText}</button>
           ) : null}
@@ -90,6 +97,17 @@ const note = {
   content: '[{"type":"paragraph","children":[{"text":"hello"}]}]',
 };
 
+// Next 15 的 params 是 Promise，页面内用 use() 解包，需要 Suspense 边界
+const renderPage = async (id: string) => {
+  await act(async () => {
+    render(
+      <Suspense>
+        <WriteNote params={Promise.resolve({ id })} />
+      </Suspense>
+    );
+  });
+};
+
 describe('write modal page', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -99,7 +117,7 @@ describe('write modal page', () => {
   it('shows an error state without an editor or publish button when loading fails', async () => {
     mocks.getNote.mockRejectedValue(new Error('笔记不存在'));
 
-    render(<WriteNote params={{ id: 'note-1' }} />);
+    await renderPage('note-1');
 
     expect(await screen.findByText('笔记不存在或加载失败')).toBeInTheDocument();
     expect(screen.queryByTestId('rich-editor')).not.toBeInTheDocument();
@@ -111,7 +129,7 @@ describe('write modal page', () => {
   it('treats unparsable note content as a load failure', async () => {
     mocks.getNote.mockResolvedValue({ ...note, content: '[]' });
 
-    render(<WriteNote params={{ id: 'note-1' }} />);
+    await renderPage('note-1');
 
     expect(await screen.findByText('笔记不存在或加载失败')).toBeInTheDocument();
     expect(screen.queryByTestId('rich-editor')).not.toBeInTheDocument();
@@ -122,7 +140,7 @@ describe('write modal page', () => {
       .mockRejectedValueOnce(new Error('network'))
       .mockResolvedValueOnce(note);
 
-    render(<WriteNote params={{ id: 'note-1' }} />);
+    await renderPage('note-1');
 
     fireEvent.click(await screen.findByRole('button', { name: '重试' }));
 
@@ -138,7 +156,7 @@ describe('write modal page', () => {
     localStorage.setItem('note-draft:note-1', note.content);
     localStorage.setItem('note-draft:new', note.content);
 
-    render(<WriteNote params={{ id: 'note-1' }} />);
+    await renderPage('note-1');
     fireEvent.click(await screen.findByRole('button', { name: '发布笔记' }));
     fireEvent.click(await screen.findByRole('button', { name: '确认发布' }));
 

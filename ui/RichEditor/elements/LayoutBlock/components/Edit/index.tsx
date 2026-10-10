@@ -17,7 +17,7 @@ const LayoutEdit = (props: LayoutEditProps) => {
 
   const override = useOverride();
 
-  const newWidths = useRef<number[] | null>();
+  const newWidths = useRef<number[] | null>(undefined);
 
   const handleResizeStart = useCallback(
     (idx: number, initialX: number) => {

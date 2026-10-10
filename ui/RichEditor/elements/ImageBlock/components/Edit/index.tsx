@@ -25,7 +25,7 @@ import { NotificationType } from '@/ui/Notification/components/Notification';
 
 interface ImageEditProps {
   element: ImageBlockElement;
-  containerRef: React.RefObject<HTMLDivElement>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
 }
 
 const ImageEdit = (props: ImageEditProps) => {

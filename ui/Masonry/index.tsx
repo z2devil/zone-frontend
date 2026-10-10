@@ -2,7 +2,6 @@
 
 import {
   CSSProperties,
-  Key,
   ReactNode,
   useCallback,
   useEffect,
@@ -32,7 +31,7 @@ interface MasonryProps<T> {
   data: T[];
   estimateSize: (item: T, width: number) => number;
   gap?: number;
-  getItemKey: (item: T) => Key;
+  getItemKey: (item: T) => string | number;
   loadDistance?: number;
   measurementVersion?: number;
   touchBottom?: () => void;
@@ -278,17 +277,17 @@ const Masonry = <T,>({
       {geometry.cardWidth > 0 ? (
         <VirtualizedMasonry
           {...props}
-          key={geometryKey}
-          children={children}
           columnWidth={columnWidth}
           data={data}
           estimateSize={estimateSize}
           gap={gap}
           geometry={geometry}
           getItemKey={getItemKey}
+          key={geometryKey}
           scrollMargin={scrollMargin}
-          touchBottom={touchBottom}
-        />
+          touchBottom={touchBottom}>
+          {children}
+        </VirtualizedMasonry>
       ) : null}
     </div>
   );
